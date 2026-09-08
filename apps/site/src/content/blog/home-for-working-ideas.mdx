@@ -1,0 +1,27 @@
+---
+title: A home for working ideas
+description: Bringing Flux core onto the homepage, with a clear path from the artwork to the toolkit and setup.
+date: '2026-09-08'
+order: -9
+---
+
+import { Image } from 'astro:assets';
+import homepage from '../../assets/home/flux-home.png';
+
+After the [field studies](/blog/fields-with-substance/), Flux core became the homepage opening. Its thick nested ribbons give the eye something to explore before the explanation begins.
+
+<Image
+  src={homepage}
+  alt="The Alkemist homepage pairs Make ideas explorable with a colorful live Flux core sculpture on a blackboard background."
+  widths={[480, 800, 1200]}
+  sizes="(max-width:800px) 100vw, 800px"
+  format="webp"
+/>
+
+The composition keeps the introduction short. The sculpture carries the color; a handwritten note invites a closer look. The study labels and equations stay in Labs. Drag, zoom, and motion controls remain available, with quiet automatic movement and a still opening for readers who prefer reduced motion.
+
+On a narrow screen, the headline leads into the sculpture, followed by the description and setup link. Three concise entries explain the working toolkit: scientific writing, charts from data files, and GLB/glTF models. The existing setup section offers a complete agent brief or terminal instructions, with Cloudflare, GitLab Pages, and custom hosting choices. Source-access requirements remain visible.
+
+The homepage owns this composition in `FluxHero.astro` and `index.astro`. The renderer and geometry are shared with the field study, so fixes reach both views. A real rendered still remains visible while graphics load or when they are unavailable. None of the homepage copy or artwork becomes a required part of the reusable theme.
+
+[Make the homepage yours →](/docs/homepage/)

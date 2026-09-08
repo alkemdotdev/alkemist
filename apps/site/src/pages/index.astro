@@ -2,97 +2,202 @@
 import SiteLayout from '../layouts/SiteLayout.astro';
 import { isPreview } from '../lib/deployment';
 import StartUsing from '../components/StartUsing.astro';
-const surface: string[] = [];
-function point(u: number, v: number) {
-  const r = 115 + 38 * Math.cos(v),
-    x = r * Math.cos(u),
-    y = r * Math.sin(u),
-    z = 38 * Math.sin(v);
-  return `${(260 + x * 0.8 + z * 0.6).toFixed(2)},${(180 + y * 0.46 - x * 0.4 + z * 0.7).toFixed(2)}`;
-}
-for (let i = 0; i < 18; i++)
-  surface.push(
-    Array.from(
-      { length: 65 },
-      (_, j) =>
-        `${j ? 'L' : 'M'}${point((i / 18) * Math.PI * 2, (j / 64) * Math.PI * 2)}`,
-    ).join(' '),
-  );
-for (let i = 0; i < 10; i++)
-  surface.push(
-    Array.from(
-      { length: 81 },
-      (_, j) =>
-        `${j ? 'L' : 'M'}${point((j / 80) * Math.PI * 2, (i / 10) * Math.PI * 2)}`,
-    ).join(' '),
-  );
+import FluxHero from '../components/FluxHero.astro';
 ---
 
-<SiteLayout title="Alkemist" preview={isPreview}>
-  <div class="alk-feature">
-    <div>
-      <p class="alk-eyebrow">For inventors & researchers</p>
-      <h1>Ideas deserve working examples.</h1>
-      <p class="alk-lead">
-        An open workbench for publishing technical ideas. Bring your notes,
-        code, data, and models. Build a place where people can explore them.
-      </p>
-      <div class="alk-links">
-        <a class="start-primary" href="#start"
-          >Start using Alkemist <span aria-hidden="true">↗</span></a
-        ><a href="/labs/">Explore the labs →</a>
-      </div>
-      <p class="alk-status">
-        Source preview · repository access required · Astro 7
-      </p>
-    </div>
-    <figure class="alk-specimen">
-      <div class="alk-specimen-label">
-        Design specimen / parametric geometry
-      </div>
-      <svg
-        viewBox="0 0 520 360"
-        role="img"
-        aria-labelledby="surface-title surface-desc"
-        ><title id="surface-title">A toroidal surface</title><desc
-          id="surface-desc"
-          >Static mathematical illustration of the geometry an Alkemist article
-          could explore.</desc
-        ><g fill="none" stroke="currentColor" stroke-width=".9"
-          >{surface.map((d) => <path d={d} />)}</g
-        ></svg
+<SiteLayout
+  title="Alkemist"
+  description="An Astro starting point for inventors and researchers. Publish your notes, code, data, and interactive models in a website you can make your own."
+  preview={isPreview}
+>
+  <FluxHero />
+  <section class="home-tools" aria-label="Inside the toolkit">
+    <a href="/docs/math-code/">
+      <span class="tool-format">MDX + math + code</span>
+      <h2>Give the idea its context.</h2>
+      <p>Write with equations, diagrams, and readable source.</p>
+      <span class="tool-link"
+        >Write & explain <span aria-hidden="true">↗</span></span
       >
-      <figcaption>
-        One shared language for the explanation, the figure, and its source.
-        Explore the interactive model, charts, equations, and shader studies on
-        the specimen board.
-      </figcaption>
-    </figure>
-  </div>
+    </a>
+    <a href="/docs/charts/">
+      <span class="tool-format">CSV → interactive charts</span>
+      <h2>Let the data speak.</h2>
+      <p>Turn a data file into a chart your reader can explore.</p>
+      <span class="tool-link"
+        >Plot & explore <span aria-hidden="true">↗</span></span
+      >
+    </a>
+    <a href="/docs/models/">
+      <span class="tool-format">GLB / glTF → 3D</span>
+      <h2>Show how it fits together.</h2>
+      <p>Put the model beside the explanation. Turn it over.</p>
+      <span class="tool-link"
+        >Build & inspect <span aria-hidden="true">↗</span></span
+      >
+    </a>
+  </section>
   <StartUsing />
-  <section class="alk-section">
-    <p class="alk-eyebrow">The workbench</p><h2>
-      Publish the idea. Keep the details.
-    </h2>
-    <div class="alk-grid">
-      <article>
-        <h3>From the blog</h3><p>
-          Articles, project notes, and the decisions behind the work. This
-          website documents its own construction.
-        </p><a href="/blog/">Read the blog →</a>
-      </article>
-      <article>
-        <h3>One component vocabulary</h3><p>
-          AlkChart, AlkModel, AlkMath. A consistent API for data, geometry,
-          computation, and scientific writing.
-        </p><a href="/docs/components/">See the components →</a>
-      </article>
-      <article>
-        <h3>A base that can evolve</h3><p>
-          Your content belongs to your site. Shared layouts and defaults live in
-          packages you can update.
-        </p><a href="/docs/architecture/">Understand the structure →</a>
-      </article>
+  <section class="home-notebook" aria-labelledby="notebook-title">
+    <div>
+      <p class="alk-eyebrow">Built here. Explained here.</p>
+      <h2 id="notebook-title">A website with its notebook open.</h2>
+      <p>
+        This site uses the same Alkemist components you can build with. Follow
+        the design decisions, explore the experiments, or start with the docs.
+      </p>
+      <a href="/blog/">Read the notebook <span aria-hidden="true">→</span></a>
+    </div>
+    <div class="home-notebook-links">
+      <a href="/blog/home-for-working-ideas/"
+        ><span>Design notes</span><strong>An opening you can explore</strong
+        ><span aria-hidden="true">↗</span></a
+      >
+      <a href="/labs/"
+        ><span>Working experiments</span><strong>A place to try things</strong
+        ><span aria-hidden="true">↗</span></a
+      >
+      <a href="/docs/homepage/"
+        ><span>Make it yours</span><strong
+          >Your content. Your composition.</strong
+        ><span aria-hidden="true">↗</span></a
+      >
     </div>
   </section>
 </SiteLayout>
+
+<style>
+  .home-tools {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2.5rem;
+    padding: 2rem 0 0;
+    border-top: 1px solid var(--alk-rule);
+  }
+  .home-tools > a {
+    color: inherit;
+    text-decoration: none;
+  }
+  .tool-format {
+    color: var(--alk-ink-cobalt);
+    font: 0.72rem/1.5 var(--alk-mono);
+  }
+  .home-tools > a:nth-child(2) .tool-format {
+    color: var(--alk-ink-teal);
+  }
+  .home-tools > a:nth-child(3) .tool-format {
+    color: var(--alk-ink-violet);
+  }
+  .home-tools h2 {
+    margin: 0.9rem 0 0.55rem;
+    font-size: 1.15rem;
+    font-weight: 500;
+    letter-spacing: -0.025em;
+  }
+  .home-tools p {
+    max-width: 34ch;
+    margin: 0;
+    color: var(--alk-muted);
+    font-size: 0.92rem;
+    line-height: 1.65;
+  }
+  .tool-link {
+    display: inline-block;
+    margin-top: 1.1rem;
+    font-size: 0.8rem;
+  }
+  .home-tools a:hover .tool-link {
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
+  }
+  .home-notebook {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    margin-top: 4rem;
+    padding-top: 2.5rem;
+    border-top: 1px solid var(--alk-rule);
+  }
+  .home-notebook h2 {
+    font-size: clamp(1.8rem, 3vw, 2.7rem);
+    line-height: 1.12;
+    letter-spacing: -0.04em;
+    max-width: 20ch;
+    margin: 0 0 1.3rem;
+  }
+  .home-notebook p:not(.alk-eyebrow) {
+    max-width: 43ch;
+    color: var(--alk-muted);
+    line-height: 1.75;
+    font-size: 0.95rem;
+  }
+  .home-notebook > div > a {
+    font-size: 0.85rem;
+  }
+  .home-notebook-links a {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    padding: 1.2rem 0;
+    border-bottom: 1px solid var(--alk-rule);
+    text-decoration: none;
+  }
+  .home-notebook-links a:first-child {
+    padding-top: 0;
+  }
+  .home-notebook-links a > span:first-child {
+    grid-column: 1/-1;
+    color: var(--alk-muted);
+    font: 0.7rem/1.5 var(--alk-mono);
+    margin-bottom: 0.45rem;
+  }
+  .home-notebook-links strong {
+    font-size: 1rem;
+    font-weight: 400;
+  }
+  .home-notebook-links a:hover strong {
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
+  }
+  @media (max-width: 700px) {
+    .home-tools {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      padding-top: 1.5rem;
+    }
+    .home-tools > a {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: baseline;
+      gap: 0;
+    }
+    .tool-format,
+    .home-tools h2,
+    .home-tools p {
+      grid-column: 1;
+    }
+    .home-tools h2 {
+      font-size: 1.1rem;
+      margin-top: 0.6rem;
+    }
+    .home-tools p {
+      max-width: 34ch;
+      font-size: 0.88rem;
+    }
+    .tool-link {
+      grid-column: 2;
+      grid-row: 1;
+      font-size: 0.68rem;
+      margin: 0;
+      padding-left: 0.4rem;
+    }
+    .tool-format {
+      font-size: 0.65rem;
+    }
+    .home-notebook {
+      grid-template-columns: 1fr;
+      gap: 2.2rem;
+      margin-top: 3rem;
+      padding-top: 2rem;
+    }
+  }
+</style>

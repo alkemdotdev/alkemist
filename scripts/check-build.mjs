@@ -23,6 +23,7 @@ const required = [
   'labs/sculpture-studies/index.html',
   'labs/field-studies/index.html',
   'blog/fields-with-substance/index.html',
+  'blog/home-for-working-ideas/index.html',
   'blog/four-new-forms/index.html',
   'blog/form-and-structure/index.html',
   'blog/color-in-the-models/index.html',

@@ -6,6 +6,14 @@ order: 16
 
 Your homepage is an ordinary Astro page at `src/pages/index.astro`. It owns the introduction, artwork, calls to action, and the order of its sections. Alkemist's packages supply the shared layout, theme, and publishing components.
 
+## The current Alkemist opening
+
+The demo homepage uses **Flux core**. `src/components/FluxHero.astro` owns its headline, description, links, handwritten caption, and responsive composition. Edit that file to change the opening; `src/pages/index.astro` owns the toolkit links, setup section, and notebook below it. `StartUsing.astro` supplies the agent and terminal setup flows.
+
+The hero uses the same `FormArt.astro` and `flux-core.ts` geometry as the [field study](/labs/field-studies/?take=flux). Its `presentation="hero"` omits study annotations and equations, prioritizes the still image, and fits the object a little closer. It retains drag, zoom, pause, keyboard controls, and reduced-motion handling. Shared canvas and control styles live in `src/components/forms/art.css`; gallery layouts stay in the studies stylesheet.
+
+Replace the hero with your own image, `AlkModel`, or site-owned visual without changing the theme package. The [homepage development note](/blog/home-for-working-ideas/) explains the composition. This demo artwork is not installed automatically by the starter.
+
 ## A small composition
 
 Use `AlkLayout` for the surrounding navigation and theme, then compose your own content inside it. `siteName` and `tagline` control the identity; the generated starter's `SiteLayout.astro` sets those values for your site.

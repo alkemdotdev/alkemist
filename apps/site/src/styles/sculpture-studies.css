@@ -1,5 +1,4 @@
-form-studies,
-form-art {
+form-studies {
   display: block;
 }
 form-studies [hidden] {
@@ -175,82 +174,11 @@ form-studies [hidden] {
 .forms-preview-art {
   min-width: 0;
 }
-.form-viewport {
-  position: relative;
-  aspect-ratio: 1.35;
-  min-width: 0;
-}
-.form-viewport > canvas,
-.form-viewport > .form-poster {
-  display: block;
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-.form-viewport > canvas {
-  opacity: 0;
-  pointer-events: none;
-  touch-action: pan-y;
-}
-form-art[data-state='ready'] canvas {
-  opacity: 1;
-  pointer-events: auto;
-  cursor: grab;
-}
-form-art[data-state='ready'] canvas:active {
-  cursor: grabbing;
-}
-form-art[data-state='ready'] .form-poster {
-  visibility: hidden;
-}
-
-.form-controls {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-  font: 0.71rem var(--alk-mono);
-  color: var(--alk-muted);
-  padding: 0.8rem 0;
-}
-.form-controls > div {
-  display: flex;
-  gap: 1rem;
-}
 form-studies button {
   color: var(--alk-ink);
   background: none;
   font: inherit;
   cursor: pointer;
-}
-.form-controls button {
-  border: 0;
-  padding: 0.35rem 0;
-  text-decoration: underline;
-  text-underline-offset: 0.25em;
-}
-.form-controls button:disabled {
-  cursor: default;
-  opacity: 0.45;
-}
-.form-status {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  clip-path: inset(50%);
-  overflow: hidden;
-}
-form-art[data-state='error'] .form-status {
-  position: static;
-  width: auto;
-  height: auto;
-  margin: 0.5rem 0;
-  clip-path: none;
-  font: 0.78rem/1.5 var(--alk-mono);
-  color: var(--alk-muted);
 }
 .forms-preview-caption {
   display: flex;
@@ -730,21 +658,6 @@ form-art[data-state='ready'] .form-annotations {
   .form-equation .alk-math-inline {
     font-size: 0.65rem;
   }
-}
-
-.form-controls .form-inspect {
-  align-items: center;
-  gap: 0.45rem;
-}
-.form-inspect span {
-  margin-right: 0.4rem;
-}
-.form-inspect button {
-  border: 1px solid var(--alk-rule);
-  text-decoration: none;
-  padding: 0.1rem 0.4rem;
-  min-width: 26px;
-  min-height: 26px;
 }
 
 .forms-orbit .form-equation > span:last-child {

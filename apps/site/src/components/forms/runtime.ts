@@ -276,9 +276,10 @@ async function mount(
         }
       }
     }
+    const framing = host.dataset.presentation === 'hero' ? 0.86 : 0.78;
     const fitDistance = () => {
       const halfAngle = THREE.MathUtils.degToRad(camera.fov / 2);
-      const vertical = Math.tan(halfAngle) * 0.78;
+      const vertical = Math.tan(halfAngle) * framing;
       const horizontal = vertical * camera.aspect;
       let distance = 0;
       for (let i = 0; i < fitPoints.length; i += 3) {

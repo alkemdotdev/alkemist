@@ -1,0 +1,225 @@
+---
+import FormArt from './forms/FormArt.astro';
+import poster from '../assets/fields/flux.png';
+---
+
+<section class="flux-hero" aria-labelledby="home-title">
+  <div class="flux-copy">
+    <p class="flux-eyebrow">For inventors & researchers</p>
+    <h1 id="home-title">Make ideas<br />explorable.</h1>
+  </div>
+  <figure class="flux-art" aria-label="Interactive Flux core sculpture">
+    <FormArt take="flux" poster={poster} presentation="hero" />
+    <figcaption>
+      <span class="flux-note">follow the field inward</span>
+      <a href="/blog/fields-with-substance/"
+        >Flux core <span aria-hidden="true">↗</span></a
+      >
+    </figcaption>
+  </figure>
+  <div class="flux-summary">
+    <p class="flux-intro">
+      An Astro starting point for your research, experiments, and inventions.
+      Publish the explanation alongside the code, data, and working model.
+    </p>
+    <div class="flux-actions">
+      <a class="start-primary" href="#start"
+        >Start using Alkemist <span aria-hidden="true">↗</span></a
+      >
+      <a href="/test/">Explore the toolkit <span aria-hidden="true">→</span></a>
+    </div>
+    <p class="flux-source">
+      <a href="/docs/status/">Source preview</a> · repository access required
+    </p>
+  </div>
+</section>
+
+<style>
+  .flux-hero {
+    display: grid;
+    grid-template-columns: 0.92fr 1.25fr;
+    grid-template-areas: 'heading art' 'summary art';
+    grid-template-rows: 1fr 1fr;
+    align-items: center;
+    gap: 0 1rem;
+    padding: 0.7rem 0 2.8rem;
+  }
+  .flux-copy {
+    min-width: 0;
+    grid-area: heading;
+    align-self: end;
+  }
+  .flux-summary {
+    grid-area: summary;
+    align-self: start;
+  }
+  .flux-eyebrow {
+    margin: 0 0 1.5rem;
+    color: var(--alk-muted);
+    font: 0.78rem/1.5 var(--alk-mono);
+  }
+  h1 {
+    font: 400 clamp(3.5rem, 5.5vw, 4.9rem)/1.04 var(--alk-sans);
+    letter-spacing: -0.055em;
+    margin: 0 0 1.6rem;
+  }
+  .flux-intro {
+    max-width: 39ch;
+    font-size: 1.08rem;
+    line-height: 1.75;
+    color: var(--alk-muted);
+    margin: 0;
+  }
+  .flux-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem 1.6rem;
+    margin-top: 2rem;
+    font-size: 0.85rem;
+  }
+  .flux-actions a {
+    text-decoration: none;
+  }
+  .flux-actions a:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
+  }
+  .flux-actions .start-primary {
+    font-size: 0.87rem;
+    border-radius: 3px;
+  }
+  .flux-source {
+    margin: 1.2rem 0 0;
+    color: var(--alk-muted);
+    font: 0.68rem/1.5 var(--alk-mono);
+  }
+  .flux-source a {
+    text-decoration: none;
+  }
+  .flux-source a:hover {
+    text-decoration: underline;
+  }
+  .flux-art {
+    grid-area: art;
+    margin: 0;
+    min-width: 0;
+  }
+  .flux-art :global(.form-viewport) {
+    aspect-ratio: 1.25;
+  }
+  .flux-art :global(.form-controls) {
+    padding: 0.3rem 1.1rem;
+    font-size: 0.65rem;
+  }
+  .flux-art :global(.form-controls button) {
+    min-height: 32px;
+  }
+  .flux-art :global(.form-inspect button) {
+    min-width: 32px;
+  }
+  .flux-art :global(.form-controls button:hover:not(:disabled)) {
+    color: var(--alk-ink-cobalt);
+  }
+  figcaption {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 0.6rem 1.1rem 0;
+    padding-top: 0.8rem;
+    border-top: 1px solid var(--alk-rule);
+  }
+  .flux-note {
+    color: var(--alk-ink-rose);
+    font: 1.4rem/1.2 var(--alk-hand);
+    transform: rotate(-3deg);
+  }
+  figcaption a {
+    font: 0.65rem/1.5 var(--alk-mono);
+    color: var(--alk-muted);
+    text-decoration: none;
+  }
+  figcaption a:hover {
+    color: var(--alk-ink);
+    text-decoration: underline;
+  }
+  @media (max-width: 1000px) {
+    .flux-hero {
+      grid-template-columns: 0.95fr 1.1fr;
+    }
+    h1 {
+      font-size: clamp(3rem, 6vw, 4rem);
+    }
+    .flux-intro {
+      font-size: 1rem;
+    }
+    .flux-actions {
+      gap: 1rem;
+    }
+    .flux-art :global(.form-controls) {
+      padding-inline: 0;
+      font-size: 0.6rem;
+    }
+    figcaption {
+      margin-inline: 0;
+    }
+  }
+  @media (max-width: 700px) {
+    .flux-hero {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      padding: 0 0 2rem;
+    }
+    .flux-copy {
+      padding-top: 0.5rem;
+      align-self: stretch;
+    }
+    .flux-summary {
+      align-self: stretch;
+      margin-top: 1.8rem;
+    }
+    .flux-eyebrow {
+      margin-bottom: 1.1rem;
+      font-size: 0.7rem;
+    }
+    h1 {
+      font-size: clamp(3.2rem, 10.8vw, 4.8rem);
+      margin-bottom: 1.2rem;
+    }
+    .flux-intro {
+      max-width: 42ch;
+      font-size: 1rem;
+    }
+    .flux-actions {
+      margin-top: 1.5rem;
+      gap: 1.2rem;
+      font-size: 0.8rem;
+    }
+    .flux-actions .start-primary {
+      padding: 0.85rem 1rem;
+      font-size: 0.8rem;
+    }
+    .flux-source {
+      font-size: 0.62rem;
+      margin-top: 1rem;
+    }
+    .flux-art {
+      margin-top: 0;
+    }
+    .flux-art :global(.form-viewport) {
+      aspect-ratio: 1.4;
+    }
+    .flux-art :global(.form-controls) {
+      padding-inline: 0;
+      font-size: 0.62rem;
+    }
+    .flux-note {
+      font-size: 1.25rem;
+    }
+    figcaption {
+      margin-top: 0.3rem;
+    }
+  }
+</style>

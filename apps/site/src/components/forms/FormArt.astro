@@ -1,5 +1,6 @@
 ---
 import FormPoster from './FormPoster.astro';
+import './art.css';
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 import AlkMath from '@alkemist/ui/AlkMath.astro';
@@ -8,13 +9,14 @@ import type { FormId } from './types';
 interface Props {
   take: FormId;
   poster?: ImageMetadata;
+  presentation?: 'study' | 'hero';
 }
-const { take, poster } = Astro.props;
+const { take, poster, presentation = 'study' } = Astro.props;
 const study = allFormStudies.find((item) => item.id === take)!;
 const scene = study.make();
 ---
 
-<form-art data-form={take} data-state="idle">
+<form-art data-form={take} data-state="idle" data-presentation={presentation}>
   <div class="form-viewport" aria-busy="false">
     {
       poster ? (
@@ -25,6 +27,8 @@ const scene = study.make();
           widths={[480, 800, 1200]}
           sizes="(max-width:650px) 100vw, 65vw"
           format="webp"
+          loading={presentation === 'hero' ? 'eager' : 'lazy'}
+          fetchpriority={presentation === 'hero' ? 'high' : 'auto'}
         />
       ) : (
         <FormPoster
@@ -40,37 +44,49 @@ const scene = study.make();
       role="img"
       aria-label={`${study.name}. ${study.description} Drag horizontally or use arrow keys to turn. Home resets the view.`}
     ></canvas>
-    <div class="form-apparatus" aria-hidden="true">
-      <span>{study.domain}</span><span>Interactive specimen / 3D</span>
-    </div>
-    <div class="form-annotations" data-form-note aria-hidden="true">
-      <svg
-        >{
-          scene.annotations?.map(() => (
+    {
+      presentation === 'study' && (
+        <>
+          <div class="form-apparatus" aria-hidden="true">
             <>
-              <>
-                <path data-annotation-leader />
-                <circle data-annotation-anchor r="2" />
-              </>
+              <span>{study.domain}</span>
+              <span>Interactive specimen / 3D</span>
             </>
-          ))
-        }</svg
-      >
-      {
-        scene.annotations?.map((annotation) => (
-          <span class="form-label" data-annotation-label>
-            <>
-              <strong>{annotation.label}</strong>
-              <span>{annotation.detail}</span>
-            </>
-          </span>
-        ))
-      }
-    </div>
+          </div>
+          <div class="form-annotations" data-form-note aria-hidden="true">
+            <svg>
+              {scene.annotations?.map(() => (
+                <>
+                  <>
+                    <path data-annotation-leader />
+                    <circle data-annotation-anchor r="2" />
+                  </>
+                </>
+              ))}
+            </svg>
+            {scene.annotations?.map((annotation) => (
+              <span class="form-label" data-annotation-label>
+                <>
+                  <strong>{annotation.label}</strong>
+                  <span>{annotation.detail}</span>
+                </>
+              </span>
+            ))}
+          </div>
+        </>
+      )
+    }
   </div>
-  <div class="form-equation">
-    <AlkMath tex={study.equation} display={false} /><span>{study.note}</span>
-  </div>
+  {
+    presentation === 'study' && (
+      <div class="form-equation">
+        <>
+          <AlkMath tex={study.equation} display={false} />
+          <span>{study.note}</span>
+        </>
+      </div>
+    )
+  }
   <div class="form-controls">
     <div class="form-inspect">
       <span>Drag to turn <span aria-hidden="true">↔</span></span><button
