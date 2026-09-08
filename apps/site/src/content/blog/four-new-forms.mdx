@@ -1,0 +1,80 @@
+---
+title: Four new forms, from the beginning
+description: Rebuilding the opening around silhouette, material, and quiet motion.
+date: '2026-09-08'
+order: -5
+---
+
+import { Image } from 'astro:assets';
+import orbitStill from '../../assets/forms/orbit.png';
+import strataStill from '../../assets/forms/strata.png';
+import interferenceStill from '../../assets/forms/interference.png';
+import assemblyStill from '../../assets/forms/assembly.png';
+
+The first sculpture was a colored ribbon with a small companion. The next review asked for four new takes, built from scratch. [The new comparison](/labs/sculpture-studies/) starts with silhouettes: open bands, separated layers, crossing waves, and a collection of geometric objects.
+
+The boards and type stay familiar: #111 and #eee, Ubuntu and Ubuntu Mono, with small handwritten annotations. Each composition uses a selection of the same eight inks. That gives each form its own character while keeping its colors consistent across both boards.
+
+## Orbit
+
+<Image
+  src={orbitStill}
+  alt="Three open blue orbital bands with a small warm center."
+  widths={[400, 800]}
+  sizes="(max-width:800px) 100vw, 800px"
+  format="webp"
+/>
+
+Three open bands surround a small vermilion center. They have thickness and uneven openings, which makes the negative space part of the sculpture. Each band turns a little independently. The homepage pairs that open structure with a modest introduction on the left.
+
+## Strata
+
+<Image
+  src={strataStill}
+  alt="Warm contour slabs separated by air and a central cleft."
+  widths={[400, 800]}
+  sizes="(max-width:800px) 100vw, 800px"
+  format="webp"
+/>
+
+Eight contour layers are separated by air and divided by a cleft. Rose carries most of the form, with warm section accents. A low viewing angle makes the stacked construction visible. The art sits on the left, so the composition changes how you enter the page.
+
+## Interference
+
+<Image
+  src={interferenceStill}
+  alt="Two crossing cyan and violet wave sheets."
+  widths={[400, 800]}
+  sizes="(max-width:800px) 100vw, 800px"
+  format="webp"
+/>
+
+Two long wave sheets cross without becoming a single object. Cyan and violet identify the sheets; a short rose seam marks the meeting. The lines follow the surfaces, revealing their curvature. A wide composition sits above the introduction, giving this opening more breathing room.
+
+These are invented parametric surfaces, not measurements or a physical wave simulation.
+
+## Assembly
+
+<Image
+  src={assemblyStill}
+  alt="A blue faceted shell, ochre spring, and teal rings."
+  widths={[400, 800]}
+  sizes="(max-width:800px) 100vw, 800px"
+  format="webp"
+/>
+
+A faceted shell, a spring, and an instrument made of rings form a small still life. All three have enough weight to belong. Their distinct structures suggest the range of things someone could publish: models, mechanisms, geometry, and unfinished ideas.
+
+## A useful boundary
+
+The four geometry modules are pure TypeScript. They return objects, triangle surfaces, contour lines, ink names, and resting poses. A small Three.js renderer supplies lighting, camera controls, and bounded motion. Contour projections provide still views when JavaScript or WebGL is unavailable.
+
+The comparison images above are transparent stills captured from the actual renderer at its resting pose. They are generated from the geometry, not AI-created illustrations. The capture recipe is retained at `docs/art/capture-forms.cjs`.
+
+The movement stays close to the authored pose. It is capped at 30 painted frames per second, stops outside the viewport, and pauses on drag, keyboard input, or the pause control. Reduced-motion visitors start still and can explicitly choose Play motion.
+
+The comparison opens with four still previews. Opening a take loads its interactive renderer when it is visible. The review controls switch boards and annotations, record a preferred take locally, and copy a direction for discussion. They do not publish a homepage selection.
+
+These are site-owned studies, not a new public component API. Their source lives under `apps/site/src/components/forms/`, with the page composition in `src/pages/labs/sculpture-studies.astro`. A future template can adopt an approved composition without making its artwork part of the shared package contract.
+
+[Compare the four openings →](/labs/sculpture-studies/)

@@ -44,6 +44,14 @@ The comparison layout is `src/pages/labs/hero-studies.astro`; its copy and secti
 
 For an image opening, import a local image from `src/assets/` into Astro's `Image` component. The demo generates multiple WebP widths with explicit dimensions and alt text. Follow [Astro's image guide](https://docs.astro.build/en/guides/images/) when changing the image or sizing behavior. The exact prompt for the demo's generated art is recorded at `docs/art/working-surface-prompt.md` in the source repository.
 
+## Four new sculpture takes
+
+[Orbit, Strata, Interference, and Assembly](/labs/sculpture-studies/) are a fresh round of geometric openings. Each has its own composition and a small subset of the same shared inks. The four-up comparison uses transparent stills captured from the real renderer; opening a take activates its live 3D view.
+
+`src/components/forms/orbit.ts`, `strata.ts`, `interference.ts`, and `assembly.ts` generate the geometry. Each returns surfaces, contour lines, object poses, and bounded motion amplitudes. `runtime.ts` owns the camera, materials, and lifecycle. `FormPoster.astro` projects contour lines for the no-WebGL view. The page and `src/styles/sculpture-studies.css` own composition and spacing. The capture recipe for refreshing the comparison images is in `docs/art/capture-forms.cjs` in the demo repository.
+
+These are local design studies, not installed starter presets or new shared component APIs. Use the review controls to compare boards, annotations, and captions, and to copy a preferred take.
+
 ## Preserve the useful defaults
 
 Keep controls keyboard accessible, provide a still image when a graphics engine is unavailable, and let a reader pause animated art. The sculpture study starts a slow orbit unless reduced motion is preferred; its small companion drifts gently. Dragging, keyboard input, or the pause control stops both motions. The shader study remains still until Play is pressed. Both stop drawing while hidden or outside the viewport. Check the opening on both boards and a narrow screen, with the ordinary reading content below it.

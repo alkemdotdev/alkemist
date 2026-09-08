@@ -1,0 +1,70 @@
+---
+import { ALK_INKS } from '@alkemist/ui/palette';
+import type { FormScene, Vec3 } from './types';
+interface Props {
+  scene: FormScene;
+  label: string;
+  decorative?: boolean;
+}
+const { scene, label, decorative = false } = Astro.props;
+const colors = Object.fromEntries(ALK_INKS.map(({ id, hex }) => [id, hex]));
+const distance = scene.radius / Math.sin((17 * Math.PI) / 180);
+const transform = (point: Vec3, rotation: Vec3, position: Vec3): Vec3 => {
+  let [x, y, z] = point;
+  const [a, b, c] = rotation;
+  [x, y] = [
+    x * Math.cos(c) - y * Math.sin(c),
+    x * Math.sin(c) + y * Math.cos(c),
+  ];
+  [x, z] = [
+    x * Math.cos(b) + z * Math.sin(b),
+    -x * Math.sin(b) + z * Math.cos(b),
+  ];
+  [y, z] = [
+    y * Math.cos(a) - z * Math.sin(a),
+    y * Math.sin(a) + z * Math.cos(a),
+  ];
+  return [x + position[0], y + position[1], z + position[2]];
+};
+const lines = scene.objects
+  .flatMap((object) =>
+    object.lines.map((line) => {
+      const points = line.points.map((point) =>
+        transform(point, object.rotation, object.position),
+      );
+      return {
+        ...line,
+        depth: points.reduce((sum, p) => sum + p[2], 0) / points.length,
+        path: points
+          .map(([x, y, z], i) => {
+            const scale = 300 / Math.tan((17 * Math.PI) / 180) / (distance - z);
+            return `${i ? 'L' : 'M'}${(400 + x * scale).toFixed(1)},${(300 - y * scale).toFixed(1)}`;
+          })
+          .join(' '),
+      };
+    }),
+  )
+  .sort((a, b) => a.depth - b.depth);
+---
+
+<svg
+  class="form-poster"
+  viewBox="0 0 800 600"
+  role={decorative ? undefined : 'img'}
+  aria-label={decorative ? undefined : label}
+  aria-hidden={decorative ? 'true' : undefined}
+>
+  {
+    lines.map((line) => (
+      <path
+        d={line.path}
+        fill="none"
+        stroke={colors[line.ink]}
+        stroke-width="1.6"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        opacity={line.opacity ?? 0.9}
+      />
+    ))
+  }
+</svg>

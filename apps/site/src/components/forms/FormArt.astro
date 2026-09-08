@@ -1,0 +1,45 @@
+---
+import FormPoster from './FormPoster.astro';
+import { formStudies } from './catalog';
+import type { FormId } from './types';
+interface Props {
+  take: FormId;
+}
+const { take } = Astro.props;
+const study = formStudies.find((item) => item.id === take)!;
+---
+
+<form-art data-form={take} data-state="idle">
+  <div class="form-viewport" aria-busy="false">
+    <FormPoster
+      scene={study.make()}
+      label={`${study.name}: ${study.description}`}
+    />
+    <canvas
+      tabindex="-1"
+      inert
+      aria-hidden="true"
+      role="img"
+      aria-label={`${study.name}. ${study.description} Drag horizontally or use arrow keys to turn. Home resets the view.`}
+    ></canvas>
+    <span class="form-annotation" data-form-note aria-hidden="true"
+      >{study.note}<svg viewBox="0 0 75 40"
+        ><path d="M5 3Q10 35 65 28m-12-6 13 6-11 9"></path></svg
+      ></span
+    >
+  </div>
+  <div class="form-controls">
+    <span>Drag to turn <span aria-hidden="true">↔</span></span>
+    <div>
+      <button type="button" data-form-play aria-pressed="false" disabled
+        >Play motion</button
+      ><button type="button" data-form-reset disabled>Reset view</button>
+    </div>
+  </div>
+  <p class="form-status" role="status">
+    The still composition is shown while the interactive view loads.
+  </p>
+</form-art>
+<script>
+  import './runtime';
+</script>
