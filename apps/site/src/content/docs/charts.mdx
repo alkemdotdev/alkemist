@@ -1,45 +1,138 @@
 ---
 title: Charts and data
-description: A broad chart vocabulary, sensible defaults, and room for precise specifications.
+description: Turn CSV files into interactive charts with stable inks, visible grids, and an inspectable source table.
 order: 4
 ---
 
-**Status: API design.** `AlkChart` is not implemented in this foundation release. The examples below specify the experience we are building.
+import AlkChart from '@alkemist/ui/AlkChart.astro';
 
-## One line for a useful default
+`AlkChart` renders a CSV file as a **line, bar, scatter, pie, donut, or heatmap**. The chart engine loads when the figure approaches the viewport. Vega-Lite supplies the chart specification and Vega supplies the runtime; Alkemist adds the reusable figure, theme, loading state, table, and source download. [Vega-Lite data model](https://vega.github.io/vega-lite/docs/data.html).
 
-```mdx
-<AlkChart src="./experiment.csv" />
-<AlkChart type="bar" src="./results.csv" x="method" y="score" />
-<AlkChart type="pie" src="./materials.csv" category="material" value="mass_g" />
-```
+## Start with a file
 
-An unambiguous date/time column and a numeric measurement can suggest a line chart. When several interpretations are plausible, the component should expose column selection and the authoring checks should request explicit fields. Numeric data cannot tell us the intended units or scientific meaning.
-
-## Planned chart families
-
-- **Bars:** vertical, horizontal, grouped, stacked, percentage, diverging, and ranged.
-- **Circular:** pie, donut, and radial.
-- **Series:** line, step, area, and stacked area.
-- **Relationships:** scatter, bubble, and connected scatter.
-- **Statistics:** histogram, density, box plot, error bars/bands, regression, and heatmap.
-- **Compositions:** layers, faceting, small multiples, and linked selections.
-- **Geographic:** choropleths, points, and routes with explicit geographic data and projections.
-
-Vega-Lite provides these underlying chart families. Pie and donut charts use arc marks, with an inner radius for donuts. We will qualify Alkemist presets through working examples and browser checks. [Vega-Lite examples](https://vega.github.io/vega-lite/examples/) and [arc marks](https://vega.github.io/vega-lite/docs/arc.html).
-
-## Options where they belong
-
-Presets will expose typed, chart-specific options for grouping, sorting, stacking, aggregation, binning, axes, units, scale domains, colors, legends, labels, tooltips, sizing, selection, and zoom. Pie charts use category/value fields; they do not pretend to have ordinary x/y axes.
-
-Defaults should include an accessible caption, table view, original data download, visible missing values, and a static fallback. Large datasets need an explicit loading and reduction strategy; reductions must preserve the original file and identify what changed.
-
-## Complete specifications
+Place a CSV in your Astro site's `public` directory, then name the fields and explain their meaning. This example uses a deterministic teaching fixture, not measured research data.
 
 ```mdx
-<AlkChart engine="vega-lite" spec={experimentSpec} />
+import AlkChart from '@alkemist/ui/AlkChart.astro';
+
+<AlkChart
+  src="/test/oscillation.csv"
+  type="line"
+  x="time"
+  y="position"
+  xLabel="Time (s)"
+  yLabel="Position (m)"
+  title="A damped oscillator"
+  description="An analytic trajectory with unit initial displacement and zero initial velocity."
+  sample
+/>
 ```
 
-Preset mode and full-specification mode will be mutually exclusive. There should be one clear source of truth for the chart, with no hidden deep merging. Vega-Embed supports both Vega-Lite and Vega specifications. [Vega-Embed](https://github.com/vega/vega-embed).
+<AlkChart
+  src="/test/oscillation.csv"
+  type="line"
+  x="time"
+  y="position"
+  xLabel="Time (s)"
+  yLabel="Position (m)"
+  title="A damped oscillator"
+  description="A synthetic, analytic trajectory: initial displacement 1 m, initial velocity 0 m/s, natural angular frequency 2 rad/s, damping ratio 0.12."
+  height={280}
+  sample
+/>
 
-Network layouts and specialized hierarchical views can use full Vega or a qualified adapter. We will build our own primitives when they solve an Alkemist-specific problem and document their behavior, inputs, and limits. Existing engines remain preferable to reimplementing their renderers.
+**Shift + scroll zooms; dragging pans.** Line charts zoom along x; scatter plots zoom both axes. The Reset view button restores the initial extent. The modifier keeps ordinary page scrolling available. Scale-bound selections are provided by [Vega-Lite](https://vega.github.io/vega-lite/docs/selection.html).
+
+## Supported presets
+
+| `type`          | Field meaning                                                  | Options                                           |
+| --------------- | -------------------------------------------------------------- | ------------------------------------------------- |
+| `line`          | `x` is the independent variable, `y` the numeric observation   | `color` for separate series, `ink`, `zoom`        |
+| `scatter`       | `x` and `y` are coordinates                                    | `color` for categories, `ink`, `zoom`             |
+| `bar`           | `x` is the category, `y` the numeric magnitude                 | `horizontal`, `color` for groups, `stacked`       |
+| `pie` / `donut` | `x` is the category, `y` the nonnegative amount                | One row per category; legend uses the shared inks |
+| `heatmap`       | `x` and `y` identify grid cells, `value` is the numeric scalar | `valueLabel`; fixed continuous cobalt ramp        |
+
+For the circular presets, `x` and `y` name the category and amount columns; they are not Cartesian axes. Zero amounts are allowed, but at least one amount must be positive. Aggregation is currently the author's responsibility: prepare one row per category for a pie, one row per category/group for a bar, and one row per grid cell for a heatmap.
+
+```mdx
+<AlkChart
+  src="/test/materials.csv"
+  type="bar"
+  x="material"
+  y="value"
+  title="Prototype parts"
+  description="Invented counts by material."
+  xLabel="Material"
+  yLabel="Component count"
+  horizontal
+  sample
+/>
+
+<AlkChart
+  src="/test/materials.csv"
+  type="donut"
+  x="material"
+  y="value"
+  title="Prototype composition"
+  description="The same eight invented counts."
+  yLabel="Component count"
+  sample
+/>
+
+<AlkChart
+  src="/test/field.csv"
+  type="heatmap"
+  x="x"
+  y="y"
+  value="value"
+  title="An analytic field"
+  description="625 samples of a dimensionless function."
+  xLabel="x (dimensionless)"
+  yLabel="y (dimensionless)"
+  valueLabel="Field value"
+  sample
+/>
+```
+
+See all presets together on the [test page](/test/).
+
+## Props and defaults
+
+The exported prop type is `AlkChartProps`.
+
+| Prop                    | Default                             | Meaning                                                                        |
+| ----------------------- | ----------------------------------- | ------------------------------------------------------------------------------ |
+| `src`, `type`, `x`, `y` | Required                            | CSV URL, preset, and exact column names                                        |
+| `title`, `description`  | Required                            | Visible and accessible explanation                                             |
+| `xLabel`, `yLabel`      | Column name                         | Axis or tooltip label; include units here                                      |
+| `xType`                 | Preset-dependent                    | `quantitative`, `temporal`, `nominal`, or `ordinal`                            |
+| `color`, `colorLabel`   | None / column name                  | Optional category column and legend title                                      |
+| `ink`                   | `cobalt`                            | Single-series ink: cobalt, cyan, teal, fern, ochre, vermilion, rose, or violet |
+| `value`, `valueLabel`   | Required for heatmaps / column name | Scalar column and legend label                                                 |
+| `grid`                  | `true`                              | Show grid lines on Cartesian axes                                              |
+| `zoom`                  | `true` where supported              | Enable line/scatter pan and zoom with continuous x                             |
+| `horizontal`, `stacked` | `false`                             | Bar orientation and stacking                                                   |
+| `height`                | `300`                               | Figure's chart height in CSS pixels; width follows its container               |
+| `sample`                | `false`                             | Label the figure as a synthetic dataset                                        |
+| `caption`               | None                                | Additional visible provenance or context                                       |
+
+The default x type is numeric for line/scatter, categorical for bar/pie/donut, and ordinal for heatmaps. For dated series, set `xType="temporal"` and use unambiguous ISO dates. Quantitative fields must contain finite numbers. Empty numeric and temporal cells remain missing values; invalid numeric or date text produces an explicit error. A numeric or date column with no present values also produces an error. Heatmap coordinate columns containing only numbers are parsed numerically so their order is numeric rather than lexical.
+
+## Consistent inks, readable data
+
+Category colors use the same eight ink values on both whiteboard and blackboard. An explicit domain preserves the first-seen category order from the file when the theme changes. This does not assign a universal color to every possible category name: two differently ordered source files can assign different colors to their first category.
+
+Axes, labels, and legends use the board's neutral foreground and Ubuntu fonts. Grid lines use the board's neutral rule color. Heatmaps use a separate, fixed continuous cobalt ramp and labeled value scale, because ordered measurements need an ordered ramp rather than eight categorical swatches. The palette is not certified as distinguishable for every form of color vision; labels, tooltips, and the table remain essential.
+
+Theme changes and container-width changes redraw the chart and reset its view. Resizing is briefly debounced, then the chart recomputes tick density and legend layout for the new width. Replaced and removed views are finalized so their listeners do not remain attached. [Vega view lifecycle](https://vega.github.io/vega/docs/api/view/).
+
+## Source data stays available
+
+Every chart includes a CSV download and a table of its actual source rows. Tables show at most 100 rows, state the full count, and link to the complete file. CSV values are inserted as text, and tooltips use Vega-Tooltip's default escaping.
+
+This first version loads the complete file into browser memory. It has no streaming, worker parsing, automatic reduction, automatic field selection, or server-rendered chart fallback. Keep datasets modest. A remote CSV must allow browser access through CORS. When JavaScript is unavailable, the CSV download remains usable; a fetch, validation, or rendering failure produces an error and Retry chart button, never invented replacement data.
+
+## Still planned
+
+Area and step charts, histograms, error bars, regression, maps, linked selections, domain and formatting controls, full Vega/Vega-Lite specifications, and inference-assisted authoring remain future Alkemist APIs. Many underlying techniques exist in the [Vega-Lite example gallery](https://vega.github.io/vega-lite/examples/); an upstream example is not yet a supported `AlkChart` prop.

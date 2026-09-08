@@ -5,32 +5,32 @@ const items = [
   [
     'AlkLayout',
     'Available',
-    'The shared page shell, navigation, theme tokens, local fonts, and print styles.',
+    'Ubuntu typography, #eee whiteboard and #111 blackboard, local fonts, responsive navigation, and print styles.',
+  ],
+  [
+    'AlkMath / AlkCode',
+    'Available',
+    'KaTeX equations and MathML; Shiki code, captions, line highlights, numbers, and copy controls.',
   ],
   [
     'AlkChart',
-    'Planned',
-    'Line, area, bar, stacked/grouped bar, pie, donut, scatter, heatmap, histogram, and statistical charts.',
+    'Available',
+    'CSV line, bar, scatter, pie, donut, and heatmap; grids, tooltips, source tables, and line/scatter pan and zoom.',
   ],
   [
-    'AlkModel / AlkMesh',
-    'Planned',
-    'GLB/glTF and mesh viewers with camera controls, captions, and annotations.',
+    'AlkModel',
+    'Available',
+    'Uncompressed GLB/glTF with orbit controls, camera presets, wireframe, and a static poster.',
   ],
   [
-    'AlkPointCloud / AlkSplat',
-    'Planned',
-    'Point clouds and Gaussian splats with explicit format support.',
+    'AlkShader',
+    'Available · fixed study',
+    'An interactive WebGL2 interference field with frequency and angle controls. A general shader authoring API is planned.',
   ],
   [
-    'AlkTheorem / AlkDiagram',
+    'AlkPointCloud / AlkSplat / AlkRobot',
     'Planned',
-    'Scientific authoring blocks, equations, references, and diagrams.',
-  ],
-  [
-    'AlkRobot / AlkShader',
-    'Planned',
-    'Robot joint controls, shader uniforms, and repeatable experiments.',
+    'Point clouds, Gaussian splats, and robot joint controls need qualified format adapters and real examples.',
   ],
 ];
 ---
@@ -43,8 +43,9 @@ const items = [
     Every Alkemist component has an Alk prefix. Their documentation lives beside
     the site that uses them.
   </p><div class="alk-notice">
-    The publishing foundation is available in this repository. Interactive
-    components below are planned; this page records their intended scope.
+    Explore the working components on the <a href="/test/">specimen board</a>.
+    Available means implemented in this repository; the packages are not yet
+    published to npm.
   </div><div class="alk-grid">
     {
       items.map(([name, status, description]) => (

@@ -1,0 +1,35 @@
+---
+import { codeToHtml } from 'shiki';
+import type { BundledLanguage } from 'shiki';
+import { AlkCodeTheme, createAlkCodeTransformer } from './code-theme';
+import './math-code.css';
+
+export interface AlkCodeProps {
+  code: string;
+  lang?: BundledLanguage | 'text' | 'plaintext';
+  title?: string;
+  highlightLines?: number[];
+  lineNumbers?: boolean;
+}
+type Props = AlkCodeProps;
+const {
+  code,
+  lang = 'text',
+  title,
+  highlightLines,
+  lineNumbers = true,
+} = Astro.props;
+const html = await codeToHtml(code, {
+  lang,
+  theme: AlkCodeTheme,
+  transformers: [
+    createAlkCodeTransformer({ title, highlightLines, lineNumbers }),
+  ],
+});
+---
+
+<Fragment set:html={html} />
+
+<script>
+  import './code-copy';
+</script>

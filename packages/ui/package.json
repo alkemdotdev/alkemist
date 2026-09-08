@@ -4,7 +4,16 @@
   "type": "module",
   "exports": {
     "./AlkLayout.astro": "./src/AlkLayout.astro",
-    "./theme.css": "./src/theme.css"
+    "./theme.css": "./src/theme.css",
+    "./AlkMath.astro": "./src/AlkMath.astro",
+    "./AlkCode.astro": "./src/AlkCode.astro",
+    "./AlkModel.astro": "./src/AlkModel.astro",
+    "./AlkChart.astro": "./src/AlkChart.astro",
+    "./code-theme": "./src/code-theme.ts",
+    "./code-copy": "./src/code-copy.ts",
+    "./palette": "./src/palette.ts",
+    "./AlkShader.astro": "./src/AlkShader.astro",
+    "./shader": "./src/shader.ts"
   },
   "files": [
     "src"
@@ -13,8 +22,18 @@
     "astro": "^7.3.2"
   },
   "dependencies": {
+    "@fontsource/caveat": "5.3.0",
     "@fontsource/ibm-plex-mono": "5.3.0",
     "@fontsource/ibm-plex-sans": "5.3.0",
-    "@fontsource/ibm-plex-serif": "5.3.0"
+    "@fontsource/ibm-plex-serif": "5.3.0",
+    "@fontsource/ubuntu": "5.3.0",
+    "@fontsource/ubuntu-mono": "5.3.0",
+    "@types/three": "0.185.4",
+    "katex": "0.18.7",
+    "shiki": "4.4.3",
+    "three": "0.185.1",
+    "vega": "6.4.0",
+    "vega-embed": "7.2.0",
+    "vega-lite": "6.4.3"
   }
 }

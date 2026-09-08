@@ -1,0 +1,46 @@
+---
+title: Ubuntu, boards, and eight inks
+description: The shared typography and exact same ink colors on whiteboard and blackboard.
+order: 2.5
+---
+
+## The default voice
+
+Ubuntu carries headings and prose. Ubuntu Mono carries code, axes, labels, and technical details. Caveat is reserved for handwritten annotations. All fonts are served locally. KaTeX uses its own mathematical fonts so equation layout stays correct.
+
+The two board surfaces are exactly **#eeeeee** and **#111111**. The site follows the system theme until a reader chooses Whiteboard or Blackboard in the header; that choice is saved locally when storage is available.
+
+## One palette on both boards
+
+| Ink       | Hex       | CSS token             |
+| --------- | --------- | --------------------- |
+| Cobalt    | `#1982f2` | `--alk-ink-cobalt`    |
+| Cyan      | `#158eab` | `--alk-ink-cyan`      |
+| Teal      | `#199287` | `--alk-ink-teal`      |
+| Fern      | `#029828` | `--alk-ink-fern`      |
+| Ochre     | `#a67c01` | `--alk-ink-ochre`     |
+| Vermilion | `#e25312` | `--alk-ink-vermilion` |
+| Rose      | `#e24a7a` | `--alk-ink-rose`      |
+| Violet    | `#a464e3` | `--alk-ink-violet`    |
+
+These values never change with the theme. [Compare both surfaces on the specimen board](/test/#inks) or [download the palette JSON](/test/inks.json).
+
+The palette is defined once in `packages/ui/src/palette.ts`. Run `npm run generate:palette` to regenerate CSS and the downloadable JSON. The regression check measures contrast against both surfaces.
+
+## Color has a job
+
+Use these inks for graph marks, large handwritten annotations, borders, and emphasis. Keep ordinary text neutral. The colors have at least **3.27:1** contrast against the whiteboard and **4.92:1** against the blackboard. They do not meet the normal-text 4.5:1 requirement on white.
+
+This is a mathematical trade-off: a single fixed color cannot reach 4.5:1 against both of these backgrounds. We kept the desired cross-theme identity and made typography carry small-text readability. Code panels stay `#111` in both themes, with a `#181818` highlighted-line surface; syntax colors retain at least 4.5:1 on both code surfaces.
+
+The thresholds follow [WCAG text contrast guidance](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html) and [non-text contrast guidance](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html). This palette check alone does not establish whole-site WCAG conformance.
+
+Charts also use labels and tooltips; eight hues are not eight universally distinguishable categories. Ordered scalar fields use a continuous sequential ramp with a numeric legend. Grids are enabled by default.
+
+## Annotating a figure
+
+```astro title="A note beside a figure"
+<p class="alk-note">Same knot. A different point of view.</p>
+```
+
+The shared annotation style uses Caveat at a large size. Keep notes short and next to their subject. Use regular Ubuntu for explanations that need multiple sentences.

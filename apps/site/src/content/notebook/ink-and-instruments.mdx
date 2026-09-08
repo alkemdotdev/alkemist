@@ -1,0 +1,48 @@
+---
+title: Eight inks and a board full of experiments
+description: Turning the chosen Ubuntu and board direction into reusable math, code, charts, a model viewer, and an interactive specimen page.
+date: '2026-09-08'
+order: 0
+---
+
+The design studio answered the aesthetic questions: Ubuntu throughout, Ubuntu Mono for technical work, handwritten notes, annotations, several inks, and graph grids on by default. The next step was to make that language survive contact with real content.
+
+The result is the [specimen board at /test](/test/). It is a long page on purpose. A theme that looks good in a title must also work in a matrix, a data table, a code gutter, and a narrow form label.
+
+## An ink should keep its identity
+
+Earlier board studies changed accent colors with the surface. We replaced them with eight fixed inks: cobalt, cyan, teal, fern, ochre, vermilion, rose, and violet. A category keeps its color when the board changes.
+
+There is a useful constraint hiding here. No single color can reach normal-text 4.5:1 contrast against both `#111` and `#eee`. We selected colors near a common relative luminance, checked every hex against both surfaces, and kept ordinary text neutral. The resulting inks exceed 3:1 on both boards; dark code surfaces let the same inks exceed 4.5:1 for syntax.
+
+The [palette documentation](/docs/palette/) records the rules, and a generator writes the CSS and downloadable JSON from one source. The arithmetic follows [WCAG's contrast definition](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html).
+
+![The eight fixed inks displayed on both whiteboard and blackboard surfaces.](/notebook/eight-inks.jpg)
+
+_Browser capture of the actual palette, September 8, 2026._
+
+## Build the authoring layer around good engines
+
+We chose existing engines for the difficult rendering work and built the shared authoring and lifecycle layer around them:
+
+| Author writes                      | Engine does                  | Alkemist supplies                                     |
+| ---------------------------------- | ---------------------------- | ----------------------------------------------------- |
+| `AlkMath` or dollar-delimited math | KaTeX typesetting            | Shared fonts/options, MathML, build errors            |
+| `AlkCode` or a code fence          | Shiki tokenization           | Inks, captions, line highlights, copy                 |
+| `AlkChart` with a CSV path         | Vega-Lite and Vega rendering | Presets, grids, tables, lazy loading, theme updates   |
+| `AlkModel` with a GLB path         | Three.js rendering           | Orbit controls, camera presets, poster, cleanup       |
+| `AlkShader`                        | WebGL2 fragment shading      | A bounded interactive study, controls, pause behavior |
+
+The public names keep the `Alk` prefix. Heavy clients load when their figure approaches the viewport. Math and code are rendered at build time. Model and shader animation starts only when requested and stops doing work when offscreen.
+
+## Real examples, explicit provenance
+
+The torus knot is an actual local GLB generated from deterministic geometry. The oscillator, component-count, and scalar-field CSV files are synthetic fixtures with repeatable source scripts. Chart downloads expose the same files that the client reads.
+
+The page pairs these with a proof, an SVG diagram, a static image, code in four languages, MDX footnotes and task lists, and a local form with a real preview flow. This lets a design change be examined across content types instead of judged from one hero screenshot.
+
+## What this establishes
+
+This is the first working set of scientific components, with [their APIs documented](/components/). It does not make every 3D representation interchangeable: compressed assets, arbitrary NeRF checkpoints, splats, point clouds, and robot descriptions still need format-specific work. The shader is a fixed interactive study, not yet an arbitrary shader playground.
+
+Implementation checks include strict Astro/TypeScript validation, real math/code compilation, malformed-TeX rejection, palette contrast tests, chart preset rendering, and deterministic GLB parsing. Browser interaction and deployment evidence are recorded in the repository's `docs/progress.md` as they are completed.

@@ -1,0 +1,151 @@
+---
+title: Math and code
+description: Build-time mathematical typesetting and readable, copyable source listings.
+order: 6
+---
+
+import AlkMath from '@alkemist/ui/AlkMath.astro';
+import AlkCode from '@alkemist/ui/AlkCode.astro';
+
+**Available.** `AlkMath`, `AlkCode`, Markdown equations, and styled code fences work in the current site. Math and syntax highlighting render during the build. Readers receive the equation and source immediately; only copying needs a small browser script.
+
+## Write mathematics naturally
+
+Use single dollar signs for inline notation, such as $\mathbf{x}\in\mathbb{R}^n$, and a pair of dollar signs on their own lines for a display equation. Escape a literal dollar sign with `\$`.
+
+```md
+The oscillator satisfies $\ddot{x} + 2\zeta\omega_n\dot{x} + \omega_n^2x = 0$.
+
+$$
+x(t) = e^{-\zeta\omega_n t}\cos(\omega_d t)
+$$
+```
+
+The oscillator satisfies $\ddot{x} + 2\zeta\omega_n\dot{x} + \omega_n^2x = 0$. A useful solution for an underdamped system, with $0 \leq \zeta < 1$, is:
+
+$$
+\begin{aligned}
+\omega_d &= \omega_n\sqrt{1-\zeta^2},\\
+x(t) &= e^{-\zeta\omega_n t}\cos(\omega_d t).
+\end{aligned}
+$$
+
+This particular solution has initial displacement $x(0)=1$ and velocity $\dot{x}(0)=-\zeta\omega_n$. Initial conditions belong in the explanation, not just the formula.
+
+Matrices and aligned derivations use ordinary TeX environments:
+
+$$
+\mathbf{R}(\theta)=
+\begin{bmatrix}
+\cos\theta & -\sin\theta\\
+\sin\theta & \cos\theta
+\end{bmatrix},
+\qquad \det\mathbf{R}(\theta)=1.
+$$
+
+A fenced `math` block also produces a display equation. Use a `tex` or `latex` fence when you want to show its source instead.
+
+## The component form
+
+`AlkMath` works in Astro and MDX. `String.raw` keeps TeX backslashes intact when the source is a JavaScript string.
+
+```astro title="research-note.astro" {5-8}
+---
+import AlkMath from '@alkemist/ui/AlkMath.astro';
+---
+
+<AlkMath
+  tex={String.raw`\int_{\partial\Omega}\omega = \int_\Omega d\omega`}
+  label="Stokes’ theorem, for a smooth oriented manifold and suitable differential form."
+/>
+```
+
+<AlkMath
+  tex={String.raw`\int_{\partial\Omega}\omega = \int_\Omega d\omega`}
+  label="Stokes’ theorem, for a smooth oriented manifold and suitable differential form."
+/>
+
+| Property           | Default  | Behavior                                                             |
+| ------------------ | -------- | -------------------------------------------------------------------- |
+| `tex: string`      | Required | TeX source without dollar delimiters.                                |
+| `display: boolean` | `true`   | A scrollable equation figure; set `false` for inline notation.       |
+| `label: string`    | Omitted  | Optional visible caption and accessible name for the display figure. |
+
+Use `\tag{1}` inside a display expression for an explicit equation number. Automatic cross-document equation numbering and bibliography management are not implemented yet.
+
+### Rendering and correctness
+
+The [KaTeX renderer](https://katex.org/docs/options.html) emits visual HTML and accompanying MathML. KaTeX's own mathematical fonts remain separate from Ubuntu and Ubuntu Mono so fractions, symbols, and stretchy delimiters retain their intended metrics. Display figures scroll horizontally when a long expression needs more room.
+
+Alkemist sets `trust: false`, rejects invalid or unsupported TeX at build time, and bounds macro expansion and explicit sizing. In Markdown, an additional error gate turns `rehype-katex` diagnostics into build failures. A broken formula must be corrected before publication. HTML extensions and trusted URL commands are not enabled.
+
+KaTeX is a TeX mathematics renderer, not a complete LaTeX document compiler. Check its [supported functions](https://katex.org/docs/supported.html) when using specialized notation. Correct rendering does not establish that a mathematical claim is true.
+
+## Code fences with context
+
+Code listings share Ubuntu Mono, the same ink palette, and a `#111` panel in both board themes. Keeping the panel dark gives the fixed inks sufficient contrast for small source text. Captions identify the file and language; line numbers and highlighted lines help a reader follow an explanation.
+
+Add a language, optional title, and one-based highlight ranges to a Markdown fence:
+
+````md
+```typescript title="oscillator.ts" {2,4-5}
+const damping = 0.25;
+const frequency = 2;
+
+const omegaD = frequency * Math.sqrt(1 - damping ** 2);
+const displacement = (t: number) =>
+  Math.exp(-damping * frequency * t) * Math.cos(omegaD * t);
+```
+````
+
+```typescript title="oscillator.ts" {2,4-5}
+const damping = 0.25;
+const frequency = 2;
+
+const omegaD = frequency * Math.sqrt(1 - damping ** 2);
+const displacement = (t: number) =>
+  Math.exp(-damping * frequency * t) * Math.cos(omegaD * t);
+```
+
+Highlight individual lines with `{2,4}` or inclusive ranges with `{4-7}`. Add `no-line-numbers` to the fence metadata to hide the gutter. Titles currently use double quotes: `title="filename.ts"`. Metadata is rendered as text, not evaluated as HTML.
+
+## The code component
+
+Use `AlkCode` when the source already exists as a string, including source files imported with Vite's `?raw` suffix.
+
+```astro title="algorithm.astro"
+---
+import AlkCode from '@alkemist/ui/AlkCode.astro';
+import source from './solver.ts?raw';
+---
+
+<AlkCode
+  code={source}
+  lang="typescript"
+  title="solver.ts"
+  highlightLines={[2, 3]}
+/>
+```
+
+<AlkCode
+  code={
+    'def advance(position, velocity, dt):\n    return position + velocity * dt\n'
+  }
+  lang="python"
+  title="integrator.py"
+  highlightLines={[2]}
+/>
+
+| Property                   | Default  | Behavior                                 |
+| -------------------------- | -------- | ---------------------------------------- |
+| `code: string`             | Required | The source text to display and copy.     |
+| `lang`                     | `text`   | A bundled Shiki language or plain text.  |
+| `title: string`            | `Source` | File name or descriptive caption.        |
+| `highlightLines: number[]` | `[]`     | One-based positive integer line numbers. |
+| `lineNumbers: boolean`     | `true`   | Show the numbered gutter.                |
+
+Syntax highlighting uses [Shiki](https://shiki.style/guide/transformers) during the build; its grammars are not shipped as a browser highlighter. Components reject unknown languages. Astro's fenced-code pipeline warns and falls back to plain text for an unknown fence language, so check the build output when adding a new grammar.
+
+Copy uses the browser clipboard when permitted. If copying is blocked, it selects the source and announces how to copy it manually. Line numbers are presentation only and are excluded from the copied source. Without JavaScript, the code remains readable and selectable and the inactive copy control stays hidden. Long lines scroll inside their panel.
+
+See [the test page](/test/#math) for equations alongside interactive figures, and [its code section](/test/#code) for listings in context. The shared integration uses Astro's [Unified Markdown processor](https://docs.astro.build/en/guides/markdown-content/) for Markdown and MDX.

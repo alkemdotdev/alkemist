@@ -1,0 +1,64 @@
+{
+  "name": "Alkemist eight inks",
+  "version": 1,
+  "backgrounds": ["#111111", "#eeeeee"],
+  "usage": "Same inks in both themes. Graphical marks and large notes on either board; normal text on a blackboard. Use neutral foreground for small whiteboard text.",
+  "colors": [
+    {
+      "id": "cobalt",
+      "name": "Cobalt",
+      "hex": "#1982f2",
+      "contrastBlackboard": 4.960443707517846,
+      "contrastWhiteboard": 3.2810103671857496
+    },
+    {
+      "id": "cyan",
+      "name": "Cyan",
+      "hex": "#158eab",
+      "contrastBlackboard": 4.935799382532901,
+      "contrastWhiteboard": 3.297392371295164
+    },
+    {
+      "id": "teal",
+      "name": "Teal",
+      "hex": "#199287",
+      "contrastBlackboard": 4.9480294437281005,
+      "contrastWhiteboard": 3.289242195362674
+    },
+    {
+      "id": "fern",
+      "name": "Fern",
+      "hex": "#029828",
+      "contrastBlackboard": 4.967608211370567,
+      "contrastWhiteboard": 3.27627834919715
+    },
+    {
+      "id": "ochre",
+      "name": "Ochre",
+      "hex": "#a67c01",
+      "contrastBlackboard": 4.949967068889741,
+      "contrastWhiteboard": 3.2879546477180606
+    },
+    {
+      "id": "vermilion",
+      "name": "Vermilion",
+      "hex": "#e25312",
+      "contrastBlackboard": 4.927388475895593,
+      "contrastWhiteboard": 3.3030209227108296
+    },
+    {
+      "id": "rose",
+      "name": "Rose",
+      "hex": "#e24a7a",
+      "contrastBlackboard": 4.940429265945356,
+      "contrastWhiteboard": 3.2943022466476055
+    },
+    {
+      "id": "violet",
+      "name": "Violet",
+      "hex": "#a464e3",
+      "contrastBlackboard": 4.955078360202084,
+      "contrastWhiteboard": 3.284563037574972
+    }
+  ]
+}

@@ -1,0 +1,86 @@
+---
+import './model.css';
+
+export interface AlkModelProps {
+  /** A glTF 2.0 .glb or .gltf URL. Compression decoders are not included. */
+  src: string;
+  title: string;
+  description?: string;
+  /** Static image shown before loading and when WebGL is unavailable. */
+  poster?: string;
+  class?: string;
+}
+
+type Props = AlkModelProps;
+const { src, title, description, poster, class: className } = Astro.props;
+---
+
+<alk-model
+  class:list={['alk-model', className]}
+  data-src={src}
+  data-state="idle"
+>
+  <figure>
+    <figcaption class="alk-model-heading">
+      <div>
+        <span class="alk-model-label">Interactive specimen / glTF 2.0</span>
+        <strong>{title}</strong>
+      </div>
+      <span class="alk-model-badge">3D</span>
+    </figcaption>
+    <div class="alk-model-viewport" aria-busy="false">
+      {
+        poster && (
+          <img
+            class="alk-model-poster"
+            src={poster}
+            alt={`Static view of ${title}`}
+            loading="lazy"
+            width="960"
+            height="640"
+          />
+        )
+      }
+      <canvas
+        aria-label={`${title}. Drag to orbit; use arrow keys to rotate and plus or minus to zoom.`}
+        role="img"
+        tabindex="0"></canvas>
+      <div class="alk-model-axis" aria-hidden="true">
+        <span>X</span><span>Y</span><span>Z</span>
+      </div>
+      <p class="alk-model-hint">Drag to orbit · scroll to zoom</p>
+    </div>
+    <div class="alk-model-toolbar" aria-label={`${title} controls`}>
+      <div class="alk-model-presets" role="group" aria-label="Camera view">
+        <button type="button" data-view="perspective" disabled
+          >Reset view</button
+        >
+        <button type="button" data-view="front" disabled>Front</button>
+        <button type="button" data-view="top" disabled>Top</button>
+      </div>
+      <div class="alk-model-switches">
+        <label
+          ><input type="checkbox" data-wireframe disabled /> Wireframe</label
+        >
+        <label><input type="checkbox" data-spin disabled /> Spin</label>
+      </div>
+    </div>
+    <div class="alk-model-footer">
+      <p class="alk-model-status" role="status" aria-live="polite">
+        Interactive view loads when visible.
+      </p>
+      <a href={src} download>Download original ↗</a>
+    </div>
+    {description && <p class="alk-model-description">{description}</p>}
+    <noscript
+      ><p class="alk-model-description">
+        Enable JavaScript to explore this model. The original file is available
+        above.
+      </p></noscript
+    >
+  </figure>
+</alk-model>
+
+<script>
+  import './model';
+</script>

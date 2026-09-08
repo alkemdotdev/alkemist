@@ -4,9 +4,9 @@
   --ink: #eeeeee;
   --muted: #aaa9a6;
   --rule: #393939;
-  --blue: #8cd9d0;
-  --yellow: #ebd897;
-  --pink: #e49bac;
+  --blue: var(--alk-ink-cobalt);
+  --yellow: var(--alk-ink-ochre);
+  --pink: var(--alk-ink-rose);
   --soft: #191919;
   --alk-accent: var(--blue);
   font-size: 16px;
@@ -19,9 +19,9 @@
   --ink: #111111;
   --muted: #626262;
   --rule: #c5c5c5;
-  --blue: #2259bb;
-  --yellow: #267258;
-  --pink: #b34446;
+  --blue: var(--alk-ink-cobalt);
+  --yellow: var(--alk-ink-ochre);
+  --pink: var(--alk-ink-rose);
   --soft: #e6e6e6;
 }
 .board-studio {

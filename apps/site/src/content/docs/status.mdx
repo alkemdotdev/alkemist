@@ -1,26 +1,29 @@
 ---
 title: Project status
-description: What exists today and what the next iteration will establish.
-order: 6
+description: What is implemented and where the current boundaries are.
+order: 9
 ---
 
-## Available in the foundation
+## Available in the repository
 
-- Astro 7.3.2 and a reusable workspace package boundary.
-- `AlkLayout`, Paper/Graphite themes, locally served typography, responsive layouts, and print styles.
-- MDX documentation and a development notebook built with the same theme as the demo.
-- A component roadmap with canonical `Alk*` names.
-- Cloudflare Pages configuration for production and branch previews.
-- Build checks and a source-revision manifest for deployment verification.
+- Astro 7.3.2 with an integration package and reusable UI package.
+- `AlkLayout`, Ubuntu and Ubuntu Mono, handwritten annotations, #eee/#111 boards, and eight fixed inks.
+- `AlkMath` and math in Markdown/MDX: KaTeX HTML and MathML, with invalid expressions rejected during the build.
+- `AlkCode` and enhanced code fences: Shiki highlighting, captions, line numbers, highlighted lines, and copy controls.
+- `AlkChart`: CSV-backed line, bar, scatter, pie, donut, and heatmap, with data tables and line/scatter zoom.
+- `AlkModel`: uncompressed GLB/glTF viewing, camera controls, wireframe, and poster fallback.
+- `AlkShader`: one real WebGL2 interference study with adjustable frequency and angle.
+- MDX docs, a development notebook, and the [interactive specimen board](/test/) using the same packages.
+- Cloudflare native Git production and branch previews, build checks, and source-revision verification.
 
-## Next: real interactive evidence
+These are workspace packages, not yet an npm release. The demo fixtures are synthetic and labeled as such.
 
-The next feature milestone combines math, a diagram, a real CSV chart, and a real GLB viewer in one article. Then we expand to the full chart gallery, meshes, point clouds, splats, robotics, shaders, and simulations.
+## Further work
 
-One-line components should make supported cases easy while preserving explicit options for units, coordinate systems, data interpretation, and rendering formats.
+Chart aggregation, more statistical presets, streaming and large-file processing; compressed model pipelines, mesh and point-cloud adapters; Gaussian splats, robotics, simulations, and a general shader authoring API still require implementation and representative examples. Dedicated theorem and diagram components are planned; the current specimen uses semantic HTML and SVG.
 
 ## Representation matters
 
-NeRF training checkpoints are not universal browser assets. We will document browser-ready export pipelines and qualify method-specific viewers. Converting a radiance field into a mesh changes its representation and will be labeled accordingly.
+NeRF training checkpoints are not universal browser assets. Browser-ready export pipelines and method-specific viewers need separate qualification. Converting a radiance field into a mesh changes its representation and will be labeled accordingly.
 
-An upstream library's capability is not automatically an Alkemist feature. A component becomes available here after implementation, documentation, and a representative browser demonstration.
+An upstream engine's capability is not automatically an Alkemist feature. A component becomes available here after implementation, documentation, and a representative demonstration.

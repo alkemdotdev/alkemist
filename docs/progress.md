@@ -70,3 +70,28 @@ Status: awaiting the user's approval of the sketch and architecture before imple
 ### Proposed next action after approval
 
 Build the first real meta article with math, a diagram, an actual CSV chart, and an actual GLB viewer, using the reusable package boundary. Validate it in a separately installed starter and in desktop/mobile browsers.
+
+## 2026-09-08 — Ubuntu, fixed inks, and the specimen board
+
+Implemented the accepted Ubuntu/Ubuntu Mono typography across the shared theme, with locally served Caveat annotations. Whiteboard and blackboard now use #eee and #111. Eight named ink tokens have identical values on both surfaces; palette.ts is the source for generated CSS and downloadable /test/inks.json. Contrast regression tests distinguish graphical marks/large notes from normal text; code panels remain #111 in both themes so the same syntax inks retain normal-text contrast.
+
+New reusable package components: AlkMath (KaTeX HTML+MathML), AlkCode (Shiki with captions/highlighted lines/copy), AlkChart (six CSV presets through Vega-Lite/Vega), AlkModel (real GLB/glTF through Three.js), and AlkShader (fixed WebGL2 interference study with frequency/angle/play controls). Shared Markdown/MDX processing has the same code and math defaults. Resolved rehype-katex's transitive KaTeX version to the same 0.18.7 renderer/CSS used by AlkMath; malformed math fails builds. Rendering engines are lazy; model/shader motion is opt-in and stops offscreen.
+
+Created /test/ as a long interactive specimen with a generated torus-knot GLB, six chart treatments, mathematical typography and proof, language tabs, GLSL art, accessible SVG diagram, image/poster, rich MDX, and an actual local form/dialog flow. Data fixtures are synthetic and deterministic. Reference docs cover real supported APIs and limits; the notebook article explains the design and includes a browser screenshot of the palette.
+
+Browser evidence (Codex in-app browser, built static preview, 1440×1000 and 390×844):
+
+- Computed body/headings are Ubuntu; code is Ubuntu Mono. Both swatch boards have byte-identical computed colors. Body backgrounds resolve to rgb(238,238,238) and rgb(17,17,17).
+- Actual WebGL model reported 9,216 triangles; Front/Top/Reset, keyboard orbit/zoom, wireframe, and spin controls exercised. WebGL2 shader reached ready and responded to frequency, angle, play, and pause.
+- Real CSV rows loaded: 301 oscillator samples, 8 component counts, 625 field samples. Shift-wheel changed the line x domain from 0–12 to 3–8; Reset restored 0–12. Theme changed axis text while preserving the cobalt trace.
+- Source table exposes first 100 rows with full CSV download. Deliberately blocking the oscillator request produced explicit error text; unblocking and pressing Retry restored 301 rows. Browser network override was cleared afterward.
+- Code language clicks/arrow keys changed panels; copy button reported Copied. Independent system clipboard contents were not inspected.
+- Form input/checkboxes/selection updated the local card; dialog opened and Escape closed it. Found and fixed reset event timing: reset defaults occur after the event handler, so the preview must update in a later task, not a microtask. Verified reset now restores Untitled experiment.
+- Responsive check found/fixed grouped-bar slotting when x=color and stale legend/tick compilation on resize. Width changes now recompile after debounce and reset the view. Mobile page width remains contained; formulas/code/diagram use explicit local scrolling.
+- Console had no unexpected errors/warnings before deliberate failure injection. Heavy lazy bundles still produce Vite's size advisory (Three~~724kB and Vega~~524kB uncompressed); this is recorded, not suppressed.
+
+Independent code review found and fixed quoted-caption brace parsing and stringified numeric category domains. Regression tests use real Shiki/Vega output, not mocked renderers. New docs distinguish unsupported compressed models/splats/NeRF/robotics and a general shader API from implemented components. No package release to npm is claimed.
+
+Publication uses the existing native Cloudflare Git integration: push branch for preview, then promote the verified revision to main for alkemist.alkem.dev. Final verification results and exact source identity are captured by scripts/check-deployment.mjs in ignored .alkemist/deployments artifacts; the source commit is discoverable from public build.json.
+
+Final clean-install gate: `npm ci`, `npm run verify`, and `npm run format:check` passed: 33 Astro files with zero diagnostics, 18 tests passed, 21 pages built with internal links/assets verified. Final mobile bar labels use rotated labels and overlap avoidance; the complete category legend stays readable.

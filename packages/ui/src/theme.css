@@ -4,18 +4,30 @@
 @import '@fontsource/ibm-plex-serif/400-italic.css';
 @import '@fontsource/ibm-plex-mono/400.css';
 
+@import '@fontsource/ubuntu/400.css';
+@import '@fontsource/ubuntu/400-italic.css';
+@import '@fontsource/ubuntu/500.css';
+@import '@fontsource/ubuntu/700.css';
+@import '@fontsource/ubuntu-mono/400.css';
+@import '@fontsource/ubuntu-mono/700.css';
+@import '@fontsource/caveat/400.css';
+@import '@fontsource/caveat/600.css';
+@import './inks.css';
+@import './math-code.css';
+
 :root {
   color-scheme: light dark;
-  --alk-paper: light-dark(#f5f3ec, #191e1c);
-  --alk-ink: light-dark(#252d28, #e6e9dc);
-  --alk-muted: light-dark(#57645b, #aab7aa);
-  --alk-rule: light-dark(#cbd3c6, #3d4d41);
-  --alk-accent: light-dark(#2c6248, #a3d1a7);
-  --alk-field: light-dark(#e8ede2, #232e26);
-  --alk-code: light-dark(#ecebe3, #101713);
-  --alk-sans: 'IBM Plex Sans', sans-serif;
+  --alk-paper: light-dark(#eee, #111);
+  --alk-ink: light-dark(#111, #eee);
+  --alk-muted: light-dark(#5e5e5e, #aaa);
+  --alk-rule: light-dark(#ccc, #383838);
+  --alk-accent: var(--alk-ink);
+  --alk-field: light-dark(#e5e5e5, #191919);
+  --alk-code: #111;
+  --alk-sans: 'Ubuntu', sans-serif;
   --alk-serif: 'IBM Plex Serif', serif;
-  --alk-mono: 'IBM Plex Mono', monospace;
+  --alk-mono: 'Ubuntu Mono', monospace;
+  --alk-hand: 'Caveat', cursive;
   font-family: var(--alk-sans);
   font-size: 17px;
   line-height: 1.65;
@@ -27,6 +39,8 @@
 }
 body {
   margin: 0;
+  background: var(--alk-paper);
+  color: var(--alk-ink);
 }
 a {
   color: var(--alk-accent);
@@ -57,9 +71,9 @@ svg {
 h1,
 h2,
 h3 {
-  font-family: var(--alk-serif);
-  font-weight: 400;
-  line-height: 1.2;
+  font-family: var(--alk-sans);
+  font-weight: 700;
+  line-height: 1.15;
   letter-spacing: -0.035em;
   margin: 0 0 0.7em;
 }
@@ -165,7 +179,7 @@ th {
   border-bottom: 1px solid var(--alk-rule);
 }
 .alk-brand {
-  font: 2rem var(--alk-serif);
+  font: 700 2rem var(--alk-sans);
   letter-spacing: -0.06em;
   text-decoration: none;
   color: var(--alk-ink);
@@ -220,7 +234,7 @@ th {
   margin-bottom: 1.4rem;
 }
 .alk-lead {
-  font: 1.3rem/1.65 var(--alk-serif);
+  font: 1.25rem/1.65 var(--alk-sans);
   max-width: 48ch;
   color: var(--alk-muted);
 }
@@ -294,7 +308,7 @@ th {
   border-top: 1px solid var(--alk-rule);
 }
 .alk-index a {
-  font: 1.4rem var(--alk-serif);
+  font: 500 1.4rem var(--alk-sans);
   text-decoration: none;
 }
 .alk-index p {
@@ -453,4 +467,78 @@ th {
   a {
     color: inherit;
   }
+}
+
+/* Shared rich-content primitives. Color stays in marks; prose uses neutral ink. */
+.alk-note {
+  font: 600 1.85rem/1.1 var(--alk-hand);
+  color: var(--alk-ink-violet);
+}
+.alk-main > * {
+  min-width: 0;
+}
+button,
+select,
+input,
+textarea {
+  border-radius: 5px;
+}
+button {
+  cursor: pointer;
+}
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+textarea {
+  font: inherit;
+}
+input,
+textarea,
+select {
+  accent-color: var(--alk-ink-cobalt);
+}
+input:not([type='checkbox']):not([type='radio']):not([type='range']),
+textarea {
+  background: var(--alk-paper);
+  color: var(--alk-ink);
+  border: 1px solid var(--alk-rule);
+  padding: 0.6rem;
+  max-width: 100%;
+}
+kbd {
+  font: 0.82em var(--alk-mono);
+  border: 1px solid var(--alk-rule);
+  border-bottom-width: 3px;
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+}
+mark {
+  background: color-mix(in srgb, var(--alk-ink-ochre) 25%, transparent);
+  color: inherit;
+  padding: 0.05rem 0.2rem;
+}
+details {
+  border-block: 1px solid var(--alk-rule);
+  padding: 0.85rem 0;
+}
+summary {
+  cursor: pointer;
+  font-weight: 500;
+}
+summary + * {
+  margin-top: 1rem;
+}
+.alk-prose img {
+  display: block;
+  height: auto;
+  border-radius: 6px;
+}
+.alk-prose a {
+  text-decoration-color: var(--alk-ink-cobalt);
+}
+.alk-prose h4,
+.alk-prose h5,
+.alk-prose h6 {
+  font-family: var(--alk-sans);
 }

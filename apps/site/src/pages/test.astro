@@ -1,0 +1,726 @@
+---
+import AlkLayout from '@alkemist/ui/AlkLayout.astro';
+import AlkMath from '@alkemist/ui/AlkMath.astro';
+import AlkCode from '@alkemist/ui/AlkCode.astro';
+import AlkChart from '@alkemist/ui/AlkChart.astro';
+import AlkShader from '@alkemist/ui/AlkShader.astro';
+import AlkModel from '@alkemist/ui/AlkModel.astro';
+import { ALK_INKS } from '@alkemist/ui/palette';
+import RichSpecimen from '../components/RichSpecimen.mdx';
+import { isPreview } from '../lib/deployment';
+import '../styles/test.css';
+
+const tabs = [
+  {
+    id: 'typescript',
+    label: 'TypeScript',
+    title: 'integrate.ts',
+    code: `type State = { position: number; velocity: number };
+
+// Semi-implicit Euler: velocity first, then position.
+export function step(s: State, dt: number, k = 1): State {
+  const velocity = s.velocity - k * s.position * dt;
+  return { velocity, position: s.position + velocity * dt };
+}`,
+  },
+  {
+    id: 'python',
+    label: 'Python',
+    title: 'experiment.py',
+    code: `from math import cos, exp
+
+def displacement(t: float, damping: float = 0.18) -> float:
+    """A synthetic damped signal, in metres."""
+    return exp(-damping * t) * cos(2.4 * t)
+
+samples = [(t / 25, displacement(t / 25)) for t in range(301)]`,
+  },
+  {
+    id: 'rust',
+    label: 'Rust',
+    title: 'state.rs',
+    code: `#[derive(Clone, Copy, Debug)]
+struct State { position: f64, velocity: f64 }
+
+impl State {
+    fn energy(self, stiffness: f64) -> f64 {
+        0.5 * (self.velocity.powi(2) + stiffness * self.position.powi(2))
+    }
+}`,
+  },
+  {
+    id: 'glsl',
+    label: 'GLSL',
+    title: 'contours.frag',
+    code: `// Isolines of two interfering waves.
+float field = sin(uv.x * frequency + phase)
+            + cos(uv.y * frequency - phase);
+float contour = smoothstep(0.08, 0.0, abs(sin(field * 3.0)));
+vec3 ink = mix(cobalt, violet, 0.5 + 0.5 * field);
+outColor = vec4(mix(board, ink, contour), 1.0);`,
+  },
+] as const;
+---
+
+<AlkLayout
+  title="The specimen board"
+  section="A living style test / built with Alkemist"
+  preview={isPreview}
+>
+  <div class="test-intro">
+    <div>
+      <h1>A place for every<br />kind of <span>idea.</span></h1>
+      <p class="alk-lead">
+        Equations, experiments, code, and the occasional happy accident. One
+        long board to see how everything feels.
+      </p>
+      <div class="test-intro-links">
+        <a href="#inks">Meet the eight inks ↓</a><a href="/docs/"
+          >Use these components ↗</a
+        >
+      </div>
+    </div>
+    <aside class="alk-note test-intro-note">
+      Touch the model.<br />Follow a curve.<br />Leave a note. <span
+        aria-hidden="true">↘</span
+      >
+    </aside>
+  </div>
+
+  <section
+    id="space"
+    class="test-space"
+    aria-label="Interactive three-dimensional model"
+  >
+    <AlkModel
+      src="/test/torus-knot.glb"
+      poster="/test/torus-knot.svg"
+      title="An idea with another side"
+      description="A (2, 3) torus knot. Drag to orbit, scroll to zoom, or use the camera buttons. The shape is a real, downloadable GLB."
+    />
+    <div class="test-model-foot">
+      <p class="alk-note">Same knot. A different point of view.</p><span
+        class="test-meta">Geometry · light · perspective</span
+      >
+    </div>
+    <AlkCode
+      code={'<AlkModel src="/models/knot.glb" title="A torus knot" />'}
+      lang="astro"
+      title="One line, three dimensions"
+      lineNumbers={false}
+    />
+  </section>
+
+  <nav class="test-jump" aria-label="Specimen sections">
+    <a href="#inks">Inks</a><a href="#math">Math</a><a href="#data">Data</a><a
+      href="#code">Code</a
+    ><a href="#art">Art</a><a href="#writing">Writing</a><a href="#controls"
+      >Controls</a
+    >
+  </nav>
+
+  <section id="inks" class="test-section">
+    <div class="test-heading">
+      <div>
+        <p class="test-meta">The marker tray</p><h2>
+          Eight inks. Two boards.<br />One palette.
+        </h2>
+      </div><p>
+        The exact same colors on <code>#eee</code> and <code>#111</code>. Switch
+        the board in the header; the ink never changes.
+      </p>
+    </div>
+    <div class="test-palette-pair">
+      {
+        ['white', 'black'].map((board) => (
+          <div
+            class={`test-ink-board test-ink-board--${board}`}
+            aria-label={`${board} board palette`}
+          >
+            <span class="test-meta">
+              {board === 'white'
+                ? 'Whiteboard / #eeeeee'
+                : 'Blackboard / #111111'}
+            </span>
+            <div class="test-ink-swatches">
+              {ALK_INKS.map((ink) => (
+                <div style={`--swatch:${ink.hex}`}>
+                  <span class="test-stroke" aria-hidden="true" />
+                  <strong>{ink.name}</strong>
+                  <code>{ink.hex}</code>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))
+      }
+    </div>
+    <div class="test-palette-foot">
+      <p class="alk-note">Keep the color. Change the surface.</p><a
+        href="/test/inks.json"
+        download>Download palette JSON ↗</a
+      >
+    </div>
+    <p class="test-small">
+      Colored marks and large handwritten notes contrast against both boards.
+      Small text stays neutral. <a href="/docs/palette/"
+        >Read the palette rules →</a
+      >
+    </p>
+  </section>
+
+  <section id="math" class="test-section">
+    <div class="test-heading">
+      <div>
+        <p class="test-meta">Think in symbols</p><h2>
+          Give the idea<br />a precise form.
+        </h2>
+      </div><p>
+        Real typeset mathematics: fractions, matrices, aligned derivations, and
+        inline notation. Rendered into the page, ready to read.
+      </p>
+    </div>
+    <div class="test-equation-hero">
+      <span class="alk-note">A whole world in one line.</span><AlkMath
+        tex={String.raw`e^{i\pi} + 1 = 0`}
+        label="Euler’s identity"
+      />
+    </div>
+    <div class="test-duo">
+      <div class="test-math-cell">
+        <h3>A signal, seen differently</h3><AlkMath
+          tex={String.raw`\widehat{f}(\xi) = \int_{-\infty}^{\infty} f(x)\,e^{-2\pi i x\xi}\,dx`}
+          label="The Fourier transform"
+        /><p>
+          Move from position to frequency. A new view can reveal a simpler
+          structure.
+        </p>
+      </div>
+      <div class="test-math-cell">
+        <h3>State becomes motion</h3><AlkMath
+          tex={String.raw`\frac{d}{dt}\begin{bmatrix}x\\v\end{bmatrix}=\begin{bmatrix}0&1\\-\omega^2&-2\zeta\omega\end{bmatrix}\begin{bmatrix}x\\v\end{bmatrix}`}
+          label="A damped harmonic oscillator"
+        /><p>
+          Position and velocity evolve together. The chart below follows a
+          synthetic damped signal.
+        </p>
+      </div>
+    </div>
+    <div class="test-proof">
+      <div>
+        <span class="test-tag">Proposition</span><h3>Energy stays put.</h3><p>
+          For an undamped oscillator with unit mass, <AlkMath
+            tex={String.raw`\ddot{x}=-\omega^2x`}
+            display={false}
+          />, total energy is constant.
+        </p>
+      </div><div>
+        <AlkMath
+          tex={String.raw`\begin{aligned}E &= \tfrac12\dot{x}^{\,2}+\tfrac12\omega^2 x^2\\[4pt]\frac{dE}{dt}&=\dot{x}(\ddot{x}+\omega^2x)=0.\end{aligned}`}
+          label="Proof by differentiation"
+        /><span class="test-qed" aria-label="End of proof">□</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="data" class="test-section">
+    <div class="test-heading">
+      <div>
+        <p class="test-meta">Follow the evidence</p><h2>
+          A file becomes<br />something to explore.
+        </h2>
+      </div><p>
+        Hover for values. Zoom into a signal. Open the data table. Every chart
+        below reads a local CSV, with grid lines on by default.
+      </p>
+    </div>
+    <AlkChart
+      src="/test/oscillation.csv"
+      type="line"
+      x="time"
+      y="position"
+      title="A signal finding its quiet"
+      description="Synthetic oscillator: ω₀ = 2 rad/s, ζ = 0.12; x(0) = 1 m, v(0) = 0."
+      xLabel="Time (s)"
+      yLabel="Position (m)"
+      height={340}
+      sample
+    />
+    <p class="alk-note test-chart-note">
+      Shift + scroll to look a little closer. ↗
+    </p>
+    <div class="test-duo">
+      <AlkChart
+        src="/test/materials.csv"
+        type="bar"
+        x="material"
+        y="value"
+        color="material"
+        title="What went into the prototype?"
+        description="Invented component counts, with a stable ink for each category."
+        xLabel="Component"
+        yLabel="Count"
+        height={280}
+        sample
+      />
+      <AlkChart
+        src="/test/materials.csv"
+        type="donut"
+        x="material"
+        y="value"
+        color="material"
+        title="The parts of a whole"
+        description="The same counts as shares. Labels and a table keep color from carrying the explanation alone."
+        yLabel="Count"
+        height={280}
+        sample
+      />
+      <AlkChart
+        src="/test/oscillation.csv"
+        type="scatter"
+        x="position"
+        y="velocity"
+        title="A path through phase space"
+        description="The signal and its analytic derivative spiral toward rest."
+        xLabel="Position (m)"
+        yLabel="Velocity (m/s)"
+        ink="rose"
+        height={280}
+        sample
+      />
+      <AlkChart
+        src="/test/field.csv"
+        type="heatmap"
+        x="x"
+        y="y"
+        value="value"
+        valueLabel="Field value"
+        title="A field, sampled"
+        description="625 synthetic samples of cos(1.4x) sin(1.4y) exp(−(x² + y²)/8). A continuous cobalt scale shows ordered values."
+        xLabel="x (dimensionless)"
+        yLabel="y (dimensionless)"
+        height={280}
+        sample
+      />
+    </div>
+    <div class="test-duo">
+      <AlkChart
+        src="/test/materials.csv"
+        type="pie"
+        x="material"
+        y="value"
+        color="material"
+        colorLabel="Component"
+        title="A full-circle comparison"
+        description="The same eight component counts as a pie, for comparing the pie and donut treatments."
+        yLabel="Count"
+        height={300}
+        sample
+      />
+      <aside class="test-math-cell">
+        <p class="alk-note">Choose the view that answers the question.</p><h3>
+          Compare amounts. Compare shares.
+        </h3><p>
+          Bars make lengths easy to compare. Pie and donut charts emphasize
+          parts of a whole. A table is often the clearest way to read an exact
+          value.
+        </p><p>
+          All three use the same source, with the same category colors.
+        </p><a href="/docs/charts/">Chart options and examples →</a>
+      </aside>
+    </div>
+    <AlkCode
+      code={'<AlkChart src="/data/run.csv" type="line" x="time" y="position"\n  title="Displacement" description="Position during the experiment."\n  xLabel="Time (s)" yLabel="Position (m)" />'}
+      lang="astro"
+      title="Data with context"
+    />
+  </section>
+
+  <section id="code" class="test-section">
+    <div class="test-heading">
+      <div>
+        <p class="test-meta">Make it reproducible</p><h2>
+          The explanation<br />and the executable.
+        </h2>
+      </div><p>
+        Ubuntu Mono, the same eight syntax inks, line numbers, highlighted
+        lines, and copy controls. A dark code surface keeps syntax legible on
+        either board.
+      </p>
+    </div>
+    <div class="test-code-tabs" data-code-tabs>
+      <div role="tablist" aria-label="Code language">
+        {
+          tabs.map((tab, i) => (
+            <button
+              type="button"
+              role="tab"
+              id={`tab-${tab.id}`}
+              aria-controls={`panel-${tab.id}`}
+              aria-selected={i === 0}
+              tabindex={i === 0 ? 0 : -1}
+            >
+              {tab.label}
+            </button>
+          ))
+        }
+      </div>
+      {
+        tabs.map((tab, i) => (
+          <div
+            role="tabpanel"
+            id={`panel-${tab.id}`}
+            aria-labelledby={`tab-${tab.id}`}
+            hidden={i !== 0}
+            tabindex="0"
+          >
+            <AlkCode
+              code={tab.code}
+              lang={tab.id}
+              title={tab.title}
+              highlightLines={tab.id === 'typescript' ? [4, 5] : []}
+            />
+          </div>
+        ))
+      }
+    </div>
+    <p class="test-small">
+      Use the arrow keys to move between languages. The full source copies
+      without line numbers.
+    </p>
+  </section>
+
+  <section id="art" class="test-section">
+    <div class="test-heading">
+      <div>
+        <p class="test-meta">Let curiosity wander</p><h2>
+          Between a diagram<br />and a daydream.
+        </h2>
+      </div><p>
+        Images, vector drawings, and interactive studies deserve the same care
+        as a theorem. This little drawing connects an idea to its many
+        representations.
+      </p>
+    </div>
+    <AlkShader title="Interference, in eight inks" frequency={9} angle={24} />
+    <p class="alk-note">Turn a wave. Find a pattern.</p>
+    <figure
+      class="test-diagram"
+      tabindex="0"
+      aria-label="Scrollable idea diagram"
+    >
+      <svg
+        viewBox="0 0 1000 390"
+        role="img"
+        aria-labelledby="diagram-title diagram-desc"
+        ><title id="diagram-title">One idea, many representations</title><desc
+          id="diagram-desc"
+          >An idea connects to a mathematical model, code, a dataset and a
+          visualization, which loops back to a new question.</desc
+        >
+        <defs
+          ><pattern
+            id="diagram-grid"
+            width="25"
+            height="25"
+            patternUnits="userSpaceOnUse"
+            ><circle cx="1" cy="1" r="1" fill="currentColor" opacity=".13"
+            ></circle></pattern
+          ><marker
+            id="diagram-arrow"
+            markerWidth="8"
+            markerHeight="8"
+            refX="6"
+            refY="3"
+            orient="auto"
+            ><path d="M0,0 L6,3 L0,6" fill="none" stroke="currentColor"
+            ></path></marker
+          ></defs
+        >
+        <rect width="1000" height="390" fill="url(#diagram-grid)"></rect>
+        <g
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          marker-end="url(#diagram-arrow)"
+          ><path d="M190 188 Q240 88 300 98"></path><path
+            d="M190 205 Q240 300 300 285"></path><path
+            d="M480 98 Q540 96 577 173"></path><path
+            d="M480 285 Q540 285 577 210"></path><path d="M695 195 H775"
+          ></path><path d="M858 239 Q540 395 135 250" stroke-dasharray="5 5"
+          ></path></g
+        >
+        <g class="diagram-node"
+          ><rect x="55" y="155" width="140" height="90" rx="40"></rect><rect
+            x="300"
+            y="61"
+            width="180"
+            height="74"
+            rx="8"></rect><rect x="300" y="250" width="180" height="74" rx="8"
+          ></rect><rect x="550" y="152" width="145" height="85" rx="8"
+          ></rect><rect x="775" y="150" width="170" height="90" rx="8"
+          ></rect></g
+        >
+        <g text-anchor="middle" dominant-baseline="middle" fill="currentColor"
+          ><text x="125" y="202">an idea</text><text x="390" y="100"
+            >a model</text
+          ><text x="390" y="288">some code</text><text x="622" y="198"
+            >a dataset</text
+          ><text x="860" y="198">a new view</text></g
+        ><text x="538" y="357" class="diagram-hand" text-anchor="middle"
+          >…and another question</text
+        >
+      </svg><figcaption>
+        Drawing the loop · accessible SVG, selectable text, the shared inks.
+      </figcaption>
+    </figure>
+    <div class="test-image-row">
+      <figure>
+        <img
+          src="/test/torus-knot.svg"
+          width="960"
+          height="640"
+          loading="lazy"
+          alt="An illustrated torus knot rendered as a flowing loop with violet and cobalt strokes on a black board."
+        /><figcaption>
+          The model also has a static SVG poster. An image remains useful before
+          the interactive viewer loads.
+        </figcaption>
+      </figure><div>
+        <p class="alk-note">A picture can be a way in.</p><h3>
+          Caption it. Explain it.<br />Keep the source close.
+        </h3><p>
+          A figure should stand on its own: a useful description, room to
+          breathe, and a route back to the source.
+        </p><a href="/test/torus-knot.glb" download
+          >Download the actual model ↗</a
+        >
+      </div>
+    </div>
+  </section>
+
+  <section id="writing" class="test-section">
+    <div class="test-heading">
+      <div>
+        <p class="test-meta">Leave a readable trail</p><h2>
+          Rich content.<br />Quiet typography.
+        </h2>
+      </div><p>
+        This section is authored in MDX. Tables, footnotes, task lists,
+        quotations, inline math, and semantic HTML share the same theme.
+      </p>
+    </div>
+    <div class="test-writing-grid">
+      <article class="alk-prose"><RichSpecimen /></article><aside
+        class="test-margin"
+      >
+        <p class="alk-note">
+          The margin is part<br />of the conversation. ←
+        </p><div class="test-callout" style="--callout:var(--alk-ink-teal)">
+          <strong>Observation</strong><p>
+            Keep an annotation beside the evidence it describes.
+          </p>
+        </div><div class="test-callout" style="--callout:var(--alk-ink-ochre)">
+          <strong>A useful caution</strong><p>
+            Numerical evidence is not a proof. Label the boundary.
+          </p>
+        </div><div class="test-callout" style="--callout:var(--alk-ink-rose)">
+          <strong>Open question</strong><p>
+            What happens when the initial conditions change?
+          </p>
+        </div><dl>
+          <dt>Hypothesis</dt><dd>A claim to investigate.</dd><dt>
+            Observation
+          </dt><dd>What the experiment actually shows.</dd><dt>Proof</dt><dd>
+            A derivation under explicit assumptions.
+          </dd>
+        </dl>
+      </aside>
+    </div>
+  </section>
+
+  <section id="controls" class="test-section">
+    <div class="test-heading">
+      <div>
+        <p class="test-meta">The small interactions</p><h2>
+          Useful things<br />at your fingertips.
+        </h2>
+      </div><p>
+        A small local experiment form: keyboard controls, checkboxes, a range,
+        validation, a dialog, and clear feedback. Try changing the specimen.
+      </p>
+    </div>
+    <div class="test-duo">
+      <form class="test-form" id="specimen-form">
+        <label
+          >Experiment name<input
+            name="name"
+            value="Untitled experiment"
+            required
+            maxlength="80"
+          /></label
+        ><label
+          >Discipline<select name="discipline"
+            ><option>Mathematics</option><option>Robotics</option><option
+              >Computer science</option
+            ><option>Materials</option></select
+          ></label
+        ><label
+          >Confidence <output id="confidence-value">65%</output><input
+            type="range"
+            name="confidence"
+            min="0"
+            max="100"
+            value="65"
+          /></label
+        ><fieldset>
+          <legend>Include in the notebook</legend><label
+            ><input type="checkbox" name="data" checked /> Source data</label
+          ><label
+            ><input type="checkbox" name="notes" checked /> Handwritten annotations</label
+          ><label><input type="checkbox" name="method" /> Method notes</label>
+        </fieldset><label
+          >Working note<textarea
+            name="note"
+            rows="3"
+            placeholder="What surprised you?"
+            maxlength="500"></textarea></label
+        ><div class="test-actions">
+          <button type="submit">Preview notebook card</button><button
+            type="reset">Reset form</button
+          >
+        </div>
+      </form>
+      <div class="test-form-side">
+        <div class="test-callout">
+          <span class="test-tag">Local specimen</span><h3 id="card-name">
+            Untitled experiment
+          </h3><p id="card-detail">Mathematics · 65% confidence</p><p
+            id="card-note"
+          >
+            Add a working note and preview the card.
+          </p><p id="card-includes" class="test-small">
+            Source data · Handwritten annotations
+          </p>
+        </div><label class="test-meter-label"
+          >Confidence preview<meter
+            id="confidence-meter"
+            min="0"
+            max="100"
+            value="65">65%</meter
+          ></label
+        ><p class="test-small" id="form-status" role="status">
+          The preview stays in this browser. Nothing is submitted to a server.
+        </p><button type="button" class="test-dialog-open"
+          >Open specimen details</button
+        ><details>
+          <summary>Why include ordinary form elements?</summary><p>
+            A theme is only useful when the quiet details work too: a long
+            label, a selected option, a keyboard focus ring, a helpful result.
+          </p>
+        </details><p>
+          <button type="button" disabled>Unavailable action</button>
+          <span class="test-small">A disabled state</span>
+        </p>
+      </div>
+    </div>
+    <dialog id="specimen-dialog" aria-labelledby="dialog-title">
+      <h2 id="dialog-title">A tiny experiment.</h2><p>
+        Dialogs have a title, a clear way out, and keyboard focus. Press <kbd
+          >Esc</kbd
+        > or close below.
+      </p><form method="dialog"><button>Close details</button></form>
+    </dialog>
+  </section>
+
+  <div class="test-end">
+    <p class="alk-note">Keep a little room for the next idea.</p><h2>
+      That’s the board.<br />What will you put on it?
+    </h2><div class="test-intro-links">
+      <a href="/docs/">Explore the docs →</a><a
+        href="/notebook/ink-and-instruments/">How this page was built →</a
+      ><a href="#main">Back to the top ↑</a>
+    </div>
+  </div>
+</AlkLayout>
+
+<script>
+  const tabRoot = document.querySelector('[data-code-tabs]');
+  const tabs = Array.from(
+    tabRoot?.querySelectorAll<HTMLButtonElement>('[role=tab]') ?? [],
+  );
+  function selectTab(tab: HTMLButtonElement) {
+    tabs.forEach((item) => {
+      const selected = item === tab;
+      item.setAttribute('aria-selected', String(selected));
+      item.tabIndex = selected ? 0 : -1;
+      const panel = document.getElementById(
+        item.getAttribute('aria-controls')!,
+      );
+      if (panel) panel.hidden = !selected;
+    });
+  }
+  tabs.forEach((tab, index) => {
+    tab.addEventListener('click', () => selectTab(tab));
+    tab.addEventListener('keydown', (event) => {
+      let next: number;
+      if (event.key === 'ArrowRight') next = (index + 1) % tabs.length;
+      else if (event.key === 'ArrowLeft')
+        next = (index + tabs.length - 1) % tabs.length;
+      else if (event.key === 'Home') next = 0;
+      else if (event.key === 'End') next = tabs.length - 1;
+      else return;
+      event.preventDefault();
+      selectTab(tabs[next]);
+      tabs[next].focus();
+    });
+  });
+  const form = document.querySelector<HTMLFormElement>('#specimen-form')!;
+  const slider = form.elements.namedItem('confidence') as HTMLInputElement;
+  const output =
+    document.querySelector<HTMLOutputElement>('#confidence-value')!;
+  slider.addEventListener('input', () => (output.value = slider.value + '%'));
+  const update = () => {
+    const data = new FormData(form);
+    document.getElementById('card-name')!.textContent = String(
+      data.get('name'),
+    );
+    document.getElementById('card-detail')!.textContent =
+      `${data.get('discipline')} · ${data.get('confidence')}% confidence`;
+    document.getElementById('card-note')!.textContent = String(
+      data.get('note') || 'No working note yet.',
+    );
+    document.getElementById('card-includes')!.textContent =
+      [
+        ['data', 'Source data'],
+        ['notes', 'Handwritten annotations'],
+        ['method', 'Method notes'],
+      ]
+        .filter(([key]) => data.has(key))
+        .map(([, label]) => label)
+        .join(' · ') || 'No attachments selected.';
+    document.querySelector<HTMLMeterElement>('#confidence-meter')!.value =
+      Number(data.get('confidence'));
+    document.getElementById('form-status')!.textContent =
+      'Notebook card updated locally.';
+  };
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    update();
+  });
+  form.addEventListener('reset', () => {
+    setTimeout(() => {
+      output.value = '65%';
+      update();
+      document.getElementById('form-status')!.textContent =
+        'Form reset to its initial values.';
+    });
+  });
+  document
+    .querySelector('.test-dialog-open')
+    ?.addEventListener('click', () =>
+      document
+        .querySelector<HTMLDialogElement>('#specimen-dialog')!
+        .showModal(),
+    );
+</script>

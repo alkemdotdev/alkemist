@@ -1,0 +1,75 @@
+---
+import './chart.css';
+import { alkChartCanZoom, type AlkChartProps } from './charts';
+export type { AlkChartProps } from './charts';
+type Props = AlkChartProps;
+const props = Astro.props;
+const canZoom = alkChartCanZoom(props);
+---
+
+<alk-chart class="alk-chart" data-config={JSON.stringify(props)}>
+  <figure aria-label={props.title}>
+    <figcaption class="alk-chart-caption">
+      <div>
+        <p class="alk-chart-kicker">
+          {props.sample ? 'Synthetic dataset' : 'Data visualization'} · {
+            props.type
+          }
+        </p>
+        <h3>{props.title}</h3>
+        <p>{props.description}</p>
+      </div>
+      <span class="alk-chart-file">CSV → {props.type}</span>
+    </figcaption>
+    <div
+      class="alk-chart-canvas"
+      style={`min-height: ${props.height ?? 300}px`}
+      aria-busy="true"
+    >
+    </div>
+    <p class="alk-chart-status" role="status" aria-live="polite">
+      The interactive chart loads when it comes into view.
+    </p>
+    <div class="alk-chart-tools">
+      {
+        canZoom && (
+          <button type="button" data-chart-reset disabled>
+            Reset view
+          </button>
+        )
+      }
+      <button type="button" data-chart-retry hidden>Retry chart</button>
+      <a href={props.src} download
+        >Download CSV <span aria-hidden="true">↗</span></a
+      >
+      {
+        canZoom && (
+          <span class="alk-chart-hint">
+            Shift + scroll to zoom · drag to pan
+          </span>
+        )
+      }
+    </div>
+    <details class="alk-chart-table">
+      <summary>View data table <span data-chart-count></span></summary>
+      <div
+        class="alk-chart-table-scroll"
+        tabindex="0"
+        aria-label={`${props.title} data table`}
+      >
+        <p data-chart-table-placeholder>The table loads alongside the chart.</p>
+      </div>
+    </details>
+    {props.caption && <p class="alk-chart-source">{props.caption}</p>}
+    <noscript
+      ><p>
+        JavaScript is required for this interactive view. Download the CSV to
+        inspect the source data.
+      </p></noscript
+    >
+  </figure>
+</alk-chart>
+
+<script>
+  import './chart';
+</script>

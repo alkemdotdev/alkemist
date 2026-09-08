@@ -19,7 +19,9 @@
     "format:check": "prettier --check .",
     "verify": "npm run check && npm test && npm run build && node scripts/check-build.mjs",
     "cloudflare:status": "node scripts/cloudflare.mjs status",
-    "cloudflare:setup": "node scripts/cloudflare.mjs setup"
+    "cloudflare:setup": "node scripts/cloudflare.mjs setup",
+    "generate:palette": "node scripts/generate-palette.mjs",
+    "generate:fixtures": "node scripts/generate-test-data.mjs && node scripts/generate-test-model.mjs"
   },
   "allowScripts": {
     "esbuild@0.28.2": true,
@@ -28,5 +30,10 @@
   "devDependencies": {
     "prettier": "3.9.6",
     "prettier-plugin-astro": "0.14.1"
+  },
+  "overrides": {
+    "rehype-katex": {
+      "katex": "0.18.7"
+    }
   }
 }

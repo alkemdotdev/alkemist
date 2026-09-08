@@ -18,6 +18,7 @@ const navigation = [
   { label: 'Docs', href: '/docs/' },
   { label: 'Components', href: '/components/' },
   { label: 'Notebook', href: '/notebook/' },
+  { label: 'Test', href: '/test/' },
 ];
 ---
 
@@ -63,8 +64,8 @@ const navigation = [
           id="alk-theme"
           aria-label="Color theme"
           ><option value="system">System</option><option value="light"
-            >Paper</option
-          ><option value="dark">Graphite</option></select
+            >Whiteboard</option
+          ><option value="dark">Blackboard</option></select
         ></label
       >
     </header>
@@ -77,11 +78,13 @@ const navigation = [
       ><a href="/docs/status/">Project status</a>
     </footer>
     <script>
+      import './code-copy';
       const select = document.querySelector<HTMLSelectElement>('#alk-theme');
       function applyTheme(value: string) {
         document.documentElement.style.colorScheme =
           value === 'system' ? 'light dark' : value;
         if (select) select.value = value;
+        window.dispatchEvent(new CustomEvent('alk:theme-change'));
       }
       try {
         const saved = localStorage.getItem('alk-theme');
@@ -90,6 +93,12 @@ const navigation = [
       } catch {
         /* Storage can be disabled; the system theme remains usable. */
       }
+      matchMedia('(prefers-color-scheme: dark)').addEventListener(
+        'change',
+        () => {
+          if (select?.value === 'system') applyTheme('system');
+        },
+      );
       select?.addEventListener('change', () => {
         applyTheme(select.value);
         try {

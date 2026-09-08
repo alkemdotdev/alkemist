@@ -46,13 +46,13 @@ export const designChoices = [
     options: [
       {
         value: 'color',
-        label: 'Three inks',
+        label: 'Multiple inks',
         hint: 'Separate the signal, notes, and emphasis',
       },
       {
         value: 'single',
         label: 'One accent',
-        hint: 'Blue on white; cyan on black',
+        hint: 'The same cobalt on both boards',
       },
       {
         value: 'mono',
@@ -117,7 +117,7 @@ export const designDetails = [
     label: 'Graph grid',
     hint: 'Faint coordinate lines behind the signal',
     group: 'ink',
-    initial: false,
+    initial: true,
   },
   {
     key: 'frame',
