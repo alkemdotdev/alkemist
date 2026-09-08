@@ -26,9 +26,11 @@ export function createAssembly(): FormScene {
     return surface;
   };
   const steel = material('silver', 0.3, 0.48);
-  const machined = material('silver', 0.42, 0.32);
   const dark = material('graphite', 0.43, 0.26);
-  const accent = material('ochre', 0.35, 0.33);
+  const accent = material('ochre', 0.3, 0.35);
+  const housing = material('cobalt', 0.28, 0.38);
+  const carrier = material('teal', 0.3, 0.3);
+  const sun = material('vermilion', 0.3, 0.3);
 
   const point = (r: number, angle: number, z: number, center: Vec3): Vec3 => [
     center[0] + r * Math.cos(angle),
@@ -191,12 +193,13 @@ export function createAssembly(): FormScene {
     center: Vec3,
     internal = false,
     phase = 0,
+    finish: FormSurface = steel,
   ) => {
     const profile = gearProfile(teeth, internal, phase);
     const bevel = 0.009;
     const back = -0.21;
     const front = 0.3;
-    const base = steel.positions.length / 3;
+    const base = finish.positions.length / 3;
     const sections = 8;
     for (const { radius, angle } of profile) {
       const inner = internal ? radius : boreOrOuter;
@@ -211,7 +214,7 @@ export function createAssembly(): FormScene {
         [inner, front - bevel],
         [inner, back + bevel],
       ])
-        steel.positions.push(...point(r!, angle, z!, center));
+        finish.positions.push(...point(r!, angle, z!, center));
     }
     for (let i = 0; i < profile.length; i++) {
       for (let j = 0; j < sections; j++) {
@@ -227,7 +230,7 @@ export function createAssembly(): FormScene {
         const b = base + next * sections + j;
         const c = base + next * sections + ((j + 1) % sections);
         const d = base + i * sections + ((j + 1) % sections);
-        steel.indices.push(a, b, c, a, c, d);
+        finish.indices.push(a, b, c, a, c, d);
       }
     }
     for (const z of [back - 0.002, front + 0.002]) {
@@ -331,14 +334,14 @@ export function createAssembly(): FormScene {
   // remains in place so the four planet contacts and nominal 56 teeth are visible.
   const cutStart = Math.PI * 0.38;
   const cutEnd = Math.PI * 1.96;
-  collar(machined, 2.19, 2.58, -0.91, -0.74);
-  collar(dark, 2.32, 2.51, -0.74, 0.45, [0, 0, 0], cutStart, cutEnd);
-  collar(steel, 2.31, 2.65, -0.77, -0.65, [0, 0, 0], cutStart, cutEnd);
-  collar(steel, 2.31, 2.63, 0.37, 0.51, [0, 0, 0], cutStart, cutEnd);
+  collar(housing, 2.19, 2.58, -0.91, -0.74);
+  collar(housing, 2.32, 2.51, -0.74, 0.45, [0, 0, 0], cutStart, cutEnd);
+  collar(housing, 2.31, 2.65, -0.77, -0.65, [0, 0, 0], cutStart, cutEnd);
+  collar(housing, 2.31, 2.63, 0.37, 0.51, [0, 0, 0], cutStart, cutEnd);
   // Closely spaced machined circumferential grooves catch light on the side wall.
   for (let i = 0; i < 9; i++) {
     const z = -0.64 + i * 0.102;
-    edge(2.518, z, [0, 0, 0], cutStart, cutEnd, 'construction', 0.52);
+    edge(2.518, z, [0, 0, 0], cutStart, cutEnd, 'cyan', 0.7);
   }
   for (const z of [-0.916, -0.738]) {
     edge(2.58, z);
@@ -389,20 +392,20 @@ export function createAssembly(): FormScene {
       const backB = rotate([b[0], b[1], -0.57]);
       const frontA = rotate([a[0], a[1], -0.37]);
       const frontB = rotate([b[0], b[1], -0.37]);
-      quad(dark, backA, backB, frontB, frontA);
+      quad(carrier, backA, backB, frontB, frontA);
       for (const z of [-0.57, -0.37]) {
-        const offset = dark.positions.length / 3;
-        dark.positions.push(
+        const offset = carrier.positions.length / 3;
+        carrier.positions.push(
           ...rotate([center[0], center[1], z]),
           ...rotate([a[0], a[1], z]),
           ...rotate([b[0], b[1], z]),
         );
-        dark.indices.push(offset, offset + 1, offset + 2);
+        carrier.indices.push(offset, offset + 1, offset + 2);
       }
     }
   };
-  gear(SUN_TEETH, 0.277, [0, 0, 0]);
-  collar(machined, 0.28, 0.64, 0.3, 0.338);
+  gear(SUN_TEETH, 0.277, [0, 0, 0], false, 0, sun);
+  collar(sun, 0.28, 0.64, 0.3, 0.338);
   edge((MODULE * SUN_TEETH) / 2, 0.31, [0, 0, 0], 0, TAU, 'ochre', 0.85);
   for (let i = 0; i < 4; i++) {
     const angle = (TAU * i) / 4;
@@ -414,7 +417,7 @@ export function createAssembly(): FormScene {
     arm(angle);
     // 24+56 is divisible by four, so this phase meshes at all four positions.
     gear(PLANET_TEETH, 0.22, center, false, Math.PI / PLANET_TEETH);
-    collar(machined, 0.22, 0.414, 0.3, 0.336, center, 0, TAU, 64);
+    collar(carrier, 0.22, 0.414, 0.3, 0.336, center, 0, TAU, 64);
     bearing([center[0], center[1], 0.46], 0.135, 0.33, 10);
     collar(dark, 0.074, 0.13, -0.59, 0.72, center, 0, TAU, 48);
     collar(steel, 0.126, 0.24, 0.61, 0.66, center, 0, TAU, 64);

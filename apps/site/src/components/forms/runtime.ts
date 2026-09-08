@@ -195,9 +195,33 @@ async function mount(
             new THREE.Float32BufferAttribute(surface.normals, 3),
           );
         else geometry.computeVertexNormals();
+        if (surface.colorRamp) {
+          const { axis, inks } = surface.colorRamp;
+          const ramp = inks.map((ink) => new THREE.Color(colors[ink]));
+          const position = geometry.getAttribute('position');
+          let lo = Infinity,
+            hi = -Infinity;
+          for (let i = 0; i < position.count; i++) {
+            const value = surface.positions[i * 3 + axis]!;
+            lo = Math.min(lo, value);
+            hi = Math.max(hi, value);
+          }
+          const color = new THREE.Color();
+          const values = new Float32Array(position.count * 3);
+          for (let i = 0; i < position.count; i++) {
+            const t =
+              ((surface.positions[i * 3 + axis]! - lo) / (hi - lo || 1)) *
+              (ramp.length - 1);
+            const index = Math.min(Math.floor(t), ramp.length - 2);
+            color.copy(ramp[index]!).lerp(ramp[index + 1]!, t - index);
+            color.toArray(values, i * 3);
+          }
+          geometry.setAttribute('color', new THREE.BufferAttribute(values, 3));
+        }
         const opacity = surface.opacity ?? 1;
         const material = new THREE.MeshStandardMaterial({
-          color: colors[surface.ink],
+          color: surface.colorRamp ? 0xffffff : colors[surface.ink],
+          vertexColors: !!surface.colorRamp,
           side: THREE.DoubleSide,
           roughness: surface.roughness ?? 0.36,
           metalness: surface.metalness ?? 0.65,

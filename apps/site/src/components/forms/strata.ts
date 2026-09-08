@@ -177,7 +177,14 @@ function nodalMesh(): FormSurface {
       }
     }
   }
-  return { positions, indices, ink: 'silver', roughness: 0.38, metalness: 0.5 };
+  return {
+    positions,
+    indices,
+    ink: 'teal',
+    colorRamp: { axis: 1, inks: ['cobalt', 'cyan', 'teal'] },
+    roughness: 0.3,
+    metalness: 0.3,
+  };
 }
 
 /** Clip the mesh to x + z <= CUT, preserving indexed edges at the section. */
@@ -294,7 +301,7 @@ function contours(
 export function createStrata(): FormScene {
   const surface = sectionedMesh(nodalMesh());
   const lines: FormLine[] = [
-    ...contours(surface, [1, 0, 1], CUT, 'cyan', 0.95),
+    ...contours(surface, [1, 0, 1], CUT, 'vermilion', 0.95),
     ...contours(surface, [0, 1, 0], 0, 'ochre', 0.9),
     ...contours(surface, [0, 0, 1], -2, 'construction', 0.6),
     ...contours(surface, [1, 0, 0], -2, 'construction', 0.6),

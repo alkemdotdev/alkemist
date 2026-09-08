@@ -53,6 +53,21 @@ export function createInterference(): FormScene {
   const lines: FormLine[] = [],
     surfaces: FormSurface[] = [];
   const core = 0.34;
+  const shellInks: FormInk[] = [
+    'ochre',
+    'vermilion',
+    'rose',
+    'rose',
+    'violet',
+    'violet',
+    'cobalt',
+    'cobalt',
+    'cyan',
+    'cyan',
+    'teal',
+    'teal',
+    'cyan',
+  ];
   for (let family = 0; family < 13; family++) {
     const L = 0.62 + family * 0.18;
     const start = Math.asin(Math.sqrt(core / L));
@@ -66,10 +81,10 @@ export function createInterference(): FormScene {
       const major = azimuth % 8 === 0 && family % 3 === 0;
       lines.push({
         points,
-        ink: major ? 'cyan' : family % 3 === 0 ? 'silver' : 'construction',
-        opacity: major ? 0.9 : family % 3 === 0 ? 0.55 : 0.3,
+        ink: shellInks[family]!,
+        opacity: major ? 0.95 : family % 3 === 0 ? 0.76 : 0.53,
       });
-      if (major) surfaces.push(tube(points, phi, 0.009, 'cyan'));
+      if (major) surfaces.push(tube(points, phi, 0.009, shellInks[family]!));
     }
   }
   const positions: number[] = [],
@@ -92,9 +107,9 @@ export function createInterference(): FormScene {
   surfaces.push({
     positions,
     indices,
-    ink: 'graphite',
-    roughness: 0.4,
-    metalness: 0.65,
+    ink: 'vermilion',
+    roughness: 0.3,
+    metalness: 0.3,
   });
   for (let latitude = 1; latitude < 12; latitude++) {
     const a = (latitude * Math.PI) / 12;

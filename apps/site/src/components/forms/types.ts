@@ -10,6 +10,8 @@ export type FormSurface = {
   normals?: number[];
   ink: FormInk;
   opacity?: number;
+  /** An illustrative color ramp along one local coordinate, not measured data. */
+  colorRamp?: { axis: 0 | 1 | 2; inks: [FormInk, FormInk, ...FormInk[]] };
   roughness?: number;
   metalness?: number;
 };

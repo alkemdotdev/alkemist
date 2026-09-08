@@ -78,8 +78,8 @@ export function createOrbit(): FormScene {
         }
         lines.push({
           points,
-          ink: family === 0 ? 'cobalt' : 'cyan',
-          opacity: coordinate === 0 ? 0.8 : major ? 0.48 : 0.26,
+          ink: family === 0 ? 'cyan' : 'rose',
+          opacity: coordinate === 0 ? 0.9 : major ? 0.72 : 0.42,
         });
       }
     }
@@ -114,9 +114,10 @@ export function createOrbit(): FormScene {
           {
             positions,
             indices,
-            ink: 'silver',
-            roughness: 0.48,
-            metalness: 0.38,
+            ink: 'violet',
+            colorRamp: { axis: 2, inks: ['cobalt', 'violet', 'rose'] },
+            roughness: 0.32,
+            metalness: 0.28,
           },
         ],
       },

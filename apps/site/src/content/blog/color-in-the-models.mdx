@@ -1,0 +1,38 @@
+---
+title: Bringing color back to the models
+description: Keeping the mathematical detail while giving the opening more color and warmth.
+date: '2026-09-08'
+order: -7
+---
+
+import { Image } from 'astro:assets';
+import enneper from '../../assets/forms-color/orbit.png';
+import dipole from '../../assets/forms-color/interference.png';
+
+The [engineering round](/blog/form-and-structure/) gave the objects useful detail, but the silver surfaces made the opening feel dry. This pass keeps the geometry and brings the shared inks into the objects themselves.
+
+<Image
+  src={enneper}
+  alt="The Enneper surface shaded in blue, violet, and rose, with cyan coordinates and an ochre edge."
+  widths={[480, 800, 1200]}
+  sizes="(max-width:800px) 100vw, 800px"
+  format="webp"
+/>
+
+Enneper blends cobalt, violet, and rose along a local coordinate. Gyroid moves from cobalt through cyan to teal, with vermilion section curves. Reduction uses a cobalt housing, teal carrier and retainers, a vermilion sun gear, and silver teeth and bearings. The color has a role at the scale of both the whole object and its parts.
+
+<Image
+  src={dipole}
+  alt="Dipole field lines arranged in warm inner families and cool outer families around an orange reference sphere."
+  widths={[480, 800, 1200]}
+  sizes="(max-width:800px) 100vw, 800px"
+  format="webp"
+/>
+
+Dipole assigns colors by shell family: warm inner lines lead through rose and violet to cool outer lines. The surface ramps and shell colors are illustrative choices, not maps of stress, temperature, or field strength. The model definitions and their limits remain described in the preceding article.
+
+The eight shared inks retain the same values on both boards. Physically based lighting shades the surfaces, while line colors stay crisp. Handwritten notes return beneath the equations. The technical labels, coordinate nets, fine mechanical parts, and quiet motion remain available for closer inspection.
+
+The comparison stills are real browser captures at the resting pose. The current sources are in `src/assets/forms-color/`, with a reproducible capture recipe at `docs/art/capture-color-forms.cjs`. Previous stills remain with their original articles.
+
+[Compare the color studies →](/labs/sculpture-studies/?take=compare&board=black)

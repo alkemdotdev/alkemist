@@ -695,13 +695,19 @@ form-art[data-state='ready'] .form-annotations {
   padding: 2px 0;
 }
 .form-equation > span:last-child:not(.alk-math-inline) {
-  color: var(--alk-muted);
-  font: 0.62rem/1.5 var(--alk-mono);
-  max-width: 20ch;
+  color: var(--alk-ink-cobalt);
+  font: 1.25rem/1.1 var(--alk-hand);
+  max-width: 22ch;
+  transform: rotate(-3deg);
 }
 @media (max-width: 900px) {
-  .form-apparatus > span:last-child,
+  .form-equation {
+    flex-wrap: wrap;
+  }
   .form-equation > span:last-child:not(.alk-math-inline) {
+    font-size: 1.1rem;
+  }
+  .form-apparatus > span:last-child {
     display: none;
   }
 }
@@ -739,4 +745,17 @@ form-art[data-state='ready'] .form-annotations {
   padding: 0.1rem 0.4rem;
   min-width: 26px;
   min-height: 26px;
+}
+
+.forms-orbit .form-equation > span:last-child {
+  color: var(--alk-ink-rose);
+}
+.forms-strata .form-equation > span:last-child {
+  color: var(--alk-ink-teal);
+}
+.forms-interference .form-equation > span:last-child {
+  color: var(--alk-ink-violet);
+}
+.forms-assembly .form-equation > span:last-child {
+  color: var(--alk-ink-vermilion);
 }
