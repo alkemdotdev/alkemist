@@ -1,0 +1,45 @@
+---
+import SiteLayout from './SiteLayout.astro';
+import DocsNav from '../components/DocsNav.astro';
+import { isPreview } from '../lib/deployment';
+import '../styles/docs.css';
+
+interface Props {
+  title: string;
+  description: string;
+  headings?: { depth: number; slug: string; text: string }[];
+  catalog?: boolean;
+}
+const { title, description, headings = [], catalog = false } = Astro.props;
+const sections = headings.filter((heading) => heading.depth === 2);
+---
+
+<SiteLayout title={title} description={description} preview={isPreview}>
+  <div class="docs-shell">
+    <DocsNav />
+    <article
+      class:list={['docs-article', 'alk-prose', { 'docs-catalog': catalog }]}
+    >
+      <header class="docs-heading">
+        {title !== 'Documentation' && <p class="docs-kicker">Documentation</p>}
+        <h1>{title}</h1>
+        <p class="docs-description">{description}</p>
+      </header>
+      {
+        sections.length > 3 && (
+          <details class="docs-contents">
+            <summary>On this page</summary>
+            <ul>
+              {sections.map((heading) => (
+                <li>
+                  <a href={`#${heading.slug}`}>{heading.text}</a>
+                </li>
+              ))}
+            </ul>
+          </details>
+        )
+      }
+      <slot />
+    </article>
+  </div>
+</SiteLayout>

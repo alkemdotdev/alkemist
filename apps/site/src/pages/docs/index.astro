@@ -1,36 +1,62 @@
 ---
-import SiteLayout from '../../layouts/SiteLayout.astro';
-import { getCollection } from 'astro:content';
-import { isPreview } from '../../lib/deployment';
-const docs = (await getCollection('docs')).sort(
-  (a, b) => a.data.order - b.data.order,
-);
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import { docsGroups, docsReference } from '../../lib/docs-navigation';
 ---
 
-<SiteLayout
+<DocsLayout
   title="Documentation"
-  section="Guide / Reference / Recipes"
-  preview={isPreview}
+  description="Build, customize, and publish your Alkemist site."
 >
-  <h1>The Alkemist handbook.</h1><p class="alk-lead">
-    How the workbench fits together, what is available today, and the interfaces
-    we are building toward.
-  </p>
-  <ul class="alk-index">
-    <li>
-      <a href="/docs/components/">Component catalog</a><p>
-        Every available component and its current scope.
+  <div class="docs-start">
+    <div>
+      <h2>Start with your own site.</h2>
+      <p>
+        Follow the setup guide, or give the same instructions to your coding
+        agent.
       </p>
-    </li>
+    </div>
+    <div class="docs-start-links">
+      <a class="docs-primary" href="/docs/getting-started/"
+        >Create a site <span aria-hidden="true">→</span></a
+      >
+      <a href="/docs/agent-setup.md">Read the agent instructions</a>
+    </div>
+  </div>
+  <div class="docs-directory">
     {
-      docs.map((doc) => (
-        <li>
-          <>
-            <a href={`/docs/${doc.id}/`}>{doc.data.title}</a>
-            <p>{doc.data.description}</p>
-          </>
-        </li>
+      docsGroups.map((group) => (
+        <section>
+          <h2>{group.label}</h2>
+          <p>{group.description}</p>
+          <ul>
+            {group.links.map((link) => (
+              <li>
+                <a href={link.href}>
+                  {link.label}
+                  <span aria-hidden="true">↗</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
       ))
     }
-  </ul>
-</SiteLayout>
+  </div>
+  <div class="docs-reference-links">
+    <h2>Project reference</h2>
+    <p>Package boundaries, API conventions, and this demo's configuration.</p>
+    <ul>
+      {
+        docsReference.map((link) => (
+          <li>
+            <a href={link.href}>{link.label}</a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+  <p class="docs-footnote">
+    Alkemist is available from a source checkout. The packages are not yet
+    published to npm.
+  </p>
+</DocsLayout>

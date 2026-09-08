@@ -1,5 +1,6 @@
 ---
 import './model.css';
+import './figure.css';
 
 export interface AlkModelProps {
   /** A glTF 2.0 .glb or .gltf URL. Compression decoders are not included. */
@@ -20,13 +21,19 @@ const { src, title, description, poster, class: className } = Astro.props;
   data-src={src}
   data-state="idle"
 >
-  <figure>
-    <figcaption class="alk-model-heading">
+  <figure class="alk-figure" aria-label={title}>
+    <figcaption class="alk-model-heading alk-figure-heading">
       <div>
-        <span class="alk-model-label">Interactive specimen / glTF 2.0</span>
-        <strong>{title}</strong>
+        <p class="alk-model-label alk-figure-label">3D model · glTF 2.0</p>
+        <h3 class="alk-figure-title">{title}</h3>
+        {
+          description && (
+            <p class="alk-model-description alk-figure-description">
+              {description}
+            </p>
+          )
+        }
       </div>
-      <span class="alk-model-badge">3D</span>
     </figcaption>
     <div class="alk-model-viewport" aria-busy="false">
       {
@@ -50,7 +57,10 @@ const { src, title, description, poster, class: className } = Astro.props;
       </div>
       <p class="alk-model-hint">Drag to orbit · scroll to zoom</p>
     </div>
-    <div class="alk-model-toolbar" aria-label={`${title} controls`}>
+    <div
+      class="alk-model-toolbar alk-figure-controls"
+      aria-label={`${title} controls`}
+    >
       <div class="alk-model-presets" role="group" aria-label="Camera view">
         <button type="button" data-view="perspective" disabled
           >Reset view</button
@@ -65,15 +75,19 @@ const { src, title, description, poster, class: className } = Astro.props;
         <label><input type="checkbox" data-spin disabled /> Spin</label>
       </div>
     </div>
-    <div class="alk-model-footer">
-      <p class="alk-model-status" role="status" aria-live="polite">
+    <div class="alk-model-footer alk-figure-footer">
+      <p
+        class="alk-model-status alk-figure-status"
+        role="status"
+        aria-live="polite"
+      >
         Interactive view loads when visible.
       </p>
-      <a href={src} download>Download original ↗</a>
+      <a href={src} download>Download model <span aria-hidden="true">↓</span></a
+      >
     </div>
-    {description && <p class="alk-model-description">{description}</p>}
     <noscript
-      ><p class="alk-model-description">
+      ><p class="alk-figure-caption">
         Enable JavaScript to explore this model. The original file is available
         above.
       </p></noscript

@@ -1,66 +1,231 @@
 ---
-import SiteLayout from '../../layouts/SiteLayout.astro';
-import { isPreview } from '../../lib/deployment';
-const items = [
-  [
-    'AlkLayout',
-    'Available',
-    'Ubuntu typography, #eee whiteboard and #111 blackboard, local fonts, responsive navigation, and print styles.',
-  ],
-  [
-    'AlkMath / AlkCode',
-    'Available',
-    'KaTeX equations and MathML; Shiki code, captions, line highlights, numbers, and copy controls.',
-  ],
-  [
-    'AlkChart',
-    'Available',
-    'CSV line, bar, scatter, pie, donut, and heatmap; grids, tooltips, source tables, and line/scatter pan and zoom.',
-  ],
-  [
-    'AlkModel',
-    'Available',
-    'Uncompressed GLB/glTF with orbit controls, camera presets, wireframe, and a static poster.',
-  ],
-  [
-    'AlkShader',
-    'Available · fixed study',
-    'An interactive WebGL2 interference field with frequency and angle controls. A general shader authoring API is planned.',
-  ],
-  [
-    'AlkPointCloud / AlkSplat / AlkRobot',
-    'Planned',
-    'Point clouds, Gaussian splats, and robot joint controls need qualified format adapters and real examples.',
-  ],
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import AlkChart from '@alkemist/ui/AlkChart.astro';
+import AlkModel from '@alkemist/ui/AlkModel.astro';
+import AlkMath from '@alkemist/ui/AlkMath.astro';
+import AlkCode from '@alkemist/ui/AlkCode.astro';
+import AlkShader from '@alkemist/ui/AlkShader.astro';
+
+const chartCode = `import AlkChart from '@alkemist/ui/AlkChart.astro';
+
+<AlkChart
+  src="/test/oscillation.csv"
+  type="line" x="time" y="position"
+  title="Damped oscillator"
+  description="A synthetic trajectory with damping ratio 0.12."
+  xLabel="Time (s)" yLabel="Position (m)"
+  height={220} sample
+/>`;
+const modelCode = `import AlkModel from '@alkemist/ui/AlkModel.astro';
+
+<AlkModel
+  src="/test/torus-knot.glb"
+  poster="/test/torus-knot.svg"
+  title="A torus knot"
+  description="A generated teaching mesh. Drag to inspect it."
+/>`;
+const mathCode =
+  'import AlkMath from \'@alkemist/ui/AlkMath.astro\';\n\n<AlkMath\n  tex={String.raw`\\int_{\\partial\\Omega} \\omega = \\int_\\Omega d\\omega`}\n  label="Stokes’ theorem"\n/>';
+const source =
+  'function advance(position: number, velocity: number, dt: number) {\n  return position + velocity * dt;\n}';
+const codeCode = `import AlkCode from '@alkemist/ui/AlkCode.astro';
+import source from './integrator.ts?raw';
+
+<AlkCode
+  code={source} lang="typescript"
+  title="integrator.ts" highlightLines={[2]}
+/>`;
+const shaderCode = `import AlkShader from '@alkemist/ui/AlkShader.astro';
+
+<AlkShader title="Two wave sources" frequency={9} angle={24} />`;
+const layoutCode = `---
+import AlkLayout from '@alkemist/ui/AlkLayout.astro';
+---
+
+<AlkLayout title="Research notes" siteName="My lab">
+  <h1>Research notes</h1>
+  <p>What we are working on.</p>
+</AlkLayout>`;
+const catalog = [
+  ['charts', 'Charts'],
+  ['models', '3D models'],
+  ['math', 'Math'],
+  ['code', 'Code'],
+  ['shaders', 'Shaders'],
+  ['layout', 'Layout'],
 ];
 ---
 
-<SiteLayout
+<DocsLayout
   title="Components"
-  section="Public API / Alk prefix"
-  preview={isPreview}
-  ><h1>A small vocabulary. A large workbench.</h1><p class="alk-lead">
-    Every Alkemist component has an Alk prefix. Their documentation lives beside
-    the site that uses them.
-  </p><div class="alk-notice">
-    Explore the working components on the <a href="/test/">specimen board</a>.
-    Available means implemented in this repository; the packages are not yet
-    published to npm.
-  </div><div class="alk-grid">
-    {
-      items.map(([name, status, description]) => (
-        <article>
-          <>
-            <p class="alk-pill">{status}</p>
-            <h3>{name}</h3>
-            <p>{description}</p>
-          </>
-        </article>
-      ))
-    }
-  </div><div class="alk-links">
-    <a href="/docs/charts/">Chart types and options →</a><a href="/docs/naming/"
-      >Naming conventions →</a
-    >
-  </div></SiteLayout
+  description="Try a component, copy an example, and add your own content."
+  catalog
 >
+  <nav class="docs-jump" aria-label="Components on this page">
+    {catalog.map(([id, label]) => <a href={`#${id}`}>{label}</a>)}
+  </nav>
+  <p class="docs-footnote">
+    Examples use the current source packages. Put data and models in your site's <code
+      >public/</code
+    > directory; use the corresponding URL in <code>src</code>.
+  </p>
+
+  <section class="docs-example" id="charts">
+    <div class="docs-example-heading">
+      <h2>AlkChart</h2><a href="/docs/charts/"
+        >Chart reference <span aria-hidden="true">↗</span></a
+      >
+    </div>
+    <p>
+      CSV to line, bar, scatter, pie, donut, or heatmap. Inspect the data table
+      or zoom a line or scatter plot.
+    </p>
+    <AlkChart
+      src="/test/oscillation.csv"
+      type="line"
+      x="time"
+      y="position"
+      title="Damped oscillator"
+      description="A synthetic trajectory with damping ratio 0.12."
+      xLabel="Time (s)"
+      yLabel="Position (m)"
+      height={220}
+      sample
+    />
+    <details class="docs-source">
+      <summary>Code</summary><AlkCode
+        code={chartCode}
+        lang="mdx"
+        title="oscillator.mdx"
+        lineNumbers={false}
+      />
+    </details>
+  </section>
+
+  <section class="docs-example" id="models">
+    <div class="docs-example-heading">
+      <h2>AlkModel</h2><a href="/docs/models/"
+        >Model reference <span aria-hidden="true">↗</span></a
+      >
+    </div>
+    <p>
+      Uncompressed GLB or glTF with orbit controls, wireframe, and a static
+      poster.
+    </p>
+    <AlkModel
+      src="/test/torus-knot.glb"
+      poster="/test/torus-knot.svg"
+      title="A torus knot"
+      description="A generated teaching mesh. Drag to inspect it."
+    />
+    <details class="docs-source">
+      <summary>Code</summary><AlkCode
+        code={modelCode}
+        lang="mdx"
+        title="model.mdx"
+        lineNumbers={false}
+      />
+    </details>
+  </section>
+
+  <section class="docs-example" id="math">
+    <div class="docs-example-heading">
+      <h2>AlkMath</h2><a href="/docs/math-code/#the-component-form"
+        >Math reference <span aria-hidden="true">↗</span></a
+      >
+    </div>
+    <p>
+      TeX equations with accessible MathML. Inline and display math also work
+      directly in Markdown.
+    </p>
+    <AlkMath
+      tex={String.raw`\int_{\partial\Omega} \omega = \int_\Omega d\omega`}
+      label="Stokes’ theorem"
+    />
+    <details class="docs-source">
+      <summary>Code</summary><AlkCode
+        code={mathCode}
+        lang="mdx"
+        title="equation.mdx"
+        lineNumbers={false}
+      />
+    </details>
+  </section>
+
+  <section class="docs-example" id="code">
+    <div class="docs-example-heading">
+      <h2>AlkCode</h2><a href="/docs/math-code/#the-code-component"
+        >Code reference <span aria-hidden="true">↗</span></a
+      >
+    </div>
+    <p>
+      Highlighted source with a file title, line numbers, and a copy button.
+      Markdown code fences use the same styling.
+    </p>
+    <AlkCode
+      code={source}
+      lang="typescript"
+      title="integrator.ts"
+      highlightLines={[2]}
+    />
+    <details class="docs-source">
+      <summary>Usage</summary><AlkCode
+        code={codeCode}
+        lang="mdx"
+        title="code.mdx"
+        lineNumbers={false}
+      />
+    </details>
+  </section>
+
+  <section class="docs-example" id="shaders">
+    <div class="docs-example-heading">
+      <h2>AlkShader</h2><a href="/docs/models/#a-live-shader-study"
+        >Shader reference <span aria-hidden="true">↗</span></a
+      >
+    </div>
+    <p>
+      A two-source interference study with frequency and angle controls. This
+      component currently renders this fixed study.
+    </p>
+    <AlkShader title="Two wave sources" frequency={9} angle={24} />
+    <details class="docs-source">
+      <summary>Code</summary><AlkCode
+        code={shaderCode}
+        lang="mdx"
+        title="field.mdx"
+        lineNumbers={false}
+      />
+    </details>
+  </section>
+
+  <section class="docs-example" id="layout">
+    <div class="docs-example-heading">
+      <h2>AlkLayout</h2><a
+        href="/docs/site-structure/#your-site-owns-its-documentation"
+        >Layout reference <span aria-hidden="true">↗</span></a
+      >
+    </div>
+    <p>
+      The shell used by this page: Ubuntu, board themes, responsive navigation,
+      and print styles. Set your site name and navigation; keep your content
+      inside.
+    </p>
+    <AlkCode
+      code={layoutCode}
+      lang="astro"
+      title="index.astro"
+      lineNumbers={false}
+    />
+  </section>
+
+  <div class="docs-catalog-end">
+    <a href="/test/"
+      >See all specimens together <span aria-hidden="true">→</span></a
+    ><p>
+      Point clouds, splats, robotics, and custom shader authoring are <a
+        href="/docs/status/#further-work">planned</a
+      >.
+    </p>
+  </div>
+</DocsLayout>

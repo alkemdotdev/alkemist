@@ -72,20 +72,20 @@ h1,
 h2,
 h3 {
   font-family: var(--alk-sans);
-  font-weight: 700;
+  font-weight: 500;
   line-height: 1.15;
   letter-spacing: -0.035em;
   margin: 0 0 0.7em;
 }
 h1 {
-  font-size: clamp(2.4rem, 6vw, 4.6rem);
-  max-width: 17ch;
+  font-size: clamp(2rem, 3.7vw, 2.8rem);
+  max-width: 28ch;
 }
 h2 {
-  font-size: clamp(1.65rem, 3vw, 2.25rem);
+  font-size: clamp(1.4rem, 2.5vw, 1.85rem);
 }
 h3 {
-  font-size: 1.35rem;
+  font-size: 1.18rem;
 }
 p {
   margin: 0 0 1.2em;
@@ -271,14 +271,14 @@ th {
 }
 .alk-eyebrow {
   font: 0.7rem var(--alk-mono);
-  letter-spacing: 0.12em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--alk-accent);
-  margin-bottom: 1.4rem;
+  margin-bottom: 1rem;
 }
 .alk-lead {
-  font: 1.25rem/1.65 var(--alk-sans);
-  max-width: 48ch;
+  font: 1.08rem/1.65 var(--alk-sans);
+  max-width: 60ch;
   color: var(--alk-muted);
 }
 .alk-links {
@@ -347,11 +347,11 @@ th {
 }
 .alk-index li {
   margin: 0;
-  padding: 1.3rem 0;
+  padding: 1.1rem 0;
   border-top: 1px solid var(--alk-rule);
 }
 .alk-index a {
-  font: 500 1.4rem var(--alk-sans);
+  font: 500 1.15rem var(--alk-sans);
   text-decoration: none;
 }
 .alk-index p {
@@ -383,11 +383,11 @@ th {
   min-width: 0;
 }
 .alk-prose h1 {
-  font-size: clamp(2.1rem, 4.4vw, 3.6rem);
-  max-width: 22ch;
+  font-size: clamp(2rem, 3.5vw, 2.65rem);
+  max-width: 30ch;
 }
 .alk-prose h2 {
-  font-size: 1.7rem;
+  font-size: 1.5rem;
   margin-top: 2rem;
 }
 .alk-prose h3 {
@@ -461,7 +461,7 @@ th {
     gap: 0.8rem 1.3rem;
   }
   h1 {
-    font-size: 2.8rem;
+    font-size: 2.15rem;
   }
   .alk-section {
     margin-top: 2.5rem;

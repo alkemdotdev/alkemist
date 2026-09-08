@@ -1,0 +1,68 @@
+---
+import { docsGroups, docsReference } from '../lib/docs-navigation';
+const currentPath = Astro.url.pathname.replace(/\/?$/, '/');
+const isCurrent = (href: string) => currentPath === href;
+const inReference = docsReference.some((link) => isCurrent(link.href));
+---
+
+<aside class="docs-sidebar">
+  <details class="docs-menu" open>
+    <summary>Browse documentation</summary>
+    <nav aria-label="Documentation">
+      <a
+        class="docs-home"
+        href="/docs/"
+        aria-current={isCurrent('/docs/') ? 'page' : undefined}>Overview</a
+      >
+      {
+        docsGroups.map((group) => (
+          <div class="docs-nav-group">
+            <p>{group.label}</p>
+            <ul>
+              {group.links.map((link) => (
+                <li>
+                  <a
+                    href={link.href}
+                    aria-current={isCurrent(link.href) ? 'page' : undefined}
+                  >
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+      <details class="docs-reference" open={inReference}>
+        <summary>Project reference</summary>
+        <ul>
+          {
+            docsReference.map((link) => (
+              <li>
+                <a
+                  href={link.href}
+                  aria-current={isCurrent(link.href) ? 'page' : undefined}
+                >
+                  {link.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </details>
+      <a class="docs-agent-link" href="/docs/agent-setup.md"
+        >Agent setup instructions <span aria-hidden="true">↗</span></a
+      >
+    </nav>
+  </details>
+</aside>
+
+<script>
+  const menu = document.querySelector<HTMLDetailsElement>('.docs-menu');
+  const narrow = matchMedia('(max-width: 760px)');
+  const adaptMenu = () => {
+    if (menu) menu.open = !narrow.matches;
+  };
+  adaptMenu();
+  narrow.addEventListener('change', adaptMenu);
+</script>

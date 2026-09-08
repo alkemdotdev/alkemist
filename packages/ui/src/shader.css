@@ -2,34 +2,6 @@ alk-shader.alk-shader {
   display: block;
   margin: 1.5rem 0;
   min-width: 0;
-  border: 1px solid var(--alk-rule);
-  background: var(--alk-paper);
-  color: var(--alk-ink);
-}
-.alk-shader figure {
-  margin: 0;
-}
-.alk-shader-heading {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-  border-bottom: 1px solid var(--alk-rule);
-  padding: 1rem 1.2rem;
-}
-.alk-shader-heading strong {
-  display: block;
-  font-size: 1.05rem;
-  line-height: 1.4;
-  margin-top: 0.25rem;
-}
-.alk-shader-heading span {
-  font: 0.7rem/1.6 var(--alk-mono);
-  color: var(--alk-muted);
-}
-.alk-shader-tag {
-  padding: 0.2rem 0.5rem;
-  border: 1px solid var(--alk-rule);
 }
 .alk-shader-viewport {
   position: relative;
@@ -56,7 +28,7 @@ alk-shader.alk-shader {
 }
 .alk-shader-coordinate {
   position: absolute;
-  left: 1rem;
+  left: var(--alk-figure-gutter);
   bottom: 1rem;
   margin: 0;
   background: var(--alk-paper);
@@ -65,21 +37,18 @@ alk-shader.alk-shader {
   padding: 0.3rem 0.5rem;
   pointer-events: none;
 }
-.alk-shader-controls {
+.alk-shader-controls.alk-figure-controls {
   display: grid;
   grid-template-columns: 1fr 1fr auto;
-  align-items: center;
-  gap: 1.5rem;
-  padding: 1rem 1.2rem;
-  border-block: 1px solid var(--alk-rule);
+  gap: 1.25rem;
 }
 .alk-shader-controls label {
   display: block;
-  font: 0.75rem/1.4 var(--alk-mono);
+  min-width: 0;
 }
 .alk-shader-controls label > span {
   display: flex;
-  gap: 1rem;
+  gap: 0.6rem;
   justify-content: space-between;
   margin-bottom: 0.4rem;
 }
@@ -91,60 +60,20 @@ alk-shader.alk-shader {
   width: 100%;
   accent-color: var(--alk-ink-violet);
 }
-.alk-shader-controls button {
-  min-height: 42px;
-  border: 1px solid var(--alk-rule);
-  border-radius: 4px;
-  background: transparent;
-  color: inherit;
-  font: 0.75rem/1.4 var(--alk-mono);
-  padding: 0.55rem 0.85rem;
-  cursor: pointer;
-}
-.alk-shader-controls button:hover:enabled {
-  background: var(--alk-field);
-}
-.alk-shader-controls button:disabled,
-.alk-shader-controls label:has(:disabled) {
-  opacity: 0.5;
-  cursor: default;
-}
-.alk-shader-footer {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 0.5rem;
-  padding: 0.75rem 1rem;
-  color: var(--alk-muted);
-  font: 0.7rem/1.5 var(--alk-mono);
-}
-.alk-shader-footer p {
-  margin: 0;
-}
-.alk-shader-nojs {
-  font-size: 0.85rem;
-  padding-inline: 1rem;
-}
 @media (max-width: 600px) {
-  .alk-shader-controls {
+  .alk-shader-controls.alk-figure-controls {
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
-    padding: 0.85rem;
   }
   .alk-shader-controls button {
     grid-column: 1 / -1;
   }
-  .alk-shader-heading {
-    padding: 0.85rem;
-  }
   .alk-shader-coordinate {
     font-size: 0.6rem;
-    left: 0.5rem;
   }
 }
 @media print {
   .alk-shader canvas,
-  .alk-shader-controls,
   .alk-shader-coordinate {
     display: none;
   }

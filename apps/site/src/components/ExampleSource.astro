@@ -1,0 +1,65 @@
+---
+import AlkCode from '@alkemist/ui/AlkCode.astro';
+
+interface Props {
+  code: string;
+  label: string;
+  reference: string;
+  referenceLabel?: string;
+  files?: { href: string; label: string }[];
+}
+
+const {
+  code,
+  label,
+  reference,
+  referenceLabel = 'Component reference',
+  files = [],
+} = Astro.props;
+---
+
+<details class="example-source">
+  <summary>{label} source</summary>
+  <AlkCode code={code} lang="astro" title="example.astro" lineNumbers={false} />
+  <div class="example-source-links">
+    <a href={reference}>{referenceLabel} →</a>
+    {
+      files.map((file) => (
+        <a href={file.href} download>
+          {file.label} ↓
+        </a>
+      ))
+    }
+  </div>
+</details>
+
+<style>
+  .example-source {
+    min-width: 0;
+    margin: 0.6rem 0 1.5rem;
+    font-size: 0.85rem;
+  }
+  summary {
+    width: fit-content;
+    padding: 0.45rem 0;
+    color: var(--alk-muted);
+    cursor: pointer;
+  }
+  summary:hover,
+  summary:focus-visible,
+  details[open] > summary {
+    color: var(--alk-ink);
+  }
+  summary::marker {
+    color: var(--alk-ink-cobalt);
+  }
+  .example-source-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem 1.5rem;
+    padding: 0.1rem 0 0.5rem;
+  }
+  .example-source :global(.alk-code) {
+    margin: 0.4rem 0 0.85rem;
+  }
+</style>

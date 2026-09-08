@@ -1,61 +1,20 @@
 .test-intro {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 220px;
-  align-items: end;
-  gap: 2rem;
-  padding: 1rem 0 2.5rem;
-}
-.test-intro h1 {
-  font-size: clamp(3.2rem, 6.6vw, 5.5rem);
-  letter-spacing: -0.055em;
-  max-width: 15ch;
-  line-height: 1.03;
-}
-.test-intro h1 span {
-  position: relative;
-}
-.test-intro h1 span::after {
-  content: '';
-  position: absolute;
-  bottom: -0.07em;
-  left: 0;
-  right: 0;
-  height: 0.065em;
-  background: var(--alk-ink-cobalt);
-  border-radius: 50%;
-  transform: rotate(-2deg);
+  max-width: 68ch;
+  padding: 0.5rem 0 1.5rem;
 }
 .test-intro .alk-lead {
-  margin-top: 1.6rem;
-  max-width: 47ch;
+  margin: 0.85rem 0 1rem;
+  font-size: 1.05rem;
 }
 .test-intro-links {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem 2rem;
-  font-size: 0.9rem;
-}
-.test-intro-note {
-  transform: rotate(4deg);
-  margin: 0 0 2rem;
-}
-.test-intro-note span {
-  display: block;
-  font-size: 4rem;
-  margin-left: 5rem;
+  gap: 0.7rem 1.5rem;
+  font-size: 0.88rem;
 }
 .test-space {
-  margin-top: 1rem;
-}
-.test-model-foot {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-  padding-top: 1rem;
-}
-.test-model-foot .alk-note {
-  color: var(--alk-ink-teal);
+  margin-top: 2rem;
+  scroll-margin-top: 6rem;
 }
 .test-meta {
   font: 0.72rem/1.5 var(--alk-mono);
@@ -67,8 +26,12 @@
   display: flex;
   gap: 0.5rem 2rem;
   flex-wrap: wrap;
-  padding: 1.1rem 0;
-  margin: 3rem 0 0;
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  padding: 0.65rem 0;
+  margin: 0;
+  background: var(--alk-paper);
   border-block: 1px solid var(--alk-rule);
   font: 0.88rem var(--alk-mono);
 }
@@ -77,33 +40,35 @@
   padding: 0.3rem 0;
 }
 .test-section {
-  padding-top: 5rem;
-  scroll-margin-top: 1rem;
+  padding-top: 2.5rem;
+  scroll-margin-top: 4rem;
 }
 .test-section + .test-section {
-  margin-top: 4rem;
+  margin-top: 2rem;
   border-top: 1px solid var(--alk-rule);
 }
 .test-heading {
   display: grid;
-  grid-template-columns: 1.25fr 1fr;
-  gap: 3rem;
-  align-items: end;
-  margin-bottom: 2.5rem;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 2rem;
+  align-items: start;
+  margin-bottom: 1.5rem;
 }
-.test-heading h2 {
-  font-size: clamp(2rem, 3.8vw, 3.1rem);
-  letter-spacing: -0.045em;
+.test-heading h2,
+.test-model-title {
+  font-size: clamp(1.5rem, 2.5vw, 2rem);
+  letter-spacing: -0.025em;
+  line-height: 1.2;
   margin: 0;
 }
+.test-model-title {
+  margin-bottom: 1.5rem;
+}
 .test-heading > p {
-  font-size: 1rem;
+  font-size: 0.95rem;
   color: var(--alk-muted);
   margin: 0;
   max-width: 40ch;
-}
-.test-heading .test-meta {
-  margin-bottom: 1rem;
 }
 .test-palette-pair {
   display: grid;
@@ -169,14 +134,14 @@
   margin-top: 1.5rem;
 }
 .test-equation-hero {
-  padding: 2.5rem 1rem;
+  padding: 1.8rem 1rem;
   text-align: center;
   background: var(--alk-field);
   border-radius: 8px;
   border: 1px solid var(--alk-rule);
 }
 .test-equation-hero .alk-math-scroll {
-  font-size: clamp(1.8rem, 4vw, 3.1rem);
+  font-size: clamp(1.5rem, 3vw, 2.3rem);
 }
 .test-equation-hero .alk-note {
   display: block;
@@ -231,7 +196,7 @@
 .test-chart-note {
   text-align: right;
   color: var(--alk-ink-cobalt);
-  margin: 1rem 1rem 2rem;
+  margin: 0 1rem 1.5rem;
 }
 .test-code-tabs [role='tablist'] {
   display: flex;
@@ -431,22 +396,16 @@ dialog::backdrop {
 .test-end {
   text-align: center;
   border-top: 1px solid var(--alk-rule);
-  padding-top: 4rem;
-  margin-top: 5rem;
+  padding-top: 2rem;
+  margin-top: 3rem;
 }
 .test-end h2 {
-  font-size: clamp(2rem, 4vw, 3.4rem);
+  font-size: 1.5rem;
 }
 .test-end .test-intro-links {
   justify-content: center;
 }
 @media (max-width: 900px) {
-  .test-intro {
-    grid-template-columns: 1fr;
-  }
-  .test-intro-note {
-    display: none;
-  }
   .test-writing-grid {
     grid-template-columns: 1fr;
     gap: 2rem;
@@ -468,9 +427,6 @@ dialog::backdrop {
   }
 }
 @media (max-width: 650px) {
-  .test-intro h1 {
-    font-size: 3.1rem;
-  }
   .test-heading,
   .test-duo,
   .test-proof,
@@ -478,20 +434,12 @@ dialog::backdrop {
     grid-template-columns: 1fr;
     gap: 1.4rem;
   }
-  .test-heading h2 {
-    font-size: 2.25rem;
-  }
   .test-section {
-    padding-top: 3rem;
+    padding-top: 2rem;
+    scroll-margin-top: 7rem;
   }
   .test-section + .test-section {
-    margin-top: 2.7rem;
-  }
-  .test-model-foot .test-meta {
-    display: none;
-  }
-  .test-model-foot p {
-    font-size: 1.65rem;
+    margin-top: 1.5rem;
   }
   .test-palette-foot {
     align-items: flex-start;
@@ -523,7 +471,11 @@ dialog::backdrop {
     padding: 2rem 0.3rem;
   }
   .test-jump {
-    gap: 0.5rem 1.5rem;
+    gap: 0.2rem 1.15rem;
+    font-size: 0.8rem;
+  }
+  .test-space {
+    scroll-margin-top: 7rem;
   }
 }
 @media print {

@@ -3,39 +3,47 @@ import SiteLayout from '../../layouts/SiteLayout.astro';
 import { isPreview } from '../../lib/deployment';
 ---
 
-<SiteLayout title="Info" section="About Alkemist" preview={isPreview}>
+<SiteLayout
+  title="Info"
+  description="About Alkemist, the Astro toolkit for inventors and researchers."
+  preview={isPreview}
+>
   <article class="alk-prose">
-    <h1>A home for people who make things.</h1>
+    <h1>About Alkemist</h1>
     <p class="alk-lead">
-      Alkemist is an Astro publishing toolkit for inventors, researchers, and
-      the teams around them.
+      An Astro toolkit for inventors, researchers, and the teams around them.
     </p>
     <p>
-      A useful research website can hold the explanation and the experiment
-      together: a model you can turn, a chart you can inspect, and the source
-      behind both. Alkemist brings those pieces into a shared language for
-      publishing.
+      Alkemist brings technical writing, charts, and interactive models into one
+      website. Use it for a personal notebook, a research group, or an
+      independent project.
     </p>
-    <h2>Built in the open</h2>
+    <h2>Your site, your files</h2>
     <p>
-      This website uses the same Alkemist packages it documents. The blog
-      records design decisions and progress; the labs put ideas into your hands;
-      the docs explain how to use the components in your own project.
+      Your content, identity, and page layouts belong to your site. Shared
+      components and defaults live in packages you can update. The <a
+        href="/docs/getting-started/">starter</a
+      > creates a separate project with its own configuration and content.
     </p>
-    <h2>The project</h2>
+    <h2>Built with Alkemist</h2>
     <p>
-      Alkemist lives in the <a href="https://github.com/alkemdev/alkemist"
-        >alkemdev organization on GitHub</a
-      >. Its source, changes, and development history are available there.
+      This site uses the components it documents. The <a href="/blog/">blog</a> records
+      the work, <a href="/labs/">Labs</a> holds interactive experiments, and the <a
+        href="/docs/">docs</a
+      > explain how to use the toolkit.
     </p>
-    <h2>Make it your own</h2>
+    <h2>Project status</h2>
     <p>
-      Use Alkemist for a personal research site, a team, a company, or an
-      independent project. Your content and identity belong to your site; shared
-      components and defaults live in packages that can evolve.
+      Alkemist is a source preview. Access to the <a
+        href="https://github.com/alkemdev/alkemist">GitHub repository</a
+      > is required, and the packages are not on npm yet. See <a
+        href="/docs/status/">what is available and what is planned</a
+      >.
     </p>
     <div class="alk-links">
-      <a href="/blog/">Follow the work →</a><a href="/docs/">Read the docs →</a>
+      <a href="/docs/getting-started/">Get started →</a><a
+        href="/docs/components/">Browse the components →</a
+      >
     </div>
   </article>
 </SiteLayout>

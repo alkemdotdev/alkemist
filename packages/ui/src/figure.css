@@ -1,0 +1,121 @@
+/* Shared figure presentation; each medium keeps its own rendering lifecycle. */
+.alk-figure {
+  --alk-figure-gutter: clamp(0.85rem, 2vw, 1.15rem);
+  margin: 0;
+  min-width: 0;
+  border: 1px solid var(--alk-rule);
+  border-radius: 6px;
+  background: var(--alk-paper);
+  color: var(--alk-ink);
+}
+.alk-figure-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: var(--alk-figure-gutter);
+}
+.alk-figure-heading > div {
+  min-width: 0;
+}
+.alk-figure .alk-figure-label {
+  margin: 0 0 0.35rem;
+  color: var(--alk-muted);
+  font: 0.7rem/1.5 var(--alk-mono);
+}
+.alk-figure .alk-figure-title {
+  margin: 0;
+  font: 500 1.08rem/1.35 var(--alk-sans);
+  letter-spacing: -0.02em;
+  overflow-wrap: anywhere;
+}
+.alk-figure .alk-figure-description {
+  margin: 0.45rem 0 0;
+  max-width: 68ch;
+  color: var(--alk-muted);
+  font: 0.84rem/1.55 var(--alk-sans);
+  overflow-wrap: anywhere;
+}
+.alk-figure-format {
+  flex: 0 0 auto;
+  color: var(--alk-muted);
+  font: 0.7rem/1.5 var(--alk-mono);
+}
+.alk-figure-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem 1rem;
+  border-top: 1px solid var(--alk-rule);
+  padding: 0.7rem var(--alk-figure-gutter);
+  font: 0.76rem/1.4 var(--alk-mono);
+}
+.alk-figure-controls button {
+  min-height: 40px;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid var(--alk-rule);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--alk-ink);
+  font: inherit;
+  cursor: pointer;
+}
+.alk-figure-controls button:hover:enabled {
+  background: var(--alk-field);
+  border-color: var(--alk-muted);
+}
+.alk-figure-controls button:disabled,
+.alk-figure-controls label:has(:disabled) {
+  opacity: 0.5;
+  cursor: default;
+}
+.alk-figure-controls button[hidden] {
+  display: none;
+}
+.alk-figure-controls :focus-visible,
+.alk-figure-footer a:focus-visible,
+.alk-chart-table summary:focus-visible {
+  outline: 2px solid var(--alk-ink-cobalt);
+  outline-offset: 3px;
+}
+.alk-figure-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.35rem 1rem;
+  padding: 0.5rem var(--alk-figure-gutter) 0.9rem;
+  color: var(--alk-muted);
+  font: 0.72rem/1.5 var(--alk-mono);
+}
+.alk-figure-status {
+  margin: 0;
+  flex: 1 1 14rem;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.alk-figure-footer a {
+  flex: 0 0 auto;
+  padding-block: 0.3rem;
+}
+[data-state='error'] > .alk-figure .alk-figure-status {
+  color: var(--alk-ink);
+  border-left: 2px solid var(--alk-ink-vermilion);
+  padding-left: 0.65rem;
+}
+.alk-figure .alk-figure-caption {
+  margin: 0;
+  padding: 0 var(--alk-figure-gutter) 1rem;
+  color: var(--alk-muted);
+  font: 0.78rem/1.6 var(--alk-sans);
+  overflow-wrap: anywhere;
+}
+@media print {
+  .alk-figure {
+    break-inside: avoid;
+  }
+  .alk-figure-controls,
+  .alk-figure-status {
+    display: none;
+  }
+}

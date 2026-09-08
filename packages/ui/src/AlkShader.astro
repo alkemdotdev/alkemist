@@ -1,5 +1,6 @@
 ---
 import './shader.css';
+import './figure.css';
 
 export interface AlkShaderProps {
   title?: string;
@@ -37,12 +38,13 @@ const fallbackInks = [
 ---
 
 <alk-shader class:list={['alk-shader', className]} data-state="idle">
-  <figure>
-    <figcaption class="alk-shader-heading">
+  <figure class="alk-figure" aria-label={title}>
+    <figcaption class="alk-shader-heading alk-figure-heading">
       <div>
-        <span>Fragment study / two wave sources</span><strong>{title}</strong>
+        <p class="alk-figure-label">Shader · two wave sources</p>
+        <h3 class="alk-figure-title">{title}</h3>
       </div>
-      <span class="alk-shader-tag">GLSL</span>
+      <span class="alk-shader-tag alk-figure-format">GLSL</span>
     </figcaption>
     <div class="alk-shader-viewport">
       <svg
@@ -76,7 +78,10 @@ const fallbackInks = [
         ψ = sin(k r₁ − φ) + sin(k r₂ − φ)
       </p>
     </div>
-    <div class="alk-shader-controls">
+    <div
+      class="alk-shader-controls alk-figure-controls"
+      aria-label={`${title} controls`}
+    >
       <label
         ><span
           >Frequency <output data-frequency-output
@@ -111,13 +116,13 @@ const fallbackInks = [
         >Play waves</button
       >
     </div>
-    <div class="alk-shader-footer">
-      <p role="status" aria-live="polite">
-        Shader loads when visible. The static illustration remains available.
-      </p><span>Eight inks · two sources</span>
+    <div class="alk-shader-footer alk-figure-footer">
+      <p class="alk-figure-status" role="status" aria-live="polite">
+        Shader loads when visible.
+      </p>
     </div>
     <noscript
-      ><p class="alk-shader-nojs">
+      ><p class="alk-shader-nojs alk-figure-caption">
         Enable JavaScript to change the frequency and angle or animate the
         field.
       </p></noscript

@@ -2,38 +2,6 @@ alk-model.alk-model {
   display: block;
   min-width: 0;
   margin: 1.5rem 0;
-  border: 1px solid var(--alk-rule);
-  background: var(--alk-paper);
-  color: var(--alk-ink);
-}
-.alk-model figure {
-  margin: 0;
-}
-.alk-model-heading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 1rem 1.2rem;
-  border-bottom: 1px solid var(--alk-rule);
-}
-.alk-model-heading strong {
-  display: block;
-  font-weight: 700;
-  line-height: 1.4;
-}
-.alk-model-label,
-.alk-model-badge {
-  font: 0.7rem/1.6 var(--alk-mono);
-  color: var(--alk-muted);
-}
-.alk-model-label {
-  display: block;
-  margin-bottom: 0.25rem;
-}
-.alk-model-badge {
-  border: 1px solid var(--alk-rule);
-  padding: 0.2rem 0.5rem;
 }
 .alk-model-viewport {
   position: relative;
@@ -66,7 +34,7 @@ alk-model.alk-model {
 }
 .alk-model-axis {
   position: absolute;
-  right: 1rem;
+  right: var(--alk-figure-gutter);
   bottom: 1rem;
   display: flex;
   gap: 0.6rem;
@@ -84,17 +52,15 @@ alk-model.alk-model {
 }
 .alk-model-hint {
   position: absolute;
-  left: 1rem;
+  left: var(--alk-figure-gutter);
   bottom: 1rem;
   margin: 0;
   font: 0.7rem/1.4 var(--alk-mono);
   color: var(--alk-muted);
   pointer-events: none;
 }
-.alk-model-toolbar,
 .alk-model-presets,
-.alk-model-switches,
-.alk-model-footer {
+.alk-model-switches {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -102,27 +68,6 @@ alk-model.alk-model {
 }
 .alk-model-toolbar {
   justify-content: space-between;
-  padding: 0.85rem 1rem;
-  border-top: 1px solid var(--alk-rule);
-  border-bottom: 1px solid var(--alk-rule);
-}
-.alk-model-toolbar button {
-  padding: 0.45rem 0.75rem;
-  min-height: 40px;
-  border: 1px solid var(--alk-rule);
-  border-radius: 4px;
-  background: transparent;
-  color: inherit;
-  font: 0.78rem/1.4 var(--alk-mono);
-  cursor: pointer;
-}
-.alk-model-toolbar button:hover:enabled {
-  background: var(--alk-field);
-}
-.alk-model-toolbar button:disabled,
-.alk-model-toolbar label:has(:disabled) {
-  opacity: 0.5;
-  cursor: default;
 }
 .alk-model-switches {
   gap: 1rem;
@@ -131,7 +76,6 @@ alk-model.alk-model {
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  font: 0.78rem/1.4 var(--alk-mono);
   min-height: 40px;
 }
 .alk-model-switches input {
@@ -139,49 +83,17 @@ alk-model.alk-model {
   width: 1rem;
   height: 1rem;
 }
-.alk-model-footer {
-  justify-content: space-between;
-  padding: 0.75rem 1rem;
-  font: 0.7rem/1.6 var(--alk-mono);
-}
-.alk-model-status {
-  margin: 0;
-  color: var(--alk-muted);
-}
-.alk-model-footer a {
-  white-space: nowrap;
-}
-.alk-model-description {
-  margin: 0;
-  padding: 0 1rem 1rem;
-  font-size: 0.85rem;
-}
-.alk-model[data-state='error'] .alk-model-status {
-  color: var(--alk-ink);
-}
 .alk-model[data-state='error'] .alk-model-hint,
 .alk-model:not([data-state='ready']) .alk-model-axis {
   display: none;
 }
 @media (max-width: 480px) {
-  .alk-model-heading {
-    padding: 0.8rem;
-  }
-  .alk-model-label {
-    font-size: 0.62rem;
-  }
-  .alk-model-toolbar,
-  .alk-model-footer {
-    padding: 0.65rem;
-  }
   .alk-model-hint {
-    left: 0.65rem;
     font-size: 0.6rem;
   }
 }
 @media print {
   .alk-model canvas,
-  .alk-model-toolbar,
   .alk-model-hint,
   .alk-model-axis {
     display: none;

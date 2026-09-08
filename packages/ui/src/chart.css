@@ -2,49 +2,13 @@
   display: block;
   min-width: 0;
   width: 100%;
-  --alk-chart-control: 0.75rem;
-}
-.alk-chart figure {
-  margin: 0;
-  padding: clamp(1rem, 3vw, 1.8rem);
-  border: 1px solid var(--alk-rule);
-  background: var(--alk-paper);
-  border-radius: 6px;
-  min-width: 0;
-}
-.alk-chart-caption {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 1rem;
-  margin-bottom: 1.2rem;
-}
-.alk-chart-caption h3 {
-  font: 500 clamp(1.15rem, 2vw, 1.45rem) var(--alk-sans);
-  letter-spacing: -0.025em;
-  margin: 0.3rem 0 0.7rem;
-}
-.alk-chart-caption p {
-  font-size: 0.85rem;
-  margin: 0;
-  max-width: 66ch;
-  color: var(--alk-muted);
-}
-.alk-chart-caption .alk-chart-kicker {
-  font: 0.64rem var(--alk-mono);
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-}
-.alk-chart-file {
-  flex: 0 0 auto;
-  font: 0.66rem var(--alk-mono);
-  color: var(--alk-muted);
-  padding-top: 0.1rem;
+  margin: 1.5rem 0;
 }
 .alk-chart-canvas {
   width: 100%;
   min-width: 0;
   position: relative;
+  padding: 0 0.5rem 0.75rem;
 }
 .alk-chart-canvas .vega-embed {
   display: block;
@@ -56,58 +20,32 @@
   max-width: 100%;
   height: auto;
 }
-.alk-chart-status {
-  color: var(--alk-muted);
-  font: 0.71rem var(--alk-mono);
-  margin: 0.65rem 0;
-}
-.alk-chart[data-state='error'] .alk-chart-status {
-  color: var(--alk-ink);
-  border-left: 3px solid var(--alk-ink-vermilion);
-  padding-left: 0.7rem;
-}
 .alk-chart[data-state='error'] .alk-chart-canvas {
   min-height: 0 !important;
 }
-.alk-chart-tools {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 0.6rem 1rem;
-  padding: 0.6rem 0 1rem;
-  font-size: var(--alk-chart-control);
+.alk-chart[data-state='error'] .alk-chart-hint {
+  display: none;
 }
-.alk-chart-tools button {
-  background: var(--alk-field);
-  color: var(--alk-ink);
-  border: 1px solid var(--alk-rule);
-  border-radius: 4px;
-  padding: 0.4rem 0.65rem;
-  cursor: pointer;
-}
-.alk-chart-tools button[disabled] {
-  opacity: 0.5;
-  cursor: default;
-}
-.alk-chart-tools button[hidden] {
+.alk-chart-tools:not(:has(button:not([hidden]))) {
   display: none;
 }
 .alk-chart-hint {
   color: var(--alk-muted);
-  font: 0.68rem var(--alk-mono);
+  font: 0.7rem/1.5 var(--alk-mono);
 }
 .alk-chart-table {
   border-top: 1px solid var(--alk-rule);
+  margin: 0 var(--alk-figure-gutter);
   font-size: 0.76rem;
 }
 .alk-chart-table summary {
   cursor: pointer;
-  padding: 0.75rem 0 0.2rem;
+  padding: 0.7rem 0;
 }
 .alk-chart-table-scroll {
   max-height: 23rem;
   overflow: auto;
-  margin-top: 0.8rem;
+  margin-bottom: 0.85rem;
 }
 .alk-chart-table-scroll table {
   font: 0.75rem var(--alk-mono);
@@ -128,12 +66,6 @@
   white-space: nowrap;
   padding: 0.55rem 0.7rem;
 }
-.alk-chart-source {
-  color: var(--alk-muted);
-  font: 0.7rem var(--alk-mono);
-  padding-top: 0.9rem;
-  margin: 0;
-}
 #vg-tooltip-element {
   font-family: var(--alk-sans);
   background: var(--alk-paper);
@@ -146,22 +78,7 @@
   color: var(--alk-muted);
 }
 @media (max-width: 600px) {
-  .alk-chart-file {
-    display: none;
-  }
-  .alk-chart-tools {
-    gap: 0.7rem;
-  }
   .alk-chart-hint {
     width: 100%;
-  }
-}
-@media print {
-  .alk-chart-tools,
-  .alk-chart-status {
-    display: none;
-  }
-  .alk-chart figure {
-    break-inside: avoid;
   }
 }

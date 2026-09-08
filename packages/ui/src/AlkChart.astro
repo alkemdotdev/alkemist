@@ -1,5 +1,6 @@
 ---
 import './chart.css';
+import './figure.css';
 import { alkChartCanZoom, type AlkChartProps } from './charts';
 export type { AlkChartProps } from './charts';
 type Props = AlkChartProps;
@@ -8,18 +9,18 @@ const canZoom = alkChartCanZoom(props);
 ---
 
 <alk-chart class="alk-chart" data-config={JSON.stringify(props)}>
-  <figure aria-label={props.title}>
-    <figcaption class="alk-chart-caption">
+  <figure class="alk-figure" aria-label={props.title}>
+    <figcaption class="alk-chart-caption alk-figure-heading">
       <div>
-        <p class="alk-chart-kicker">
+        <p class="alk-chart-kicker alk-figure-label">
           {props.sample ? 'Synthetic dataset' : 'Data visualization'} · {
             props.type
           }
         </p>
-        <h3>{props.title}</h3>
-        <p>{props.description}</p>
+        <h3 class="alk-figure-title">{props.title}</h3>
+        <p class="alk-figure-description">{props.description}</p>
       </div>
-      <span class="alk-chart-file">CSV → {props.type}</span>
+      <span class="alk-chart-file alk-figure-format">CSV</span>
     </figcaption>
     <div
       class="alk-chart-canvas"
@@ -27,10 +28,10 @@ const canZoom = alkChartCanZoom(props);
       aria-busy="true"
     >
     </div>
-    <p class="alk-chart-status" role="status" aria-live="polite">
-      The interactive chart loads when it comes into view.
-    </p>
-    <div class="alk-chart-tools">
+    <div
+      class="alk-chart-tools alk-figure-controls"
+      aria-label={`${props.title} controls`}
+    >
       {
         canZoom && (
           <button type="button" data-chart-reset disabled>
@@ -38,10 +39,7 @@ const canZoom = alkChartCanZoom(props);
           </button>
         )
       }
-      <button type="button" data-chart-retry hidden>Retry chart</button>
-      <a href={props.src} download
-        >Download CSV <span aria-hidden="true">↗</span></a
-      >
+      <button type="button" data-chart-retry hidden>Retry</button>
       {
         canZoom && (
           <span class="alk-chart-hint">
@@ -50,8 +48,20 @@ const canZoom = alkChartCanZoom(props);
         )
       }
     </div>
+    <div class="alk-figure-footer">
+      <p
+        class="alk-chart-status alk-figure-status"
+        role="status"
+        aria-live="polite"
+      >
+        Chart loads when visible.
+      </p>
+      <a href={props.src} download
+        >Download CSV <span aria-hidden="true">↓</span></a
+      >
+    </div>
     <details class="alk-chart-table">
-      <summary>View data table <span data-chart-count></span></summary>
+      <summary>Data table <span data-chart-count></span></summary>
       <div
         class="alk-chart-table-scroll"
         tabindex="0"
@@ -60,9 +70,13 @@ const canZoom = alkChartCanZoom(props);
         <p data-chart-table-placeholder>The table loads alongside the chart.</p>
       </div>
     </details>
-    {props.caption && <p class="alk-chart-source">{props.caption}</p>}
+    {
+      props.caption && (
+        <p class="alk-chart-source alk-figure-caption">{props.caption}</p>
+      )
+    }
     <noscript
-      ><p>
+      ><p class="alk-figure-caption">
         JavaScript is required for this interactive view. Download the CSV to
         inspect the source data.
       </p></noscript

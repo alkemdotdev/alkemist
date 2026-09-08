@@ -1,85 +1,224 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import { isPreview } from '../../lib/deployment';
-const labs = [
+const tools = [
+  {
+    name: 'Interference field',
+    href: '/labs/interference/',
+    kind: 'Shader',
+    description: 'Adjust two wave sources and inspect the resulting field.',
+  },
+  {
+    name: 'Theme studio',
+    href: '/labs/design-studio/',
+    kind: 'Design tool',
+    description:
+      'Try fonts, inks, and board details. Copy or download your choices.',
+  },
+];
+const studies = [
   {
     name: 'Field studies',
     href: '/labs/field-studies/',
-    kind: 'Art / New directions',
-    description:
-      'Flux core, Toroidal weave, Vortex, and Knot core: four substantial sculptures built from layered fields, sweeping ribbons, and interlocking strands.',
+    description: 'Flux core and three other layered sculptures.',
   },
   {
-    name: 'Four sculpture studies',
+    name: 'Mathematical sculptures',
     href: '/labs/sculpture-studies/',
-    kind: 'Art / Earlier directions',
-    description:
-      'Enneper, Gyroid, Dipole, and Reduction: detailed mathematical and engineering openings with fine geometry and quiet motion.',
+    description: 'Enneper, Gyroid, Dipole, and a planetary gear stage.',
   },
   {
     name: 'Hero studies',
     href: '/labs/hero-studies/',
-    kind: 'Art / Design comparison',
-    description:
-      'Compare a live sculpture, flowing shader art, and an illustrated worktable as the opening to Alkemist.',
+    description: 'Sculpture, shader, and illustration compositions.',
   },
   {
     name: 'Homepage studies',
     href: '/labs/homepage-studies/',
-    kind: 'Design / Comparison',
-    description:
-      'Try three homepage directions, compare the story, and choose the parts to carry forward.',
-  },
-  {
-    name: 'Interference field',
-    href: '/labs/interference/',
-    kind: 'Shader / Interactive',
-    description:
-      'Turn two wave sources, change their frequency, and watch the field evolve.',
-  },
-  {
-    name: 'Design studio',
-    href: '/labs/design-studio/',
-    kind: 'Design / Tool',
-    description:
-      'Choose typography, inks, and board details. Share a preview or download your choices.',
+    description: 'Three earlier approaches to the homepage.',
   },
   {
     name: 'Board studies',
     href: '/labs/board-studies/',
-    kind: 'Design / Comparison',
-    description:
-      'Compare Seminar, Workshop, and Drafting on whiteboard and blackboard surfaces.',
+    description: 'Whiteboard and blackboard treatments.',
   },
 ];
 ---
 
 <SiteLayout
   title="Labs"
-  section="Small apps / Open experiments"
+  description="Small tools and interactive experiments built with Alkemist."
   preview={isPreview}
 >
-  <h1>Take an idea for a spin.</h1>
-  <p class="alk-lead">
-    Working tools and interactive experiments. Open a lab, change something, and
-    see what happens.
-  </p>
-  <div class="alk-grid alk-section">
+  <header class="labs-heading">
+    <h1>Labs</h1><p class="alk-lead">
+      Small tools and interactive experiments.
+    </p>
+  </header>
+  <div class="labs-tools">
     {
-      labs.map((lab) => (
-        <article>
+      tools.map((tool) => (
+        <a class="labs-tool" href={tool.href}>
           <>
-            <p class="alk-pill">{lab.kind}</p>
+            <span class="labs-kind">{tool.kind}</span>
             <h2>
-              <a href={lab.href}>
-                {lab.name} <span aria-hidden="true">↗</span>
-              </a>
+              {tool.name} <span aria-hidden="true">↗</span>
             </h2>
-            <p>{lab.description}</p>
+            <p>{tool.description}</p>
           </>
-        </article>
+        </a>
       ))
     }
   </div>
-  <p class="alk-note">Leave room for the next experiment.</p>
+  <p class="labs-components">
+    Looking for charts, models, or code examples? <a href="/test/"
+      >Open the test page →</a
+    >
+  </p>
+  <section class="labs-history" aria-labelledby="history-title">
+    <div>
+      <h2 id="history-title">Design notebook</h2><p>
+        The studies behind this site.
+      </p>
+    </div>
+    <details>
+      <summary
+        >Browse the design studies <span>{studies.length} studies</span
+        ></summary
+      ><ul>
+        {
+          studies.map((study) => (
+            <li>
+              <>
+                <a href={study.href}>
+                  {study.name} <span aria-hidden="true">↗</span>
+                </a>
+                <p>{study.description}</p>
+              </>
+            </li>
+          ))
+        }
+      </ul>
+    </details>
+  </section>
 </SiteLayout>
+
+<style>
+  .labs-heading {
+    margin-bottom: 2rem;
+  }
+  .labs-heading h1 {
+    margin-bottom: 0.65rem;
+  }
+  .labs-heading p {
+    margin: 0;
+  }
+  .labs-tools {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+  .labs-tool {
+    display: block;
+    padding: 1.4rem;
+    border: 1px solid var(--alk-rule);
+    border-radius: 4px;
+    text-decoration: none;
+  }
+  .labs-tool:hover {
+    border-color: var(--alk-muted);
+  }
+  .labs-kind {
+    color: var(--alk-ink-cobalt);
+    font: 0.72rem var(--alk-mono);
+  }
+  .labs-tool:nth-child(2) .labs-kind {
+    color: var(--alk-ink-teal);
+  }
+  .labs-tool h2 {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    font-size: 1.3rem;
+    margin: 0.9rem 0 0.7rem;
+  }
+  .labs-tool h2 span {
+    font: 1rem var(--alk-mono);
+  }
+  .labs-tool p {
+    color: var(--alk-muted);
+    font-size: 0.95rem;
+    margin: 0;
+    max-width: 44ch;
+  }
+  .labs-components {
+    color: var(--alk-muted);
+    font-size: 0.85rem;
+    margin: 1.3rem 0 0;
+  }
+  .labs-history {
+    border-top: 1px solid var(--alk-rule);
+    margin-top: 3rem;
+    padding-top: 1.7rem;
+    display: grid;
+    grid-template-columns: 0.65fr 1.35fr;
+    gap: 2rem;
+  }
+  .labs-history h2 {
+    font-size: 1.3rem;
+    margin: 0 0 0.4rem;
+  }
+  .labs-history p {
+    color: var(--alk-muted);
+    font-size: 0.9rem;
+    margin: 0;
+  }
+  details {
+    padding: 0;
+    border: 0;
+  }
+  summary {
+    cursor: pointer;
+    padding: 0.2rem 0;
+    font-size: 0.95rem;
+  }
+  summary span {
+    float: right;
+    color: var(--alk-muted);
+    font: 0.75rem/1.7 var(--alk-mono);
+  }
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 1.3rem 0 0;
+  }
+  li {
+    border-top: 1px solid var(--alk-rule);
+    padding: 0.8rem 0;
+    margin: 0;
+  }
+  li a {
+    font-weight: 500;
+    font-size: 0.95rem;
+    text-decoration: none;
+  }
+  li a:hover {
+    text-decoration: underline;
+  }
+  li p {
+    margin-top: 0.3rem;
+  }
+  @media (max-width: 650px) {
+    .labs-tools,
+    .labs-history {
+      grid-template-columns: 1fr;
+    }
+    .labs-history {
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    .labs-tool {
+      padding: 1.15rem;
+    }
+  }
+</style>

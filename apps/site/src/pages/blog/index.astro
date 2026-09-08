@@ -8,27 +8,87 @@ const notes = (await getCollection('blog')).sort(
     a.data.order - b.data.order ||
     a.id.localeCompare(b.id),
 );
+const dateLabel = (value: string) =>
+  new Intl.DateTimeFormat('en', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    timeZone: 'UTC',
+  }).format(new Date(`${value}T12:00:00Z`));
 ---
 
 <SiteLayout
   title="Blog"
-  section="Articles / News / Fieldnotes"
+  description="Build notes, experiments, and releases from Alkemist."
   preview={isPreview}
-  ><h1>Notes from the workbench.</h1><p class="alk-lead">
-    News, experiments, and the decisions behind Alkemist. Follow the work from
-    its first sketch to a working example.
-  </p><ul class="alk-index">
+>
+  <h1>Blog</h1><p class="alk-lead">Build notes, experiments, and releases.</p>
+  <ul class="blog-list">
     {
       notes.map((note) => (
         <li>
-          <>
-            <span class="alk-pill">{note.data.date}</span>
-            <br />
-            <a href={`/blog/${note.id}/`}>{note.data.title}</a>
-            <p>{note.data.description}</p>
-          </>
+          {note.data.date && (
+            <time datetime={note.data.date}>{dateLabel(note.data.date)}</time>
+          )}
+          <div>
+            <>
+              <h2>
+                <a href={`/blog/${note.id}/`}>{note.data.title}</a>
+              </h2>
+              <p>{note.data.description}</p>
+            </>
+          </div>
         </li>
       ))
     }
-  </ul></SiteLayout
->
+  </ul>
+</SiteLayout>
+
+<style>
+  h1 {
+    margin-bottom: 0.65rem;
+  }
+  .blog-list {
+    list-style: none;
+    padding: 0;
+    margin: 2rem 0 0;
+    max-width: 970px;
+  }
+  .blog-list li {
+    display: grid;
+    grid-template-columns: 120px minmax(0, 1fr);
+    gap: 1.7rem;
+    margin: 0;
+    padding: 1.25rem 0;
+    border-top: 1px solid var(--alk-rule);
+  }
+  time {
+    color: var(--alk-muted);
+    font: 0.75rem/1.7 var(--alk-mono);
+    padding-top: 0.12rem;
+  }
+  .blog-list h2 {
+    font-size: 1.16rem;
+    line-height: 1.4;
+    margin: 0;
+  }
+  .blog-list h2 a {
+    text-decoration: none;
+  }
+  .blog-list h2 a:hover {
+    text-decoration: underline;
+  }
+  .blog-list p {
+    color: var(--alk-muted);
+    font-size: 0.9rem;
+    margin: 0.4rem 0 0;
+    max-width: 64ch;
+  }
+  @media (max-width: 650px) {
+    .blog-list li {
+      grid-template-columns: 1fr;
+      gap: 0.4rem;
+      padding: 1.1rem 0;
+    }
+  }
+</style>

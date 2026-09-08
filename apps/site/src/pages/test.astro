@@ -7,6 +7,7 @@ import AlkShader from '@alkemist/ui/AlkShader.astro';
 import AlkModel from '@alkemist/ui/AlkModel.astro';
 import { ALK_INKS } from '@alkemist/ui/palette';
 import RichSpecimen from '../components/RichSpecimen.mdx';
+import ExampleSource from '../components/ExampleSource.astro';
 import { isPreview } from '../lib/deployment';
 import '../styles/test.css';
 
@@ -55,76 +56,67 @@ impl State {
     code: `// Isolines of two interfering waves.
 float field = sin(uv.x * frequency + phase)
             + cos(uv.y * frequency - phase);
-float contour = smoothstep(0.08, 0.0, abs(sin(field * 3.0)));
-vec3 ink = mix(cobalt, violet, 0.5 + 0.5 * field);
+float contour = 1.0 - smoothstep(0.0, 0.08, abs(sin(field * 3.0)));
+vec3 ink = mix(cobalt, violet, 0.5 + 0.25 * field);
 outColor = vec4(mix(board, ink, contour), 1.0);`,
   },
 ] as const;
 ---
 
-<SiteLayout
-  title="The specimen board"
-  section="A living style test / built with Alkemist"
-  preview={isPreview}
->
+<SiteLayout title="Test page" section="Test" preview={isPreview}>
   <div class="test-intro">
-    <div>
-      <h1>A place for every<br />kind of <span>idea.</span></h1>
-      <p class="alk-lead">
-        Equations, experiments, code, and the occasional happy accident. One
-        long board to see how everything feels.
-      </p>
-      <div class="test-intro-links">
-        <a href="#inks">Meet the eight inks ↓</a><a href="/docs/"
-          >Use these components ↗</a
-        >
-      </div>
+    <h1>Test page</h1>
+    <p class="alk-lead">
+      Models, charts, equations, code, and everyday interface elements. Try each
+      example, inspect its source, and switch boards to compare styles.
+    </p>
+    <div class="test-intro-links">
+      <a href="/docs/">Component documentation →</a>
     </div>
-    <aside class="alk-note test-intro-note">
-      Touch the model.<br />Follow a curve.<br />Leave a note. <span
-        aria-hidden="true">↘</span
-      >
-    </aside>
   </div>
+
+  <nav class="test-jump" aria-label="Specimen sections">
+    <a href="#space">3D</a><a href="#inks">Palette</a><a href="#math">Math</a>
+    <a href="#data">Charts</a><a href="#code">Code</a><a href="#art">Art</a>
+    <a href="#writing">Writing</a><a href="#controls">Forms</a>
+  </nav>
 
   <section
     id="space"
     class="test-space"
     aria-label="Interactive three-dimensional model"
   >
+    <h2 class="test-model-title">3D model</h2>
     <AlkModel
       src="/test/torus-knot.glb"
       poster="/test/torus-knot.svg"
-      title="An idea with another side"
+      title="Torus knot"
       description="A (2, 3) torus knot. Drag to orbit, scroll to zoom, or use the camera buttons. The shape is a real, downloadable GLB."
     />
-    <div class="test-model-foot">
-      <p class="alk-note">Same knot. A different point of view.</p><span
-        class="test-meta">Geometry · light · perspective</span
-      >
-    </div>
-    <AlkCode
-      code={'<AlkModel src="/models/knot.glb" title="A torus knot" />'}
-      lang="astro"
-      title="One line, three dimensions"
-      lineNumbers={false}
+    <ExampleSource
+      label="Model"
+      code={`---
+import AlkModel from '@alkemist/ui/AlkModel.astro';
+---
+
+<AlkModel
+  src="/test/torus-knot.glb"
+  poster="/test/torus-knot.svg"
+  title="Torus knot"
+  description="A (2, 3) torus knot. Drag to orbit or use the camera buttons."
+/>`}
+      reference="/docs/models/"
+      files={[
+        { href: '/test/torus-knot.glb', label: 'Download GLB' },
+        { href: '/test/torus-knot.svg', label: 'Download poster' },
+      ]}
     />
   </section>
-
-  <nav class="test-jump" aria-label="Specimen sections">
-    <a href="#inks">Inks</a><a href="#math">Math</a><a href="#data">Data</a><a
-      href="#code">Code</a
-    ><a href="#art">Art</a><a href="#writing">Writing</a><a href="#controls"
-      >Controls</a
-    >
-  </nav>
 
   <section id="inks" class="test-section">
     <div class="test-heading">
       <div>
-        <p class="test-meta">The marker tray</p><h2>
-          Eight inks. Two boards.<br />One palette.
-        </h2>
+        <h2>Palette</h2>
       </div><p>
         The exact same colors on <code>#eee</code> and <code>#111</code>. Switch
         the board in the header; the ink never changes.
@@ -172,23 +164,18 @@ outColor = vec4(mix(board, ink, contour), 1.0);`,
   <section id="math" class="test-section">
     <div class="test-heading">
       <div>
-        <p class="test-meta">Think in symbols</p><h2>
-          Give the idea<br />a precise form.
-        </h2>
+        <h2>Math</h2>
       </div><p>
-        Real typeset mathematics: fractions, matrices, aligned derivations, and
-        inline notation. Rendered into the page, ready to read.
+        Inline notation, display equations, matrices, and aligned derivations.
+        Math is typeset at build time.
       </p>
     </div>
     <div class="test-equation-hero">
-      <span class="alk-note">A whole world in one line.</span><AlkMath
-        tex={String.raw`e^{i\pi} + 1 = 0`}
-        label="Euler’s identity"
-      />
+      <AlkMath tex={String.raw`e^{i\pi} + 1 = 0`} label="Euler’s identity" />
     </div>
     <div class="test-duo">
       <div class="test-math-cell">
-        <h3>A signal, seen differently</h3><AlkMath
+        <h3>Fourier transform</h3><AlkMath
           tex={String.raw`\widehat{f}(\xi) = \int_{-\infty}^{\infty} f(x)\,e^{-2\pi i x\xi}\,dx`}
           label="The Fourier transform"
         /><p>
@@ -197,7 +184,7 @@ outColor = vec4(mix(board, ink, contour), 1.0);`,
         </p>
       </div>
       <div class="test-math-cell">
-        <h3>State becomes motion</h3><AlkMath
+        <h3>Damped oscillator</h3><AlkMath
           tex={String.raw`\frac{d}{dt}\begin{bmatrix}x\\v\end{bmatrix}=\begin{bmatrix}0&1\\-\omega^2&-2\zeta\omega\end{bmatrix}\begin{bmatrix}x\\v\end{bmatrix}`}
           label="A damped harmonic oscillator"
         /><p>
@@ -208,7 +195,9 @@ outColor = vec4(mix(board, ink, contour), 1.0);`,
     </div>
     <div class="test-proof">
       <div>
-        <span class="test-tag">Proposition</span><h3>Energy stays put.</h3><p>
+        <span class="test-tag">Proposition</span><h3>
+          Conservation of energy
+        </h3><p>
           For an undamped oscillator with unit mass, <AlkMath
             tex={String.raw`\ddot{x}=-\omega^2x`}
             display={false}
@@ -221,102 +210,246 @@ outColor = vec4(mix(board, ink, contour), 1.0);`,
         /><span class="test-qed" aria-label="End of proof">□</span>
       </div>
     </div>
+    <ExampleSource
+      label="Equation"
+      code={'---\nimport AlkMath from \'@alkemist/ui/AlkMath.astro\';\n---\n\n<AlkMath tex={String.raw`e^{i\\pi} + 1 = 0`} label="Euler’s identity" />'}
+      reference="/docs/math-code/"
+    />
   </section>
 
   <section id="data" class="test-section">
     <div class="test-heading">
       <div>
-        <p class="test-meta">Follow the evidence</p><h2>
-          A file becomes<br />something to explore.
-        </h2>
+        <h2>Charts</h2>
       </div><p>
         Hover for values. Zoom into a signal. Open the data table. Every chart
         below reads a local CSV, with grid lines on by default.
       </p>
     </div>
-    <AlkChart
-      src="/test/oscillation.csv"
-      type="line"
-      x="time"
-      y="position"
-      title="A signal finding its quiet"
-      description="Synthetic oscillator: ω₀ = 2 rad/s, ζ = 0.12; x(0) = 1 m, v(0) = 0."
-      xLabel="Time (s)"
-      yLabel="Position (m)"
-      height={340}
-      sample
-    />
-    <p class="alk-note test-chart-note">
-      Shift + scroll to look a little closer. ↗
-    </p>
-    <div class="test-duo">
-      <AlkChart
-        src="/test/materials.csv"
-        type="bar"
-        x="material"
-        y="value"
-        color="material"
-        title="What went into the prototype?"
-        description="Invented component counts, with a stable ink for each category."
-        xLabel="Component"
-        yLabel="Count"
-        height={280}
-        sample
-      />
-      <AlkChart
-        src="/test/materials.csv"
-        type="donut"
-        x="material"
-        y="value"
-        color="material"
-        title="The parts of a whole"
-        description="The same counts as shares. Labels and a table keep color from carrying the explanation alone."
-        yLabel="Count"
-        height={280}
-        sample
-      />
+    <div class="test-example">
       <AlkChart
         src="/test/oscillation.csv"
-        type="scatter"
-        x="position"
-        y="velocity"
-        title="A path through phase space"
-        description="The signal and its analytic derivative spiral toward rest."
-        xLabel="Position (m)"
-        yLabel="Velocity (m/s)"
-        ink="rose"
-        height={280}
+        type="line"
+        x="time"
+        y="position"
+        title="Damped oscillation"
+        description="Synthetic oscillator: ω₀ = 2 rad/s, ζ = 0.12; x(0) = 1 m, v(0) = 0."
+        xLabel="Time (s)"
+        yLabel="Position (m)"
+        height={340}
         sample
       />
-      <AlkChart
-        src="/test/field.csv"
-        type="heatmap"
-        x="x"
-        y="y"
-        value="value"
-        valueLabel="Field value"
-        title="A field, sampled"
-        description="625 synthetic samples of cos(1.4x) sin(1.4y) exp(−(x² + y²)/8). A continuous cobalt scale shows ordered values."
-        xLabel="x (dimensionless)"
-        yLabel="y (dimensionless)"
-        height={280}
-        sample
+      <ExampleSource
+        label="Line chart"
+        code={`---
+import AlkChart from '@alkemist/ui/AlkChart.astro';
+---
+
+<AlkChart
+  src="/test/oscillation.csv"
+  type="line"
+  x="time"
+  y="position"
+  title="Damped oscillation"
+  description="Synthetic oscillator: ω₀ = 2 rad/s, ζ = 0.12; x(0) = 1 m, v(0) = 0."
+  xLabel="Time (s)"
+  yLabel="Position (m)"
+  height={340}
+  sample
+/>`}
+        reference="/docs/charts/"
+        files={[{ href: '/test/oscillation.csv', label: 'Download CSV' }]}
       />
     </div>
+    <p class="alk-note test-chart-note">Shift + scroll to zoom. ↗</p>
     <div class="test-duo">
-      <AlkChart
-        src="/test/materials.csv"
-        type="pie"
-        x="material"
-        y="value"
-        color="material"
-        colorLabel="Component"
-        title="A full-circle comparison"
-        description="The same eight component counts as a pie, for comparing the pie and donut treatments."
-        yLabel="Count"
-        height={300}
-        sample
-      />
+      <div class="test-example">
+        <AlkChart
+          src="/test/materials.csv"
+          type="bar"
+          x="material"
+          y="value"
+          color="material"
+          title="Bar chart"
+          description="Invented component counts, with a stable ink for each category."
+          xLabel="Component"
+          yLabel="Count"
+          height={280}
+          sample
+        />
+        <ExampleSource
+          label="Bar chart"
+          code={`---
+import AlkChart from '@alkemist/ui/AlkChart.astro';
+---
+
+<AlkChart
+  src="/test/materials.csv"
+  type="bar"
+  x="material"
+  y="value"
+  color="material"
+  title="Bar chart"
+  description="Invented component counts, with a stable ink for each category."
+  xLabel="Component"
+  yLabel="Count"
+  height={280}
+  sample
+/>`}
+          reference="/docs/charts/"
+          files={[{ href: '/test/materials.csv', label: 'Download CSV' }]}
+        />
+      </div>
+      <div class="test-example">
+        <AlkChart
+          src="/test/materials.csv"
+          type="donut"
+          x="material"
+          y="value"
+          color="material"
+          title="Donut chart"
+          description="The same counts as shares. Labels and a table keep color from carrying the explanation alone."
+          yLabel="Count"
+          height={280}
+          sample
+        />
+        <ExampleSource
+          label="Donut chart"
+          code={`---
+import AlkChart from '@alkemist/ui/AlkChart.astro';
+---
+
+<AlkChart
+  src="/test/materials.csv"
+  type="donut"
+  x="material"
+  y="value"
+  color="material"
+  title="Donut chart"
+  description="The same counts as shares. Labels and a table keep color from carrying the explanation alone."
+  yLabel="Count"
+  height={280}
+  sample
+/>`}
+          reference="/docs/charts/"
+          files={[{ href: '/test/materials.csv', label: 'Download CSV' }]}
+        />
+      </div>
+      <div class="test-example">
+        <AlkChart
+          src="/test/oscillation.csv"
+          type="scatter"
+          x="position"
+          y="velocity"
+          title="Phase portrait"
+          description="The signal and its analytic derivative spiral toward rest."
+          xLabel="Position (m)"
+          yLabel="Velocity (m/s)"
+          ink="rose"
+          height={280}
+          sample
+        />
+        <ExampleSource
+          label="Scatter chart"
+          code={`---
+import AlkChart from '@alkemist/ui/AlkChart.astro';
+---
+
+<AlkChart
+  src="/test/oscillation.csv"
+  type="scatter"
+  x="position"
+  y="velocity"
+  title="Phase portrait"
+  description="The signal and its analytic derivative spiral toward rest."
+  xLabel="Position (m)"
+  yLabel="Velocity (m/s)"
+  ink="rose"
+  height={280}
+  sample
+/>`}
+          reference="/docs/charts/"
+          files={[{ href: '/test/oscillation.csv', label: 'Download CSV' }]}
+        />
+      </div>
+      <div class="test-example">
+        <AlkChart
+          src="/test/field.csv"
+          type="heatmap"
+          x="x"
+          y="y"
+          value="value"
+          valueLabel="Field value"
+          title="Heatmap"
+          description="625 synthetic samples of cos(1.4x) sin(1.4y) exp(−(x² + y²)/8). A continuous cobalt scale shows ordered values."
+          xLabel="x (dimensionless)"
+          yLabel="y (dimensionless)"
+          height={280}
+          sample
+        />
+        <ExampleSource
+          label="Heatmap chart"
+          code={`---
+import AlkChart from '@alkemist/ui/AlkChart.astro';
+---
+
+<AlkChart
+  src="/test/field.csv"
+  type="heatmap"
+  x="x"
+  y="y"
+  value="value"
+  valueLabel="Field value"
+  title="Heatmap"
+  description="625 synthetic samples of cos(1.4x) sin(1.4y) exp(−(x² + y²)/8). A continuous cobalt scale shows ordered values."
+  xLabel="x (dimensionless)"
+  yLabel="y (dimensionless)"
+  height={280}
+  sample
+/>`}
+          reference="/docs/charts/"
+          files={[{ href: '/test/field.csv', label: 'Download CSV' }]}
+        />
+      </div>
+    </div>
+    <div class="test-duo">
+      <div class="test-example">
+        <AlkChart
+          src="/test/materials.csv"
+          type="pie"
+          x="material"
+          y="value"
+          color="material"
+          colorLabel="Component"
+          title="Pie chart"
+          description="The same eight component counts as a pie, for comparing the pie and donut treatments."
+          yLabel="Count"
+          height={300}
+          sample
+        />
+        <ExampleSource
+          label="Pie chart"
+          code={`---
+import AlkChart from '@alkemist/ui/AlkChart.astro';
+---
+
+<AlkChart
+  src="/test/materials.csv"
+  type="pie"
+  x="material"
+  y="value"
+  color="material"
+  colorLabel="Component"
+  title="Pie chart"
+  description="The same eight component counts as a pie, for comparing the pie and donut treatments."
+  yLabel="Count"
+  height={300}
+  sample
+/>`}
+          reference="/docs/charts/"
+          files={[{ href: '/test/materials.csv', label: 'Download CSV' }]}
+        />
+      </div>
       <aside class="test-math-cell">
         <p class="alk-note">Choose the view that answers the question.</p><h3>
           Compare amounts. Compare shares.
@@ -329,23 +462,15 @@ outColor = vec4(mix(board, ink, contour), 1.0);`,
         </p><a href="/docs/charts/">Chart options and examples →</a>
       </aside>
     </div>
-    <AlkCode
-      code={'<AlkChart src="/data/run.csv" type="line" x="time" y="position"\n  title="Displacement" description="Position during the experiment."\n  xLabel="Time (s)" yLabel="Position (m)" />'}
-      lang="astro"
-      title="Data with context"
-    />
   </section>
 
   <section id="code" class="test-section">
     <div class="test-heading">
       <div>
-        <p class="test-meta">Make it reproducible</p><h2>
-          The explanation<br />and the executable.
-        </h2>
+        <h2>Code</h2>
       </div><p>
-        Ubuntu Mono, the same eight syntax inks, line numbers, highlighted
-        lines, and copy controls. A dark code surface keeps syntax legible on
-        either board.
+        Four languages in Ubuntu Mono, with line numbers, highlighted lines, and
+        a copy button. The code surface stays dark on both boards.
       </p>
     </div>
     <div class="test-code-tabs" data-code-tabs>
@@ -388,22 +513,43 @@ outColor = vec4(mix(board, ink, contour), 1.0);`,
       Use the arrow keys to move between languages. The full source copies
       without line numbers.
     </p>
+    <ExampleSource
+      label="Code component"
+      code={`---
+import AlkCode from '@alkemist/ui/AlkCode.astro';
+
+const code = \`${tabs[0].code}\`;
+---
+
+<AlkCode
+  code={code}
+  lang="typescript"
+  title="integrate.ts"
+  highlightLines={[4, 5]}
+/>`}
+      reference="/docs/math-code/"
+    />
   </section>
 
   <section id="art" class="test-section">
     <div class="test-heading">
       <div>
-        <p class="test-meta">Let curiosity wander</p><h2>
-          Between a diagram<br />and a daydream.
-        </h2>
+        <h2>Shaders, diagrams, and images</h2>
       </div><p>
-        Images, vector drawings, and interactive studies deserve the same care
-        as a theorem. This little drawing connects an idea to its many
-        representations.
+        A live interference shader, an accessible SVG diagram, and an image with
+        a caption and downloadable source.
       </p>
     </div>
-    <AlkShader title="Interference, in eight inks" frequency={9} angle={24} />
-    <p class="alk-note">Turn a wave. Find a pattern.</p>
+    <AlkShader title="Two-source interference" frequency={9} angle={24} />
+    <ExampleSource
+      label="Shader"
+      code={`---
+import AlkShader from '@alkemist/ui/AlkShader.astro';
+---
+
+<AlkShader title="Two-source interference" frequency={9} angle={24} />`}
+      reference="/docs/models/#a-live-shader-study"
+    />
     <figure
       class="test-diagram"
       tabindex="0"
@@ -487,11 +633,9 @@ outColor = vec4(mix(board, ink, contour), 1.0);`,
           the interactive viewer loads.
         </figcaption>
       </figure><div>
-        <p class="alk-note">A picture can be a way in.</p><h3>
-          Caption it. Explain it.<br />Keep the source close.
-        </h3><p>
-          A figure should stand on its own: a useful description, room to
-          breathe, and a route back to the source.
+        <h3>Image and caption</h3><p>
+          This SVG is the model viewer’s static poster. It remains available
+          before the 3D renderer loads.
         </p><a href="/test/torus-knot.glb" download
           >Download the actual model ↗</a
         >
@@ -502,9 +646,7 @@ outColor = vec4(mix(board, ink, contour), 1.0);`,
   <section id="writing" class="test-section">
     <div class="test-heading">
       <div>
-        <p class="test-meta">Leave a readable trail</p><h2>
-          Rich content.<br />Quiet typography.
-        </h2>
+        <h2>Writing</h2>
       </div><p>
         This section is authored in MDX. Tables, footnotes, task lists,
         quotations, inline math, and semantic HTML share the same theme.
@@ -542,12 +684,10 @@ outColor = vec4(mix(board, ink, contour), 1.0);`,
   <section id="controls" class="test-section">
     <div class="test-heading">
       <div>
-        <p class="test-meta">The small interactions</p><h2>
-          Useful things<br />at your fingertips.
-        </h2>
+        <h2>Forms and controls</h2>
       </div><p>
-        A small local experiment form: keyboard controls, checkboxes, a range,
-        validation, a dialog, and clear feedback. Try changing the specimen.
+        Inputs, a select menu, checkboxes, a range, validation, and a dialog.
+        Changes update the preview in this browser.
       </p>
     </div>
     <div class="test-duo">
@@ -625,7 +765,7 @@ outColor = vec4(mix(board, ink, contour), 1.0);`,
       </div>
     </div>
     <dialog id="specimen-dialog" aria-labelledby="dialog-title">
-      <h2 id="dialog-title">A tiny experiment.</h2><p>
+      <h2 id="dialog-title">Specimen details</h2><p>
         Dialogs have a title, a clear way out, and keyboard focus. Press <kbd
           >Esc</kbd
         > or close below.
@@ -634,12 +774,14 @@ outColor = vec4(mix(board, ink, contour), 1.0);`,
   </section>
 
   <div class="test-end">
-    <p class="alk-note">Keep a little room for the next idea.</p><h2>
-      That’s the board.<br />What will you put on it?
-    </h2><div class="test-intro-links">
-      <a href="/docs/">Explore the docs →</a><a
-        href="/blog/ink-and-instruments/">How this page was built →</a
-      ><a href="#main">Back to the top ↑</a>
+    <h2>Use an example</h2>
+    <p>
+      Open its source above, copy the snippet, and replace the demo content.
+    </p>
+    <div class="test-intro-links">
+      <a href="/docs/">Documentation →</a>
+      <a href="/blog/ink-and-instruments/">How this page was built →</a>
+      <a href="#main">Back to top ↑</a>
     </div>
   </div>
 </SiteLayout>
