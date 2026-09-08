@@ -2,7 +2,7 @@
 
 An Astro workbench for inventors and researchers. The demo website, documentation, and development notebook consume the same Alkemist theme packages.
 
-Production: https://alkemist.alkem.dev
+[Production](https://alkemist.alkem.dev) · [Interactive specimen board](https://alkemist.alkem.dev/test/)
 
 ## Develop
 
@@ -17,7 +17,7 @@ Use Node 24.20.0 (`.nvmrc`). Astro is pinned to 7.3.2; TypeScript 6.0.3 matches 
 ## Structure
 
 - `packages/astro`: shared Astro integration and MDX defaults.
-- `packages/ui`: `AlkLayout`, theme tokens, and local fonts.
+- `packages/ui`: shared layouts, math, code, charts, model/shader viewers, theme tokens, and local fonts.
 - `apps/site`: demo, docs, notebook, and site-owned routes/content.
 - `infra/cloudflare.json`: managed Cloudflare Pages/Git/domain configuration.
 - `docs/proposal.md`: full product scope and intended component contracts.
@@ -40,4 +40,8 @@ These require an externally supplied `CLOUDFLARE_API_TOKEN` with appropriate Pag
 
 ## Current scope
 
-The shared publishing theme and documentation foundation are implemented. Rich charts and scientific/3D widgets remain the next phase. Documented future syntax is labeled as proposed; there is no published `create-alkemist` or npm release yet.
+Ubuntu/Ubuntu Mono, handwritten annotations, #eee/#111 boards, and eight invariant inks are implemented. The reusable components cover KaTeX math, highlighted code, six CSV chart presets, uncompressed GLB/glTF, and a fixed interactive GLSL study. `/test/` exercises these beside rich MDX and ordinary controls.
+
+Splats, point clouds, robotics, compressed-asset pipelines, more statistical charts, and a general shader API remain future work. There is no published `create-alkemist` or npm release yet.
+
+Run `npm run generate:palette` to regenerate CSS/JSON from the shared palette and `npm run generate:fixtures` to regenerate the synthetic datasets and GLB.

@@ -140,7 +140,7 @@ MDX is trusted source code. Untrusted external data is parsed as data; code exam
 
 ## Example site and visual direction
 
-Recommended direction: **research notebook × instrument panel**. Legible editorial typography, a restrained green ink accent, monochrome UI labels, generous margins, and wide figures that can extend beyond the prose. Paper and Graphite themes share tokens; project/lab identity is customizable. Movement explains state changes and respects reduced motion.
+Accepted direction (September 8): **whiteboard / blackboard** on #eee and #111, Ubuntu and Ubuntu Mono, Caveat handwritten annotations, and eight fixed inks shared across surfaces. Graph grids are enabled by default. The implemented `/test/` specimen exercises math, code, data, 3D, shader art, and rich content; current API docs distinguish that working subset from the broader proposal below. Movement explains state changes and respects reduced motion.
 
 Site structure:
 
