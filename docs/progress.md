@@ -8,8 +8,9 @@
 - Added an illustrated notebook article and `docs/board-studies.md` with the design rationale, tokens, font choices, and implementation boundaries.
 - Browser checks verified all six combinations at a 390px viewport (375px content width), with matching scroll widths and exact requested background colors. Inspected all three desktop styles and mobile Seminar/Workshop/Drafting. A Drafting mobile brand wrap was identified and corrected.
 - Damping keyboard control reached 0.65, changed the SVG curve, and updated its accessible value. Notes toggled to hidden. The browser warning/error log was empty.
-- Captured three built-site screenshots for the notebook. The development toolbar is absent from these captures.
+- Captured three built-site viewport screenshots for the notebook. The development toolbar is absent. Full-page export added incorrect empty padding; recapturing the visible viewport corrected the artifacts, which were reopened and checked as JPEGs at 1265 × 712.
 - Local verification passed before publishing the branch preview. The preview URL and exact source revision are verified after the push; production remains the previously deployed main revision.
+- Cloudflare successfully deployed the first study commit `39d10cf` from a GitHub push to `design/board-studies`, with stable alias `https://design-board-studies.alkemist-8be.pages.dev`. A follow-up screenshot correction uses the same branch workflow.
 
 ## Current phase — deployment foundation
 
