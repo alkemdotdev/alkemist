@@ -1,0 +1,288 @@
+---
+import '@alkemist/ui/theme.css';
+import '@fontsource/ubuntu/400.css';
+import '@fontsource/ubuntu/500.css';
+import '@fontsource/ubuntu-mono/400.css';
+import '../../styles/design-studio.css';
+import DecisionGroup from '../../components/design/DecisionGroup.astro';
+import { suggestedDesign, designParams } from '../../lib/design-options';
+const initialPreview = new URLSearchParams(designParams(suggestedDesign));
+initialPreview.set('custom', '1');
+initialPreview.set('embedded', '1');
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta
+      name="description"
+      content="Choose Alkemist’s fonts, colors, spacing, and board details with a live interactive preview."
+    />
+    <title>Design studio · Alkemist</title>
+    <link rel="canonical" href={new URL('/design/studio/', Astro.site)} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body class="design-studio">
+    <a class="alk-skip" href="#decision-form">Skip to design choices</a>
+    <header class="design-header">
+      <a href="/" class="studio-brand">alkemist <span>/ design studio</span></a>
+      <div class="studio-intro">
+        <h1>Make the board yours.</h1><p>
+          18 choices. One notebook. See what feels right.
+        </p>
+      </div>
+      <div class="header-actions">
+        <button
+          type="button"
+          id="toggle-panel"
+          aria-expanded="true"
+          aria-controls="decisions">Preview only</button
+        ><button type="button" id="copy-link">Copy preview link</button>
+      </div>
+    </header>
+    <div class="design-workspace">
+      <aside
+        class="decision-panel"
+        id="decisions"
+        aria-label="Aesthetic choices"
+      >
+        <p class="panel-help">
+          Start with Ubuntu, then make it your own. Check a box to see the
+          change.
+        </p>
+        <form id="decision-form">
+          <details open>
+            <summary>Type & voice</summary>
+            <DecisionGroup group="type" choices={['font', 'heading']} />
+            <div class="font-proof" aria-label="Font specimen">
+              <p>Invent. Observe. Explain.</p><code
+                >const α = 0.18; // O0 Il1</code
+              ><small>Math keeps its own serif face in the figure.</small>
+            </div>
+          </details>
+          <details open>
+            <summary>Board & ink</summary><DecisionGroup
+              group="ink"
+              choices={['board', 'palette']}
+            />
+          </details>
+          <details>
+            <summary>Shape & spacing</summary><DecisionGroup
+              group="shape"
+              choices={['take']}
+            />
+          </details>
+        </form>
+        <div class="decision-actions">
+          <button type="button" id="reset-design"
+            >Reset suggested choices</button
+          ><button type="button" id="copy-choices">Copy choices</button><a
+            id="download-choices"
+            download="alkemist-design.json"
+            href="data:application/json,%7B%7D">Download choices</a
+          >
+        </div>
+        <p class="save-status" id="save-status" role="status">
+          Choose a detail to begin.
+        </p>
+        <details class="share-fallback">
+          <summary>Review / share your choices</summary><label
+            for="choice-summary">Selection summary and preview link</label
+          ><textarea id="choice-summary" readonly rows="14"></textarea><p>
+            Paste this into our conversation when you have a combination you
+            like.
+          </p>
+        </details>
+        <p class="export-status" id="export-status" role="status"></p>
+        <a class="panel-help" href="/notebook/design-choices/"
+          >Why Ubuntu? Read the design notes ↗</a
+        >
+      </aside>
+      <section class="live-preview" aria-label="Live design preview">
+        <div class="preview-toolbar">
+          <span class="preview-label" id="preview-label"
+            >Ubuntu / whiteboard</span
+          ><label for="preview-mode"
+            >Preview width <select id="preview-mode"
+              ><option value="native">Available space</option><option
+                value="mobile">Phone · 390px</option
+              ></select
+            ></label
+          ><a
+            id="open-design"
+            href={`/design/boards/?${designParams(suggestedDesign)}&custom=1`}
+            target="_blank"
+            rel="noopener">Open full size ↗</a
+          >
+        </div>
+        <div class="preview-stage" data-size="native">
+          <iframe
+            id="design-preview"
+            title="Alkemist notebook with your selected design"
+            src={`/design/boards/?${initialPreview}`}
+            loading="eager"></iframe>
+        </div>
+      </section>
+    </div>
+    <noscript
+      ><p>
+        The suggested design is visible. Enable JavaScript to change options and
+        save your choices.
+      </p></noscript
+    >
+    <script>
+      import {
+        designChoices,
+        designDetails,
+        suggestedDesign,
+        readDesignOptions,
+        designParams,
+        designSummary,
+      } from '../../lib/design-options';
+      const form = document.querySelector<HTMLFormElement>('#decision-form')!;
+      const frame =
+        document.querySelector<HTMLIFrameElement>('#design-preview')!;
+      const saveStatus = document.getElementById('save-status')!;
+      const exportStatus = document.getElementById('export-status')!;
+      const summary =
+        document.querySelector<HTMLTextAreaElement>('#choice-summary')!;
+      const storageKey = 'alkemist-design-v1';
+      const initialParams = new URLSearchParams(location.search);
+      const keys = [...designChoices, ...designDetails].map(
+        (option) => option.key,
+      );
+      let state = { ...suggestedDesign };
+      let storageAvailable = true;
+      if (keys.some((key) => initialParams.has(key)))
+        state = readDesignOptions(initialParams);
+      else {
+        try {
+          const saved = localStorage.getItem(storageKey);
+          if (saved) state = readDesignOptions(JSON.parse(saved));
+        } catch {
+          storageAvailable = false;
+        }
+      }
+      function apply() {
+        for (const choice of designChoices) {
+          form
+            .querySelectorAll<HTMLInputElement>(`input[name="${choice.key}"]`)
+            .forEach((input) => {
+              input.checked = input.value === state[choice.key];
+            });
+        }
+        for (const detail of designDetails)
+          form.querySelector<HTMLInputElement>(
+            `input[name="${detail.key}"]`,
+          )!.checked = state[detail.key];
+        const url = new URL(location.href);
+        url.search = designParams(state).toString();
+        history.replaceState(null, '', url);
+        try {
+          localStorage.setItem(storageKey, JSON.stringify(state));
+          storageAvailable = true;
+        } catch {
+          storageAvailable = false;
+        }
+        saveStatus.textContent = storageAvailable
+          ? 'Saved in this browser. Your link includes every choice.'
+          : 'Your link includes every choice. Browser storage is unavailable.';
+        document.body.dataset.font = state.font;
+        document.body.dataset.board = state.board;
+        document.getElementById('preview-label')!.textContent =
+          `${state.font === 'ubuntu' ? 'Ubuntu + Ubuntu Mono' : 'IBM Plex Sans + Mono'} / ${state.board}board`;
+        summary.value = designSummary(state) + '\n\nPreview: ' + url.href;
+        const fullSize = new URL('/design/boards/', location.origin);
+        fullSize.search = designParams(state).toString();
+        fullSize.searchParams.set('custom', '1');
+        document.querySelector<HTMLAnchorElement>('#open-design')!.href =
+          fullSize.href;
+        const exportJson = JSON.stringify(
+          { version: 1, options: state, previewUrl: url.href },
+          null,
+          2,
+        );
+        document.querySelector<HTMLAnchorElement>('#download-choices')!.href =
+          'data:application/json;charset=utf-8,' +
+          encodeURIComponent(exportJson);
+        frame.contentWindow?.postMessage(
+          { type: 'alkemist:design-update', options: state },
+          location.origin,
+        );
+      }
+      form.addEventListener('submit', (event) => event.preventDefault());
+      form.addEventListener('change', () => {
+        const input: Record<string, string | boolean> = Object.fromEntries(
+          new FormData(form).entries(),
+        ) as Record<string, string>;
+        for (const detail of designDetails)
+          input[detail.key] = form.querySelector<HTMLInputElement>(
+            `input[name="${detail.key}"]`,
+          )!.checked;
+        state = readDesignOptions(input);
+        apply();
+        exportStatus.textContent = '';
+        document.getElementById('copy-link')!.textContent = 'Copy preview link';
+        document.getElementById('copy-choices')!.textContent = 'Copy choices';
+      });
+      frame.addEventListener('load', () =>
+        frame.contentWindow?.postMessage(
+          { type: 'alkemist:design-update', options: state },
+          location.origin,
+        ),
+      );
+      document.getElementById('reset-design')!.addEventListener('click', () => {
+        state = { ...suggestedDesign };
+        apply();
+        exportStatus.textContent = 'Suggested choices restored.';
+      });
+      document
+        .getElementById('toggle-panel')!
+        .addEventListener('click', (event) => {
+          const button = event.currentTarget as HTMLButtonElement;
+          const hidden = document.body.classList.toggle('preview-only');
+          button.setAttribute('aria-expanded', String(!hidden));
+          button.textContent = hidden ? 'Show choices' : 'Preview only';
+        });
+      document
+        .querySelector<HTMLSelectElement>('#preview-mode')!
+        .addEventListener('change', (event) => {
+          document.querySelector<HTMLElement>('.preview-stage')!.dataset.size =
+            (event.currentTarget as HTMLSelectElement).value;
+        });
+      async function copy(text: string, success: string) {
+        try {
+          await navigator.clipboard.writeText(text);
+          exportStatus.textContent = success;
+          return true;
+        } catch {
+          document.querySelector<HTMLDetailsElement>('.share-fallback')!.open =
+            true;
+          summary.focus();
+          summary.select();
+          exportStatus.textContent =
+            'Copy is unavailable here. Your summary and link are selected for manual copying.';
+          return false;
+        }
+      }
+      document
+        .getElementById('copy-link')!
+        .addEventListener('click', async (event) => {
+          const button = event.currentTarget as HTMLButtonElement;
+          if (await copy(location.href, 'Preview link copied.'))
+            button.textContent = 'Link copied';
+        });
+      document
+        .getElementById('copy-choices')!
+        .addEventListener('click', async (event) => {
+          const button = event.currentTarget as HTMLButtonElement;
+          if (await copy(summary.value, 'Choices and preview link copied.'))
+            button.textContent = 'Choices copied';
+        });
+      apply();
+    </script>
+  </body>
+</html>

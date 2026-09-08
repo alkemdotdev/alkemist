@@ -1,0 +1,30 @@
+---
+title: Choose the character of the notebook
+description: Ubuntu, Ubuntu Mono, and an interactive set of aesthetic choices for Alkemist.
+date: '2026-09-08'
+order: 3
+---
+
+The next design question is typography: could Ubuntu and Ubuntu Mono give Alkemist a friendlier technical voice?
+
+Our recommendation is yes. Ubuntu's shapes give the headings and prose a recognizable character. Ubuntu Mono makes code, labels, and data feel like part of the same family. The trade-off is that this character is more noticeable than a quieter typeface such as IBM Plex.
+
+The [Ubuntu font documentation](https://design.ubuntu.com/font) describes the family and its monospaced companion. The study self-hosts both, with their packaged Ubuntu Font License. Mathematical notation keeps a separate serif face; a UI font should not determine how mathematical expressions are typeset.
+
+## Make the decision in context
+
+The [interactive design studio](/design/studio/) lets you make 18 choices against the same notebook. Font pairing, headline voice, board surface, accent palette, and layout are single-choice groups. Thirteen checkboxes control handwriting, annotations, chalk edges, the grid, borders, underlines, spacing, and other details.
+
+Every option affects the preview. A phone-width mode shows the layout at a narrow viewport. The full-size link opens the notebook with the same selections and without the controls panel.
+
+## A preference you can send back
+
+Choices are saved in the browser and represented in the URL. A shared URL takes precedence over a saved local preference, so two people reviewing the same link see the same combination. Unchecked options are stored explicitly.
+
+You can copy the preview link, copy a readable checklist, or download the choices as JSON. The JSON is a design record, not a published theme configuration API. If clipboard access is unavailable, the studio exposes a selectable summary for manual copying.
+
+## The implementation boundary
+
+The studio and notebook preview are separate documents. This lets the notebook respond to its actual available width. The studio sends validated choices to its own preview frame; the frame accepts updates only from its same-origin parent. The existing three board studies remain available as their original comparisons.
+
+The selected direction will eventually move into the shared theme package. These controls are a way to choose it first.

@@ -2,7 +2,13 @@
 import '@alkemist/ui/theme.css';
 import '@fontsource/caveat/400.css';
 import '@fontsource/caveat/600.css';
+import '@fontsource/ubuntu/400.css';
+import '@fontsource/ubuntu/400-italic.css';
+import '@fontsource/ubuntu/500.css';
+import '@fontsource/ubuntu-mono/400.css';
+import '@fontsource/ubuntu-mono/700.css';
 import '../../styles/board-studies.css';
+import '../../styles/board-options.css';
 import { boardSignal } from '../../lib/board-signal';
 const initialSignal = boardSignal(0.18);
 const canonical = new URL('/design/boards/', Astro.site);
@@ -282,6 +288,7 @@ const canonical = new URL('/design/boards/', Astro.site);
         <h2>Same content. Three points of view.</h2><p>
           Switch above to compare each direction on both boards.
         </p>
+        <a href="/design/studio/">Choose fonts and every detail ↗</a>
       </div>
       <article>
         <h3>Seminar</h3><p>
@@ -310,6 +317,10 @@ const canonical = new URL('/design/boards/', Astro.site);
     >
     <script>
       import { boardSignal } from '../../lib/board-signal';
+      import {
+        readDesignOptions,
+        designParams,
+      } from '../../lib/design-options';
       const root = document.documentElement;
       const descriptions: Record<string, string> = {
         seminar:
@@ -350,12 +361,52 @@ const canonical = new URL('/design/boards/', Astro.site);
         history.replaceState(null, '', url);
       }
       const params = new URLSearchParams(location.search);
+      const embedded = params.get('embedded') === '1';
+      root.dataset.embedded = String(embedded);
       setStudy(
         Object.hasOwn(descriptions, params.get('take') ?? '')
           ? params.get('take')!
           : 'seminar',
         params.get('board') === 'white' ? 'white' : 'black',
       );
+      function setCustomDesign(input: unknown) {
+        const options = readDesignOptions(input);
+        root.dataset.custom = 'true';
+        for (const [key, value] of Object.entries(options))
+          root.dataset[key] = String(value);
+        root.classList.remove('notes-hidden');
+        document
+          .getElementById('annotation-toggle')!
+          .setAttribute('aria-pressed', String(options.notes));
+        document.querySelector('#annotation-toggle span')!.textContent =
+          options.notes ? '✓' : '+';
+        setStudy(options.take, options.board);
+        const url = new URL(location.href);
+        url.search = designParams(options).toString();
+        url.searchParams.set('custom', '1');
+        if (embedded) url.searchParams.set('embedded', '1');
+        history.replaceState(null, '', url);
+      }
+      if (params.get('custom') === '1') setCustomDesign(params);
+      if (embedded) {
+        document
+          .querySelectorAll<HTMLAnchorElement>('a[href]')
+          .forEach((link) => {
+            if (!link.getAttribute('href')!.startsWith('#')) {
+              link.target = '_blank';
+              link.rel = 'noopener';
+            }
+          });
+        window.addEventListener('message', (event) => {
+          if (
+            event.origin !== location.origin ||
+            event.source !== window.parent
+          )
+            return;
+          if (event.data?.type === 'alkemist:design-update')
+            setCustomDesign(event.data.options);
+        });
+      }
       document
         .querySelectorAll<HTMLButtonElement>('[data-take-choice]')
         .forEach((button) =>
@@ -392,6 +443,13 @@ const canonical = new URL('/design/boards/', Astro.site);
         .addEventListener('click', (event) => {
           const button = event.currentTarget as HTMLButtonElement;
           const show = button.getAttribute('aria-pressed') !== 'true';
+          if (root.dataset.custom === 'true') {
+            const options = readDesignOptions(
+              new URLSearchParams(location.search),
+            );
+            setCustomDesign({ ...options, notes: show });
+            return;
+          }
           button.setAttribute('aria-pressed', String(show));
           button.querySelector('span')!.textContent = show ? '✓' : '+';
           root.classList.toggle('notes-hidden', !show);

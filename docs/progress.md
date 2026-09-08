@@ -1,5 +1,15 @@
 # Alkemist progress
 
+## 2026-09-08 — Ubuntu and aesthetic decision studio
+
+- Added `/design/studio/` on the existing design preview branch, with Ubuntu + Ubuntu Mono as the suggested pairing and IBM Plex as an actual font comparison.
+- Added five radio groups and thirteen native checkboxes. Every checkbox was exercised in the browser and changed its intended computed style: fonts/weight, annotations, underline, filter, grid, border, corners, tray, symbol, dividers, spacing, and code gutter.
+- Choices update a same-origin notebook frame without resetting the experiment. Both the parent-window identity and origin are checked; URL/storage/message values pass a shared allowlist.
+- Verified a customized blackboard with monospaced headings and disabled handwriting/underline survives a reload. A bare studio URL restores saved preferences; an explicit shared URL overrides a different saved choice. Added two contract tests for false-value round trips and invalid/inherited input handling.
+- The narrow preview had matching scroll/content widths. Inspected the controls themselves at 390px, with 375px content width and no horizontal overflow. The phone preview and full-size view preserve the selected design.
+- Copy-link reports browser clipboard success; the automation clipboard reader returned empty, so exact clipboard contents are not independently established. A selectable readable checklist remains available, alongside a JSON download containing the same state and URL.
+- Added design rationale to `docs/board-studies.md` and a public notebook article. Final build, export, and deployed-source checks are performed before handoff.
+
 ## 2026-09-08 — Blackboard / whiteboard studies
 
 - Created the `design/board-studies` branch for three reviewable directions: Seminar, Workshop, and Drafting. Each offers exact `#111111` and `#eeeeee` backgrounds.

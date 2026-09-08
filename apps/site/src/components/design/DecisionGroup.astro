@@ -1,0 +1,63 @@
+---
+import {
+  designChoices,
+  designDetails,
+  suggestedDesign,
+} from '../../lib/design-options';
+interface Props {
+  group: 'type' | 'ink' | 'shape';
+  choices: string[];
+}
+const { group, choices } = Astro.props;
+---
+
+{
+  designChoices
+    .filter((choice) => choices.includes(choice.key))
+    .map((choice) => (
+      <fieldset>
+        <legend>{choice.label}</legend>
+        <div
+          class:list={[
+            'choice-list',
+            { 'surface-options': choice.key === 'board' },
+          ]}
+        >
+          {choice.options.map((option) => (
+            <label class="radio-card">
+              <input
+                type="radio"
+                name={choice.key}
+                value={option.value}
+                checked={suggestedDesign[choice.key] === option.value}
+              />
+              <span class="choice-copy">
+                <strong>{option.label}</strong>
+                <small>{option.hint}</small>
+              </span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
+    ))
+}
+<fieldset>
+  <legend>Details</legend>
+  <div class="choice-list">
+    {
+      designDetails
+        .filter((detail) => detail.group === group)
+        .map((detail) => (
+          <label class="check-row">
+            <input type="checkbox" name={detail.key} checked={detail.initial} />
+            <span class="choice-copy">
+              <>
+                <strong>{detail.label}</strong>
+                <small>{detail.hint}</small>
+              </>
+            </span>
+          </label>
+        ))
+    }
+  </div>
+</fieldset>
