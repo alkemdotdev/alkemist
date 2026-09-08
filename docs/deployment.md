@@ -37,7 +37,21 @@ An operator supplies `CLOUDFLARE_API_TOKEN` via their environment. Credentials a
 - Pages project `alkemist` was created and its managed settings passed an exact readback check on September 8, 2026.
 - Cloudflare assigned `alkemist-8be.pages.dev` as the project hostname.
 - `alkemist.alkem.dev` is associated with that Pages project and has a proxied CNAME to the assigned hostname.
-- Domain validation/certificate issuance and the first push-triggered deployments are being verified. Configuration readback alone is not deployment proof.
+- Domain verification, HTTP validation, and certificate status are active.
+- Production commit `8049a95797badcf3cca3159b9abfc3a8db4c2180` deployed through a `github:push` event as deployment `463b9ed1-9720-4984-b665-0b7238fff503`.
+- The first preview deployed the same source from `preview/deployment-check` as `7763a3f6-92ef-486f-a896-964b31f93609`.
+- Stable preview alias: https://preview-deployment-check.alkemist-8be.pages.dev
+- HTTPS checks passed for production, the immutable preview, and the stable preview: exact commit/branch/environment, home/docs/charts/components/notebook content, security headers, robots behavior, and a true 404. Preview responses supplied both Cloudflare's `X-Robots-Tag: noindex` and the site's no-index metadata/banner.
+- The second `github:push` preview deployed `5f5e2b9fef610589c8e6a9c57ad459845eb20b6e` as `26e6b87e-9adc-4e95-894d-fec847840881`. At 17:21 UTC the stable alias served that newer revision while production still served `8049a95`; both passed the HTTPS verifier. This establishes automatic branch updates and separation from production.
+
+Repeat the live check using the exact expected source revision and branch:
+
+```sh
+node scripts/check-deployment.mjs https://alkemist.alkem.dev <full-main-commit> main
+node scripts/check-deployment.mjs https://preview-deployment-check.alkemist-8be.pages.dev <full-preview-commit> preview/deployment-check
+```
+
+Reports are saved to the ignored `.alkemist/deployments/` directory. The final publishing commit can be read from `/build.json`; the evidence above records the initial deployment checks, not an assertion that production will remain at that revision.
 
 ## Sources
 

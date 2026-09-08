@@ -12,7 +12,12 @@ The user authorized a public Cloudflare site at `alkemist.alkem.dev`, automatic 
 - Production and preview-mode local builds pass; desktop/mobile browser checks confirmed docs navigation, theme persistence, and no page overflow.
 - Initial source commit `e587eef` was pushed to main, with local/remote parity verified.
 - Created the `alkemist` Cloudflare Pages project. Source repository identity, build settings, main production, all-branch previews, and disabled PR comments passed remote readback.
-- Associated `alkemist.alkem.dev` and created its proxied CNAME to `alkemist-8be.pages.dev`. Domain validation and push-triggered deployment checks are in progress.
+- Associated `alkemist.alkem.dev` and created its proxied CNAME to `alkemist-8be.pages.dev`. The domain and certificate are active.
+- `github:push` deployed main commit `8049a95` successfully. HTTPS verification passed for home, docs, chart docs, components, notebook, headers, robots, source identity, and 404 behavior. The published homepage was visually inspected in the browser.
+- The first preview deployment of `8049a95` passed the same checks at its immutable URL and stable branch alias, with preview identity/banner and no-index behavior verified.
+- GitHub Actions passed for the initial main and preview pushes. A separate read-only deployment review found no actionable issues.
+- A second preview push (`5f5e2b9`) adds the reusable HTTPS verifier. Cloudflare deployed it automatically and the same branch alias advanced to that revision while production stayed at `8049a95`. Both passed HTTPS checks at 17:21 UTC; the preview's GitHub Actions run passed.
+- Hosting/preview foundation is complete. A final documentation publication records this evidence; its exact deployed revision is checked through `/build.json` after the push. Full interactive components remain the next phase.
 
 ## 2026-09-08 — Research and proposal
 

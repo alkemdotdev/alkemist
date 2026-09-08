@@ -28,3 +28,11 @@ A good charting interface needs more than line charts. The intended `AlkChart` v
 This post is MDX, rendered inside `AlkLayout` with the same theme used by the handbook and homepage. As features land, development articles will include actual demos, diagrams, annotated screenshots, data files, and validation evidence.
 
 The immediate next experiment is one complete article with a real CSV chart and GLB viewer. That will test whether the proposed one-line authoring interface works beyond the sketch.
+
+## What the first deployment established
+
+The foundation passed Astro checks with no diagnostics, deployment-contract tests, and an audit of twelve built pages and their internal links. Desktop and mobile browser checks exercised documentation navigation and theme selection.
+
+Cloudflare built the site automatically from a main-branch push and served it at the custom domain over HTTPS. Two pushes to a preview branch produced separate deployments; the same preview alias advanced to the second commit while production stayed unchanged. We verified the exact source revisions through the build manifest and checked preview indexing controls and real 404 responses.
+
+These checks establish the publishing and deployment loop. They do not yet establish real chart loading, model rendering, or standalone package upgrades. The [hosting guide](/docs/deployment/) documents the reproducible checks.

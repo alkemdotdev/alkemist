@@ -29,6 +29,14 @@ The build runs at the repository root and serves `apps/site/dist`. Node is pinne
 
 ## Managed configuration
 
+The initial production deployment and two successive pushes to `preview/deployment-check` were verified on September 8, 2026. The [stable preview](https://preview-deployment-check.alkemist-8be.pages.dev) advanced to its second source revision while production stayed unchanged. HTTPS checks covered the deployed commit, branch/environment, documentation routes, preview no-index behavior, headers, and 404 responses.
+
+Run the same live checks with an expected full commit and branch:
+
+```sh
+node scripts/check-deployment.mjs https://alkemist.alkem.dev <full-commit> main
+```
+
 The deployment settings are recorded in `infra/cloudflare.json`. `npm run cloudflare:status` reads the remote state. `npm run cloudflare:setup` reconciles the expected Pages project and domain using an operator-provided Cloudflare token; it checks repository identity and refuses to replace an unrelated DNS record.
 
 Cloudflare [documents GitHub integration](https://developers.cloudflare.com/pages/configuration/git-integration/github-integration/) and [preview deployment behavior](https://developers.cloudflare.com/pages/configuration/preview-deployments/).
