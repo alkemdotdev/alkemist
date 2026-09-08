@@ -2,6 +2,30 @@ import type { BufferGeometry, Material } from 'three';
 import { ALK_INKS } from '@alkemist/ui/palette';
 
 export const SCULPTURE_INKS = ALK_INKS.map(({ hex }) => hex);
+export const COMPANION_CENTER = [-2.6, 1.3, 0.6] as const;
+const companionRadius = 0.27;
+export const COMPANION_VERTICES: [number, number, number][] = [
+  [companionRadius, 0, 0],
+  [-companionRadius, 0, 0],
+  [0, companionRadius, 0],
+  [0, -companionRadius, 0],
+  [0, 0, companionRadius],
+  [0, 0, -companionRadius],
+];
+export const COMPANION_EDGES = [
+  [0, 2],
+  [0, 3],
+  [0, 4],
+  [0, 5],
+  [1, 2],
+  [1, 3],
+  [1, 4],
+  [1, 5],
+  [2, 4],
+  [2, 5],
+  [3, 4],
+  [3, 5],
+];
 
 /** A three-half-twist ribbon. Reversing v joins its ends at u = 2π. */
 export function ribbonPoint(u: number, v: number): [number, number, number] {
@@ -62,17 +86,21 @@ async function mountSculpture(
   controls.enablePan = false;
   controls.enableDamping = false;
   controls.enableZoom = false;
-  controls.autoRotateSpeed = 0.65;
+  controls.autoRotateSpeed = 0.2;
   controls.minPolarAngle = 0.12;
   controls.maxPolarAngle = Math.PI - 0.12;
   const group = new THREE.Group();
   group.rotation.set(-0.32, 0.25, -0.26);
   scene.add(group);
+  const companion = new THREE.Group();
+  companion.position.set(...COMPANION_CENTER);
+  scene.add(companion);
   const geometries: BufferGeometry[] = [];
   const materials: Material[] = [];
   const events = new AbortController();
   let frame = 0;
   let previousTime = 0;
+  let motionTime = 0;
   let visible = false;
   let disposed = false;
   let resizeObserver: ResizeObserver | undefined;
@@ -88,10 +116,29 @@ async function mountSculpture(
   const render = (time: number) => {
     frame = 0;
     if (disposed || !visible || document.hidden) return;
-    if (controls.autoRotate)
-      controls.update(
-        previousTime ? Math.min((time - previousTime) / 1000, 0.04) : 0,
+    // Slow ambient motion needs only 30 painted frames per second. Manual input stays responsive.
+    if (
+      controls.autoRotate &&
+      previousTime &&
+      time - previousTime < 1000 / 30
+    ) {
+      requestRender();
+      return;
+    }
+    if (controls.autoRotate) {
+      const delta = previousTime
+        ? Math.min((time - previousTime) / 1000, 0.1)
+        : 0;
+      motionTime += delta;
+      controls.update(delta);
+      companion.rotation.set(
+        0.3 + motionTime * 0.025,
+        0.2 + motionTime * 0.04,
+        -0.15,
       );
+      companion.position.y =
+        COMPANION_CENTER[1] + Math.sin(motionTime * 0.22) * 0.055;
+    }
     previousTime = time;
     renderer.render(scene, camera);
     if (controls.autoRotate) requestRender();
@@ -112,6 +159,25 @@ async function mountSculpture(
   };
   signal.addEventListener('abort', dispose, { once: true });
   try {
+    const companionGeometry = new THREE.BufferGeometry();
+    companionGeometry.setAttribute(
+      'position',
+      new THREE.Float32BufferAttribute(
+        COMPANION_EDGES.flatMap((edge) =>
+          edge.flatMap((index) => COMPANION_VERTICES[index]!),
+        ),
+        3,
+      ),
+    );
+    const companionMaterial = new THREE.LineBasicMaterial({
+      color: SCULPTURE_INKS[1],
+      transparent: true,
+      opacity: 0.65,
+    });
+    geometries.push(companionGeometry);
+    materials.push(companionMaterial);
+    companion.add(new THREE.LineSegments(companionGeometry, companionMaterial));
+    companion.rotation.set(0.3, 0.2, -0.15);
     const strips = 48;
     const segments = 256;
     for (let strip = 0; strip < strips; strip++) {
@@ -158,7 +224,7 @@ async function mountSculpture(
         halfAngle,
         Math.atan(Math.tan(halfAngle) * camera.aspect),
       );
-      const distance = 2.8 / Math.sin(fitAngle);
+      const distance = 3.3 / Math.sin(fitAngle);
       camera.position.copy(
         new THREE.Vector3(0.5, -0.8, 1.5).normalize().multiplyScalar(distance),
       );
@@ -168,9 +234,12 @@ async function mountSculpture(
     };
     const updateMotion = (playing: boolean) => {
       controls.autoRotate = playing;
+      host.dataset.motionPreference = playing ? 'playing' : 'paused';
       play.textContent = playing ? 'Pause motion' : 'Set in motion';
       play.setAttribute('aria-pressed', String(playing));
-      status.textContent = playing ? 'Slow orbit is on.' : 'Motion is paused.';
+      status.textContent = playing
+        ? 'Slow orbit and gentle companion drift are on.'
+        : 'Motion is paused.';
       previousTime = 0;
       requestRender();
     };
@@ -198,6 +267,7 @@ async function mountSculpture(
       (event) => {
         if (event.key === 'Home') {
           event.preventDefault();
+          updateMotion(false);
           home();
           return;
         }
@@ -265,7 +335,9 @@ async function mountSculpture(
     resize();
     play.disabled = false;
     reset.disabled = false;
-    updateMotion(false);
+    updateMotion(
+      !reducedMotion.matches && host.dataset.motionPreference !== 'paused',
+    );
     return {
       dispose,
       setVisible(value) {
@@ -358,6 +430,11 @@ function registerSculpture() {
         'false',
       );
       this.querySelector('.sculpture-status')!.textContent = message;
+      const play = this.querySelector<HTMLButtonElement>(
+        '[data-sculpture-play]',
+      )!;
+      play.textContent = 'Set in motion';
+      play.setAttribute('aria-pressed', 'false');
       this.querySelectorAll<HTMLButtonElement>('button').forEach(
         (button) => (button.disabled = true),
       );
@@ -376,6 +453,11 @@ function registerSculpture() {
       );
       this.querySelector('.sculpture-status')!.textContent =
         'Interactive sculpture loads when visible.';
+      const play = this.querySelector<HTMLButtonElement>(
+        '[data-sculpture-play]',
+      )!;
+      play.textContent = 'Set in motion';
+      play.setAttribute('aria-pressed', 'false');
       this.querySelectorAll<HTMLButtonElement>('button').forEach(
         (button) => (button.disabled = true),
       );

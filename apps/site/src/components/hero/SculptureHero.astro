@@ -1,6 +1,13 @@
 ---
 import './sculpture.css';
-import { ribbonInk, ribbonPoint } from './sculpture';
+import {
+  ribbonInk,
+  ribbonPoint,
+  COMPANION_CENTER,
+  COMPANION_EDGES,
+  COMPANION_VERTICES,
+  SCULPTURE_INKS,
+} from './sculpture';
 
 // The no-WebGL view is a sampled projection of the live sculpture's surface.
 const project = ([x, y, z]: [number, number, number]) => {
@@ -34,7 +41,7 @@ const strips = Array.from({ length: 48 }, (_, index) => {
       class="sculpture-poster"
       viewBox="0 0 800 550"
       role="img"
-      aria-label="A folded mathematical ribbon with an open center, drawn in eight colored inks."
+      aria-label="A folded mathematical ribbon drawn in eight colored inks, beside a small wireframe octahedron."
     >
       {
         strips.map(({ points, ink }) => (
@@ -47,11 +54,30 @@ const strips = Array.from({ length: 48 }, (_, index) => {
           />
         ))
       }
+      <g
+        fill="none"
+        stroke={SCULPTURE_INKS[1]}
+        stroke-width="1.5"
+        opacity="0.65"
+      >
+        {
+          COMPANION_EDGES.map((edge) => {
+            const [a, b] = edge.map((index) =>
+              project(
+                COMPANION_VERTICES[index]!.map(
+                  (value, axis) => value + COMPANION_CENTER[axis]!,
+                ) as [number, number, number],
+              ),
+            );
+            return <line x1={a![0]} y1={a![1]} x2={b![0]} y2={b![1]} />;
+          })
+        }
+      </g>
     </svg>
     <canvas
       tabindex="0"
       role="img"
-      aria-label="Interactive folded ribbon sculpture. Drag or use the arrow keys to turn it. Press Home to reset the view."
+      aria-label="A slowly turning folded ribbon and a small drifting wireframe octahedron. Pause motion below, or drag or use the arrow keys to take control. Press Home to reset the view."
     ></canvas>
     <span class="sculpture-note" data-hero-note aria-hidden="true"
       >a little room<br />for curiosity</span
