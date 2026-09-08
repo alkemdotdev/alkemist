@@ -1,0 +1,401 @@
+---
+import '@alkemist/ui/theme.css';
+import '@fontsource/caveat/400.css';
+import '@fontsource/caveat/600.css';
+import '../../styles/board-studies.css';
+import { boardSignal } from '../../lib/board-signal';
+const initialSignal = boardSignal(0.18);
+const canonical = new URL('/design/boards/', Astro.site);
+---
+
+<!doctype html>
+<html lang="en" data-take="seminar" data-board="black">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta
+      name="description"
+      content="Three Alkemist design studies: Seminar, Workshop, and Drafting, in blackboard and whiteboard."
+    />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>Board studies · Alkemist</title>
+  </head>
+  <body class="board-studio">
+    <a class="study-skip" href="#main">Skip to the study</a>
+    <div class="studio-bar">
+      <a class="studio-home" href="/"
+        >a<span>lk</span><span class="studio-word"> / design studies</span></a
+      >
+      <div class="take-picker" role="group" aria-label="Design direction">
+        <button type="button" data-take-choice="seminar" aria-pressed="true"
+          >Seminar</button
+        >
+        <button type="button" data-take-choice="workshop" aria-pressed="false"
+          >Workshop</button
+        >
+        <button type="button" data-take-choice="drafting" aria-pressed="false"
+          >Drafting</button
+        >
+      </div>
+      <div class="surface-picker" role="group" aria-label="Board surface">
+        <button type="button" data-board-choice="black" aria-pressed="true"
+          ><span class="surface-dot black-dot"></span>Blackboard</button
+        >
+        <button type="button" data-board-choice="white" aria-pressed="false"
+          ><span class="surface-dot white-dot"></span>Whiteboard</button
+        >
+      </div>
+    </div>
+    <div class="study-description" aria-live="polite">
+      <span id="study-name">Seminar</span><span id="study-description"
+        >A quiet lecture hall. Serif type, chalk diagrams, room for a proof.</span
+      >
+      <span class="board-hex" id="board-hex">#111111</span>
+    </div>
+    <div class="study-page">
+      <header class="board-header">
+        <a class="board-brand" href="/"
+          >alkemist<span class="brand-star" aria-hidden="true">✳</span></a
+        >
+        <span class="brand-caption"
+          >An open notebook<br />for inventors & researchers</span
+        >
+        <nav aria-label="Study navigation">
+          <a href="/notebook/">Notebook</a><a href="/components/">Experiments</a
+          ><a href="/docs/">Docs <span aria-hidden="true">↗</span></a>
+        </nav>
+      </header>
+      <main id="main">
+        <div class="board-opening">
+          <section class="board-intro">
+            <p class="board-kicker">
+              <span class="chalk-dot"></span> A work in the open
+            </p>
+            <h1>
+              Thinking,<br /><span class="title-last"
+                >made <em>visible.</em><svg
+                  class="marker-underline"
+                  viewBox="0 0 400 22"
+                  aria-hidden="true"
+                  ><path d="M5 13 Q165 -1 390 8 M38 18 Q227 7 360 15"
+                  ></path></svg
+                ></span
+              >
+            </h1>
+            <p class="board-deck">
+              A home for the question, the experiment,<br
+                class="desktop-break"
+              /> and everything you discover along the way.
+            </p>
+            <a class="board-cta" href="/notebook/"
+              >Open the notebook <span aria-hidden="true">↗</span></a
+            >
+            <span class="intro-note">Leave the working in.</span>
+          </section>
+          <figure class="signal-figure">
+            <div class="figure-topline">
+              <span>Experiment / damped oscillator</span><span class="live-dot"
+                >Interactive study</span
+              >
+            </div>
+            <div class="signal-drawing">
+              <svg
+                id="signal-svg"
+                viewBox="0 0 600 350"
+                role="img"
+                aria-labelledby="signal-title signal-desc"
+              >
+                <title id="signal-title">Damped oscillation</title><desc
+                  id="signal-desc"
+                  >A synthetic curve of exponential decay times a cosine. Adjust
+                  damping using the slider beneath the graph.</desc
+                >
+                <defs>
+                  <pattern
+                    id="signal-grid"
+                    width="32"
+                    height="32"
+                    patternUnits="userSpaceOnUse"
+                    ><path
+                      d="M32 0H0V32"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width=".6"></path></pattern
+                  >
+                  <filter
+                    id="chalk-edge"
+                    x="-5%"
+                    y="-5%"
+                    width="110%"
+                    height="110%"
+                    ><feTurbulence
+                      type="fractalNoise"
+                      baseFrequency=".13"
+                      numOctaves="2"
+                      seed="8"
+                      result="noise"></feTurbulence><feDisplacementMap
+                      in="SourceGraphic"
+                      in2="noise"
+                      scale="1.4"
+                      xChannelSelector="R"
+                      yChannelSelector="G"></feDisplacementMap></filter
+                  >
+                </defs>
+                <rect
+                  class="plot-grid"
+                  x="45"
+                  y="57"
+                  width="510"
+                  height="244"
+                  fill="url(#signal-grid)"></rect>
+                <g class="plot-axes" fill="none"
+                  ><path d="M45 63V291M36 179H560M551 175L560 179L551 183"
+                  ></path><path
+                    class="plot-ticks"
+                    d="M145 174V184M245 174V184M345 174V184M445 174V184M545 174V184"
+                  ></path></g
+                >
+                <g class="plot-labels"
+                  ><text x="17" y="72">1</text><text x="20" y="183">0</text
+                  ><text x="9" y="284">−1</text><text x="43" y="317">0</text
+                  ><text x="240" y="317">4</text><text x="440" y="317">8</text
+                  ><text x="520" y="317">t (s)</text></g
+                >
+                <g class="envelopes" fill="none"
+                  ><path id="upper-envelope" d={initialSignal.upper}
+                  ></path><path id="lower-envelope" d={initialSignal.lower}
+                  ></path></g
+                >
+                <path
+                  id="signal-curve"
+                  class="signal-curve"
+                  fill="none"
+                  d={initialSignal.curve}></path>
+                <g class="figure-notes">
+                  <text
+                    class="figure-note note-yellow"
+                    x="266"
+                    y="70"
+                    transform="rotate(-5 266 70)"
+                    >a little friction changes everything</text
+                  >
+                  <path
+                    class="note-arrow"
+                    d="M389 77Q417 105 395 120M394 110L395 122L407 119"
+                    fill="none"></path>
+                  <text
+                    class="figure-note note-pink"
+                    x="351"
+                    y="268"
+                    transform="rotate(3 351 268)">try the damping ↓</text
+                  >
+                  <ellipse
+                    class="note-ring"
+                    cx="98"
+                    cy="127"
+                    rx="34"
+                    ry="60"
+                    transform="rotate(-19 98 127)"
+                    fill="none"></ellipse>
+                </g>
+              </svg>
+            </div>
+            <div class="figure-controls">
+              <label for="damping"
+                >Damping <span class="math-symbol">α</span></label
+              ><input
+                id="damping"
+                type="range"
+                min="0"
+                max="0.65"
+                step="0.01"
+                value="0.18"
+              /><output id="damping-value" for="damping">0.18</output><button
+                id="annotation-toggle"
+                type="button"
+                aria-pressed="true"
+                >Notes <span aria-hidden="true">✓</span></button
+              >
+            </div>
+            <figcaption>
+              <span class="figure-equation">x(t) = e<sup>−αt</sup> cos(ωt)</span
+              ><span>Change a parameter. See the idea.</span>
+            </figcaption>
+          </figure>
+        </div>
+        <div class="board-tray" aria-hidden="true">
+          <span></span><span></span><span></span><i></i>
+        </div>
+        <section class="board-bottom" aria-label="A research notebook">
+          <article class="board-proof">
+            <p class="board-kicker">From the notebook</p><h2>
+              Show how you got there.
+            </h2><p>
+              The unfinished proof. The surprising result. The small detail that
+              made it click. Give the explanation as much care as the
+              experiment.
+            </p><a href="/notebook/foundation/"
+              >Notes on building Alkemist <span aria-hidden="true">↗</span></a
+            >
+          </article>
+          <article class="board-source">
+            <p class="board-kicker">
+              A small vocabulary / proposed API
+            </p><pre><code><span class="code-muted">// From a file to a figure.</span>
+<span class="code-accent">&lt;AlkChart</span>
+  src=<span class="code-string">"./oscillation.csv"</span>
+  x=<span class="code-string">"time"</span> y=<span class="code-string">"displacement"</span>
+  zoom
+<span class="code-accent">/&gt;</span></code></pre><p
+              class="source-caption"
+            >
+              Readable by people. Easy to build with AI.
+            </p>
+          </article>
+          <aside class="board-notes">
+            <p class="board-kicker">On the board</p><ul>
+              <li>
+                <span class="list-symbol">∿</span> Data you can explore
+              </li><li>
+                <span class="list-symbol">∑</span> Math with its meaning intact
+              </li><li>
+                <span class="list-symbol">⌘</span> Code beside its explanation
+              </li><li>
+                <span class="list-symbol">◇</span> Models you can turn around
+              </li>
+            </ul><p class="margin-note">
+              Ideas are better<br />with the edges showing.
+            </p>
+          </aside>
+        </section>
+      </main>
+      <footer class="board-footer">
+        <span>alkemist / a place to work things out</span><span
+          >Design study · synthetic data · proposed components</span
+        >
+      </footer>
+    </div>
+    <section class="study-guide" aria-label="About the directions">
+      <div>
+        <h2>Same content. Three points of view.</h2><p>
+          Switch above to compare each direction on both boards.
+        </p>
+      </div>
+      <article>
+        <h3>Seminar</h3><p>
+          Serif headlines, mathematical rhythm, quiet chalk notes. Best for
+          essays, research, and longer explanations.
+        </p>
+      </article>
+      <article>
+        <h3>Workshop</h3><p>
+          Clear sans type, broad marker strokes, informal annotations. Best for
+          invention, demos, and building in public.
+        </p>
+      </article>
+      <article>
+        <h3>Drafting</h3><p>
+          Monospaced headings, measured rules, a precise figure frame. Best for
+          engineering, robotics, and technical references.
+        </p>
+      </article>
+    </section>
+    <noscript
+      ><p class="no-script-note">
+        The default Seminar blackboard is shown. JavaScript enables the design
+        switches and oscillator controls.
+      </p></noscript
+    >
+    <script>
+      import { boardSignal } from '../../lib/board-signal';
+      const root = document.documentElement;
+      const descriptions: Record<string, string> = {
+        seminar:
+          'A quiet lecture hall. Serif type, chalk diagrams, room for a proof.',
+        workshop:
+          'A working session. Marker strokes, loose annotations, ideas in motion.',
+        drafting:
+          'An engineering desk. Monospaced type, measured rules, precise figures.',
+      };
+      function setStudy(take: string, board: string) {
+        root.dataset.take = take;
+        root.dataset.board = board;
+        document
+          .querySelectorAll<HTMLButtonElement>('[data-take-choice]')
+          .forEach((button) =>
+            button.setAttribute(
+              'aria-pressed',
+              String(button.dataset.takeChoice === take),
+            ),
+          );
+        document
+          .querySelectorAll<HTMLButtonElement>('[data-board-choice]')
+          .forEach((button) =>
+            button.setAttribute(
+              'aria-pressed',
+              String(button.dataset.boardChoice === board),
+            ),
+          );
+        document.getElementById('study-name')!.textContent =
+          take[0].toUpperCase() + take.slice(1);
+        document.getElementById('study-description')!.textContent =
+          descriptions[take];
+        document.getElementById('board-hex')!.textContent =
+          board === 'black' ? '#111111' : '#eeeeee';
+        const url = new URL(location.href);
+        url.searchParams.set('take', take);
+        url.searchParams.set('board', board);
+        history.replaceState(null, '', url);
+      }
+      const params = new URLSearchParams(location.search);
+      setStudy(
+        Object.hasOwn(descriptions, params.get('take') ?? '')
+          ? params.get('take')!
+          : 'seminar',
+        params.get('board') === 'white' ? 'white' : 'black',
+      );
+      document
+        .querySelectorAll<HTMLButtonElement>('[data-take-choice]')
+        .forEach((button) =>
+          button.addEventListener('click', () =>
+            setStudy(button.dataset.takeChoice!, root.dataset.board!),
+          ),
+        );
+      document
+        .querySelectorAll<HTMLButtonElement>('[data-board-choice]')
+        .forEach((button) =>
+          button.addEventListener('click', () =>
+            setStudy(root.dataset.take!, button.dataset.boardChoice!),
+          ),
+        );
+      const damping = document.querySelector<HTMLInputElement>('#damping')!;
+      function draw() {
+        const alpha = Number(damping.value);
+        const paths = boardSignal(alpha);
+        document.getElementById('signal-curve')!.setAttribute('d', paths.curve);
+        document
+          .getElementById('upper-envelope')!
+          .setAttribute('d', paths.upper);
+        document
+          .getElementById('lower-envelope')!
+          .setAttribute('d', paths.lower);
+        document.getElementById('damping-value')!.textContent =
+          alpha.toFixed(2);
+        damping.setAttribute('aria-valuetext', alpha.toFixed(2));
+      }
+      damping.addEventListener('input', draw);
+      draw();
+      document
+        .getElementById('annotation-toggle')!
+        .addEventListener('click', (event) => {
+          const button = event.currentTarget as HTMLButtonElement;
+          const show = button.getAttribute('aria-pressed') !== 'true';
+          button.setAttribute('aria-pressed', String(show));
+          button.querySelector('span')!.textContent = show ? '✓' : '+';
+          root.classList.toggle('notes-hidden', !show);
+        });
+    </script>
+  </body>
+</html>

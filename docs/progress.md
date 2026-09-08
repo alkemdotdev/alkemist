@@ -1,5 +1,16 @@
 # Alkemist progress
 
+## 2026-09-08 — Blackboard / whiteboard studies
+
+- Created the `design/board-studies` branch for three reviewable directions: Seminar, Workshop, and Drafting. Each offers exact `#111111` and `#eeeeee` backgrounds.
+- Added `/design/boards/` with shareable query parameters, keyboard-operable direction and surface controls, a synthetic damped oscillator, and annotation visibility control. The graph also renders statically without JavaScript.
+- Kept experimental styles inside the demo app; the shared production theme has not been selected or replaced.
+- Added an illustrated notebook article and `docs/board-studies.md` with the design rationale, tokens, font choices, and implementation boundaries.
+- Browser checks verified all six combinations at a 390px viewport (375px content width), with matching scroll widths and exact requested background colors. Inspected all three desktop styles and mobile Seminar/Workshop/Drafting. A Drafting mobile brand wrap was identified and corrected.
+- Damping keyboard control reached 0.65, changed the SVG curve, and updated its accessible value. Notes toggled to hidden. The browser warning/error log was empty.
+- Captured three built-site screenshots for the notebook. The development toolbar is absent from these captures.
+- Local verification passed before publishing the branch preview. The preview URL and exact source revision are verified after the push; production remains the previously deployed main revision.
+
 ## Current phase — deployment foundation
 
 The user authorized a public Cloudflare site at `alkemist.alkem.dev`, automatic main deployments, other-branch previews, integrated docs, and a shared theme foundation before continuing full widget implementation.
