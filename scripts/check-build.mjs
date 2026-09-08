@@ -18,6 +18,7 @@ const required = [
   'docs/agent-setup.md',
   'llms.txt',
   'labs/index.html',
+  'labs/homepage-studies/index.html',
   'labs/interference/index.html',
   'labs/design-studio/index.html',
   'labs/board-studies/index.html',

@@ -1,0 +1,223 @@
+.proof-bench {
+  display: block;
+  min-width: 0;
+  border: 1px solid var(--alk-rule);
+  background: var(--alk-paper);
+}
+.proof-bench [hidden] {
+  display: none !important;
+}
+.proof-bench-tabs {
+  display: flex;
+  align-items: stretch;
+  gap: 0.1rem;
+  padding-inline: 0.65rem;
+  border-bottom: 1px solid var(--alk-rule);
+  background: var(--alk-field);
+}
+.proof-bench-tabs > button {
+  position: relative;
+  padding: 0.85rem 0.8rem;
+  border: 0;
+  background: transparent;
+  color: var(--alk-muted);
+  font: 0.8rem/1.4 var(--alk-mono);
+  cursor: pointer;
+}
+.proof-bench-tabs > button[aria-selected='true'] {
+  color: var(--alk-ink);
+}
+.proof-bench-tabs > button[aria-selected='true']::after {
+  position: absolute;
+  inset: auto 0.8rem -1px;
+  height: 3px;
+  background: var(--alk-ink-cobalt);
+  content: '';
+}
+.proof-bench-tabs > button:hover {
+  color: var(--alk-ink);
+}
+.proof-bench-live {
+  align-self: center;
+  margin-left: auto;
+  padding-left: 0.5rem;
+  color: var(--alk-ink-teal);
+  white-space: nowrap;
+  font: 1.25rem/1 var(--alk-hand);
+}
+.proof-bench [role='tabpanel'] {
+  min-width: 0;
+}
+.proof-bench .alk-chart figure {
+  padding: 1.1rem 1.2rem 0.8rem;
+  border: 0;
+  border-radius: 0;
+}
+.proof-bench .alk-chart-caption {
+  margin-bottom: 0.75rem;
+}
+.proof-bench .alk-chart-caption h3 {
+  font-size: 1.2rem;
+  margin-bottom: 0.35rem;
+}
+.proof-bench .alk-chart-caption p:not(.alk-chart-kicker) {
+  font-size: 0.77rem;
+}
+.proof-bench .alk-chart-tools {
+  padding-bottom: 0.7rem;
+}
+.proof-bench .alk-model {
+  margin: 0;
+  border: 0;
+}
+.proof-bench .alk-model-heading {
+  padding: 1rem 1.2rem 0.8rem;
+}
+.proof-bench .alk-model-viewport {
+  height: 255px;
+}
+.proof-bench--compact .alk-model-viewport {
+  height: 220px;
+}
+.proof-bench .alk-model-description {
+  font-size: 0.74rem;
+  color: var(--alk-muted);
+}
+.proof-bench-source {
+  border-top: 1px solid var(--alk-rule);
+}
+.proof-bench-source > summary {
+  padding: 0.7rem 1.2rem;
+  cursor: pointer;
+  font: 0.74rem/1.5 var(--alk-mono);
+}
+.proof-bench-source > summary code {
+  float: right;
+  margin-left: 0.5rem;
+  padding: 0;
+  border: 0;
+  color: var(--alk-muted);
+  font-size: inherit;
+}
+.proof-bench-source .alk-code {
+  margin: 0 0.65rem 0.8rem;
+}
+.proof-bench-source .alk-code-pre {
+  max-height: 20rem;
+  font-size: 0.75rem;
+}
+.proof-bench-source-note,
+.proof-bench-noscript {
+  padding: 0 1.2rem 1rem;
+  margin: 0;
+  color: var(--alk-muted);
+  font-size: 0.73rem;
+}
+.proof-math {
+  padding: 1.1rem 1.2rem 0.8rem;
+}
+.proof-math-heading > p {
+  margin: 0 0 0.35rem;
+  color: var(--alk-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font: 0.64rem/1.4 var(--alk-mono);
+}
+.proof-math-heading h3 {
+  margin-bottom: 0;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+.proof-math .alk-math {
+  margin: 0.8rem 0 0;
+  padding: 0.35rem 0 0.7rem;
+  border: 0;
+}
+.proof-math .alk-math figcaption {
+  margin-top: 0.15rem;
+  font-size: 0.69rem;
+}
+.proof-math .katex-display {
+  margin: 0.35rem 0;
+}
+.proof-math-plot {
+  display: block;
+  width: 100%;
+  height: 175px;
+}
+.proof-math-grid {
+  stroke: var(--alk-rule);
+  stroke-width: 1;
+}
+.proof-math-axis {
+  fill: none;
+  stroke: var(--alk-muted);
+  stroke-width: 1;
+}
+.proof-math-signal {
+  fill: none;
+  stroke: var(--alk-ink-violet);
+  stroke-width: 2.5;
+}
+.proof-math-labels {
+  fill: var(--alk-muted);
+  font: 14px var(--alk-mono);
+}
+.proof-math-control {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 0.25rem 1rem;
+  font: 0.74rem/1.4 var(--alk-mono);
+}
+.proof-math-control output {
+  color: var(--alk-ink);
+}
+.proof-math-control input {
+  grid-column: 1 / -1;
+  width: 100%;
+  min-height: 34px;
+  margin: 0;
+  accent-color: var(--alk-ink-violet);
+  cursor: pointer;
+}
+.proof-math-caption {
+  margin: 0.65rem 0 0;
+  color: var(--alk-muted);
+  font-size: 0.69rem;
+}
+@media (max-width: 650px) {
+  .proof-bench-tabs {
+    padding-inline: 0.35rem;
+  }
+  .proof-bench-tabs > button {
+    padding-inline: 0.65rem;
+    font-size: 0.75rem;
+  }
+  .proof-bench-live {
+    font-size: 1.05rem;
+  }
+  .proof-bench .alk-chart figure,
+  .proof-math {
+    padding-inline: 0.75rem;
+  }
+  .proof-bench-source > summary {
+    padding-inline: 0.75rem;
+  }
+  .proof-bench .alk-model-viewport {
+    height: 230px;
+  }
+  .proof-math-plot {
+    height: auto;
+  }
+}
+@media (max-width: 360px) {
+  .proof-bench-live {
+    display: none;
+  }
+  .proof-bench-source > summary code {
+    float: none;
+    display: block;
+    margin: 0.2rem 0 0 1rem;
+  }
+}

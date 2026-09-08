@@ -1,0 +1,151 @@
+---
+interface Props {
+  id: string;
+}
+const { id } = Astro.props;
+const examples = [
+  {
+    id: 'researcher',
+    name: 'Researcher',
+    brand: 'Your research',
+    eyebrow: 'A personal research notebook',
+    title: 'Questions worth keeping open.',
+    text: 'Notes, experiments, and ideas from a work in progress.',
+    links: ['Latest writing', 'Selected experiments'],
+    note: 'a place to think out loud',
+  },
+  {
+    id: 'lab',
+    name: 'Research group',
+    brand: 'Your lab',
+    eyebrow: 'People working on hard questions',
+    title: 'Small team. Shared curiosity.',
+    text: 'Introduce your team, explain the work, and let people explore the results.',
+    links: ['Research directions', 'Meet the team'],
+    note: 'make the work approachable',
+  },
+  {
+    id: 'project',
+    name: 'Project',
+    brand: 'Your project',
+    eyebrow: 'A working idea, explained',
+    title: 'Here is what we are building.',
+    text: 'Give your project a home for its demo, documentation, and development story.',
+    links: ['Try the demo', 'Read the documentation'],
+    note: 'the demo belongs beside the explanation',
+  },
+];
+---
+
+<site-compositions>
+  <div class="composition-heading">
+    <div>
+      <p class="home-eyebrow">Make it yours</p><h2>
+        One workbench.<br />Your kind of website.
+      </h2>
+    </div><p>
+      Your identity, your pages, your arrangement. Start with the pieces that
+      fit the work.
+    </p>
+  </div>
+  <div
+    class="composition-choices"
+    role="group"
+    aria-label="Example site composition"
+  >
+    {
+      examples.map((example, i) => (
+        <button
+          type="button"
+          data-composition={example.id}
+          aria-pressed={i === 0 ? 'true' : 'false'}
+          aria-controls={`${id}-${example.id}`}
+        >
+          {example.name}
+        </button>
+      ))
+    }
+  </div>
+  {
+    examples.map((example, i) => (
+      <div
+        class={`composition-preview composition-${example.id}`}
+        id={`${id}-${example.id}`}
+        data-composition-panel={example.id}
+        hidden={i !== 0}
+      >
+        <div class="mini-header">
+          <>
+            <strong>{example.brand}</strong>
+            <span>Blog / Labs / Info</span>
+          </>
+        </div>
+        <div class="mini-content">
+          <div>
+            <>
+              <p class="home-eyebrow">{example.eyebrow}</p>
+              <h3>{example.title}</h3>
+              <p>{example.text}</p>
+              <div class="mini-links">
+                {example.links.map((link) => (
+                  <span>{link} ↗</span>
+                ))}
+              </div>
+            </>
+          </div>
+          <div class="mini-figure" aria-hidden="true">
+            <>
+              <svg viewBox="0 0 240 160">
+                <>
+                  <path
+                    class="mini-grid"
+                    d="M0 40H240M0 80H240M0 120H240M40 0V160M80 0V160M120 0V160M160 0V160M200 0V160"
+                  />
+                  <path
+                    class="mini-curve"
+                    d="M0 120C40 120 30 30 70 30S110 130 145 105S175 30 240 40"
+                  />
+                  <circle cx="145" cy="105" r="6" />
+                </>
+              </svg>
+              <span class="home-note">{example.note}</span>
+            </>
+          </div>
+        </div>
+      </div>
+    ))
+  }
+  <p class="composition-caption">
+    Illustrative layouts for comparison. The current starter gives you one
+    editable Astro site; these preset compositions are design proposals.
+  </p>
+</site-compositions>
+
+<script>
+  class SiteCompositions extends HTMLElement {
+    connectedCallback() {
+      if (this.dataset.ready) return;
+      this.dataset.ready = 'true';
+      this.querySelectorAll<HTMLButtonElement>('[data-composition]').forEach(
+        (button) =>
+          button.addEventListener('click', () => {
+            this.querySelectorAll<HTMLElement>(
+              '[data-composition-panel]',
+            ).forEach(
+              (panel) =>
+                (panel.hidden =
+                  panel.dataset.compositionPanel !==
+                  button.dataset.composition),
+            );
+            this.querySelectorAll<HTMLButtonElement>(
+              '[data-composition]',
+            ).forEach((item) =>
+              item.setAttribute('aria-pressed', String(item === button)),
+            );
+          }),
+      );
+    }
+  }
+  if (!customElements.get('site-compositions'))
+    customElements.define('site-compositions', SiteCompositions);
+</script>

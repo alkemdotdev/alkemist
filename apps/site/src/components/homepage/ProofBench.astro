@@ -1,0 +1,295 @@
+---
+import AlkChart from '@alkemist/ui/AlkChart.astro';
+import AlkModel from '@alkemist/ui/AlkModel.astro';
+import AlkMath from '@alkemist/ui/AlkMath.astro';
+import AlkCode from '@alkemist/ui/AlkCode.astro';
+import './proof-bench.css';
+
+interface Props {
+  id: string;
+  initial?: 'data' | 'geometry' | 'math';
+  compact?: boolean;
+}
+
+const { id, initial = 'data', compact = false } = Astro.props;
+const tabs = [
+  { key: 'data', label: 'Data', file: 'oscillation.csv' },
+  { key: 'geometry', label: 'Geometry', file: 'torus-knot.glb' },
+  { key: 'math', label: 'Math', file: 'signal.astro' },
+] as const;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const chart = {
+  src: `${base}/test/oscillation.csv`,
+  type: 'line' as const,
+  x: 'time',
+  y: 'position',
+  title: 'A signal finding its quiet',
+  description: 'A synthetic damped oscillator. Explore the data at any scale.',
+  xLabel: 'Time (s)',
+  yLabel: 'Position (m)',
+  height: compact ? 170 : 205,
+  grid: true,
+  sample: true,
+};
+const model = {
+  src: `${base}/test/torus-knot.glb`,
+  title: 'A knot, from every angle',
+  poster: `${base}/test/torus-knot.svg`,
+  description: 'An Alkemist-generated specimen. Uncompressed GLB / glTF 2.0.',
+};
+const equation = {
+  tex: String.raw`s_\omega(t)=\sin(\omega t)`,
+  label: 'A family of signals, one parameter.',
+};
+
+function source(name: string, props: Record<string, unknown>) {
+  const attributes = Object.entries(props).map(([key, value]) => {
+    if (typeof value === 'string' && !/[\\"\n]/.test(value))
+      return `  ${key}="${value}"`;
+    return `  ${key}={${JSON.stringify(value)}}`;
+  });
+  return `---\nimport ${name} from '@alkemist/ui/${name}.astro';\n---\n\n<${name}\n${attributes.join('\n')}\n/>`;
+}
+
+function signalPath(frequency: number) {
+  return Array.from({ length: 241 }, (_, index) => {
+    const t = (index / 240) * Math.PI * 2;
+    return `${index ? 'L' : 'M'}${(32 + (index / 240) * 536).toFixed(2)},${(86 - Math.sin(frequency * t) * 58).toFixed(2)}`;
+  }).join(' ');
+}
+---
+
+<alk-proof-bench
+  id={id}
+  class:list={['proof-bench', { 'proof-bench--compact': compact }]}
+>
+  <div
+    class="proof-bench-tabs"
+    role="tablist"
+    aria-label="Explore a working example"
+  >
+    {
+      tabs.map(({ key, label }) => (
+        <button
+          type="button"
+          role="tab"
+          id={`${id}-tab-${key}`}
+          aria-controls={`${id}-panel-${key}`}
+          aria-selected={initial === key}
+          tabindex={initial === key ? 0 : -1}
+          data-proof-tab={key}
+        >
+          {label}
+        </button>
+      ))
+    }
+  </div>
+
+  {
+    tabs.map(({ key, file }) => (
+      <section
+        id={`${id}-panel-${key}`}
+        role="tabpanel"
+        aria-labelledby={`${id}-tab-${key}`}
+        tabindex="0"
+        data-proof-panel={key}
+        hidden={initial !== key}
+      >
+        {key === 'data' && <AlkChart {...chart} />}
+        {key === 'geometry' && <AlkModel {...model} />}
+        {key === 'math' && (
+          <div class="proof-math">
+            <div class="proof-math-heading">
+              <p>Mathematical writing</p>
+              <h3>An equation you can explore.</h3>
+            </div>
+            <AlkMath {...equation} />
+            <svg
+              class="proof-math-plot"
+              viewBox="0 0 600 190"
+              role="img"
+              aria-label="Sine signal with angular frequency 2, from zero to two pi."
+              data-proof-plot
+            >
+              <g class="proof-math-grid" fill="none">
+                {[28, 57, 86, 115, 144].map((y) => (
+                  <path d={`M32 ${y}H568`} />
+                ))}
+                {[32, 99, 166, 233, 300, 367, 434, 501, 568].map((x) => (
+                  <path d={`M${x} 28V144`} />
+                ))}
+              </g>
+              <path class="proof-math-axis" d="M32 86H568" />
+              <path
+                class="proof-math-signal"
+                d={signalPath(2)}
+                data-proof-signal
+              />
+              <g class="proof-math-labels">
+                <text x="32" y="173">
+                  0
+                </text>
+                <text x="300" y="173" text-anchor="middle">
+                  π
+                </text>
+                <text x="568" y="173" text-anchor="end">
+                  2π
+                </text>
+                <text x="14" y="33">
+                  1
+                </text>
+                <text x="8" y="149">
+                  −1
+                </text>
+              </g>
+            </svg>
+            <div class="proof-math-control">
+              <label for={`${id}-frequency`}>Angular frequency</label>
+              <output for={`${id}-frequency`} data-proof-frequency-value>
+                ω = 2
+              </output>
+              <input
+                id={`${id}-frequency`}
+                type="range"
+                min="1"
+                max="5"
+                step="0.25"
+                value="2"
+                aria-label="Angular frequency in radians per time unit"
+                data-proof-frequency
+              />
+            </div>
+            <p class="proof-math-caption">
+              AlkMath renders the equation; this small site widget draws the
+              signal.
+            </p>
+          </div>
+        )}
+        <details class="proof-bench-source">
+          <summary>
+            <span>Show {key === 'math' ? 'equation ' : ''}source</span>
+            <code>{file}</code>
+          </summary>
+          <AlkCode
+            code={source(
+              key === 'data'
+                ? 'AlkChart'
+                : key === 'geometry'
+                  ? 'AlkModel'
+                  : 'AlkMath',
+              key === 'data' ? chart : key === 'geometry' ? model : equation,
+            )}
+            lang="astro"
+            title={`${key === 'math' ? 'Equation' : 'Figure'} component · current API`}
+            lineNumbers={false}
+          />
+          <p class="proof-bench-source-note">
+            {key === 'data' &&
+              'The CSV is included with this demo. Use your own URL and column names.'}
+            {key === 'geometry' &&
+              'The model is included with this demo. This viewer supports uncompressed GLB and glTF; NeRF and splat viewers are planned.'}
+            {key === 'math' &&
+              'This source renders the equation. The slider and SVG plot are ordinary site-owned HTML and TypeScript.'}
+          </p>
+        </details>
+      </section>
+    ))
+  }
+  <noscript
+    ><p class="proof-bench-noscript">
+      JavaScript enables the tabs and interactive views. <a
+        href={`${base}/test/`}>Browse all examples on the test page.</a
+      >
+    </p></noscript
+  >
+</alk-proof-bench>
+
+<script>
+  class AlkProofBench extends HTMLElement {
+    private lifetime?: AbortController;
+
+    connectedCallback() {
+      if (this.lifetime) return;
+      this.lifetime = new AbortController();
+      const options = { signal: this.lifetime.signal };
+      const tabs = [
+        ...this.querySelectorAll<HTMLButtonElement>('[data-proof-tab]'),
+      ];
+      const panels = [
+        ...this.querySelectorAll<HTMLElement>('[data-proof-panel]'),
+      ];
+
+      const select = (selected: HTMLButtonElement) => {
+        for (const tab of tabs) {
+          const active = tab === selected;
+          tab.setAttribute('aria-selected', String(active));
+          tab.tabIndex = active ? 0 : -1;
+        }
+        for (const panel of panels)
+          panel.hidden = panel.dataset.proofPanel !== selected.dataset.proofTab;
+      };
+
+      for (const tab of tabs) {
+        tab.addEventListener('click', () => select(tab), options);
+        tab.addEventListener(
+          'keydown',
+          (event) => {
+            const index = tabs.indexOf(tab);
+            const next =
+              event.key === 'ArrowRight'
+                ? tabs[(index + 1) % tabs.length]
+                : event.key === 'ArrowLeft'
+                  ? tabs[(index + tabs.length - 1) % tabs.length]
+                  : event.key === 'Home'
+                    ? tabs[0]
+                    : event.key === 'End'
+                      ? tabs[tabs.length - 1]
+                      : undefined;
+            if (!next) return;
+            event.preventDefault();
+            select(next);
+            next.focus();
+          },
+          options,
+        );
+      }
+
+      const frequency = this.querySelector<HTMLInputElement>(
+        '[data-proof-frequency]',
+      );
+      const output = this.querySelector<HTMLOutputElement>(
+        '[data-proof-frequency-value]',
+      );
+      const plot = this.querySelector<SVGSVGElement>('[data-proof-plot]');
+      const signal = this.querySelector<SVGPathElement>('[data-proof-signal]');
+      frequency?.addEventListener(
+        'input',
+        () => {
+          const value = frequency.valueAsNumber;
+          if (!Number.isFinite(value)) return;
+          if (output) output.value = `ω = ${value}`;
+          plot?.setAttribute(
+            'aria-label',
+            `Sine signal with angular frequency ${value}, from zero to two pi.`,
+          );
+          signal?.setAttribute(
+            'd',
+            Array.from({ length: 241 }, (_, index) => {
+              const t = (index / 240) * Math.PI * 2;
+              return `${index ? 'L' : 'M'}${(32 + (index / 240) * 536).toFixed(2)},${(86 - Math.sin(value * t) * 58).toFixed(2)}`;
+            }).join(' '),
+          );
+        },
+        options,
+      );
+    }
+
+    disconnectedCallback() {
+      this.lifetime?.abort();
+      this.lifetime = undefined;
+    }
+  }
+
+  if (!customElements.get('alk-proof-bench'))
+    customElements.define('alk-proof-bench', AlkProofBench);
+</script>

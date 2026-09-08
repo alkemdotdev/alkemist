@@ -1,0 +1,607 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import ProofBench from '../../components/homepage/ProofBench.astro';
+import SiteCompositions from '../../components/homepage/SiteCompositions.astro';
+import AlkCode from '@alkemist/ui/AlkCode.astro';
+import { setupProviders, setupPrompt, sourceAccess } from '../../lib/setup';
+import { isPreview } from '../../lib/deployment';
+import '../../styles/homepage-studies.css';
+const directions = [
+  {
+    id: 'workbench',
+    name: 'Workbench',
+    letter: 'A',
+    description:
+      'Lead with the promise. Prove it with something people can use.',
+    best: 'My recommendation: the clearest introduction to the product.',
+  },
+  {
+    id: 'fieldnotes',
+    name: 'Fieldnotes',
+    letter: 'B',
+    description:
+      'Let the website feel like the research someone could publish.',
+    best: 'Best for an editorial, academic identity. Takes longer to explain the toolkit.',
+  },
+  {
+    id: 'together',
+    name: 'Build together',
+    letter: 'C',
+    description:
+      'Make the first step feel concrete: an idea, an agent, and a site.',
+    best: 'Best for an agent-led launch. The scientific tools need a second look.',
+  },
+];
+const choices = [
+  { id: 'live', label: 'Live example beside the headline', selected: true },
+  { id: 'notes', label: 'Handwritten annotations', selected: true },
+  {
+    id: 'compositions',
+    label: 'Researcher / group / project previews',
+    selected: true,
+  },
+  { id: 'agent', label: 'Agent-led setup from C', selected: false },
+  { id: 'editorial', label: 'Editorial story from B', selected: false },
+];
+---
+
+<SiteLayout
+  title="Homepage studies"
+  description="Three working homepage mockups for Alkemist. Compare the story, try the examples, and save your selection."
+  preview={isPreview}
+>
+  <homepage-studies data-take="workbench">
+    <div class="study-toolbar">
+      <a href="/labs/" class="study-label"
+        >← Labs <span>/ Homepage mockups</span></a
+      >
+      <div
+        class="study-directions"
+        role="group"
+        aria-label="Homepage direction"
+      >
+        {
+          directions.map((direction, i) => (
+            <button
+              type="button"
+              data-direction={direction.id}
+              aria-pressed={i === 0 ? 'true' : 'false'}
+              aria-controls={`take-${direction.id}`}
+            >
+              <span>{direction.letter}</span> {direction.name}
+            </button>
+          ))
+        }
+      </div>
+      <a href="#selection" class="study-selection-link">Your selection ↓</a>
+    </div>
+    <div class="study-explanation" aria-live="polite">
+      {
+        directions.map((direction, i) => (
+          <div data-explanation={direction.id} hidden={i !== 0}>
+            <>
+              <p>{direction.description}</p>
+              <span>{direction.best}</span>
+            </>
+          </div>
+        ))
+      }
+    </div>
+
+    <section
+      id="take-workbench"
+      data-take-panel="workbench"
+      aria-label="Workbench homepage mockup"
+      class="home-take workbench-take"
+    >
+      <div class="workbench-hero">
+        <div class="workbench-promise">
+          <p class="home-eyebrow">
+            An Astro starter for inventors & researchers
+          </p>
+          <h1>
+            Turn your research into something people can <span
+              class="ink-underline">explore.</span
+            >
+          </h1>
+          <p class="home-lead">
+            Articles, interactive charts, 3D models, and working experiments. A
+            thoughtful starting point for your own corner of the web.
+          </p>
+          <div class="home-actions">
+            <a class="home-primary" href="/docs/getting-started/"
+              >Start using Alkemist ↗</a
+            ><a href="/test/">Explore the full specimen →</a>
+          </div>
+          <p class="home-note">bring the question. show the working.</p>
+        </div>
+        <div class="workbench-proof">
+          <div class="proof-topline">
+            <span>Try the workbench</span><span class="home-note"
+              >go on, change something ↙</span
+            >
+          </div><ProofBench id="workbench" initial="data" compact />
+        </div>
+      </div>
+      <div class="home-benefits">
+        <article>
+          <span class="file-tag ink-cobalt">.csv</span><h2>
+            Let the data speak.
+          </h2><p>
+            Zoom into a signal, compare a series, inspect the source. Keep the
+            evidence within reach.
+          </p>
+        </article>
+        <article>
+          <span class="file-tag ink-violet">.glb</span><h2>
+            Give the idea dimension.
+          </h2><p>
+            Make a model something people can turn over and understand for
+            themselves.
+          </p>
+        </article>
+        <article>
+          <span class="file-tag ink-fern">.mdx</span><h2>
+            Keep the whole story.
+          </h2><p>
+            Bring equations, code, notes, and interactive figures together in
+            the same article.
+          </p>
+        </article>
+      </div>
+      <SiteCompositions id="workbench-sites" />
+      <section class="home-invitation">
+        <div>
+          <p class="home-eyebrow">From a starting point to your own site</p><h2>
+            Built to begin.<br />Yours to keep building.
+          </h2><p>
+            Start with a coding agent or a terminal. Your content lives in your
+            site; shared components can be updated as Alkemist grows.
+          </p>
+        </div><div class="home-invitation-actions">
+          <a class="home-primary" href="/docs/getting-started/"
+            >Create your site ↗</a
+          ><a href="/docs/agent-setup.md">Read the agent setup brief →</a><span
+            >Cloudflare / GitLab Pages / Your host</span
+          >
+        </div>
+      </section>
+    </section>
+
+    <section
+      id="take-fieldnotes"
+      data-take-panel="fieldnotes"
+      aria-label="Fieldnotes homepage mockup"
+      class="home-take fieldnotes-take"
+      hidden
+    >
+      <div class="fieldnotes-heading">
+        <p class="home-eyebrow">Alkemist / A home for curious work</p><h1>
+          Good ideas deserve<br /><span class="ink-underline"
+            >good explanations.</span
+          >
+        </h1><p class="home-lead">
+          A research notebook, a place to experiment, a website of your own.
+          Built on Astro, with the instruments already on the desk.
+        </p><div class="home-actions">
+          <a class="home-primary" href="/docs/getting-started/"
+            >Start your notebook ↗</a
+          ><a href="/blog/">Read how this one was built →</a>
+        </div>
+      </div>
+      <div class="fieldnotes-article">
+        <aside class="fieldnotes-margin">
+          <p class="home-eyebrow">Inside a working note</p><p>
+            Question<br />Evidence<br />Explanation
+          </p><span class="home-note">leave room<br />for discovery →</span>
+        </aside>
+        <article class="fieldnotes-paper">
+          <div class="paper-label">
+            <span>A small experiment in explanation</span><span
+              >Made with Alkemist</span
+            >
+          </div><h2>What becomes clear when you can explore it?</h2><p>
+            A curve tells a story. Its samples let you check it. An interactive
+            view lets you ask your own question.
+          </p><p>
+            Bring the explanation and the evidence together. Inspect the data
+            below, turn the geometry, or look at the equation and its source.
+          </p><ProofBench id="fieldnotes" initial="data" compact /><p
+            class="paper-ending"
+          >
+            A useful research website gives the reader somewhere to go next:
+            into the figure, back to the data, or on to the next idea.
+          </p><a href="/docs/components/"
+            >See the components behind the page →</a
+          >
+        </article>
+        <aside class="fieldnotes-outside">
+          <span class="home-note"
+            >the figure<br />is part of<br />the argument.</span
+          ><p>
+            Ubuntu type.<br />Notes in the margin.<br />Two board surfaces.<br
+            />Eight shared inks.
+          </p>
+        </aside>
+      </div>
+      <div class="fieldnotes-links">
+        <a href="/docs/math-code/"
+          ><span>Write clearly</span><h2>Math & code ↗</h2><p>
+            Give the derivation the typography it deserves.
+          </p></a
+        ><a href="/labs/"
+          ><span>Leave something useful</span><h2>Working labs ↗</h2><p>
+            A small tool can carry an idea further.
+          </p></a
+        ><a href="/docs/site-structure/"
+          ><span>Make a home for it</span><h2>Your own structure ↗</h2><p>
+            Blog, Labs, Info. Add project docs when you need them.
+          </p></a
+        >
+      </div>
+      <section class="fieldnotes-close">
+        <span class="home-note">your next idea goes here.</span><h2>
+          Keep an open notebook.
+        </h2><p>
+          Begin with the Alkemist starter, then make it sound and feel like you.
+        </p><a class="home-primary" href="/docs/getting-started/"
+          >Start using Alkemist ↗</a
+        >
+      </section>
+    </section>
+
+    <section
+      id="take-together"
+      data-take-panel="together"
+      aria-label="Build together homepage mockup"
+      class="home-take together-take"
+      hidden
+    >
+      <div class="together-hero">
+        <div>
+          <p class="home-eyebrow">Your idea / Your agent / Your website</p><h1>
+            Bring the idea.<br /><span class="ink-underline"
+              >Build the rest</span
+            ><br />with your agent.
+          </h1><p class="home-lead">
+            An Astro starting point for research websites—with scientific
+            components, clear docs, and a setup brief your coding agent can
+            follow.
+          </p><div class="home-actions">
+            <a class="home-primary" href="#agent-brief">Get the setup brief ↓</a
+            ><a href="/docs/getting-started/">Use the terminal →</a>
+          </div>
+        </div>
+        <div class="agent-brief" id="agent-brief">
+          <div class="agent-brief-head">
+            <span class="home-eyebrow">Start with a useful instruction</span
+            ><span class="home-note">make it yours ↓</span>
+          </div><label
+            >Publish with <select
+              data-agent-provider
+              aria-label="Agent setup hosting provider"
+              >{
+                setupProviders.map((provider) => (
+                  <option value={provider.id}>{provider.name}</option>
+                ))
+              }</select
+            ></label
+          ><p class="brief-preview">
+            “Set up my own research website with Alkemist. Give it a home for my
+            writing, interactive experiments, and the people behind the work.”
+          </p><p class="brief-detail">
+            The full brief includes installation, customization, Git, hosting,
+            and checks for the deployed site.
+          </p>{
+            setupProviders.map((provider, i) => (
+              <textarea
+                class="agent-prompt-value"
+                data-agent-prompt={provider.id}
+                aria-label={`${provider.name} full setup brief`}
+                readonly
+                hidden={i !== 0}
+                set:text={setupPrompt(provider)}
+              />
+            ))
+          }<button type="button" class="home-primary" data-copy-agent
+            >Copy full agent brief ↗</button
+          ><a href="/docs/agent-setup.md">Read the complete instructions →</a><p
+            class="brief-feedback"
+            role="status"
+            data-agent-feedback
+          >
+          </p>
+        </div>
+      </div>
+      <div class="together-sequence">
+        <article>
+          <span>Start</span><h2>A site of your own.</h2><p>
+            Generate an independent project with real installed components and
+            editable examples.
+          </p>
+        </article><article>
+          <span>Make</span><h2>Bring in the work.</h2><p>
+            Add articles, CSV data, models, and small interactive apps to
+            ordinary Astro pages.
+          </p>
+        </article><article>
+          <span>Share</span><h2>Publish, then iterate.</h2><p>
+            Connect your repository to your host. Check a preview before sharing
+            a new version.
+          </p>
+        </article>
+      </div>
+      <section class="together-proof">
+        <div>
+          <p class="home-eyebrow">A small vocabulary. Useful results.</p><h2>
+            The building blocks<br />are already here.
+          </h2><p>
+            Start with a real chart, a real model, or an equation. Open the
+            source to see what creates the result.
+          </p><AlkCode
+            title="From the source checkout"
+            lang="sh"
+            code="npm run create:site -- ../my-lab --provider cloudflare"
+          />
+        </div><ProofBench id="together" initial="geometry" compact />
+      </section>
+      <SiteCompositions id="together-sites" />
+    </section>
+
+    <div class="home-release-note">
+      <span>{sourceAccess}</span><a href="/docs/status/"
+        >Implemented features & current limits →</a
+      >
+    </div>
+
+    <section
+      class="study-selection"
+      id="selection"
+      aria-labelledby="selection-heading"
+    >
+      <div>
+        <p class="home-eyebrow">Your turn</p><h2 id="selection-heading">
+          Choose a base.<br />Keep the good parts.
+        </h2><p>
+          I recommend <strong>A · Workbench</strong>: visitors see what Alkemist
+          is and try it immediately. Borrow C’s setup brief and B’s handwritten
+          editorial details.
+        </p><p>
+          These are homepage proposals. Your choices are saved in this browser;
+          copying them lets you send the decision back.
+        </p>
+      </div><form data-selection-form>
+        <label class="selection-direction"
+          >Base direction<select
+            name="direction"
+            aria-label="Preferred homepage direction"
+            >{
+              directions.map((direction) => (
+                <option value={direction.id}>
+                  {direction.letter} · {direction.name}
+                </option>
+              ))
+            }</select
+          ></label
+        ><fieldset>
+          <legend>Carry these ideas forward</legend>{
+            choices.map((choice) => (
+              <label>
+                <input
+                  type="checkbox"
+                  name="keep"
+                  value={choice.id}
+                  checked={choice.selected}
+                />
+                {choice.label}
+              </label>
+            ))
+          }
+        </fieldset><label
+          >Anything to change?<textarea
+            name="notes"
+            rows="3"
+            placeholder="For example: A’s layout, with B’s headline…"
+          ></textarea></label
+        ><div class="selection-actions">
+          <button class="home-primary" type="button" data-copy-selection
+            >Copy my selection ↗</button
+          ><button type="button" data-download-selection
+            >Download choices</button
+          >
+        </div><p
+          class="selection-feedback"
+          data-selection-feedback
+          role="status"
+        >
+        </p><textarea
+          data-selection-output
+          readonly
+          aria-label="Selection to copy manually"
+          rows="5"
+          hidden></textarea>
+      </form>
+    </section>
+    <noscript
+      ><p>
+        JavaScript enables the direction switcher and live previews. Workbench
+        is shown by default; the current <a href="/docs/getting-started/"
+          >setup guide</a
+        > works without the switcher.
+      </p></noscript
+    >
+  </homepage-studies>
+</SiteLayout>
+
+<script>
+  import { setupProviders, setupPrompt } from '../../lib/setup';
+  class HomepageStudies extends HTMLElement {
+    connectedCallback() {
+      if (this.dataset.ready) return;
+      this.dataset.ready = 'true';
+      const valid = ['workbench', 'fieldnotes', 'together'];
+      const form = this.querySelector<HTMLFormElement>(
+        '[data-selection-form]',
+      )!;
+      const preference = form.elements.namedItem(
+        'direction',
+      ) as HTMLSelectElement;
+      const notes = form.elements.namedItem('notes') as HTMLTextAreaElement;
+      const checks = [
+        ...form.querySelectorAll<HTMLInputElement>('[name="keep"]'),
+      ];
+      const feedback = this.querySelector<HTMLElement>(
+        '[data-selection-feedback]',
+      )!;
+      const output = this.querySelector<HTMLTextAreaElement>(
+        '[data-selection-output]',
+      )!;
+      const key = 'alkemist-homepage-selection-v1';
+      const save = () => {
+        const value = {
+          schemaVersion: 1,
+          direction: preference.value,
+          keep: checks.filter((item) => item.checked).map((item) => item.value),
+          notes: notes.value,
+        };
+        try {
+          localStorage.setItem(key, JSON.stringify(value));
+        } catch {
+          /* Selection still works without storage. */
+        }
+        return value;
+      };
+      const show = (take: string) => {
+        if (!valid.includes(take)) return;
+        this.dataset.take = take;
+        preference.value = take;
+        feedback.textContent = '';
+        output.hidden = true;
+        this.querySelectorAll<HTMLElement>('[data-take-panel]').forEach(
+          (panel) => (panel.hidden = panel.dataset.takePanel !== take),
+        );
+        this.querySelectorAll<HTMLElement>('[data-explanation]').forEach(
+          (panel) => (panel.hidden = panel.dataset.explanation !== take),
+        );
+        this.querySelectorAll<HTMLElement>('[data-direction]').forEach(
+          (button) =>
+            button.setAttribute(
+              'aria-pressed',
+              String(button.dataset.direction === take),
+            ),
+        );
+        const url = new URL(location.href);
+        url.searchParams.set('take', take);
+        history.replaceState(null, '', url);
+      };
+      try {
+        const saved = JSON.parse(localStorage.getItem(key) ?? 'null');
+        if (saved?.schemaVersion === 1) {
+          if (valid.includes(saved.direction))
+            preference.value = saved.direction;
+          if (Array.isArray(saved.keep))
+            checks.forEach(
+              (check) => (check.checked = saved.keep.includes(check.value)),
+            );
+          if (typeof saved.notes === 'string') notes.value = saved.notes;
+        }
+      } catch {
+        /* Ignore invalid or unavailable local preferences. */
+      }
+      const initial = new URL(location.href).searchParams.get('take');
+      show(initial && valid.includes(initial) ? initial : preference.value);
+      this.querySelectorAll<HTMLButtonElement>('[data-direction]').forEach(
+        (button) =>
+          button.addEventListener('click', () => {
+            show(button.dataset.direction!);
+            save();
+          }),
+      );
+      form.addEventListener('submit', (event) => event.preventDefault());
+      form.addEventListener('input', () => {
+        save();
+        feedback.textContent = '';
+        output.hidden = true;
+      });
+      preference.addEventListener('change', () => {
+        show(preference.value);
+        save();
+      });
+      this.querySelector('[data-copy-selection]')!.addEventListener(
+        'click',
+        async () => {
+          const choice = save();
+          const labels = checks
+            .filter((item) => item.checked)
+            .map((item) => item.parentElement!.textContent!.trim());
+          const text = `Alkemist homepage choice: ${preference.selectedOptions[0].textContent}\nKeep: ${labels.length ? labels.join('; ') : 'No extra elements selected'}\n${choice.notes ? `Changes: ${choice.notes}\n` : ''}Preview: ${new URL(`/labs/homepage-studies/?take=${choice.direction}`, location.origin).href}`;
+          try {
+            await navigator.clipboard.writeText(text);
+            feedback.textContent =
+              'Selection copied. Paste it into our conversation.';
+          } catch {
+            output.value = text;
+            output.hidden = false;
+            output.focus();
+            output.select();
+            feedback.textContent = 'Select and copy the text below.';
+          }
+        },
+      );
+      this.querySelector('[data-download-selection]')!.addEventListener(
+        'click',
+        () => {
+          const url = URL.createObjectURL(
+            new Blob([JSON.stringify(save(), null, 2) + '\n'], {
+              type: 'application/json',
+            }),
+          );
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = 'alkemist-homepage-choice.json';
+          link.click();
+          setTimeout(() => URL.revokeObjectURL(url), 1000);
+          feedback.textContent =
+            'Choices downloaded. They do not publish a homepage.';
+        },
+      );
+      const provider = this.querySelector<HTMLSelectElement>(
+        '[data-agent-provider]',
+      )!;
+      const agentFeedback = this.querySelector<HTMLElement>(
+        '[data-agent-feedback]',
+      )!;
+      provider.addEventListener('change', () => {
+        this.querySelectorAll<HTMLTextAreaElement>(
+          '[data-agent-prompt]',
+        ).forEach(
+          (prompt) =>
+            (prompt.hidden = prompt.dataset.agentPrompt !== provider.value),
+        );
+        agentFeedback.textContent = '';
+      });
+      this.querySelector('[data-copy-agent]')!.addEventListener(
+        'click',
+        async () => {
+          const selected = setupProviders.find(
+            (item) => item.id === provider.value,
+          )!;
+          try {
+            await navigator.clipboard.writeText(setupPrompt(selected));
+            agentFeedback.textContent = 'Full setup brief copied.';
+          } catch {
+            const prompt = this.querySelector<HTMLTextAreaElement>(
+              `[data-agent-prompt="${selected.id}"]`,
+            )!;
+            prompt.classList.add('show-prompt');
+            prompt.focus();
+            prompt.select();
+            agentFeedback.textContent = 'Select and copy the full brief above.';
+          }
+        },
+      );
+    }
+  }
+  if (!customElements.get('homepage-studies'))
+    customElements.define('homepage-studies', HomepageStudies);
+</script>
