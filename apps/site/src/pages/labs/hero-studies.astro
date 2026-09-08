@@ -292,6 +292,40 @@ const takes = [
         </p>
       </form>
     </section>
+    <script is:inline>
+      // Select the visible art before deferred renderer modules start observing it.
+      // The bundled controller then installs controls and restores all review details.
+      (() => {
+        const host = document.currentScript.closest('hero-studies');
+        const allowed = JSON.parse(host.dataset.directions).map(
+          (item) => item.id,
+        );
+        let saved;
+        try {
+          saved = JSON.parse(
+            localStorage.getItem('alkemist-hero-studies-v1') || '{}',
+          )?.take;
+        } catch {
+          /* Storage is optional. */
+        }
+        const requested = new URL(location.href).searchParams.get('take');
+        const take = allowed.includes(requested)
+          ? requested
+          : allowed.includes(saved)
+            ? saved
+            : 'sculpture';
+        host.dataset.take = take;
+        host.querySelectorAll('[data-hero-panel]').forEach((panel) => {
+          panel.hidden = panel.dataset.heroPanel !== take;
+        });
+        host.querySelectorAll('[data-take-button]').forEach((button) => {
+          button.setAttribute(
+            'aria-pressed',
+            String(button.dataset.takeButton === take),
+          );
+        });
+      })();
+    </script>
   </hero-studies>
 </SiteLayout>
 
