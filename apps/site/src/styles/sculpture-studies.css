@@ -759,3 +759,37 @@ form-art[data-state='ready'] .form-annotations {
 .forms-assembly .form-equation > span:last-child {
   color: var(--alk-ink-vermilion);
 }
+
+.field-studies .forms-card-art {
+  border-color: transparent;
+  background: radial-gradient(
+    ellipse at 50% 55%,
+    color-mix(in srgb, var(--alk-ink-cobalt) 4%, transparent),
+    transparent 68%
+  );
+}
+.field-studies .forms-card:hover .forms-card-art {
+  border-color: var(--alk-rule);
+}
+.field-studies .form-viewport {
+  background: none;
+  border: 0;
+  aspect-ratio: 1.18;
+}
+.field-studies .form-apparatus {
+  display: none;
+}
+.field-studies .forms-preview {
+  grid-template-columns: 0.72fr 1.4fr;
+}
+.field-studies .forms-preview-caption {
+  border-top: 0;
+}
+.field-studies .form-equation > span:last-child {
+  color: var(--alk-ink-rose);
+}
+@media (max-width: 650px) {
+  .field-studies .form-viewport {
+    aspect-ratio: 1.05;
+  }
+}

@@ -1,19 +1,38 @@
 ---
 import FormPoster from './FormPoster.astro';
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
 import AlkMath from '@alkemist/ui/AlkMath.astro';
-import { formStudies } from './catalog';
+import { allFormStudies } from './catalog';
 import type { FormId } from './types';
 interface Props {
   take: FormId;
+  poster?: ImageMetadata;
 }
-const { take } = Astro.props;
-const study = formStudies.find((item) => item.id === take)!;
+const { take, poster } = Astro.props;
+const study = allFormStudies.find((item) => item.id === take)!;
 const scene = study.make();
 ---
 
 <form-art data-form={take} data-state="idle">
   <div class="form-viewport" aria-busy="false">
-    <FormPoster scene={scene} label={`${study.name}: ${study.description}`} />
+    {
+      poster ? (
+        <Image
+          src={poster}
+          class="form-poster"
+          alt={`${study.name}: ${study.description}`}
+          widths={[480, 800, 1200]}
+          sizes="(max-width:650px) 100vw, 65vw"
+          format="webp"
+        />
+      ) : (
+        <FormPoster
+          scene={scene}
+          label={`${study.name}: ${study.description}`}
+        />
+      )
+    }
     <canvas
       tabindex="-1"
       inert

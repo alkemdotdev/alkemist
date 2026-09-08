@@ -21,6 +21,8 @@ const required = [
   'labs/homepage-studies/index.html',
   'labs/hero-studies/index.html',
   'labs/sculpture-studies/index.html',
+  'labs/field-studies/index.html',
+  'blog/fields-with-substance/index.html',
   'blog/four-new-forms/index.html',
   'blog/form-and-structure/index.html',
   'blog/color-in-the-models/index.html',

@@ -1,6 +1,6 @@
 import { formColors } from './materials';
 import type { BufferGeometry, Material, WebGLRenderTarget } from 'three';
-import { formStudies } from './catalog';
+import { allFormStudies } from './catalog';
 
 type Runtime = { dispose(): void; setVisible(value: boolean): void };
 
@@ -15,7 +15,7 @@ async function mount(
     import('three/addons/environments/RoomEnvironment.js'),
   ]);
   signal.throwIfAborted();
-  const spec = formStudies
+  const spec = allFormStudies
     .find((study) => study.id === host.dataset.form)!
     .make();
   const viewport = host.querySelector<HTMLElement>('.form-viewport')!;

@@ -3,6 +3,10 @@ import { createOrbit } from './orbit';
 import { createStrata } from './strata';
 import { createInterference } from './interference';
 import { createAssembly } from './assembly';
+import { createFluxCore } from './flux-core';
+import { createToroidalWeave } from './toroidal-weave';
+import { createVortexBody } from './vortex-body';
+import { createKnotCore } from './knot-core';
 
 export const formStudies = [
   {
@@ -54,5 +58,57 @@ export const formStudies = [
     make: createAssembly,
   },
 ] as const;
+export const fieldStudies = [
+  {
+    id: 'flux',
+    name: 'Flux core',
+    domain: 'Layered field sculpture',
+    subtitle: 'A field with a body.',
+    description:
+      'Thick nested ribbons surround a ribbed warm core. Fine filaments extend the field beyond the solid layers, preserving the depth and color of the dipole direction.',
+    note: 'follow the field inward',
+    equation: 'r = L\\sin^2\\theta',
+    inks: ['cobalt', 'cyan', 'violet', 'rose', 'vermilion'],
+    make: createFluxCore,
+  },
+  {
+    id: 'weave',
+    name: 'Toroidal weave',
+    domain: 'Toroidal geometry',
+    subtitle: 'A dense braid around an open center.',
+    description:
+      'Two counterwound families weave around a warm toroidal core. Thick colored strands, over-and-under crossings, and fine surface fibers give the loop its weight.',
+    note: 'one loop, many paths',
+    equation: '\\varphi = \\pm3\\theta + \\varphi_0',
+    inks: ['cobalt', 'teal', 'violet', 'rose', 'ochre'],
+    make: createToroidalWeave,
+  },
+  {
+    id: 'vortex',
+    name: 'Vortex',
+    domain: 'Helical sculpture',
+    subtitle: 'Swept surfaces. A layered interior.',
+    description:
+      'Twelve substantial outer ribbons twist around six warm inner ribbons and a fluted core. The close waist and swept shoulders make a compact, dimensional field sculpture.',
+    note: 'the interior matters',
+    equation: '12\\;\\text{outer} + 6\\;\\text{inner ribbons}',
+    inks: ['cobalt', 'cyan', 'violet', 'rose', 'vermilion'],
+    make: createVortexBody,
+  },
+  {
+    id: 'knot',
+    name: 'Knot core',
+    domain: 'Knot geometry',
+    subtitle: 'One continuous, interlocking body.',
+    description:
+      'A thick fluted trefoil carries ten braided strands and warm inlays. Its crossings and open spaces make the structure readable as you turn it.',
+    note: 'trace one continuous path',
+    equation: 'T(2,3)',
+    inks: ['cobalt', 'violet', 'rose', 'cyan', 'ochre'],
+    make: createKnotCore,
+  },
+] as const;
+
+export const allFormStudies = [...formStudies, ...fieldStudies];
 export const isFormId = (value: unknown): value is FormId =>
-  formStudies.some((study) => study.id === value);
+  allFormStudies.some((study) => study.id === value);

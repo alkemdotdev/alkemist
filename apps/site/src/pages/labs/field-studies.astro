@@ -1,0 +1,261 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import FormArt from '../../components/forms/FormArt.astro';
+import { Image } from 'astro:assets';
+import fluxPoster from '../../assets/fields/flux.png';
+import weavePoster from '../../assets/fields/weave.png';
+import vortexPoster from '../../assets/fields/vortex.png';
+import knotPoster from '../../assets/fields/knot.png';
+const posters = {
+  flux: fluxPoster,
+  weave: weavePoster,
+  vortex: vortexPoster,
+  knot: knotPoster,
+};
+import { fieldStudies } from '../../components/forms/catalog';
+import { ALK_INKS } from '@alkemist/ui/palette';
+import { isPreview } from '../../lib/deployment';
+import '../../styles/sculpture-studies.css';
+---
+
+<SiteLayout
+  title="Field studies"
+  description="Four new field sculptures with substantial layered geometry, rich color, and quiet motion."
+  preview={isPreview}
+>
+  <form-studies
+    class="field-studies"
+    data-collection="field"
+    data-notes="false"
+    data-captions="true"
+    data-view="compare"
+  >
+    <div class="forms-toolbar">
+      <a href="/labs/" class="forms-back">← Labs <span>/ Field studies</span></a
+      >
+      <nav aria-label="Sculpture direction">
+        <a href="?take=compare" data-view-link="compare" aria-current="page"
+          >Compare all</a
+        >
+        {
+          fieldStudies.map((study) => (
+            <a href={`?take=${study.id}`} data-view-link={study.id}>
+              {study.name}
+            </a>
+          ))
+        }
+      </nav>
+    </div>
+    <section
+      class="forms-comparison"
+      data-comparison
+      aria-labelledby="forms-title"
+    >
+      <div class="forms-introduction">
+        <div>
+          <p class="forms-eyebrow">New forms / layered fields</p><h1
+            id="forms-title"
+          >
+            Four new field sculptures.
+          </h1>
+        </div><p>
+          More volume, more layers, more to explore.<br />Open a form and turn
+          it over.
+        </p>
+      </div>
+      <div class="forms-grid">
+        {
+          fieldStudies.map((study, i) => (
+            <a
+              class={`forms-card forms-card-${study.id}`}
+              href={`?take=${study.id}`}
+              data-view-link={study.id}
+              aria-label={`Open ${study.name} homepage preview`}
+            >
+              <div class="forms-card-art">
+                <>
+                  <Image
+                    src={posters[study.id]}
+                    alt=""
+                    class="form-poster"
+                    widths={[400, 800]}
+                    sizes="(max-width:650px) 100vw, 50vw"
+                    format="webp"
+                    loading="lazy"
+                  />
+                  <span class="forms-card-open" aria-hidden="true">
+                    Open study ↗
+                  </span>
+                </>
+              </div>
+              <div class="forms-card-caption">
+                <>
+                  <div>
+                    <>
+                      <span class="forms-letter">
+                        {String.fromCharCode(65 + i)}
+                      </span>
+                      <h2>{study.name}</h2>
+                    </>
+                  </div>
+                  <p>{study.subtitle}</p>
+                </>
+              </div>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+    {
+      fieldStudies.map((study, i) => (
+        <section
+          id={`study-${study.id}`}
+          class={`forms-preview forms-${study.id}`}
+          data-form-panel={study.id}
+          aria-label={`${study.name} homepage preview`}
+        >
+          <div class="forms-preview-copy">
+            <p class="forms-eyebrow">Alkemist · an Astro starting point</p>
+            <h1>
+              Research, made
+              <br />
+              explorable.
+            </h1>
+            <p class="forms-lead">
+              Publish research, share experiments, and make your work something
+              people can explore.
+            </p>
+            <div class="forms-actions">
+              <>
+                <a href="/#start" class="forms-primary">
+                  Start using Alkemist <span aria-hidden="true">↗</span>
+                </a>
+                <a href="/test/">Explore the toolkit →</a>
+              </>
+            </div>
+          </div>
+          <div class="forms-preview-art">
+            <FormArt take={study.id} poster={posters[study.id]} />
+          </div>
+          <div class="forms-preview-caption" data-form-caption>
+            <>
+              <span>
+                {String.fromCharCode(65 + i)} / {study.name}
+              </span>
+              <p>{study.subtitle}</p>
+              <span
+                class="forms-ink-swatches"
+                aria-label={`Inks: ${study.inks.join(', ')}`}
+              >
+                {study.inks.map((id) => (
+                  <i
+                    style={`--swatch:${ALK_INKS.find((ink) => ink.id === id)?.hex}`}
+                  />
+                ))}
+              </span>
+            </>
+          </div>
+          <div class="forms-preview-below">
+            <>
+              <p>
+                Write it down.
+                <>
+                  <br />
+                  <span>Make it explorable.</span>
+                </>
+              </p>
+              <div>
+                <>
+                  <a href="/blog/">
+                    Research & notes <span>Blog ↗</span>
+                  </a>
+                  <a href="/labs/">
+                    Working experiments <span>Labs ↗</span>
+                  </a>
+                  <a href="/docs/">
+                    Your starting point <span>Docs ↗</span>
+                  </a>
+                </>
+              </div>
+            </>
+          </div>
+        </section>
+      ))
+    }
+    <section class="forms-review" aria-labelledby="forms-review-title">
+      <div>
+        <p class="forms-eyebrow">Your direction</p><h2 id="forms-review-title">
+          Choose a direction.
+        </h2><p data-direction-description>
+          Open a study to inspect its geometry, material, and annotations in a
+          full homepage composition.
+        </p><a href="/blog/fields-with-substance/"
+          >How these forms were made ↗</a
+        >
+      </div>
+      <form>
+        <fieldset>
+          <legend>Details in the full preview</legend><label
+            ><input type="checkbox" name="notes" /> Technical annotations</label
+          ><label
+            ><input type="checkbox" name="captions" checked /> Artwork captions</label
+          >
+        </fieldset>
+        <fieldset>
+          <legend>Board</legend><label
+            ><input type="radio" name="board" value="white" /> Whiteboard</label
+          ><label
+            ><input type="radio" name="board" value="black" /> Blackboard</label
+          >
+        </fieldset>
+        <label class="forms-favorite"
+          >Preferred take<select name="favorite"
+            ><option value="">Still comparing</option>{
+              fieldStudies.map((study) => (
+                <option value={study.id}>{study.name}</option>
+              ))
+            }</select
+          ></label
+        >
+        <button type="button" data-copy-direction>Copy my direction ↗</button><p
+          data-copy-status
+          role="status"
+        >
+        </p><textarea
+          data-manual-copy
+          hidden
+          readonly
+          aria-label="Direction to copy"
+          rows="5"></textarea>
+        <p class="forms-review-note">
+          Choices stay in this browser. Nothing is submitted.
+        </p>
+      </form>
+    </section>
+    <noscript
+      ><p>
+        These are still previews. Enable JavaScript to switch views and turn the
+        forms.
+      </p></noscript
+    >
+    <script is:inline>
+      (() => {
+        const host = document.currentScript.closest('form-studies');
+        const value = new URL(location.href).searchParams.get('take');
+        const take = ['flux', 'weave', 'vortex', 'knot'].includes(value)
+          ? value
+          : 'compare';
+        host.dataset.view = take;
+        host.querySelector('[data-comparison]').hidden = take !== 'compare';
+        host
+          .querySelectorAll('[data-form-panel]')
+          .forEach(
+            (panel) => (panel.hidden = panel.dataset.formPanel !== take),
+          );
+      })();
+    </script>
+  </form-studies>
+</SiteLayout>
+<script>
+  import '../../components/forms/studies';
+</script>

@@ -61,6 +61,21 @@ The page and `src/styles/sculpture-studies.css` own composition and spacing. Ref
 
 These are local design studies, not installed starter presets or new shared component APIs. Use the review controls to compare boards, technical annotations, and captions, and to copy a preferred take. The revised studies use a new browser preference key so a favorite from the earlier geometry is not silently treated as a selection of its replacement.
 
+## Substantial field sculptures
+
+The next round, [Field studies](/labs/field-studies/), explores four new bodies inspired by the nested Dipole composition. It has its own route, take identifiers, and saved preferences; the previous four remain available.
+
+| Take           | Geometry source                          | Editable structure                                         |
+| -------------- | ---------------------------------------- | ---------------------------------------------------------- |
+| Flux core      | `src/components/forms/flux-core.ts`      | Four ribbon shells, field lines, ribbed core               |
+| Toroidal weave | `src/components/forms/toroidal-weave.ts` | Solid torus, two counterwound strand families, fine fibers |
+| Vortex         | `src/components/forms/vortex-body.ts`    | Outer and inner helical ribbons, fluted center             |
+| Knot core      | `src/components/forms/knot-core.ts`      | Trefoil tube, braided strands, inlays                      |
+
+`fieldStudies` in `catalog.ts` owns the copy, equations, and constructors. The page is `src/pages/labs/field-studies.astro`; its scoped styles are in `src/styles/sculpture-studies.css`. Start with these site files when adopting a direction. Annotations default to hidden, and the resting pose has enough volume to serve as the opening image without labels.
+
+Refresh the actual rendered stills with `docs/art/capture-field-studies.cjs`, then copy the four completed captures into `src/assets/fields/`. The page supplies those images to `FormArt.astro` as its optional `poster` prop, retaining the same artwork when JavaScript or graphics are unavailable. The earlier gallery continues using its procedural fallback. The [development article](/blog/fields-with-substance/) records each construction and its illustrative limits.
+
 ## Preserve the useful defaults
 
 Keep controls keyboard accessible, provide a still image when a graphics engine is unavailable, and let a reader pause animated art. The sculpture study starts a slow orbit unless reduced motion is preferred; its small companion drifts gently. Dragging, keyboard input, or the pause control stops both motions. The shader study remains still until Play is pressed. Both stop drawing while hidden or outside the viewport. Check the opening on both boards and a narrow screen, with the ordinary reading content below it.

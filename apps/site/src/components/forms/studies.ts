@@ -1,9 +1,15 @@
-import { formStudies, isFormId } from './catalog';
-const storageKey = 'alkemist-four-forms-v2';
+import { formStudies, fieldStudies } from './catalog';
 class FormStudies extends HTMLElement {
   connectedCallback() {
     if (this.dataset.ready) return;
     this.dataset.ready = 'true';
+    const isField = this.dataset.collection === 'field';
+    const studies = isField ? fieldStudies : formStudies;
+    const isFormId = (value: unknown) =>
+      studies.some((study) => study.id === value);
+    const storageKey = isField
+      ? 'alkemist-field-studies-v1'
+      : 'alkemist-four-forms-v2';
     const form = this.querySelector<HTMLFormElement>('form')!;
     const favorite =
       form.querySelector<HTMLSelectElement>('[name="favorite"]')!;
@@ -14,6 +20,9 @@ class FormStudies extends HTMLElement {
     const details = ['notes', 'captions'] as const;
     const checkbox = (name: string) =>
       form.querySelector<HTMLInputElement>(`[name="${name}"]`)!;
+    const defaults = Object.fromEntries(
+      details.map((name) => [name, checkbox(name).checked]),
+    );
     let saved: Record<string, unknown> = {};
     try {
       const parsed = JSON.parse(localStorage.getItem(storageKey) ?? '{}');
@@ -22,7 +31,7 @@ class FormStudies extends HTMLElement {
     } catch {
       /* Storage is optional. */
     }
-    if (isFormId(saved.favorite)) favorite.value = saved.favorite;
+    if (isFormId(saved.favorite)) favorite.value = String(saved.favorite);
     const clear = () => {
       feedback.textContent = '';
       manual.hidden = true;
@@ -62,7 +71,7 @@ class FormStudies extends HTMLElement {
       this.querySelector<HTMLElement>(
         '[data-direction-description]',
       )!.textContent =
-        formStudies.find((study) => study.id === take)?.description ??
+        studies.find((study) => study.id === take)?.description ??
         'Open a study to inspect its geometry, material, and annotations in a full homepage composition.';
       clear();
     };
@@ -73,7 +82,9 @@ class FormStudies extends HTMLElement {
         (name) =>
           (checkbox(name).checked = params.has(name)
             ? params.get(name) !== '0'
-            : saved[name] !== false),
+            : typeof saved[name] === 'boolean'
+              ? saved[name]
+              : defaults[name]),
       );
       const board = params.get('board');
       if (board === 'white' || board === 'black') {
@@ -152,7 +163,7 @@ class FormStudies extends HTMLElement {
       .querySelector('[data-copy-direction]')!
       .addEventListener('click', async () => {
         const name =
-          formStudies.find((study) => study.id === favorite.value)?.name ??
+          studies.find((study) => study.id === favorite.value)?.name ??
           'Still comparing';
         const text = `Alkemist opening: ${name}\nAnnotations: ${checkbox('notes').checked ? 'yes' : 'no'}\nCaptions: ${checkbox('captions').checked ? 'yes' : 'no'}\n${url().href}`;
         try {

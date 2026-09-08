@@ -38,4 +38,12 @@ export type FormScene = {
     offset: [number, number];
   }[];
 };
-export type FormId = 'orbit' | 'strata' | 'interference' | 'assembly';
+export type FormId =
+  | 'orbit'
+  | 'strata'
+  | 'interference'
+  | 'assembly'
+  | 'flux'
+  | 'weave'
+  | 'vortex'
+  | 'knot';

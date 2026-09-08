@@ -1,0 +1,72 @@
+---
+title: Fields with substance
+description: Four new opening studies give the field an interior, a silhouette, and a physical-looking body.
+date: '2026-09-08'
+order: -8
+---
+
+import { Image } from 'astro:assets';
+import flux from '../../assets/fields/flux.png';
+import weave from '../../assets/fields/weave.png';
+import vortex from '../../assets/fields/vortex.png';
+import knot from '../../assets/fields/knot.png';
+
+The [color round](/blog/color-in-the-models/) made Dipole the most promising starting point. Its nested families gave the eye a path into the object, but the lines needed more substance. This round builds four new bodies around that idea: layers, visible interiors, and color carried by the geometry.
+
+## Flux core
+
+<Image
+  src={flux}
+  alt="Thick cyan, cobalt, and violet field ribbons surround a warm ribbed center."
+  widths={[480, 800, 1200]}
+  sizes="(max-width:800px) 100vw, 800px"
+  format="webp"
+/>
+
+Forty thick ribbons occupy four nested shells around a ribbed core. Their centerlines follow the same $r=L\sin^2\theta$ dipole family as the earlier model. Finite width, closed ends, and a warm interior turn that scaffold into a substantial object. Finer lines continue between the surfaces, and two gaps in the outer layers reveal the center.
+
+The ribbon thickness, colors, gaps, and core are authored choices. This is a field-inspired sculpture; it does not simulate magnetic material or map measured field strength.
+
+## Toroidal weave
+
+<Image
+  src={weave}
+  alt="Dense multicolored strands wrap a warm toroidal body around an open center."
+  widths={[480, 800, 1200]}
+  sizes="(max-width:800px) 100vw, 800px"
+  format="webp"
+/>
+
+A rose and ochre torus supports two counterwound families of twelve strands. Their phase follows $\varphi=\pm3\theta+\varphi_0$. Alternating radial lift suggests an over-and-under weave, while fine fibers reveal its direction at close range. The broad silhouette remains a simple loop with an open center. This is a parametric construction, not a collision-tested textile model.
+
+## Vortex
+
+<Image
+  src={vortex}
+  alt="Sweeping blue and violet helical ribbons open around a copper and rose interior."
+  widths={[480, 800, 1200]}
+  sizes="(max-width:800px) 100vw, 800px"
+  format="webp"
+/>
+
+Twelve outer ribbons sweep around six warm inner ribbons and a fluted center. Each ribbon has a closed, lens-shaped cross section; engraved traces give the broad surfaces detail. The narrow waist and diagonal pose make this the most directional composition. The name describes its form, rather than a computed fluid flow.
+
+## Knot core
+
+<Image
+  src={knot}
+  alt="A thick blue and violet trefoil with smaller rose strands, cyan filaments, and warm inlays."
+  widths={[480, 800, 1200]}
+  sizes="(max-width:800px) 100vw, 800px"
+  format="webp"
+/>
+
+A thick, fluted tube follows a $T(2,3)$ trefoil. Ten smaller counterwound strands, warm inlays, and fine cyan filaments follow its local frame. The crossings give the object a recognizable silhouette; the braid gives it detail when enlarged. No separate pieces orbit the main body.
+
+## Keep the artwork editable
+
+All four are pure TypeScript geometry in `src/components/forms/`: `flux-core.ts`, `toroidal-weave.ts`, `vortex-body.ts`, and `knot-core.ts`. The shared renderer supplies lighting, quiet motion, drag, zoom, keyboard controls, and reduced-motion handling. Technical annotations are optional and start hidden in this round.
+
+The stills above are captures of those actual meshes. `docs/art/capture-field-studies.cjs` reproduces them; `src/assets/fields/` holds the sources used for comparison cards and graphics fallbacks. The [homepage guide](/docs/homepage/) explains which files to edit. These remain site-owned design studies while the homepage decision is open.
+
+[Compare the four field studies →](/labs/field-studies/?take=compare&board=black)
