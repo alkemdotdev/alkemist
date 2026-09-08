@@ -1,0 +1,124 @@
+---
+title: Host your site on GitLab Pages
+description: Deploy a generated Alkemist site with GitLab CI, correct base paths, and optional parallel previews.
+order: 22
+---
+
+GitLab Pages can build and publish your Alkemist site directly from its GitLab repository. The standard Pages service is available on Free, Premium, and Ultimate. The generated configuration publishes the default branch and validates other branches. [GitLab Pages](https://docs.gitlab.com/user/project/pages/)
+
+## Generate the site
+
+This source-preview workflow requires access to the Alkemist repository. There is no public npm package yet. From an authenticated source checkout with Node 24:
+
+```sh
+npm ci
+npm run create:site -- ../my-lab --provider gitlab
+cd ../my-lab
+npm install
+npm run verify
+npm run dev
+```
+
+Personalize the identity and navigation in `src/lib/site.ts` and replace the starter content. Commit its `vendor/` tarballs and `package-lock.json`: the site installs its packaged Alkemist dependencies locally rather than from a published npm release.
+
+Create an empty repository in your GitLab namespace. For a new directory, initialize and commit it:
+
+```sh
+git init -b main
+git add .
+git commit -m "feat: start research site with Alkemist"
+```
+
+Set `ALK_SITE_REMOTE` to that repository's actual clone URL, then connect and push:
+
+```sh
+git remote add origin "$ALK_SITE_REMOTE"
+git push -u origin main
+```
+
+If you are adding Alkemist to an existing project, inspect its remote, content, instructions, and CI first, and integrate the generated pipeline into the existing one.
+
+## Understand the publishing job
+
+The generated `.gitlab-ci.yml` builds with Node 24, runs `npm ci` and `npm run verify`, and publishes `dist` from the default branch. Its central Pages declaration is:
+
+```yaml
+pages:
+  publish: dist
+```
+
+This is nested inside a job. `publish` belongs beneath `pages`; it is not a top-level job property. The template targets GitLab 17.10 or later, where the publish directory is automatically included in job artifacts. On a self-managed instance, check the installed version, Pages availability, and a usable runner before adopting it. [GitLab Pages publish syntax](https://docs.gitlab.com/ci/yaml/#pagespublish)
+
+Set the project's default branch to `main` if that is your production branch. Follow the pipeline through the publish job, then read the actual address under **Deploy → Pages**.
+
+## Set the origin and base path
+
+The starter accepts `SITE_URL` for the origin and `BASE_PATH` for the path under that origin. Use the address GitLab actually assigns; do not infer it solely from the repository name.
+
+| Pages address                      | `SITE_URL`                        | `BASE_PATH` |
+| ---------------------------------- | --------------------------------- | ----------- |
+| `https://my-lab-123456.gitlab.io/` | `https://my-lab-123456.gitlab.io` | `/`         |
+| `https://group.gitlab.io/my-lab/`  | `https://group.gitlab.io`         | `/my-lab/`  |
+| `https://research.example.org/`    | `https://research.example.org`    | `/`         |
+
+Unique-domain and custom-domain sites usually live at the domain root. Traditional project URLs include a project path. Astro needs that path as `base` so routes and assets remain reachable. Keep new internal links and public asset URLs based on the starter's base-aware helper. [Astro on GitLab Pages](https://docs.astro.build/en/guides/deploy/gitlab/)
+
+In GitLab CI, the starter derives these values from `CI_PAGES_URL`. Since GitLab 17.9, that variable includes a parallel deployment's prefix too. Do not add the prefix again. Explicit `SITE_URL` and `BASE_PATH` settings override the derived values for production; use those for a production custom domain. Preview builds use the origin and complete path from `CI_PAGES_URL`, which refers to the GitLab Pages domain. [GitLab predefined variables](https://docs.gitlab.com/ci/variables/predefined_variables/)
+
+Reproduce a traditional project build locally with:
+
+```sh
+SITE_URL=https://group.gitlab.io BASE_PATH=/my-lab/ npm run verify
+```
+
+## Optional parallel previews
+
+Parallel Pages deployments require **Premium or Ultimate** and an available deployment slot. They are not enabled by the default starter. A passing non-main pipeline on Free proves the build; it does not create a hosted preview. [Parallel deployments](https://docs.gitlab.com/user/project/pages/parallel_deployments/)
+
+For an eligible project, add a merge-request-only Pages job alongside the production job:
+
+```yaml
+preview-site:
+  image: node:24
+  stage: deploy
+  script:
+    - npm ci
+    - npm run verify
+  pages:
+    publish: dist
+    path_prefix: 'mr-$CI_MERGE_REQUEST_IID'
+    expire_in: 1 week
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+```
+
+Use the production job's stage if your pipeline has different stage names. The starter derives the preview's origin and complete base path from `CI_PAGES_URL`, even when production has custom-domain variables. Keep this job in the same pipeline ownership model; do not publish a non-main build at the production path.
+
+For example, merge request 12 appears at `/mr-12/` on a unique domain or `/my-lab/mr-12/` on a traditional project domain. Choose a prefix namespace that your site does not use for ordinary content. This example keeps previews for one week; GitLab otherwise defaults parallel deployments to 24 hours. [Preview paths and expiry](https://docs.gitlab.com/user/project/pages/parallel_deployments/)
+
+## Verify the live result
+
+Compare the pipeline's commit with the deployed `/build.json`. Open the actual Pages address, directly reload a nested page, and check a chart, its data download, navigation, and both desktop/mobile layouts. For a project subpath, verify the page and its assets stay beneath that path. After enabling previews, check their commit and confirm production has not moved.
+
+For a custom domain, follow GitLab's domain verification and TLS setup, then rebuild with the final origin. [GitLab custom domains](https://docs.gitlab.com/user/project/pages/custom_domains_ssl_tls_certification/)
+
+## Hand this to an agent
+
+```text
+Set up my Alkemist site on GitLab Pages. Inspect the repository, instructions,
+content, existing CI, GitLab instance/version, runner, and Pages settings.
+Ask once for missing namespace/repository, site identity, domain, and preview
+requirements that cannot be established from context.
+
+Generate or integrate the GitLab starter and preserve existing work. Use the
+actual Pages URL to configure origin and base path. Publish the default
+branch; enable parallel previews only if the project's tier and capacity
+support them. Follow my existing authorization for repository/hosting changes.
+
+Run npm run verify and test the intended base path. Then inspect the live
+deployment at desktop/mobile sizes, check nested routes and assets, and
+compare the published revision with the pipeline commit. Record production
+and any preview URLs; identify local checks separately from live evidence.
+```
+
+This is a generated setup recipe. GitLab account deployment and preview behavior must be verified in the consuming project; the Alkemist demo's Cloudflare deployment does not establish them.

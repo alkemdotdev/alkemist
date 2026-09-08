@@ -1,0 +1,37 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+import { siteName, tagline, withBase } from '../lib/site';
+---
+
+<SiteLayout title={siteName} description={tagline}>
+  <div class="lab-intro">
+    <p class="alk-eyebrow">An open research notebook</p>
+    <h1>Make an idea something you can explore.</h1>
+    <p>
+      {tagline}. This is your site: write about the work, share a usable
+      experiment, and introduce the people behind it.
+    </p>
+    <p class="lab-note">Start with a question. Leave the working in.</p>
+    <div class="lab-links">
+      <a href={withBase('labs/oscillator/')}>Explore the first lab →</a>
+      <a href={withBase('blog/first-experiment/')}>Read the first experiment</a>
+    </div>
+  </div>
+  <section class="lab-grid lab-section" aria-label="Explore the site">
+    <article class="lab-card">
+      <h2>Blog</h2><p>Research notes, news, and the story behind the work.</p><a
+        href={withBase('blog/')}>Read the blog →</a
+      >
+    </article>
+    <article class="lab-card">
+      <h2>Labs</h2><p>Small, working tools and interactive experiments.</p><a
+        href={withBase('labs/')}>Open the labs →</a
+      >
+    </article>
+    <article class="lab-card">
+      <h2>Info</h2><p>
+        The people, purpose, and questions behind this project.
+      </p><a href={withBase('info/')}>Meet the project →</a>
+    </article>
+  </section>
+</SiteLayout>

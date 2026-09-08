@@ -1,0 +1,212 @@
+---
+import AlkCode from '@alkemist/ui/AlkCode.astro';
+import {
+  setupProviders,
+  setupCommands,
+  setupPrompt,
+  sourceAccess,
+} from '../lib/setup';
+import '../styles/start-using.css';
+interface Props {
+  heading?: string;
+}
+const { heading = 'Start using Alkemist.' } = Astro.props;
+const id = `setup-${crypto.randomUUID().slice(0, 8)}`;
+---
+
+<alk-start id="start" data-mode="agent">
+  <div class="start-intro">
+    <div>
+      <p class="alk-eyebrow">From an idea to your own website</p><h2>
+        {heading}
+      </h2>
+    </div>
+    <p>
+      Bring your agent, or open a terminal. Create a separate site, make it
+      yours, and publish it where you want.
+    </p>
+  </div>
+  <div class="start-workbench">
+    <div class="start-options">
+      <div role="tablist" aria-label="Setup method" class="start-methods">
+        <button
+          id={`${id}-agent-tab`}
+          role="tab"
+          aria-selected="true"
+          aria-controls={`${id}-agent`}
+          data-mode="agent">With an agent</button
+        >
+        <button
+          id={`${id}-terminal-tab`}
+          role="tab"
+          aria-selected="false"
+          aria-controls={`${id}-terminal`}
+          tabindex="-1"
+          data-mode="terminal">From the terminal</button
+        >
+      </div>
+      <label class="start-provider"
+        >Hosting <select aria-label="Hosting provider" data-provider
+          >{
+            setupProviders.map((p) => <option value={p.id}>{p.name}</option>)
+          }</select
+        ></label
+      >
+    </div>
+    {
+      setupProviders.map((provider, i) => (
+        <div data-provider-panel={provider.id} hidden={i !== 0}>
+          <p class="start-provider-detail">{provider.detail}</p>
+        </div>
+      ))
+    }
+    <div
+      role="tabpanel"
+      id={`${id}-agent`}
+      aria-labelledby={`${id}-agent-tab`}
+      data-method-panel="agent"
+    >
+      <p class="start-instruction">
+        Give your coding agent a complete setup brief.
+      </p>
+      {
+        setupProviders.map((provider, i) => (
+          <div data-provider-panel={provider.id} hidden={i !== 0}>
+            <label class="alk-sr-only" for={`${id}-${provider.id}-prompt`}>
+              {provider.name} setup prompt
+            </label>
+            <textarea
+              id={`${id}-${provider.id}-prompt`}
+              rows="7"
+              readonly
+              spellcheck="false"
+              data-prompt
+              set:text={setupPrompt(provider)}
+            />
+            <div class="start-actions">
+              <>
+                <button class="start-primary" type="button" data-copy>
+                  Copy setup prompt <span aria-hidden="true">↗</span>
+                </button>
+                <a href={provider.guide}>Read the hosting guide →</a>
+              </>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+    <div
+      role="tabpanel"
+      id={`${id}-terminal`}
+      aria-labelledby={`${id}-terminal-tab`}
+      data-method-panel="terminal"
+      hidden
+    >
+      <p class="start-instruction">
+        Use Node 24.20.0. Choose an empty destination for your new site.
+      </p>
+      {
+        setupProviders.map((provider, i) => (
+          <div data-provider-panel={provider.id} hidden={i !== 0}>
+            <AlkCode
+              title={`Create a site for ${provider.name}`}
+              lang="sh"
+              code={setupCommands(provider)}
+            />
+            <div class="start-actions">
+              <>
+                <a href="/docs/getting-started/">Follow the setup guide →</a>
+                <a href={provider.guide}>Publish your site →</a>
+              </>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+    <p class="start-feedback" role="status" aria-live="polite" data-feedback>
+    </p>
+    <div class="start-footnote">
+      <span>{sourceAccess}</span><a
+        href="/docs/agent-setup.md"
+        download="alkemist-agent-setup.md">Download agent instructions ↓</a
+      >
+    </div>
+  </div>
+  <noscript
+    ><p>
+      The Cloudflare instructions are shown above. Use the <a
+        href="/docs/getting-started/">setup guide</a
+      > for all hosting choices.
+    </p></noscript
+  >
+</alk-start>
+
+<script>
+  class AlkStart extends HTMLElement {
+    connectedCallback() {
+      if (this.dataset.ready) return;
+      this.dataset.ready = 'true';
+      const select = this.querySelector<HTMLSelectElement>('[data-provider]')!;
+      const feedback = this.querySelector<HTMLElement>('[data-feedback]')!;
+      const tabs = [
+        ...this.querySelectorAll<HTMLButtonElement>('[role="tab"]'),
+      ];
+      const updateProvider = () => {
+        this.querySelectorAll<HTMLElement>('[data-provider-panel]').forEach(
+          (panel) =>
+            (panel.hidden = panel.dataset.providerPanel !== select.value),
+        );
+        feedback.textContent = '';
+      };
+      select.addEventListener('change', updateProvider);
+      const chooseTab = (tab: HTMLButtonElement) => {
+        tabs.forEach((item) => {
+          item.setAttribute('aria-selected', String(item === tab));
+          item.tabIndex = item === tab ? 0 : -1;
+        });
+        this.querySelectorAll<HTMLElement>('[data-method-panel]').forEach(
+          (panel) =>
+            (panel.hidden = panel.dataset.methodPanel !== tab.dataset.mode),
+        );
+        this.dataset.mode = tab.dataset.mode;
+        feedback.textContent = '';
+      };
+      tabs.forEach((tab, index) => {
+        tab.addEventListener('click', () => chooseTab(tab));
+        tab.addEventListener('keydown', (event) => {
+          let next: number | undefined;
+          if (event.key === 'ArrowRight') next = (index + 1) % tabs.length;
+          if (event.key === 'ArrowLeft')
+            next = (index - 1 + tabs.length) % tabs.length;
+          if (event.key === 'Home') next = 0;
+          if (event.key === 'End') next = tabs.length - 1;
+          if (next !== undefined) {
+            event.preventDefault();
+            chooseTab(tabs[next]);
+            tabs[next].focus();
+          }
+        });
+      });
+      this.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach(
+        (button) =>
+          button.addEventListener('click', async () => {
+            const prompt = button
+              .closest('[data-provider-panel]')!
+              .querySelector<HTMLTextAreaElement>('[data-prompt]')!;
+            try {
+              await navigator.clipboard.writeText(prompt.value);
+              feedback.textContent =
+                'Setup prompt copied. Paste it into your coding agent.';
+            } catch {
+              prompt.focus();
+              prompt.select();
+              feedback.textContent =
+                'Copy is unavailable here. The prompt is selected so you can copy it manually.';
+            }
+          }),
+      );
+    }
+  }
+  if (!customElements.get('alk-start'))
+    customElements.define('alk-start', AlkStart);
+</script>

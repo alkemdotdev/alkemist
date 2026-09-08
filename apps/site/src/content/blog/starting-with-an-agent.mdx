@@ -1,0 +1,24 @@
+---
+title: The first useful interaction is setup
+description: A homepage entry point, a standalone starter, and instructions that work for a person or a coding agent.
+date: '2026-09-08'
+order: -2
+---
+
+A component gallery shows what a toolkit can do. The next useful interaction is making a site of your own. Alkemist now puts **Start using Alkemist** near the top of its homepage, with a choice of an agent brief or terminal instructions.
+
+Both paths use the same setup contract. Choose Cloudflare, GitLab Pages, or a custom host; the interface supplies the appropriate commands, prompt, and hosting guide. The [plain-Markdown agent instructions](/docs/agent-setup.md) also work without navigating the interface.
+
+## A separate site, with a clear owner
+
+The generator creates an independent Astro application. Your pages, styles, identity, Git history, and hosting settings belong there. The reusable packages are packed into local npm tarballs, so the generated app can install without reaching back into the source workspace.
+
+That distinction matters while the repository is access-restricted and packages have not been released on npm. The getting-started flow states the access requirement instead of advertising an unavailable package command. Updating source snapshots is explicit, with a dependency diff and verification; it does not silently replace the site's content.
+
+## Hosting instructions have to name the differences
+
+Cloudflare can build directly from a connected Git repository. GitLab Pages publishes through CI, and its parallel previews have a paid-tier requirement. Another static host can serve the same build artifact, but its upload command, paths, and preview isolation must be configured for that provider.
+
+The guides distinguish each of those cases. A local build confirms the artifact can be generated. A deployment report needs the actual URL, source revision, working links and media, and an exercised live page. An agent should leave enough evidence for the next person or agent to continue from what actually happened.
+
+Start with the [setup guide](/docs/getting-started/) or explore the [component catalog](/docs/components/). The same site that explains Alkemist should make it straightforward to begin using it.

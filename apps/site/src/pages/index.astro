@@ -1,6 +1,7 @@
 ---
 import SiteLayout from '../layouts/SiteLayout.astro';
 import { isPreview } from '../lib/deployment';
+import StartUsing from '../components/StartUsing.astro';
 const surface: string[] = [];
 function point(u: number, v: number) {
   const r = 115 + 38 * Math.cos(v),
@@ -37,9 +38,13 @@ for (let i = 0; i < 10; i++)
         code, data, and models. Build a place where people can explore them.
       </p>
       <div class="alk-links">
-        <a href="/labs/">Open the labs →</a><a href="/docs/">Use Alkemist →</a>
+        <a class="start-primary" href="#start"
+          >Start using Alkemist <span aria-hidden="true">↗</span></a
+        ><a href="/labs/">Explore the labs →</a>
       </div>
-      <p class="alk-status">Foundation 0.1 · built on Astro 7</p>
+      <p class="alk-status">
+        Source preview · repository access required · Astro 7
+      </p>
     </div>
     <figure class="alk-specimen">
       <div class="alk-specimen-label">
@@ -64,6 +69,7 @@ for (let i = 0; i < 10; i++)
       </figcaption>
     </figure>
   </div>
+  <StartUsing />
   <section class="alk-section">
     <p class="alk-eyebrow">The workbench</p><h2>
       Publish the idea. Keep the details.

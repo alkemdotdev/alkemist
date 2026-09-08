@@ -21,7 +21,7 @@ Starlight is the architectural precedent: a maintained Astro integration with co
 
 ## Theme the shared components
 
-`AlkLayout` provides the shared page shell. Its public props are `title`, `description`, `section`, and `preview`, plus `navigation`, `moreNavigation`, and `footerNavigation`. See [site structure and navigation](/docs/site-structure/) for the link arrays and how to omit Docs in a consuming site.
+`AlkLayout` provides the shared page shell. Its public props are `title`, `description`, `section`, and `preview`; `siteName`, `tagline`, and `faviconHref` set your identity. It also accepts `navigation`, `moreNavigation`, and `footerNavigation`. Home, favicon, and default navigation links respect Astro's configured base path. See [site structure and navigation](/docs/site-structure/) for the link arrays and how to omit Docs in a consuming site.
 
 ```astro
 ---

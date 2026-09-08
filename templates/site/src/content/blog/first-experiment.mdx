@@ -1,0 +1,28 @@
+---
+title: A first experiment
+description: Start with a question, preserve the data, and show the working.
+published: '2026-09-08'
+---
+
+This is your first article. Replace it with a research note, project update, or something you want to explain.
+
+## Show your working
+
+A simple harmonic oscillator gives us a useful starting point:
+
+$$
+\ddot{x} + \omega^2 x = 0, \qquad x(t) = A\cos(\omega t).
+$$
+
+The starter includes a small **synthetic** displacement dataset and an interactive chart in Labs. It is a demonstration, not a measured result.
+
+```python
+from math import cos, pi
+
+def displacement(t: float, amplitude: float = 1.0) -> float:
+    return amplitude * cos(2 * pi * t)
+```
+
+## Keep the evidence nearby
+
+Describe how your data was produced, state its units, and distinguish observed results from assumptions. The files in `public/data/` are ordinary CSV files; your article remains ordinary Markdown or MDX.

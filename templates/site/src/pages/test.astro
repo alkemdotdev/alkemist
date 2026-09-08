@@ -1,0 +1,50 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+import AlkCode from '@alkemist/ui/AlkCode.astro';
+import AlkMath from '@alkemist/ui/AlkMath.astro';
+import { withBase } from '../lib/site';
+---
+
+<SiteLayout
+  title="Test page"
+  description="A compact check of this site's reusable styles."
+>
+  <h1>One page. Many specimens.</h1><p>
+    Use this page to check your theme overrides on a phone and a desktop.
+  </p>
+  <section class="lab-section">
+    <h2>Type and ink</h2><p>
+      Ordinary text, <strong>strong text</strong>, <em>emphasis</em>, <code
+        >inline code</code
+      >, and <a href={withBase('labs/oscillator/')}>a useful link</a>.
+    </p><p class="lab-note">
+      Keep a little room for handwritten thinking.
+    </p><blockquote>
+      A good experiment makes the next question clearer.
+    </blockquote>
+  </section>
+  <section class="lab-section">
+    <h2>Math and code</h2><AlkMath
+      tex={String.raw`E = \frac{1}{2}m\dot{x}^2 + \frac{1}{2}kx^2`}
+      label="Oscillator energy"
+    /><AlkCode
+      code={'const energy = (m * v ** 2 + k * x ** 2) / 2;'}
+      lang="typescript"
+      title="energy.ts"
+      lineNumbers={true}
+    />
+  </section>
+  <section class="lab-section">
+    <h2>Details and controls</h2><details>
+      <summary>Open an annotation</summary><p>
+        State the assumption behind the result.
+      </p>
+    </details><p>
+      <label
+        ><input type="checkbox" /> Include uncertainty in the next experiment</label
+      >
+    </p><a href={withBase('labs/oscillator/')}
+      >Test the interactive chart and model →</a
+    >
+  </section>
+</SiteLayout>

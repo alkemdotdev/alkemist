@@ -1,0 +1,45 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import AlkChart from '@alkemist/ui/AlkChart.astro';
+import AlkModel from '@alkemist/ui/AlkModel.astro';
+import AlkMath from '@alkemist/ui/AlkMath.astro';
+import { withBase } from '../../lib/site';
+---
+
+<SiteLayout
+  title="The oscillator bench"
+  description="Explore a synthetic signal and an original tetrahedron mesh."
+  section="Labs"
+>
+  <h1>The oscillator bench</h1><p class="lab-intro">
+    An equation, a data file, and a shape. This is a small working starting
+    point for your own experiment.
+  </p>
+  <section class="lab-section" id="signal">
+    <h2>A synthetic signal</h2>
+    <AlkMath
+      tex={String.raw`x(t) = \cos(2\pi t)`}
+      label="Normalized harmonic motion"
+    />
+    <AlkChart
+      src={withBase('data/oscillation.csv')}
+      type="line"
+      x="time"
+      y="position"
+      title="One oscillation"
+      description="Synthetic displacement sampled over one second. Time in seconds; position in meters."
+      xLabel="Time (s)"
+      yLabel="Position (m)"
+      sample={true}
+      grid={true}
+    />
+  </section>
+  <section class="lab-section" id="model">
+    <h2>A shape to inspect</h2>
+    <AlkModel
+      src={withBase('models/tetrahedron.gltf')}
+      title="An original tetrahedron"
+      description="A small, uncompressed glTF fixture with four triangular faces. Drag to orbit or use the camera controls."
+    />
+  </section>
+</SiteLayout>

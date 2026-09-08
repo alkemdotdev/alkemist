@@ -1,0 +1,15 @@
+# Opt in only on GitLab Premium/Ultimate with parallel deployment slots.
+preview-pages:
+  stage: deploy
+  script:
+    - npm ci
+    - npm run verify
+  pages:
+    publish: dist
+    path_prefix: 'mr-$CI_MERGE_REQUEST_IID'
+    expire_in: 1 week
+  environment:
+    name: 'review/mr-$CI_MERGE_REQUEST_IID'
+    url: $CI_PAGES_URL
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'

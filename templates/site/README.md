@@ -1,0 +1,31 @@
+# Your Alkemist site
+
+This is an independent Astro project. Its content, navigation, styles, and hosting configuration belong to you. Alkemist is installed from two local package snapshots in `vendor/`; no unpublished npm command is required.
+
+```sh
+npm install
+npm run verify
+npm run dev
+```
+
+Edit `src/lib/site.ts` to change the name and tagline. Edit `src/styles/site.css` for theme overrides, `src/content/blog/` for posts, and `src/pages/labs/` for interactive apps. This starter contains Blog, Labs, Info, and a small Test page; documentation is optional.
+
+The oscillator data is synthetic. The tetrahedron is an original, small glTF fixture. Replace them with your own evidence and record units, provenance, and license terms. Math and fenced code in MDX work through the installed integration. Charts and models load their rendering engines when visible.
+
+## Hosting
+
+Follow HOSTING.md for the provider selected when generating this site. Set `SITE_URL` to your production origin and `BASE_PATH` to `/` or your project path. Copy `.env.example` to `.env` for local overrides. CI variables override values in `.env`. Never commit tokens.
+
+`npm run verify` checks Astro types, builds `dist/`, verifies local page links and assets, and checks preview metadata. It does not prove an external deployment succeeded. After publication, open the live site, inspect its labs, and compare `/build.json` with the intended commit.
+
+## Updating the installed packages
+
+Obtain a newer Alkemist source checkout and run its `npm ci`. From that source checkout, run:
+
+```sh
+npm run create:site -- /absolute/path/to/this-site --update
+```
+
+Then, in this site, run `npm install` and `npm run verify`, inspect the changes, and exercise the browser. Commit the new vendor files, package.json, and package-lock.json together when satisfied. Keep the previous package snapshot for rollback.
+
+The update command only changes package references, vendor snapshots, and `alkemist.starter.json`; it preserves your content, styles, navigation, and provider setup. This workflow checks snapshot replacement, not compatibility with every future release. Read release migration notes before changing a package's major version. It does not automatically migrate your site's Astro version.

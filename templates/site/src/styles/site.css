@@ -1,0 +1,34 @@
+/* Your overrides live here and are preserved when Alkemist packages update. */
+.lab-intro {
+  max-width: 44rem;
+}
+.lab-note {
+  font-family: var(--alk-hand);
+  font-size: 1.65rem;
+  color: var(--alk-ink-cobalt);
+}
+.lab-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 2rem;
+  margin-block: 2rem;
+}
+.lab-section {
+  margin-block: 4rem;
+  scroll-margin-top: 2rem;
+}
+.lab-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  gap: 2rem;
+}
+.lab-card {
+  border-top: 1px solid var(--alk-rule);
+  padding-top: 1.5rem;
+}
+.lab-reading {
+  max-width: 48rem;
+}
+.lab-reading h2 {
+  margin-top: 2.5rem;
+}

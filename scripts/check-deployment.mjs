@@ -43,6 +43,10 @@ const checks = [];
 for (const [path, title] of [
   ['/', 'Alkemist'],
   ['/docs/', 'Documentation'],
+  ['/docs/getting-started/', 'Getting started'],
+  ['/docs/hosting/cloudflare/', 'Host your site on Cloudflare'],
+  ['/docs/hosting/gitlab-pages/', 'Host your site on GitLab Pages'],
+  ['/docs/hosting/custom/', 'Host your site with another provider'],
   ['/docs/charts/', 'Charts and data'],
   ['/docs/components/', 'Components'],
   ['/docs/site-structure/', 'Site structure and navigation'],
@@ -86,6 +90,35 @@ for (const [path, title] of [
   });
 }
 const redirectChecks = [];
+const machineGuides = [];
+for (const [path, type, required] of [
+  [
+    '/docs/agent-setup.md',
+    /^text\/markdown/,
+    [
+      'npm run create:site',
+      '--provider cloudflare',
+      '--provider gitlab',
+      '--provider custom',
+    ],
+  ],
+  [
+    '/llms.txt',
+    /^text\/plain/,
+    ['/docs/agent-setup.md', '/docs/getting-started/'],
+  ],
+]) {
+  const response = await get(path);
+  assert.equal(response.status, 200, path);
+  assert.match(response.headers['content-type'] ?? '', type, path);
+  for (const phrase of required)
+    assert.ok(response.text.includes(phrase), `${path}: missing ${phrase}`);
+  machineGuides.push({
+    path,
+    status: response.status,
+    contentType: response.headers['content-type'],
+  });
+}
 for (const [from, to] of Object.entries(redirects)) {
   for (const source of [from, from.slice(0, -1)]) {
     const response = await fetch(
@@ -142,6 +175,7 @@ const report = {
   checkedAt: new Date().toISOString(),
   build,
   checks,
+  machineGuides,
   redirectChecks,
   robots: robots.text,
   missingPageStatus: missing.status,

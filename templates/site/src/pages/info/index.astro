@@ -1,0 +1,17 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import { siteName } from '../../lib/site';
+---
+
+<SiteLayout title="Info" description={`About ${siteName}.`}>
+  <h1>About {siteName}</h1><div class="lab-reading">
+    <p>
+      This is a place for the questions we are asking and the things we are
+      building.
+    </p><h2>People and purpose</h2><p>
+      Introduce your team, your research interests, and how others can
+      participate. Add individual bios beneath <code>/info/</code> as your project
+      grows.
+    </p>
+  </div>
+</SiteLayout>

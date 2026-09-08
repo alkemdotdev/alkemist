@@ -1,5 +1,7 @@
 ---
 import './theme.css';
+const base = import.meta.env.BASE_URL;
+const home = base.endsWith('/') ? base : `${base}/`;
 export interface AlkNavLink {
   label: string;
   href: string;
@@ -9,6 +11,9 @@ export interface AlkLayoutProps {
   description?: string;
   section?: string;
   preview?: boolean;
+  siteName?: string;
+  tagline?: string;
+  faviconHref?: string;
   navigation?: AlkNavLink[];
   moreNavigation?: AlkNavLink[];
   footerNavigation?: AlkNavLink[];
@@ -19,10 +24,13 @@ const {
   description = 'An open workbench for publishing technical ideas. Built on Astro.',
   section = '',
   preview = false,
+  siteName = 'Alkemist',
+  tagline = 'an open workbench',
+  faviconHref = `${home}favicon.svg`,
   navigation = [
-    { label: 'Blog', href: '/blog/' },
-    { label: 'Labs', href: '/labs/' },
-    { label: 'Info', href: '/info/' },
+    { label: 'Blog', href: `${home}blog/` },
+    { label: 'Labs', href: `${home}labs/` },
+    { label: 'Info', href: `${home}info/` },
   ],
   moreNavigation = [],
   footerNavigation = [],
@@ -32,6 +40,7 @@ function current(href: string) {
   if (Astro.url.pathname === href) return 'page';
   if (
     href !== '/' &&
+    href !== home &&
     Astro.url.pathname.startsWith(href.endsWith('/') ? href : `${href}/`)
   )
     return 'location';
@@ -48,8 +57,8 @@ function current(href: string) {
     <meta name="color-scheme" content="light dark" />
     {preview && <meta name="robots" content="noindex, nofollow" />}
     <link rel="canonical" href={canonical} />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <title>{title === 'Alkemist' ? title : `${title} · Alkemist`}</title>
+    <link rel="icon" href={faviconHref} type="image/svg+xml" />
+    <title>{title === siteName ? title : `${title} · ${siteName}`}</title>
   </head>
   <body>
     <a class="alk-skip" href="#main">Skip to content</a>
@@ -59,8 +68,10 @@ function current(href: string) {
       )
     }
     <header class="alk-header">
-      <a class="alk-brand" href="/" aria-label="Alkemist home"
-        >alkemist<span class="alk-brand-detail"> / an open workbench</span></a
+      <a class="alk-brand" href={home} aria-label={`${siteName} home`}
+        >{siteName === 'Alkemist' ? 'alkemist' : siteName}{
+          tagline && <span class="alk-brand-detail"> / {tagline}</span>
+        }</a
       >
       <nav aria-label="Main navigation">
         {
@@ -106,7 +117,8 @@ function current(href: string) {
       <slot />
     </main>
     <footer class="alk-footer">
-      <a href="/">Alkemist</a><span>Made with the Alkemist theme on Astro.</span
+      <a href={home}>{siteName}</a><span
+        >Made with the Alkemist theme on Astro.</span
       >
       {footerNavigation.map(({ label, href }) => <a href={href}>{label}</a>)}
     </footer>

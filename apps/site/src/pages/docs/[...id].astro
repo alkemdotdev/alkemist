@@ -23,19 +23,23 @@ const docs = (await getCollection('docs')).sort(
 >
   <div class="alk-doc-shell">
     <aside class="alk-sidebar">
-      <p class="alk-eyebrow">Documentation</p><nav aria-label="Documentation">
-        <a href="/docs/components/">Component catalog</a>
-        {
-          docs.map((doc) => (
-            <a
-              href={`/docs/${doc.id}/`}
-              aria-current={doc.id === entry.id ? 'page' : undefined}
-            >
-              {doc.data.title}
-            </a>
-          ))
-        }
-      </nav>
+      <details class="docs-menu" open>
+        <summary class="alk-eyebrow">Documentation</summary><nav
+          aria-label="Documentation"
+        >
+          <a href="/docs/components/">Component catalog</a>
+          {
+            docs.map((doc) => (
+              <a
+                href={`/docs/${doc.id}/`}
+                aria-current={doc.id === entry.id ? 'page' : undefined}
+              >
+                {doc.data.title}
+              </a>
+            ))
+          }
+        </nav>
+      </details>
     </aside>
     <article class="alk-prose">
       <h1>{entry.data.title}</h1><p class="alk-lead">
@@ -44,3 +48,28 @@ const docs = (await getCollection('docs')).sort(
     </article>
   </div>
 </SiteLayout>
+
+<style>
+  .docs-menu {
+    border: 0;
+    padding: 0;
+  }
+  .docs-menu summary {
+    cursor: pointer;
+    margin: 0;
+    padding: 0;
+  }
+  .docs-menu[open] summary {
+    margin-bottom: 1.25rem;
+  }
+</style>
+
+<script>
+  const menu = document.querySelector<HTMLDetailsElement>('.docs-menu');
+  const narrow = matchMedia('(max-width: 650px)');
+  const adaptMenu = () => {
+    if (menu) menu.open = !narrow.matches;
+  };
+  adaptMenu();
+  narrow.addEventListener('change', adaptMenu);
+</script>

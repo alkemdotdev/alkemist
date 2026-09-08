@@ -20,6 +20,8 @@
     "verify": "npm run check && npm test && npm run build && node scripts/check-build.mjs",
     "cloudflare:status": "node scripts/cloudflare.mjs status",
     "cloudflare:setup": "node scripts/cloudflare.mjs setup",
+    "create:site": "node scripts/create-site.mjs",
+    "check:starter": "node scripts/check-starter.mjs",
     "generate:palette": "node scripts/generate-palette.mjs",
     "generate:fixtures": "node scripts/generate-test-data.mjs && node scripts/generate-test-model.mjs"
   },

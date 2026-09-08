@@ -1,0 +1,111 @@
+---
+title: Host your site with another provider
+description: Build a portable static Alkemist artifact and connect it to your chosen host and Git workflow.
+order: 23
+---
+
+The generated Alkemist site builds to ordinary static files in `dist/`. A custom provider needs to serve that directory and rebuild it when the intended Git branch changes. This can be another managed static host, a server you control, or object storage behind an HTTPS CDN. [Astro deployment options](https://docs.astro.build/en/guides/deploy/)
+
+## Generate and build
+
+This source-preview workflow requires access to the Alkemist repository. There is no public npm package yet. From an authenticated source checkout with Node 24:
+
+```sh
+npm ci
+npm run create:site -- ../my-lab --provider custom
+cd ../my-lab
+npm install
+npm run verify
+npm run dev
+```
+
+Edit the identity and navigation in `src/lib/site.ts`, then replace the starter content. Its Alkemist dependencies are packed under `vendor/`, so keep that directory and `package-lock.json` in the new repository. The custom provider option does not invent an upload command or assume an account.
+
+For a new generated directory, create the initial Git history:
+
+```sh
+git init -b main
+git add .
+git commit -m "feat: start research site with Alkemist"
+```
+
+Create a repository with your Git provider, set `ALK_SITE_REMOTE` to its actual clone URL, and push:
+
+```sh
+git remote add origin "$ALK_SITE_REMOTE"
+git push -u origin main
+```
+
+Integrate with existing repositories and deployment workflows instead of initializing or replacing them again.
+
+## Establish the provider contract
+
+For a provider with native Git builds, connect the intended repository and configure:
+
+| Setting               | Value                                        |
+| --------------------- | -------------------------------------------- |
+| Working directory     | Generated repository root                    |
+| Install/build command | `npm ci && npm run verify`                   |
+| Published artifact    | Contents of `dist/`                          |
+| Production branch     | `main`, or your established default          |
+| Runtime               | Node 24, matching the starter's version file |
+| `SITE_URL`            | Final public origin                          |
+| `BASE_PATH`           | `/`, or the exact hosting subpath            |
+
+For a host that accepts uploaded files, run the same command in CI and use its supported CLI, API, or deployment action to publish the resulting artifact. Store the chosen command and provider configuration in your repository. Bind it to the intended branch and reuse the project's existing credential mechanism.
+
+For example, the build portion for a site at `https://example.org/research/` is:
+
+```sh
+npm ci
+SITE_URL=https://example.org BASE_PATH=/research/ npm run verify
+```
+
+Upload the **contents** of `dist/` to the host's location corresponding to `/research/`. `BASE_PATH` changes generated URLs; it does not create an extra `research/` folder inside the build artifact. Use the provider's documented publish operation for that destination.
+
+Serve the static artifact rather than running `npm run dev` or `npm run preview` as the production server. Adding server-rendered routes later changes this contract and may require an Astro adapter. [Astro rendering and deployment](https://docs.astro.build/en/guides/deploy/)
+
+## Make the file server match the site
+
+Configure directory indexes so `/blog/` serves `blog/index.html`, including after a direct reload. Return the generated `404.html` with an actual 404 status for unknown paths. Alkemist's static pages do not need every missing route rewritten to the homepage.
+
+Serve JavaScript, CSS, fonts, images, JSON, CSV, and model files with the corresponding content types. Exercise the actual media you publish; a successful HTML response does not prove a model or downloadable dataset is being served correctly. If assets use another origin, configure that origin's CORS policy for the site.
+
+Use HTTPS, preserve the generated URL structure, and translate redirect/header rules into the provider's supported format. Files named `_headers` or `_redirects` are provider conventions, not universal HTTP configuration.
+
+Use long-lived immutable caching for content-hashed assets such as Astro's generated bundles. Give HTML, `/build.json`, and other files with stable names a revalidation policy so a new deployment becomes visible. Publish a complete artifact atomically when the provider supports it, and retain a known previous deployment for rollback.
+
+## Define previews explicitly
+
+If the provider supplies isolated branch deployments, enable them through its native Git integration. Otherwise, implement one provider-specific preview destination per branch or merge request, with its own URL and cleanup rule. Set the build's `BASE_PATH` when the preview lives beneath a path.
+
+A non-main build must not overwrite production. If the chosen provider cannot support isolated previews, keep branch validation and document that limitation rather than labeling an unhosted build a preview.
+
+## Verify the deployment
+
+Read back the provider's account, project, repository, branch, domain, and publish directory. Compare the live `/build.json` with the commit that produced the uploaded artifact. Verify HTTPS, a direct nested-page reload, a missing-page 404, and the content types of representative assets.
+
+Open the deployed site at desktop and mobile widths, exercise an interactive lab, and follow a dataset download. If previews were configured, make a branch change and verify both its isolated address and unchanged production revision. Record the provider-specific configuration and observed URLs with the project.
+
+## Hand this to an agent
+
+```text
+Set up my Alkemist site with my chosen hosting provider. Inspect the current
+repository, instructions, content, existing CI and provider configuration.
+Ask once for missing provider/account, repository, domain, base path, and
+preview requirements. Research that provider's current official deployment
+instructions before choosing commands.
+
+Generate or integrate the custom starter. Preserve my content and use the
+existing deployment system when one is present. Build with npm ci and
+npm run verify, publish dist through the provider's supported mechanism,
+and keep the resulting configuration reproducible in this repository.
+Follow my existing authorization for repository and hosting changes.
+
+Verify origin/base paths, HTTPS, routing, 404 status, media, and the exact
+deployed commit. Exercise desktop/mobile layouts and isolated previews if
+supported. Report the observed deployment evidence and any provider-specific
+limits; do not claim an account deployment from local build success alone.
+```
+
+The static artifact is portable; each provider's publishing operation, account configuration, and live delivery still require their own verification.

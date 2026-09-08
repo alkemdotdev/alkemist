@@ -1,38 +1,78 @@
 ---
 title: Getting started
-description: Run the Alkemist development site and understand the current foundation.
+description: Create your own Alkemist site, give your agent a complete setup brief, and publish with your preferred host.
 order: 1
 ---
 
-Alkemist is being built as an updatable Astro toolkit for inventors and researchers. This website is its first consumer: the demo, documentation, and development notebook all use the shared Alkemist theme.
+import StartUsing from '../../components/StartUsing.astro';
 
-## Run the repository
+Create a website you own: your content, your Git repository, your hosting account. Alkemist supplies the scientific components and board themes. Start with a coding agent or follow the same steps in a terminal.
 
-The current source repository requires access to `alkemdev/alkemist`. It is not yet a published starter package.
+**Source preview:** the Alkemist GitHub repository currently requires access. The generator runs from an authenticated source checkout; the packages are not published on npm. There is no `npx create-alkemist` command yet.
+
+<StartUsing heading="Choose how to start." />
+
+## Create a separate site
+
+Use Node **24.20.0**, matching the repository's `.nvmrc`. Clone with your existing GitHub access, then generate into a new, empty directory:
 
 ```sh
-git clone git@github.com:alkemdev/alkemist.git
-cd alkemist
+git clone https://github.com/alkemdev/alkemist.git alkemist-source
+cd alkemist-source
 npm ci
+npm run create:site -- ../my-lab --provider cloudflare
+cd ../my-lab
+npm install
+npm run verify
 npm run dev
 ```
 
-Use Node 24.20.0 from `.nvmrc`, or a supported Node version of at least 22.12.0. The current Astro checker supports TypeScript 6; the workspace pins compatible versions.
+Use `--provider gitlab` for GitLab Pages or `--provider custom` for another static host. Open the local address printed by Astro. The generator refuses a nonempty destination and does not create a remote repository, push code, or deploy your site.
+
+The result is a standalone Astro application. Alkemist's two packages are stored as npm tarballs under `vendor/`, so the application does not need the original checkout to install or build. Keep those tarballs and the generated `package-lock.json` in Git.
+
+## Make it yours
+
+Edit the site identity and navigation in `src/lib/site.ts`. Replace the example blog, lab, information page, and favicon with your content. Shared behavior stays in the packages; your content, configuration, and custom styles stay in your application.
+
+The starter uses **Blog · Labs · Info**, with a small Test page under More. Docs is optional: add it for your own project documentation, or omit it. The starter's `AGENTS.md` describes ownership, commands, hosting, and the verification steps for a coding agent.
+
+Charts and models use their currently documented explicit props and public asset URLs. Portable source-relative figures and metadata sidecars remain proposed APIs; the setup generator does not make those forms available yet.
+
+## Put it on the web
+
+Create the destination repository in your own Git account, commit your site, and follow one hosting recipe:
+
+| Host             | Deployment workflow                                                        | Guide                                             |
+| ---------------- | -------------------------------------------------------------------------- | ------------------------------------------------- |
+| Cloudflare Pages | Native Git builds; main production and other-branch previews               | [Cloudflare setup](/docs/hosting/cloudflare/)     |
+| GitLab Pages     | GitLab CI; default branch production, with optional paid parallel previews | [GitLab Pages setup](/docs/hosting/gitlab-pages/) |
+| Another provider | Static `dist/` artifact and the provider's own Git/upload workflow         | [Custom hosting setup](/docs/hosting/custom/)     |
+
+Each guide covers repository setup, URL configuration, domains, build settings, and live verification. The generated site's publish directory is **`dist`**. The Alkemist demo's `apps/site/dist`, account IDs, and Cloudflare operator configuration belong to this website and should not be copied into your hosting setup.
+
+Set `SITE_URL` to the final public origin. Use `BASE_PATH` if the actual address includes a project path, such as `/my-lab/`. GitLab Pages may assign a unique domain instead; use the provider's real URL and the [base-path instructions](/docs/hosting/gitlab-pages/#set-the-origin-and-base-path).
+
+## What to give an agent
+
+The copyable prompt above selects a hosting recipe. The [complete plain-Markdown instructions](/docs/agent-setup.md) cover inspection, generation, customization, deployment, and verification without requiring the agent to operate this interface. An [index of agent resources](/llms.txt) links to the same source material.
+
+A useful starting request supplies your site name, intended directory or repository, hosting provider, and domain if you have one. The agent should recover existing settings from your workspace and ask for the missing details together. Its final report should include a working URL and observed deployment evidence, or identify the exact account-dependent step that remains.
+
+## Keep the base updatable
+
+From a reviewed newer Alkemist source checkout, use the explicit update mode:
 
 ```sh
+npm ci
+npm run create:site -- ../my-lab --update
+cd ../my-lab
+npm install
 npm run verify
 ```
 
-This runs Astro's type checks, deployment-contract tests, the production build, and the built-site audit. It does not deploy.
+Review the package and lockfile changes, then exercise your customized pages. The update mode refreshes package snapshots and dependency references; it preserves site-owned content and configuration. The consumer check tests that boundary, including a subpath build. It is not a guarantee that every future major version needs no migration.
 
-## Where things live
+## Contribute to Alkemist itself
 
-- `apps/site/src/content/docs`: the handbook you are reading.
-- `apps/site/src/content/blog`: development articles.
-- `apps/site/src/pages`: site-owned routes.
-- `packages/ui`: `AlkLayout` and theme tokens.
-- `packages/astro`: the Astro integration and shared Markdown/MDX configuration.
-
-## What comes next
-
-The working specimen includes math, a diagram, real CSV charts, and a real GLB model viewer. The [component roadmap](/docs/components/) distinguishes available features from proposed ones.
+To work on the demo and packages, use `npm run dev` in the source repository instead of generating a new site. `npm run verify` checks the demo; `npm run check:starter` installs and exercises a separate generated consumer. The [demo deployment guide](/docs/deployment/) describes this website's existing Cloudflare integration.

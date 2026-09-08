@@ -1,0 +1,100 @@
+---
+title: Host your site on Cloudflare
+description: Generate an independent Alkemist site and connect your own Git repository to Cloudflare Pages.
+order: 21
+---
+
+Cloudflare Pages is the recommended starting point for an Alkemist site with automatic Git deployments. Connect your own GitHub or GitLab repository: the production branch publishes the main site and other branches can publish previews. [Cloudflare Git integration](https://developers.cloudflare.com/pages/get-started/git-integration/)
+
+This guide is for **your generated site**. The separate [demo deployment guide](/docs/deployment/) describes infrastructure belonging to alkemist.alkem.dev.
+
+## Generate and personalize
+
+This is currently a source-preview workflow: access to the Alkemist repository is required, and the packages are not published on npm. Use an authenticated checkout you can access. With Node 24, run these commands from its root:
+
+```sh
+npm ci
+npm run create:site -- ../my-lab --provider cloudflare
+cd ../my-lab
+npm install
+npm run verify
+npm run dev
+```
+
+The generated directory is an independent Astro application. Its Alkemist packages are packed into `vendor/`; they do not depend on an npm release or the continued presence of the source checkout. Keep those tarballs and the generated `package-lock.json` in your repository.
+
+Edit the identity and navigation in `src/lib/site.ts`, then replace the starter content before publishing. Use the generated `AGENTS.md` and setup documentation when working with an agent. Your repository and Cloudflare account become the source of deployment settings; do not copy the demo's account IDs, domain, or `infra/cloudflare.json`.
+
+## Put the site in your repository
+
+Create an empty GitHub or GitLab repository in the intended account. For a new generated directory, initialize Git and make the first commit:
+
+```sh
+git init -b main
+git add .
+git commit -m "feat: start research site with Alkemist"
+```
+
+Add `origin` using the clone URL supplied by **your** repository, then push `main`. For example, after assigning that actual URL to `ALK_SITE_REMOTE`:
+
+```sh
+git remote add origin "$ALK_SITE_REMOTE"
+git push -u origin main
+```
+
+For an existing repository, inspect its status, remotes, instructions, and deployment workflow first. Integrate the generated files without replacing unrelated content or resetting its Git history.
+
+## Connect Pages
+
+In the intended Cloudflare account, open **Workers & Pages**, create a **Pages** project, and connect the site repository through Git integration. Read back the account, repository owner/name, and production branch before the first build.
+
+Use these settings for the generated application:
+
+| Setting           | Value                                                          |
+| ----------------- | -------------------------------------------------------------- |
+| Root directory    | Repository root                                                |
+| Build command     | `npm ci && npm run verify`                                     |
+| Output directory  | `dist`                                                         |
+| Production branch | `main`                                                         |
+| Preview branches  | All non-production branches                                    |
+| `SITE_URL`        | Your production origin, such as `https://research.example.org` |
+| `BASE_PATH`       | `/`                                                            |
+
+Keep the starter's Node version file, or set `NODE_VERSION` to the same version in both build environments. Cloudflare supports `.node-version`, `.nvmrc`, and `NODE_VERSION`. [Build environment](https://developers.cloudflare.com/pages/configuration/build-image/)
+
+Apply the build command and URL settings to production and previews. `SITE_URL` is the public canonical origin; preview builds still run at their assigned preview hostname. The output is `dist`, not the upstream demo's `apps/site/dist`. These are the build inputs Pages uses to create the deployment. [Build configuration](https://developers.cloudflare.com/pages/configuration/build-configuration/)
+
+Native Git integration owns publishing. There is no need to add a second upload workflow or store a Cloudflare deployment token in the site's build environment.
+
+## Attach the domain
+
+First open the successful `pages.dev` deployment. Then add your intended hostname under the Pages project's **Custom domains** and follow its DNS instructions. A subdomain can use a CNAME with an external DNS provider; an apex domain must be in a Cloudflare zone. Register the domain with the Pages project before adding the CNAME alone. Wait for an active domain and a valid HTTPS response. [Cloudflare custom domains](https://developers.cloudflare.com/pages/configuration/custom-domains/)
+
+If the final domain differs from the initial `SITE_URL`, update that setting and rebuild so canonical links use the final address.
+
+## Prove the Git loop
+
+After a production push, compare the deployment's source commit with `git rev-parse HEAD` and the site's `/build.json`. Open the homepage and a nested route directly, reload them, and exercise navigation and an interactive lab at desktop and mobile widths.
+
+Push a small visible change to a non-production branch. Confirm its preview serves that branch's commit while production keeps the main commit. Record both URLs and observed revisions. Cloudflare supplies a deployment URL and a branch alias that advances with new builds; verify preview indexing headers as part of that readback. [Preview deployments](https://developers.cloudflare.com/pages/configuration/preview-deployments/)
+
+## Hand this to an agent
+
+```text
+Set up my Alkemist site using this Cloudflare guide. Inspect the current
+directory, Git remotes, instructions, and any existing hosting first.
+Ask once for missing site identity, repository destination, Cloudflare
+account/project, or domain details that cannot be established from context.
+
+Generate or integrate the independent starter, preserve my existing content,
+and personalize it. Follow my existing authorization for repository and
+hosting changes. Connect native Git Pages builds with main production and
+other-branch previews. Keep account-specific settings with my project.
+
+Run npm run verify, exercise the result at desktop/mobile sizes, and verify
+the live account, repository, domain, HTTPS, and exact deployed commit.
+Test a preview without advancing production. Report what was observed and
+anything still waiting on account access or DNS; a build is not a deployment.
+```
+
+The Alkemist demo uses Cloudflare Pages. A newly generated site's deployment is complete only after those checks succeed in its own account.

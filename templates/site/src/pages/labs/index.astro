@@ -1,0 +1,13 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import { withBase } from '../../lib/site';
+---
+
+<SiteLayout title="Labs" description="Interactive experiments you can explore.">
+  <h1>Labs</h1><p>Small tools, working examples, and ideas you can touch.</p>
+  <article class="lab-card lab-section">
+    <h2><a href={withBase('labs/oscillator/')}>The oscillator bench</a></h2><p>
+      Inspect synthetic motion data and orbit a small 3D model.
+    </p>
+  </article>
+</SiteLayout>

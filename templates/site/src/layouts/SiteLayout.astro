@@ -1,0 +1,24 @@
+---
+import AlkLayout from '@alkemist/ui/AlkLayout.astro';
+import { siteName, tagline, navigation, withBase } from '../lib/site';
+import { resolveDeployment } from '../../scripts/deployment.mjs';
+import '../styles/site.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  section?: string;
+}
+const { preview } = resolveDeployment(process.env);
+---
+
+<AlkLayout
+  {...Astro.props}
+  siteName={siteName}
+  tagline={tagline}
+  navigation={navigation}
+  moreNavigation={[{ label: 'Test page', href: withBase('test/') }]}
+  preview={preview}
+>
+  <slot />
+</AlkLayout>

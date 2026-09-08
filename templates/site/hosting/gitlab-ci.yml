@@ -1,0 +1,30 @@
+image: node:24
+
+stages:
+  - verify
+  - deploy
+
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH && $CI_OPEN_MERGE_REQUESTS'
+      when: never
+    - if: '$CI_COMMIT_BRANCH'
+
+validate:
+  stage: verify
+  script:
+    - npm ci
+    - npm run verify
+  rules:
+    - if: '$CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
+
+publish-pages:
+  stage: deploy
+  script:
+    - npm ci
+    - npm run verify
+  pages:
+    publish: dist
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
