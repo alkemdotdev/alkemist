@@ -54,6 +54,7 @@ for (const [path, title] of [
   ['/blog/foundation/', 'A notebook with its own workbench'],
   ['/labs/', 'Labs'],
   ['/labs/homepage-studies/', 'Homepage studies'],
+  ['/labs/hero-studies/', 'Hero studies'],
   ['/labs/interference/', 'Interference lab'],
   ['/info/', 'Info'],
   ['/test/', 'The specimen board'],

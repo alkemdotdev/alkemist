@@ -1,0 +1,51 @@
+---
+title: Make the homepage yours
+description: Keep the opening artwork and copy in your site, with shared components underneath.
+order: 16
+---
+
+Your homepage is an ordinary Astro page at `src/pages/index.astro`. It owns the introduction, artwork, calls to action, and the order of its sections. Alkemist's packages supply the shared layout, theme, and publishing components.
+
+## A small composition
+
+Use `AlkLayout` for the surrounding navigation and theme, then compose your own content inside it. `siteName` and `tagline` control the identity; the generated starter's `SiteLayout.astro` sets those values for your site.
+
+```astro
+---
+import AlkLayout from '@alkemist/ui/AlkLayout.astro';
+import AlkModel from '@alkemist/ui/AlkModel.astro';
+---
+
+<AlkLayout title="Our lab" siteName="Our lab" tagline="research notes">
+  <h1>A place for our working ideas.</h1>
+  <p>Experiments, data, and what we are learning.</p>
+  <AlkModel
+    src="/models/prototype.glb"
+    title="Our current prototype"
+    poster="/models/prototype.webp"
+  />
+  <a href="/blog/">Read the notebook →</a>
+</AlkLayout>
+```
+
+Supply your own assets at those public paths. For a site deployed under a subpath, build asset and navigation URLs from `import.meta.env.BASE_URL`, as the starter does. See [model support and limits](/docs/models/) for the current GLB/glTF contract.
+
+## An art-led opening
+
+The demo's [hero studies](/labs/hero-studies/) compare three compositions. These live in the demo site and are not automatically installed by the starter:
+
+| Direction       | Site-owned source                                                          | What you can change                                            |
+| --------------- | -------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| Sculpture       | `src/components/hero/SculptureHero.astro`, `sculpture.ts`, `sculpture.css` | Parametric surface, lighting, camera, and framing              |
+| Flow field      | `src/components/hero/FlowHero.astro`, `flow.ts`, `flow.css`                | Fragment shader, compositions, and framing                     |
+| Working surface | `src/assets/hero/working-surface.png`                                      | Replace the generated illustration with your own project image |
+
+The comparison layout is `src/pages/labs/hero-studies.astro`; its copy and section order are local to the demo. The shared `AlkChart`, `AlkModel`, `AlkMath`, and `AlkCode` components remain usable independently. The custom sculpture and flow experiments do not imply a generalized shader, splat, or NeRF API.
+
+For an image opening, import a local image from `src/assets/` into Astro's `Image` component. The demo generates multiple WebP widths with explicit dimensions and alt text. Follow [Astro's image guide](https://docs.astro.build/en/guides/images/) when changing the image or sizing behavior. The exact prompt for the demo's generated art is recorded at `docs/art/working-surface-prompt.md` in the source repository.
+
+## Preserve the useful defaults
+
+Keep controls keyboard accessible, provide a still image when a graphics engine is unavailable, and let a reader choose whether to animate the art. The demo pauses graphics when hidden or outside the viewport. Check the opening on both boards and a narrow screen, with the ordinary reading content below it.
+
+Place your changes in the consuming site's files. Package updates can then improve the shared components without rewriting your homepage, assets, or research content. The [starter update workflow](/docs/getting-started/) preserves those user-owned files.

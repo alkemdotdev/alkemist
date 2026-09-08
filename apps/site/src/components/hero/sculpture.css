@@ -1,0 +1,115 @@
+.sculpture-hero {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  color: var(--alk-ink);
+}
+.sculpture-viewport {
+  position: relative;
+  height: clamp(330px, 42vw, 540px);
+  min-width: 0;
+  background: var(--alk-paper);
+}
+.sculpture-poster,
+.sculpture-viewport canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.sculpture-poster {
+  position: absolute;
+  inset: 0;
+}
+.sculpture-viewport canvas {
+  position: relative;
+  opacity: 0;
+  cursor: grab;
+  touch-action: pan-y;
+}
+.sculpture-viewport canvas:active {
+  cursor: grabbing;
+}
+.sculpture-hero[data-state='ready'] .sculpture-viewport canvas {
+  opacity: 1;
+}
+.sculpture-hero[data-state='ready'] .sculpture-poster {
+  visibility: hidden;
+}
+.sculpture-hero:not([data-state='ready']) .sculpture-viewport canvas {
+  visibility: hidden;
+}
+.sculpture-note {
+  position: absolute;
+  right: 2%;
+  top: 14%;
+  font-family: var(--alk-hand);
+  font-size: clamp(1.6rem, 2.8vw, 2.25rem);
+  line-height: 0.95;
+  transform: rotate(7deg);
+  color: var(--alk-ink-cobalt);
+  pointer-events: none;
+}
+.sculpture-controls,
+.sculpture-controls > div {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+.sculpture-controls {
+  justify-content: space-between;
+  padding: 0.8rem 0;
+  border-bottom: 1px solid var(--alk-rule);
+  font-family: var(--alk-mono);
+  font-size: 0.8rem;
+}
+.sculpture-hint {
+  color: var(--alk-muted);
+}
+.sculpture-controls button {
+  border: 0;
+  padding: 0.25rem 0.1rem;
+  background: transparent;
+  color: var(--alk-ink);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 0.3em;
+}
+.sculpture-controls button:disabled {
+  color: var(--alk-muted);
+  cursor: default;
+  text-decoration: none;
+}
+.sculpture-controls button[aria-pressed='true'] {
+  font-weight: 700;
+}
+.sculpture-status {
+  margin: 0;
+  padding-top: 0.4rem;
+  font-family: var(--alk-mono);
+  font-size: 0.72rem;
+  color: var(--alk-muted);
+}
+.sculpture-hero[data-state='ready'] .sculpture-status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+@media (max-width: 600px) {
+  .sculpture-viewport {
+    height: clamp(330px, 95vw, 460px);
+  }
+  .sculpture-note {
+    top: 3%;
+    right: 2%;
+    font-size: 1.5rem;
+  }
+  .sculpture-controls,
+  .sculpture-controls > div {
+    gap: 0.55rem;
+  }
+  .sculpture-controls {
+    font-size: 0.72rem;
+  }
+}

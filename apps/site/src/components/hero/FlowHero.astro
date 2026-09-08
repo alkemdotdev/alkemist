@@ -1,0 +1,83 @@
+---
+import './flow.css';
+import { ALK_INKS } from '@alkemist/ui/palette';
+
+interface Props {
+  id?: string;
+}
+const { id = 'flow-hero' } = Astro.props;
+const ribbons = Array.from({ length: 64 }, (_, line) => {
+  const offset = (line - 31.5) / 31.5;
+  const points = Array.from({ length: 91 }, (_, sample) => {
+    const x = -3 + sample / 15;
+    const width = 0.27 + 0.13 * Math.cos(x * 1.2);
+    const y =
+      0.3 * Math.sin(x * 1.65) +
+      offset * width +
+      0.12 * Math.sin(x * 2.3 + offset * 1.2);
+    return `${sample === 0 ? 'M' : 'L'}${(600 + x * 240).toFixed(1)},${(260 - y * 310).toFixed(1)}`;
+  });
+  return {
+    path: points.join(' '),
+    color: ALK_INKS[Math.floor(line / 8)].hex,
+  };
+});
+---
+
+<alk-hero-flow class="hero-flow" data-state="idle">
+  <figure aria-labelledby={`${id}-caption`}>
+    <div class="hero-flow-art">
+      <svg
+        class="hero-flow-poster"
+        viewBox="0 0 1200 520"
+        preserveAspectRatio="xMidYMid slice"
+        role="img"
+        aria-label="A static ribbon study: sixty-four colored ink contours sweep across the board in a twisting wave."
+      >
+        <g fill="none" stroke-width="2.6" stroke-linecap="round">
+          {
+            ribbons.map((ribbon) => (
+              <path d={ribbon.path} stroke={ribbon.color} />
+            ))
+          }
+        </g>
+      </svg>
+      <canvas
+        role="img"
+        aria-label="Generative ink art, rendered live. Colored contours form a flowing ribbon across the board. Use the controls below to choose a composition or play the motion."
+      ></canvas>
+      <span class="hero-flow-label" data-hero-note aria-hidden="true"
+        >an idea in motion</span
+      >
+    </div>
+    <figcaption id={`${id}-caption`} class="hero-flow-caption">
+      <span class="hero-flow-title">Eight inks. An infinite field.</span>
+      <div class="hero-flow-actions">
+        <label for={`${id}-composition`} class="hero-flow-select-label"
+          >Composition</label
+        >
+        <select id={`${id}-composition`} data-composition disabled>
+          <option value="0">Stream</option>
+          <option value="1">Vortex</option>
+          <option value="2">Contours</option>
+        </select>
+        <button type="button" data-play aria-pressed="false" disabled
+          >Play flow <span aria-hidden="true">↗</span></button
+        >
+      </div>
+    </figcaption>
+    <p class="hero-flow-status" role="status" aria-live="polite">
+      Static ribbon study · the live field loads when visible.
+    </p>
+    <noscript
+      ><p class="hero-flow-nojs">
+        This is the static ribbon study. JavaScript enables the three live
+        compositions and optional motion.
+      </p></noscript
+    >
+  </figure>
+</alk-hero-flow>
+
+<script>
+  import './flow';
+</script>

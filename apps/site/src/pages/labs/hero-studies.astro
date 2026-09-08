@@ -1,0 +1,300 @@
+---
+import { Image } from 'astro:assets';
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import SculptureHero from '../../components/hero/SculptureHero.astro';
+import FlowHero from '../../components/hero/FlowHero.astro';
+import ProofBench from '../../components/homepage/ProofBench.astro';
+import StartUsing from '../../components/StartUsing.astro';
+import workingSurface from '../../assets/hero/working-surface.png';
+import { isPreview } from '../../lib/deployment';
+import '../../styles/hero-studies.css';
+const takes = [
+  {
+    id: 'sculpture',
+    letter: 'A',
+    name: 'Sculpture',
+    description:
+      'A mathematical object you can turn over. The most direct connection between the first impression and the interactive toolkit.',
+  },
+  {
+    id: 'flow',
+    letter: 'B',
+    name: 'Flow field',
+    description:
+      'A wide field of moving ink. The most abstract direction, with a little room for surprise.',
+  },
+  {
+    id: 'surface',
+    letter: 'C',
+    name: 'Working surface',
+    description:
+      'Paper, wire, and the beginnings of an idea. A tactile, editorial opening with no graphics engine to load.',
+  },
+];
+---
+
+<SiteLayout
+  title="Hero studies"
+  description="Three art-led Alkemist homepage previews: a live sculpture, a flowing shader, and an illustrated working surface."
+  preview={isPreview}
+>
+  <hero-studies
+    data-directions={JSON.stringify(takes)}
+    data-take="sculpture"
+    data-notes="true"
+    data-captions="true"
+    data-example="true"
+  >
+    <div class="hero-study-bar">
+      <a href="/labs/" class="hero-study-label"
+        >← Labs <span>/ Opening studies</span></a
+      >
+      <div class="hero-study-switch" role="group" aria-label="Hero direction">
+        {
+          takes.map((take, i) => (
+            <button
+              type="button"
+              data-take-button={take.id}
+              aria-pressed={i === 0}
+              aria-controls={`hero-${take.id}`}
+            >
+              <span>{take.letter}</span> {take.name}
+            </button>
+          ))
+        }
+      </div>
+      <a href="#choose-hero" class="hero-study-choose">Choose ↓</a>
+    </div>
+
+    <section
+      id="hero-sculpture"
+      class="hero-take hero-sculpture-take"
+      data-hero-panel="sculpture"
+      aria-label="Sculpture homepage preview"
+    >
+      <div class="hero-sculpture-copy">
+        <p class="hero-kicker">An Astro starting point</p>
+        <h1>A place for working ideas.</h1>
+        <p class="hero-lead">
+          Research, writing, and experiments people can explore. Make a little
+          space on the web for yours.
+        </p>
+        <div class="hero-actions">
+          <a class="hero-primary" href="#start"
+            >Start using Alkemist <span aria-hidden="true">↗</span></a
+          ><a href="/test/">See what’s inside →</a>
+        </div>
+      </div>
+      <div class="hero-sculpture-art"><SculptureHero /></div>
+      <p class="hero-art-caption" data-hero-caption>
+        <span>Fold study · live geometry</span><a href="/blog/art-at-the-door/"
+          >How this opening was made ↗</a
+        >
+      </p>
+    </section>
+
+    <section
+      id="hero-flow"
+      class="hero-take hero-flow-take"
+      data-hero-panel="flow"
+      aria-label="Flow field homepage preview"
+      hidden
+    >
+      <div class="hero-flow-frame"><FlowHero /></div>
+      <div class="hero-after-art">
+        <div>
+          <p class="hero-kicker">An Astro starting point</p><h1>
+            A place for working ideas.
+          </h1><p class="hero-hand" data-hero-note>
+            a small change, a different pattern
+          </p>
+        </div>
+        <div>
+          <p class="hero-lead">
+            Research, writing, and experiments people can explore. Make a little
+            space on the web for yours.
+          </p><div class="hero-actions">
+            <a class="hero-primary" href="#start"
+              >Start using Alkemist <span aria-hidden="true">↗</span></a
+            ><a href="/test/">See what’s inside →</a>
+          </div>
+        </div>
+      </div>
+      <p class="hero-art-caption" data-hero-caption>
+        <span>Ink currents · live fragment shader</span><a
+          href="/blog/art-at-the-door/">How this opening was made ↗</a
+        >
+      </p>
+    </section>
+
+    <section
+      id="hero-surface"
+      class="hero-take hero-surface-take"
+      data-hero-panel="surface"
+      aria-label="Working surface homepage preview"
+      hidden
+    >
+      <figure class="hero-surface-image">
+        <Image
+          src={workingSurface}
+          alt="An imagined inventor’s worktable: translucent paper fins held by a blue wire sculpture, a sketched curve, drafting dividers, and colored markers."
+          widths={[640, 1000, 1600, 1902]}
+          sizes="(max-width: 700px) 100vw, (max-width: 1480px) calc(100vw - 96px), 1344px"
+          format="webp"
+          quality={85}
+          loading="lazy"
+        />
+      </figure>
+      <div class="hero-after-art">
+        <div>
+          <p class="hero-kicker">An Astro starting point</p><h1>
+            A place for working ideas.
+          </h1><p class="hero-hand" data-hero-note>
+            leave room for the next question ↗
+          </p>
+        </div>
+        <div>
+          <p class="hero-lead">
+            Research, writing, and experiments people can explore. Make a little
+            space on the web for yours.
+          </p><div class="hero-actions">
+            <a class="hero-primary" href="#start"
+              >Start using Alkemist <span aria-hidden="true">↗</span></a
+            ><a href="/test/">See what’s inside →</a>
+          </div>
+        </div>
+      </div>
+      <p class="hero-art-caption" data-hero-caption>
+        <span>Working surface · AI-generated illustration</span><a
+          href="/blog/art-at-the-door/">Image and process notes ↗</a
+        >
+      </p>
+    </section>
+
+    <noscript
+      ><p>
+        This is the static Sculpture preview. Enable JavaScript to switch takes
+        and interact with the artwork.
+      </p></noscript
+    >
+
+    <div class="hero-common-content">
+      <section
+        class="hero-work-section"
+        data-practical-example
+        aria-labelledby="hero-work-title"
+      >
+        <div class="hero-work-intro">
+          <p class="hero-kicker">Now, show the working</p><h2
+            id="hero-work-title"
+          >
+            The interesting part<br />is what you make.
+          </h2>
+          <p>
+            Write an article. Drop in a dataset. Let a reader turn a model over.
+            Alkemist brings the useful pieces together, so your subject can take
+            the lead.
+          </p>
+          <ul class="hero-content-links">
+            <li>
+              <a href="/blog/">Read the notebook <span>Blog ↗</span></a>
+            </li><li>
+              <a href="/labs/">Try an experiment <span>Labs ↗</span></a>
+            </li><li>
+              <a href="/docs/">Build with the components <span>Docs ↗</span></a>
+            </li>
+          </ul>
+        </div>
+        <ProofBench id="hero-studies-proof" initial="data" compact />
+      </section>
+      <StartUsing />
+    </div>
+
+    <section
+      id="choose-hero"
+      class="hero-choice"
+      aria-labelledby="hero-choice-title"
+    >
+      <div class="hero-choice-intro">
+        <p class="hero-kicker">Design review / stays in Labs</p><h2
+          id="hero-choice-title"
+        >
+          Which opening feels right?
+        </h2><p>
+          The same type, inks, and practical content sit beneath each take.
+          Choose the first impression, then tune the details.
+        </p><p class="hero-choice-recommendation">
+          My starting point: <strong>A, Sculpture.</strong> It invites interaction
+          and feels connected to what you can publish. C is the quieter, more tactile
+          alternative.
+        </p><a href="/labs/homepage-studies/"
+          >Compare the earlier homepage layouts →</a
+        >
+      </div>
+      <form class="hero-choice-form">
+        <label for="hero-preferred">Opening direction</label><select
+          id="hero-preferred"
+          name="take"
+          >{
+            takes.map((take) => (
+              <option value={take.id}>
+                {take.letter} — {take.name}
+              </option>
+            ))
+          }</select
+        >
+        <p
+          class="hero-choice-description"
+          data-choice-description
+          aria-live="polite"
+        >
+          {takes[0].description}
+        </p>
+        <fieldset>
+          <legend>Try the details</legend><label
+            ><input type="checkbox" name="notes" checked /> Handwritten notes</label
+          ><label
+            ><input type="checkbox" name="captions" checked /> Artwork captions</label
+          ><label
+            ><input type="checkbox" name="example" checked /> Interactive example
+            below the opening</label
+          >
+        </fieldset>
+        <label for="hero-notes">Anything to combine or change?</label><textarea
+          id="hero-notes"
+          name="comments"
+          rows="3"
+          maxlength="4000"
+          placeholder="For example: A’s sculpture, with C’s image-first layout."
+        ></textarea>
+        <div class="hero-choice-actions">
+          <button type="button" data-copy-choice>Copy my direction</button
+          ><button type="button" data-download-choice>Download choices ↓</button
+          >
+        </div>
+        <p
+          class="hero-choice-status"
+          data-choice-status
+          role="status"
+          aria-live="polite"
+        >
+        </p>
+        <textarea
+          class="hero-manual-copy"
+          data-manual-copy
+          readonly
+          hidden
+          aria-label="Selection for manual copying"
+          rows="7"></textarea>
+        <p class="hero-choice-storage">
+          Saved in this browser. Copy your direction back to the conversation
+          when you’re ready; nothing is submitted or published.
+        </p>
+      </form>
+    </section>
+  </hero-studies>
+</SiteLayout>
+
+<script>
+  import '../../components/hero/studies';
+</script>

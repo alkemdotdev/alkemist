@@ -1,0 +1,78 @@
+---
+import './sculpture.css';
+import { ribbonInk, ribbonPoint } from './sculpture';
+
+// The no-WebGL view is a sampled projection of the live sculpture's surface.
+const project = ([x, y, z]: [number, number, number]) => {
+  const a = -0.42;
+  const rotatedX = x * Math.cos(a) - y * Math.sin(a);
+  const rotatedY = x * Math.sin(a) + y * Math.cos(a);
+  const depth = rotatedY * 0.55 + z * 0.83;
+  return [
+    400 + rotatedX * 112,
+    275 + (rotatedY * 0.83 - z * 0.55) * 100,
+    depth,
+  ];
+};
+const strips = Array.from({ length: 48 }, (_, index) => {
+  const v = -1 + ((index + 0.5) / 48) * 2;
+  const points = Array.from({ length: 193 }, (_, step) =>
+    project(ribbonPoint((step / 192) * Math.PI * 2, v)),
+  );
+  return {
+    ink: ribbonInk(index),
+    points: points
+      .map(([x, y]) => `${x!.toFixed(2)},${y!.toFixed(2)}`)
+      .join(' '),
+  };
+});
+---
+
+<sculpture-hero class="sculpture-hero" data-state="idle">
+  <div class="sculpture-viewport" aria-busy="false">
+    <svg
+      class="sculpture-poster"
+      viewBox="0 0 800 550"
+      role="img"
+      aria-label="A folded mathematical ribbon with an open center, drawn in eight colored inks."
+    >
+      {
+        strips.map(({ points, ink }) => (
+          <polyline
+            points={points}
+            fill="none"
+            stroke={ink}
+            stroke-width="2.1"
+            opacity="0.86"
+          />
+        ))
+      }
+    </svg>
+    <canvas
+      tabindex="0"
+      role="img"
+      aria-label="Interactive folded ribbon sculpture. Drag or use the arrow keys to turn it. Press Home to reset the view."
+    ></canvas>
+    <span class="sculpture-note" data-hero-note aria-hidden="true"
+      >a little room<br />for curiosity</span
+    >
+  </div>
+  <div class="sculpture-controls">
+    <span class="sculpture-hint"
+      >Drag to turn <span aria-hidden="true">↔</span></span
+    >
+    <div>
+      <button type="button" data-sculpture-play aria-pressed="false" disabled
+        >Set in motion</button
+      >
+      <button type="button" data-sculpture-reset disabled>Reset</button>
+    </div>
+  </div>
+  <p class="sculpture-status" role="status">
+    Interactive sculpture loads when visible.
+  </p>
+</sculpture-hero>
+
+<script>
+  import './sculpture';
+</script>

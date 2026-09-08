@@ -1,0 +1,132 @@
+alk-hero-flow.hero-flow {
+  display: block;
+  min-width: 0;
+  color: var(--alk-ink);
+}
+.hero-flow figure {
+  margin: 0;
+}
+.hero-flow-art {
+  position: relative;
+  height: clamp(320px, 32vw, 420px);
+  overflow: hidden;
+  background: var(--alk-paper);
+}
+.hero-flow-art canvas,
+.hero-flow-poster {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.hero-flow-art canvas {
+  visibility: hidden;
+}
+.hero-flow[data-state='ready'] canvas {
+  visibility: visible;
+}
+.hero-flow[data-state='ready'] .hero-flow-poster {
+  visibility: hidden;
+}
+.hero-flow-label {
+  position: absolute;
+  right: 8%;
+  top: 9%;
+  color: var(--alk-ink-violet);
+  font:
+    2rem/1.1 'Caveat',
+    cursive;
+  transform: rotate(-6deg);
+  pointer-events: none;
+}
+.hero-flow-caption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border-top: 1px solid var(--alk-rule);
+  padding: 0.85rem 0;
+}
+.hero-flow-title {
+  font: 0.82rem/1.4 var(--alk-mono);
+}
+.hero-flow-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.hero-flow-select-label {
+  font: 0.7rem/1.4 var(--alk-mono);
+  color: var(--alk-muted);
+}
+.hero-flow-actions select,
+.hero-flow-actions button {
+  min-height: 40px;
+  border: 1px solid var(--alk-rule);
+  border-radius: 4px;
+  padding: 0.4rem 0.7rem;
+  background: var(--alk-paper);
+  color: var(--alk-ink);
+  font: 0.75rem/1.4 var(--alk-mono);
+}
+.hero-flow-actions button {
+  min-width: 110px;
+  cursor: pointer;
+}
+.hero-flow-actions button span {
+  padding-left: 0.7rem;
+}
+.hero-flow-actions :is(button, select):focus-visible {
+  outline: 2px solid var(--alk-ink);
+  outline-offset: 3px;
+}
+.hero-flow-actions button:hover:enabled {
+  background: var(--alk-field);
+}
+.hero-flow-actions :disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+.hero-flow-status {
+  margin: 0;
+  color: var(--alk-muted);
+  font: 0.68rem/1.6 var(--alk-mono);
+  overflow-wrap: anywhere;
+}
+.hero-flow[data-state='error'] .hero-flow-status {
+  color: var(--alk-ink);
+  border-left: 2px solid currentColor;
+  padding: 0.5rem 0.75rem;
+}
+.hero-flow-nojs {
+  font-size: 0.85rem;
+}
+@media (max-width: 640px) {
+  .hero-flow-art {
+    height: 380px;
+  }
+  .hero-flow-caption {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  .hero-flow-actions {
+    width: 100%;
+    justify-content: space-between;
+    gap: 0.35rem;
+  }
+  .hero-flow-label {
+    right: 7%;
+    top: 8%;
+    font-size: 1.7rem;
+  }
+}
+@media print {
+  .hero-flow-art canvas,
+  .hero-flow-actions {
+    display: none;
+  }
+  .hero-flow .hero-flow-poster {
+    visibility: visible;
+  }
+}

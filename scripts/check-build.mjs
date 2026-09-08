@@ -19,6 +19,7 @@ const required = [
   'llms.txt',
   'labs/index.html',
   'labs/homepage-studies/index.html',
+  'labs/hero-studies/index.html',
   'labs/interference/index.html',
   'labs/design-studio/index.html',
   'labs/board-studies/index.html',
