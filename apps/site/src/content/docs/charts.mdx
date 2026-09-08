@@ -1,0 +1,45 @@
+---
+title: Charts and data
+description: A broad chart vocabulary, sensible defaults, and room for precise specifications.
+order: 4
+---
+
+**Status: API design.** `AlkChart` is not implemented in this foundation release. The examples below specify the experience we are building.
+
+## One line for a useful default
+
+```mdx
+<AlkChart src="./experiment.csv" />
+<AlkChart type="bar" src="./results.csv" x="method" y="score" />
+<AlkChart type="pie" src="./materials.csv" category="material" value="mass_g" />
+```
+
+An unambiguous date/time column and a numeric measurement can suggest a line chart. When several interpretations are plausible, the component should expose column selection and the authoring checks should request explicit fields. Numeric data cannot tell us the intended units or scientific meaning.
+
+## Planned chart families
+
+- **Bars:** vertical, horizontal, grouped, stacked, percentage, diverging, and ranged.
+- **Circular:** pie, donut, and radial.
+- **Series:** line, step, area, and stacked area.
+- **Relationships:** scatter, bubble, and connected scatter.
+- **Statistics:** histogram, density, box plot, error bars/bands, regression, and heatmap.
+- **Compositions:** layers, faceting, small multiples, and linked selections.
+- **Geographic:** choropleths, points, and routes with explicit geographic data and projections.
+
+Vega-Lite provides these underlying chart families. Pie and donut charts use arc marks, with an inner radius for donuts. We will qualify Alkemist presets through working examples and browser checks. [Vega-Lite examples](https://vega.github.io/vega-lite/examples/) and [arc marks](https://vega.github.io/vega-lite/docs/arc.html).
+
+## Options where they belong
+
+Presets will expose typed, chart-specific options for grouping, sorting, stacking, aggregation, binning, axes, units, scale domains, colors, legends, labels, tooltips, sizing, selection, and zoom. Pie charts use category/value fields; they do not pretend to have ordinary x/y axes.
+
+Defaults should include an accessible caption, table view, original data download, visible missing values, and a static fallback. Large datasets need an explicit loading and reduction strategy; reductions must preserve the original file and identify what changed.
+
+## Complete specifications
+
+```mdx
+<AlkChart engine="vega-lite" spec={experimentSpec} />
+```
+
+Preset mode and full-specification mode will be mutually exclusive. There should be one clear source of truth for the chart, with no hidden deep merging. Vega-Embed supports both Vega-Lite and Vega specifications. [Vega-Embed](https://github.com/vega/vega-embed).
+
+Network layouts and specialized hierarchical views can use full Vega or a qualified adapter. We will build our own primitives when they solve an Alkemist-specific problem and document their behavior, inputs, and limits. Existing engines remain preferable to reimplementing their renderers.

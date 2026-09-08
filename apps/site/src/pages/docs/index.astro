@@ -1,0 +1,31 @@
+---
+import AlkLayout from '@alkemist/ui/AlkLayout.astro';
+import { getCollection } from 'astro:content';
+import { isPreview } from '../../lib/deployment';
+const docs = (await getCollection('docs')).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+---
+
+<AlkLayout
+  title="Documentation"
+  section="Guide / Reference / Recipes"
+  preview={isPreview}
+>
+  <h1>The Alkemist handbook.</h1><p class="alk-lead">
+    How the workbench fits together, what is available today, and the interfaces
+    we are building toward.
+  </p>
+  <ul class="alk-index">
+    {
+      docs.map((doc) => (
+        <li>
+          <>
+            <a href={`/docs/${doc.id}/`}>{doc.data.title}</a>
+            <p>{doc.data.description}</p>
+          </>
+        </li>
+      ))
+    }
+  </ul>
+</AlkLayout>

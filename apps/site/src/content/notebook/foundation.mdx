@@ -1,0 +1,30 @@
+---
+title: A notebook with its own workbench
+description: The first boundary in Alkemist separates the site you own from the toolkit you update.
+date: '2026-09-08'
+order: 1
+---
+
+Alkemist starts with a practical problem: a technical article often needs more than prose and screenshots. A reader may want to inspect a model, change a chart's range, or step through an algorithm without leaving the explanation.
+
+Before building those viewers, we need a foundation that can keep evolving. The first implementation establishes the shared theme, a documentation site, a notebook, and the deployment workflow.
+
+## A maintained package, a site of your own
+
+The example application lives in `apps/site`. Its routes and articles consume `@alkemist/astro` and `@alkemist/ui`, which own the common behavior and visual system.
+
+This is the upgrade boundary: future package improvements should not overwrite the site's articles, raw datasets, or custom pages. The current repository demonstrates that separation; standalone package release and migration tests are still ahead.
+
+## Give the components a recognizable name
+
+We chose `Alk` for public components and exported types. `AlkChart`, `AlkModel`, and `AlkTheorem` are short enough to write repeatedly and specific enough to distinguish them from local application code. The [naming guide](/docs/naming/) records the convention.
+
+## Let existing engines do their job
+
+A good charting interface needs more than line charts. The intended `AlkChart` vocabulary includes bars, pies, donuts, statistical views, and composition. Vega-Lite supplies a broad rendering grammar; Alkemist will supply file handling, typed presets, consistent figure controls, accessible alternatives, and documentation. The [chart design](/docs/charts/) records the intended API without presenting it as shipped.
+
+## Publish the process
+
+This post is MDX, rendered inside `AlkLayout` with the same theme used by the handbook and homepage. As features land, development articles will include actual demos, diagrams, annotated screenshots, data files, and validation evidence.
+
+The immediate next experiment is one complete article with a real CSV chart and GLB viewer. That will test whether the proposed one-line authoring interface works beyond the sketch.

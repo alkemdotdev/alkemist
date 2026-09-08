@@ -1,0 +1,65 @@
+---
+import AlkLayout from '@alkemist/ui/AlkLayout.astro';
+import { isPreview } from '../../lib/deployment';
+const items = [
+  [
+    'AlkLayout',
+    'Available',
+    'The shared page shell, navigation, theme tokens, local fonts, and print styles.',
+  ],
+  [
+    'AlkChart',
+    'Planned',
+    'Line, area, bar, stacked/grouped bar, pie, donut, scatter, heatmap, histogram, and statistical charts.',
+  ],
+  [
+    'AlkModel / AlkMesh',
+    'Planned',
+    'GLB/glTF and mesh viewers with camera controls, captions, and annotations.',
+  ],
+  [
+    'AlkPointCloud / AlkSplat',
+    'Planned',
+    'Point clouds and Gaussian splats with explicit format support.',
+  ],
+  [
+    'AlkTheorem / AlkDiagram',
+    'Planned',
+    'Scientific authoring blocks, equations, references, and diagrams.',
+  ],
+  [
+    'AlkRobot / AlkShader',
+    'Planned',
+    'Robot joint controls, shader uniforms, and repeatable experiments.',
+  ],
+];
+---
+
+<AlkLayout
+  title="Components"
+  section="Public API / Alk prefix"
+  preview={isPreview}
+  ><h1>A small vocabulary. A large workbench.</h1><p class="alk-lead">
+    Every Alkemist component has an Alk prefix. Their documentation lives beside
+    the site that uses them.
+  </p><div class="alk-notice">
+    The publishing foundation is available in this repository. Interactive
+    components below are planned; this page records their intended scope.
+  </div><div class="alk-grid">
+    {
+      items.map(([name, status, description]) => (
+        <article>
+          <>
+            <p class="alk-pill">{status}</p>
+            <h3>{name}</h3>
+            <p>{description}</p>
+          </>
+        </article>
+      ))
+    }
+  </div><div class="alk-links">
+    <a href="/docs/charts/">Chart types and options →</a><a href="/docs/naming/"
+      >Naming conventions →</a
+    >
+  </div></AlkLayout
+>

@@ -1,0 +1,28 @@
+---
+import AlkLayout from '@alkemist/ui/AlkLayout.astro';
+import { getCollection, render } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import { isPreview } from '../../lib/deployment';
+export async function getStaticPaths() {
+  return (await getCollection('notebook')).map((entry) => ({
+    params: { id: entry.id },
+    props: { entry },
+  }));
+}
+const { entry } = Astro.props as { entry: CollectionEntry<'notebook'> };
+const { Content } = await render(entry);
+---
+
+<AlkLayout
+  title={entry.data.title}
+  description={entry.data.description}
+  section="Building Alkemist / Fieldnotes"
+  preview={isPreview}
+  ><article class="alk-prose">
+    <p class="alk-pill">{entry.data.date}</p><h1>{entry.data.title}</h1><p
+      class="alk-lead"
+    >
+      {entry.data.description}
+    </p><Content />
+  </article></AlkLayout
+>

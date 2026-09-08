@@ -1,0 +1,22 @@
+{
+  "name": "@alkemist/site",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "check": "astro check",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "@alkemist/astro": "0.1.0",
+    "@alkemist/ui": "0.1.0",
+    "astro": "7.3.2"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.10",
+    "@types/node": "24.13.3",
+    "typescript": "6.0.3"
+  }
+}

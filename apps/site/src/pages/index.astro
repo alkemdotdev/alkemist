@@ -1,0 +1,93 @@
+---
+import AlkLayout from '@alkemist/ui/AlkLayout.astro';
+import { isPreview } from '../lib/deployment';
+const surface: string[] = [];
+function point(u: number, v: number) {
+  const r = 115 + 38 * Math.cos(v),
+    x = r * Math.cos(u),
+    y = r * Math.sin(u),
+    z = 38 * Math.sin(v);
+  return `${(260 + x * 0.8 + z * 0.6).toFixed(2)},${(180 + y * 0.46 - x * 0.4 + z * 0.7).toFixed(2)}`;
+}
+for (let i = 0; i < 18; i++)
+  surface.push(
+    Array.from(
+      { length: 65 },
+      (_, j) =>
+        `${j ? 'L' : 'M'}${point((i / 18) * Math.PI * 2, (j / 64) * Math.PI * 2)}`,
+    ).join(' '),
+  );
+for (let i = 0; i < 10; i++)
+  surface.push(
+    Array.from(
+      { length: 81 },
+      (_, j) =>
+        `${j ? 'L' : 'M'}${point((j / 80) * Math.PI * 2, (i / 10) * Math.PI * 2)}`,
+    ).join(' '),
+  );
+---
+
+<AlkLayout title="Alkemist" preview={isPreview}>
+  <div class="alk-feature">
+    <div>
+      <p class="alk-eyebrow">For inventors & researchers</p>
+      <h1>Ideas deserve working examples.</h1>
+      <p class="alk-lead">
+        An open workbench for publishing technical ideas. Bring your notes,
+        code, data, and models. Build a place where people can explore them.
+      </p>
+      <div class="alk-links">
+        <a href="/docs/">Explore the documentation →</a><a href="/notebook/"
+          >Follow the build →</a
+        >
+      </div>
+      <p class="alk-status">Foundation 0.1 · built on Astro 7</p>
+    </div>
+    <figure class="alk-specimen">
+      <div class="alk-specimen-label">
+        Design specimen / parametric geometry
+      </div>
+      <svg
+        viewBox="0 0 520 360"
+        role="img"
+        aria-labelledby="surface-title surface-desc"
+        ><title id="surface-title">A toroidal surface</title><desc
+          id="surface-desc"
+          >Static mathematical illustration of the geometry an Alkemist article
+          could explore.</desc
+        ><g fill="none" stroke="currentColor" stroke-width=".9"
+          >{surface.map((d) => <path d={d} />)}</g
+        ></svg
+      >
+      <figcaption>
+        One shared language for the explanation, the figure, and its source.
+        Interactive viewers are in development.
+      </figcaption>
+    </figure>
+  </div>
+  <section class="alk-section">
+    <p class="alk-eyebrow">The workbench</p><h2>
+      Publish the idea. Keep the details.
+    </h2>
+    <div class="alk-grid">
+      <article>
+        <h3>A living notebook</h3><p>
+          Articles, project notes, and the decisions behind the work. This
+          website documents its own construction.
+        </p><a href="/notebook/">Read the fieldnotes →</a>
+      </article>
+      <article>
+        <h3>One component vocabulary</h3><p>
+          AlkChart, AlkModel, AlkTheorem. A consistent API for data, geometry,
+          computation, and scientific writing.
+        </p><a href="/components/">See the component roadmap →</a>
+      </article>
+      <article>
+        <h3>A base that can evolve</h3><p>
+          Your content belongs to your site. Shared layouts and defaults live in
+          packages you can update.
+        </p><a href="/docs/architecture/">Understand the structure →</a>
+      </article>
+    </div>
+  </section>
+</AlkLayout>

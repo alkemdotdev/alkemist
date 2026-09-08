@@ -1,0 +1,46 @@
+---
+title: Architecture and upgrades
+description: Your content stays in your site. The maintained foundation lives in packages.
+order: 2
+---
+
+A copied template is easy to start using, but upgrading it can become a merge between the template author's edits and your own. Alkemist puts the maintained behavior in versioned packages and leaves your content, data, and identity in your application.
+
+## The package boundary
+
+```text
+Your Astro site
+  ├─ content, datasets, models, custom pages
+  ├─ @alkemist/astro  → shared integration and defaults
+  └─ @alkemist/ui     → layouts, figure shells, theme tokens
+```
+
+The site consumes the actual workspace packages. This is the initial reusable boundary; published npm releases, migration commands, and a standalone starter test are still to come.
+
+Starlight is the architectural precedent: a maintained Astro integration with configuration and component overrides. Alkemist's interface centers on scientific articles, notebooks, and experiments. [Starlight overrides](https://starlight.astro.build/reference/overrides/) and [Astro integration API](https://docs.astro.build/en/reference/integrations-reference/).
+
+## Theme the shared components
+
+`AlkLayout` provides the shell used by every page here. Its public props are `title`, `description`, `section`, and `preview`.
+
+```astro
+---
+import AlkLayout from '@alkemist/ui/AlkLayout.astro';
+---
+
+<AlkLayout title="A research notebook" section="Experiments">
+  <h1>Working notes</h1>
+</AlkLayout>
+```
+
+Theme tokens use the `--alk-` prefix. Paper and Graphite share the same hierarchy, with separate accessible foreground/background colors. Fonts are served locally. Override tokens in your application's stylesheet instead of editing package internals.
+
+```css
+:root {
+  --alk-accent: light-dark(#28577b, #a6c8ed);
+}
+```
+
+## Upgrade policy
+
+Routine releases will update dependencies. Breaking changes require release notes and migrations that show their changes before applying them. The publishing contract includes a tested Astro peer range and checks against a separately installed consumer.

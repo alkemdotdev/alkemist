@@ -1,0 +1,47 @@
+{
+  "account_id": "1f6e8a09fec260d326f4af42d7868238",
+  "zone_id": "6f0f7d0d4f526cb06c5ee714f81a09d4",
+  "domain": "alkemist.alkem.dev",
+  "project": {
+    "name": "alkemist",
+    "production_branch": "main",
+    "build_config": {
+      "build_command": "npm ci && npm run verify",
+      "destination_dir": "apps/site/dist",
+      "root_dir": "/",
+      "build_caching": true
+    },
+    "source": {
+      "type": "github",
+      "config": {
+        "owner": "alkemdev",
+        "owner_id": "142068200",
+        "repo_name": "alkemist",
+        "repo_id": "1361643737",
+        "production_branch": "main",
+        "deployments_enabled": true,
+        "production_deployments_enabled": true,
+        "preview_deployment_setting": "all",
+        "preview_branch_includes": ["*"],
+        "preview_branch_excludes": [],
+        "pr_comments_enabled": false,
+        "path_includes": ["*"],
+        "path_excludes": []
+      }
+    },
+    "deployment_configs": {
+      "production": {
+        "env_vars": {
+          "NODE_VERSION": { "type": "plain_text", "value": "24.20.0" },
+          "SKIP_DEPENDENCY_INSTALL": { "type": "plain_text", "value": "true" }
+        }
+      },
+      "preview": {
+        "env_vars": {
+          "NODE_VERSION": { "type": "plain_text", "value": "24.20.0" },
+          "SKIP_DEPENDENCY_INSTALL": { "type": "plain_text", "value": "true" }
+        }
+      }
+    }
+  }
+}

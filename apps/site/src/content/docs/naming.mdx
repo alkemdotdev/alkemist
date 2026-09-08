@@ -1,0 +1,35 @@
+---
+title: Names and public types
+description: A recognizable Alk prefix without long authoring names.
+order: 3
+---
+
+Use **Alk** for public components and exported custom types:
+
+```ts
+AlkLayout;
+AlkChart;
+AlkModel;
+AlkFigure;
+AlkChartProps;
+AlkAssetManifest;
+AlkWidgetState;
+```
+
+`AlkLayout` is implemented. The other names describe the planned public API.
+
+The prefix makes Alkemist components easy for people and AI assistants to identify, avoids collisions with a site's own `Chart` or `Model`, and keeps examples consistent.
+
+Package names stay `@alkemist/*`. The integration function is `alkemist()`, and CSS tokens use `--alk-*`. Internal variables do not need the prefix.
+
+## Local aliases
+
+Authors can explicitly alias a component in their own files. Canonical documentation and generated examples use `Alk*`; aliases do not create a second public API to maintain.
+
+```astro
+---
+import Layout from '@alkemist/ui/AlkLayout.astro';
+---
+
+<Layout title="My notebook"><slot /></Layout>
+```

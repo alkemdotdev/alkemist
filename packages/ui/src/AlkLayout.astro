@@ -1,0 +1,103 @@
+---
+import './theme.css';
+export interface AlkLayoutProps {
+  title: string;
+  description?: string;
+  section?: string;
+  preview?: boolean;
+}
+type Props = AlkLayoutProps;
+const {
+  title,
+  description = 'An open workbench for publishing technical ideas. Built on Astro.',
+  section = '',
+  preview = false,
+} = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const navigation = [
+  { label: 'Docs', href: '/docs/' },
+  { label: 'Components', href: '/components/' },
+  { label: 'Notebook', href: '/notebook/' },
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} />
+    <meta name="color-scheme" content="light dark" />
+    {preview && <meta name="robots" content="noindex, nofollow" />}
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>{title === 'Alkemist' ? title : `${title} · Alkemist`}</title>
+  </head>
+  <body>
+    <a class="alk-skip" href="#main">Skip to content</a>
+    {
+      preview && (
+        <div class="alk-preview">Branch preview · development build</div>
+      )
+    }
+    <header class="alk-header">
+      <a class="alk-brand" href="/" aria-label="Alkemist home"
+        >alkemist<span class="alk-brand-detail"> / an open workbench</span></a
+      >
+      <nav aria-label="Main navigation">
+        {
+          navigation.map(({ label, href }) => (
+            <a
+              href={href}
+              aria-current={
+                Astro.url.pathname.startsWith(href) ? 'page' : undefined
+              }
+            >
+              {label}
+            </a>
+          ))
+        }
+      </nav>
+      <label class="alk-theme-label"
+        ><span class="alk-sr-only">Color theme</span><select
+          id="alk-theme"
+          aria-label="Color theme"
+          ><option value="system">System</option><option value="light"
+            >Paper</option
+          ><option value="dark">Graphite</option></select
+        ></label
+      >
+    </header>
+    <main id="main" class="alk-main">
+      {section && <p class="alk-eyebrow">{section}</p>}
+      <slot />
+    </main>
+    <footer class="alk-footer">
+      <a href="/">Alkemist</a><span>Made with the Alkemist theme on Astro.</span
+      ><a href="/docs/status/">Project status</a>
+    </footer>
+    <script>
+      const select = document.querySelector<HTMLSelectElement>('#alk-theme');
+      function applyTheme(value: string) {
+        document.documentElement.style.colorScheme =
+          value === 'system' ? 'light dark' : value;
+        if (select) select.value = value;
+      }
+      try {
+        const saved = localStorage.getItem('alk-theme');
+        if (saved && ['light', 'dark', 'system'].includes(saved))
+          applyTheme(saved);
+      } catch {
+        /* Storage can be disabled; the system theme remains usable. */
+      }
+      select?.addEventListener('change', () => {
+        applyTheme(select.value);
+        try {
+          localStorage.setItem('alk-theme', select.value);
+        } catch {
+          /* Preference is session-only without storage. */
+        }
+      });
+    </script>
+  </body>
+</html>
