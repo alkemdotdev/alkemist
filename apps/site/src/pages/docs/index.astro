@@ -1,5 +1,5 @@
 ---
-import AlkLayout from '@alkemist/ui/AlkLayout.astro';
+import SiteLayout from '../../layouts/SiteLayout.astro';
 import { getCollection } from 'astro:content';
 import { isPreview } from '../../lib/deployment';
 const docs = (await getCollection('docs')).sort(
@@ -7,7 +7,7 @@ const docs = (await getCollection('docs')).sort(
 );
 ---
 
-<AlkLayout
+<SiteLayout
   title="Documentation"
   section="Guide / Reference / Recipes"
   preview={isPreview}
@@ -17,6 +17,11 @@ const docs = (await getCollection('docs')).sort(
     we are building toward.
   </p>
   <ul class="alk-index">
+    <li>
+      <a href="/docs/components/">Component catalog</a><p>
+        Every available component and its current scope.
+      </p>
+    </li>
     {
       docs.map((doc) => (
         <li>
@@ -28,4 +33,4 @@ const docs = (await getCollection('docs')).sort(
       ))
     }
   </ul>
-</AlkLayout>
+</SiteLayout>

@@ -1,5 +1,5 @@
 ---
-import AlkLayout from '@alkemist/ui/AlkLayout.astro';
+import SiteLayout from '../../layouts/SiteLayout.astro';
 import { getCollection, render } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
 import { isPreview } from '../../lib/deployment';
@@ -16,7 +16,7 @@ const docs = (await getCollection('docs')).sort(
 );
 ---
 
-<AlkLayout
+<SiteLayout
   title={entry.data.title}
   description={entry.data.description}
   preview={isPreview}
@@ -24,6 +24,7 @@ const docs = (await getCollection('docs')).sort(
   <div class="alk-doc-shell">
     <aside class="alk-sidebar">
       <p class="alk-eyebrow">Documentation</p><nav aria-label="Documentation">
+        <a href="/docs/components/">Component catalog</a>
         {
           docs.map((doc) => (
             <a
@@ -42,4 +43,4 @@ const docs = (await getCollection('docs')).sort(
       </p><Content />
     </article>
   </div>
-</AlkLayout>
+</SiteLayout>

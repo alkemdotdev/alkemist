@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { mkdir, writeFile } from 'node:fs/promises';
+import { redirects } from '../apps/site/redirects.mjs';
 
 const [base, expectedCommit, expectedBranch] = process.argv.slice(2);
 if (!base || !/^[a-f0-9]{40}$/.test(expectedCommit ?? '') || !expectedBranch) {
@@ -43,8 +44,14 @@ for (const [path, title] of [
   ['/', 'Alkemist'],
   ['/docs/', 'Documentation'],
   ['/docs/charts/', 'Charts and data'],
-  ['/components/', 'Components'],
-  ['/notebook/foundation/', 'A notebook with its own workbench'],
+  ['/docs/components/', 'Components'],
+  ['/docs/site-structure/', 'Site structure and navigation'],
+  ['/blog/', 'Blog'],
+  ['/blog/foundation/', 'A notebook with its own workbench'],
+  ['/labs/', 'Labs'],
+  ['/labs/interference/', 'Interference lab'],
+  ['/info/', 'Info'],
+  ['/test/', 'The specimen board'],
 ]) {
   const result = await get(path);
   assert.equal(result.status, 200, path);
@@ -78,6 +85,49 @@ for (const [path, title] of [
     previewRobots: result.headers['x-robots-tag'] ?? null,
   });
 }
+const redirectChecks = [];
+for (const [from, to] of Object.entries(redirects)) {
+  for (const source of [from, from.slice(0, -1)]) {
+    const response = await fetch(
+      new URL(`${source}?take=workshop&board=white`, origin),
+      {
+        redirect: 'manual',
+        signal: AbortSignal.timeout(15000),
+      },
+    );
+    assert.equal(response.status, 301, source);
+    const destination = new URL(response.headers.get('location'), origin);
+    assert.equal(destination.origin, origin.origin);
+    assert.equal(destination.pathname, to, source);
+    assert.equal(
+      destination.searchParams.get('take'),
+      'workshop',
+      'Redirect lost shared view state',
+    );
+    assert.equal(
+      destination.searchParams.get('board'),
+      'white',
+      'Redirect lost shared view state',
+    );
+    redirectChecks.push({
+      source,
+      destination: destination.pathname,
+      status: response.status,
+    });
+    await response.body?.cancel();
+  }
+}
+const legacyAsset = await fetch(new URL('/notebook/eight-inks.jpg', origin), {
+  redirect: 'manual',
+  signal: AbortSignal.timeout(15000),
+});
+assert.equal(
+  legacyAsset.status,
+  200,
+  'Published image must not redirect with article pages',
+);
+assert.match(legacyAsset.headers.get('content-type') ?? '', /^image\//);
+await legacyAsset.body?.cancel();
 const robots = await get('/robots.txt');
 assert.equal(robots.status, 200);
 assert.ok(
@@ -92,6 +142,7 @@ const report = {
   checkedAt: new Date().toISOString(),
   build,
   checks,
+  redirectChecks,
   robots: robots.text,
   missingPageStatus: missing.status,
 };

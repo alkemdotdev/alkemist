@@ -1,0 +1,41 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import { isPreview } from '../../lib/deployment';
+---
+
+<SiteLayout title="Info" section="About Alkemist" preview={isPreview}>
+  <article class="alk-prose">
+    <h1>A home for people who make things.</h1>
+    <p class="alk-lead">
+      Alkemist is an Astro publishing toolkit for inventors, researchers, and
+      the teams around them.
+    </p>
+    <p>
+      A useful research website can hold the explanation and the experiment
+      together: a model you can turn, a chart you can inspect, and the source
+      behind both. Alkemist brings those pieces into a shared language for
+      publishing.
+    </p>
+    <h2>Built in the open</h2>
+    <p>
+      This website uses the same Alkemist packages it documents. The blog
+      records design decisions and progress; the labs put ideas into your hands;
+      the docs explain how to use the components in your own project.
+    </p>
+    <h2>The project</h2>
+    <p>
+      Alkemist lives in the <a href="https://github.com/alkemdev/alkemist"
+        >alkemdev organization on GitHub</a
+      >. Its source, changes, and development history are available there.
+    </p>
+    <h2>Make it your own</h2>
+    <p>
+      Use Alkemist for a personal research site, a team, a company, or an
+      independent project. Your content and identity belong to your site; shared
+      components and defaults live in packages that can evolve.
+    </p>
+    <div class="alk-links">
+      <a href="/blog/">Follow the work →</a><a href="/docs/">Read the docs →</a>
+    </div>
+  </article>
+</SiteLayout>

@@ -1,5 +1,5 @@
 ---
-import AlkLayout from '@alkemist/ui/AlkLayout.astro';
+import SiteLayout from '../../layouts/SiteLayout.astro';
 import { isPreview } from '../../lib/deployment';
 const items = [
   [
@@ -35,7 +35,7 @@ const items = [
 ];
 ---
 
-<AlkLayout
+<SiteLayout
   title="Components"
   section="Public API / Alk prefix"
   preview={isPreview}
@@ -62,5 +62,5 @@ const items = [
     <a href="/docs/charts/">Chart types and options →</a><a href="/docs/naming/"
       >Naming conventions →</a
     >
-  </div></AlkLayout
+  </div></SiteLayout
 >

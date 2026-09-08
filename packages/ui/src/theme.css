@@ -193,16 +193,59 @@ th {
   display: flex;
   gap: 1.4rem;
   margin-left: auto;
+  align-items: center;
 }
-.alk-header nav a {
+.alk-header nav a,
+.alk-more summary {
   font-size: 0.85rem;
   text-decoration: none;
   color: var(--alk-muted);
   padding: 0.35rem 0;
 }
-.alk-header nav a[aria-current] {
+.alk-header nav a[aria-current],
+.alk-more summary[data-current] {
   color: var(--alk-ink);
   border-bottom: 1px solid var(--alk-accent);
+}
+.alk-more {
+  position: relative;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+.alk-more summary {
+  cursor: pointer;
+  list-style: none;
+  white-space: nowrap;
+}
+.alk-more summary::-webkit-details-marker {
+  display: none;
+}
+.alk-more summary span {
+  display: inline-block;
+  margin-left: 0.25rem;
+}
+.alk-more[open] summary span {
+  transform: rotate(90deg);
+}
+.alk-more-links {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 0.6rem);
+  right: 0;
+  min-width: 10rem;
+  padding: 0.4rem;
+  background: var(--alk-paper);
+  border: 1px solid var(--alk-rule);
+  box-shadow: 0 0.7rem 1.5rem #0002;
+  margin-top: 0;
+}
+.alk-header nav .alk-more-links a {
+  display: block;
+  padding: 0.7rem;
+}
+.alk-more-links a:hover {
+  background: var(--alk-field);
 }
 .alk-theme-label select {
   color: var(--alk-muted);
@@ -432,6 +475,7 @@ th {
     flex-direction: column;
   }
   .alk-header nav a,
+  .alk-more summary,
   .alk-sidebar a {
     min-height: 32px;
   }

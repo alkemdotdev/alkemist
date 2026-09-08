@@ -95,3 +95,25 @@ Independent code review found and fixed quoted-caption brace parsing and stringi
 Publication uses the existing native Cloudflare Git integration: push branch for preview, then promote the verified revision to main for alkemist.alkem.dev. Final verification results and exact source identity are captured by scripts/check-deployment.mjs in ignored .alkemist/deployments artifacts; the source commit is discoverable from public build.json.
 
 Final clean-install gate: `npm ci`, `npm run verify`, and `npm run format:check` passed: 33 Astro files with zero diagnostics, 18 tests passed, 21 pages built with internal links/assets verified. Final mobile bar labels use rotated labels and overlap avoidance; the complete category legend stays readable.
+
+## 2026-09-08 — URL and file contract proposal
+
+Inspected the current routes, content loader/schema, public asset paths, and component inputs. Wrote `docs/url-and-file-schemas.md` for review: stable collection IDs separated from route slugs, portable article folders, collection-specific frontmatter, optional native-file metadata sidecars, reusable figure definitions, and versioned machine schemas. Checked Astro's official loader, content-schema, and image documentation and the W3C tabular metadata model. The document distinguishes existing behavior from proposed authoring APIs and includes a migration sequence that preserves published URLs.
+
+This is a local design proposal. No route migration, runtime API change, commit, push, or deployment was performed for this discussion.
+
+Validation: `npm run verify` passed, and Prettier passed for both changed Markdown files. No rendered UI changed, so this proposal did not require another browser interaction pass.
+
+## 2026-09-08 — Blog, Labs, Info, and optional Docs
+
+Implemented the user's chosen information architecture: Blog, Labs, and Info in the primary navigation, with Docs and Test page in More. Renamed the notebook collection and routes to Blog, moved the component catalog into Docs, and moved both design apps into Labs. Added an actual standalone interference lab, a Labs index, and an Info page using known project information. The single `/test/` application remains intact. Added the public site-structure guide and a blog article explaining the decision; updated the file-schema proposal to distinguish accepted routes from the still-proposed asset metadata and stable-ID contracts.
+
+The shared `AlkLayout` exposes main, More, and footer link arrays. Extra links default to empty; the demo's `SiteLayout` owns its documentation links. Consuming projects can omit Docs or use it for their own documentation. More uses native details/summary with Escape focus return and outside-click dismissal.
+
+One explicit redirect manifest produces Astro fallback pages and Cloudflare HTTP 301 rules, including slashless legacy paths. Old article and design links have specific destinations; the published `/notebook/eight-inks.jpg` asset stays in place. The build verifier checks destination existence, redirect chains, and generated rules. The HTTPS deployment verifier also checks query preservation and the retained image.
+
+Local verification passed: 18 tests, zero Astro diagnostics, 26 content pages plus 8 redirect pages, internal links/assets, and redirect artifacts. Browser checks at 1440×1000 and 390×844 covered both themes, keyboard menu activation, Escape and focus return, outside dismissal, Docs/Info/Labs/Test navigation, active-section indication, and page width containment. The interference lab rendered WebGL and responded to frequency and play/pause. The moved design studio loaded its `/labs/board-studies/` iframe; changing Graph grid updated both the query string and the iframe's data-grid state, then the default was restored. No browser errors or warnings were observed. Visual review found and fixed rich-content disclosure borders leaking into the header menu.
+
+Cloudflare preview and production publication are the next validation step; local build success alone does not establish HTTP redirect behavior.
+
+Independent review found one outdated layout prop list in the architecture guide; it now documents the navigation arrays and links to the site-structure reference. No actionable behavior or security findings remained in that review.

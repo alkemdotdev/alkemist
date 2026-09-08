@@ -1,6 +1,6 @@
 # Alkemist: an open workbench for publishing ideas
 
-Status: implementation direction, updated September 8, 2026. The current phase is the Astro demo/documentation site and Cloudflare deployment bootstrap, including main deployments and branch previews. Full interactive widgets remain the next phase. See `docs/progress.md` for observed progress and deployment evidence.
+Status: implementation direction, updated September 8, 2026. Accepted navigation: Blog, Labs, Info, with Docs and Test in More. See `docs/url-and-file-schemas.md` and the public `/docs/site-structure/` guide for route ownership. The current phase is the Astro demo/documentation site and Cloudflare deployment bootstrap, including main deployments and branch previews. Math, code, six chart presets, GLB/glTF, and a fixed shader study are now implemented; additional format adapters remain planned. See `docs/progress.md` for observed progress and deployment evidence.
 
 ## Product
 

@@ -1,0 +1,34 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import { getCollection } from 'astro:content';
+import { isPreview } from '../../lib/deployment';
+const notes = (await getCollection('blog')).sort(
+  (a, b) =>
+    (b.data.date ?? '').localeCompare(a.data.date ?? '') ||
+    a.data.order - b.data.order ||
+    a.id.localeCompare(b.id),
+);
+---
+
+<SiteLayout
+  title="Blog"
+  section="Articles / News / Fieldnotes"
+  preview={isPreview}
+  ><h1>Notes from the workbench.</h1><p class="alk-lead">
+    News, experiments, and the decisions behind Alkemist. Follow the work from
+    its first sketch to a working example.
+  </p><ul class="alk-index">
+    {
+      notes.map((note) => (
+        <li>
+          <>
+            <span class="alk-pill">{note.data.date}</span>
+            <br />
+            <a href={`/blog/${note.id}/`}>{note.data.title}</a>
+            <p>{note.data.description}</p>
+          </>
+        </li>
+      ))
+    }
+  </ul></SiteLayout
+>

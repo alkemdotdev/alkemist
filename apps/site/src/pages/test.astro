@@ -1,5 +1,5 @@
 ---
-import AlkLayout from '@alkemist/ui/AlkLayout.astro';
+import SiteLayout from '../layouts/SiteLayout.astro';
 import AlkMath from '@alkemist/ui/AlkMath.astro';
 import AlkCode from '@alkemist/ui/AlkCode.astro';
 import AlkChart from '@alkemist/ui/AlkChart.astro';
@@ -62,7 +62,7 @@ outColor = vec4(mix(board, ink, contour), 1.0);`,
 ] as const;
 ---
 
-<AlkLayout
+<SiteLayout
   title="The specimen board"
   section="A living style test / built with Alkemist"
   preview={isPreview}
@@ -638,11 +638,11 @@ outColor = vec4(mix(board, ink, contour), 1.0);`,
       That’s the board.<br />What will you put on it?
     </h2><div class="test-intro-links">
       <a href="/docs/">Explore the docs →</a><a
-        href="/notebook/ink-and-instruments/">How this page was built →</a
+        href="/blog/ink-and-instruments/">How this page was built →</a
       ><a href="#main">Back to the top ↑</a>
     </div>
   </div>
-</AlkLayout>
+</SiteLayout>
 
 <script>
   const tabRoot = document.querySelector('[data-code-tabs]');

@@ -9,5 +9,5 @@ Alkemist is a reusable Astro publishing toolkit for inventors and researchers.
 - Run `npm run verify`. Validate visible changes in a browser at desktop/mobile widths.
 - Hosting is Cloudflare Pages. `infra/cloudflare.json` and `scripts/cloudflare.mjs` own reproducible configuration. Native Git builds deploy `main` to production and other branches to previews; do not add a second deployment system.
 - Keep tokens out of source, output, and build environment. Native Cloudflare Git integration needs no repository deploy secret.
-- Record meaningful work and observed evidence in `docs/progress.md`; publish readable development articles in `apps/site/src/content/notebook`.
+- Record meaningful work and observed evidence in `docs/progress.md`; publish readable development blog articles in `apps/site/src/content/blog`.
 - Never claim an upstream capability or a concept sketch is an implemented Alkemist feature.

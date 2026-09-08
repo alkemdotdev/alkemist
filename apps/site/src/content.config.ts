@@ -13,8 +13,8 @@ export const collections = {
     loader: glob({ pattern: '**/*.mdx', base: './src/content/docs' }),
     schema,
   }),
-  notebook: defineCollection({
-    loader: glob({ pattern: '**/*.mdx', base: './src/content/notebook' }),
+  blog: defineCollection({
+    loader: glob({ pattern: '**/*.mdx', base: './src/content/blog' }),
     schema,
   }),
 };

@@ -11,7 +11,7 @@ import '../../styles/board-studies.css';
 import '../../styles/board-options.css';
 import { boardSignal } from '../../lib/board-signal';
 const initialSignal = boardSignal(0.18);
-const canonical = new URL('/design/boards/', Astro.site);
+const canonical = new URL('/labs/board-studies/', Astro.site);
 ---
 
 <!doctype html>
@@ -69,8 +69,9 @@ const canonical = new URL('/design/boards/', Astro.site);
           >An open notebook<br />for inventors & researchers</span
         >
         <nav aria-label="Study navigation">
-          <a href="/notebook/">Notebook</a><a href="/components/">Experiments</a
-          ><a href="/docs/">Docs <span aria-hidden="true">↗</span></a>
+          <a href="/blog/">Blog</a><a href="/labs/">Labs</a><a href="/info/"
+            >Info <span aria-hidden="true">↗</span></a
+          >
         </nav>
       </header>
       <main id="main">
@@ -95,7 +96,7 @@ const canonical = new URL('/design/boards/', Astro.site);
                 class="desktop-break"
               /> and everything you discover along the way.
             </p>
-            <a class="board-cta" href="/notebook/"
+            <a class="board-cta" href="/blog/"
               >Open the notebook <span aria-hidden="true">↗</span></a
             >
             <span class="intro-note">Leave the working in.</span>
@@ -242,7 +243,7 @@ const canonical = new URL('/design/boards/', Astro.site);
               The unfinished proof. The surprising result. The small detail that
               made it click. Give the explanation as much care as the
               experiment.
-            </p><a href="/notebook/foundation/"
+            </p><a href="/blog/foundation/"
               >Notes on building Alkemist <span aria-hidden="true">↗</span></a
             >
           </article>
@@ -288,7 +289,7 @@ const canonical = new URL('/design/boards/', Astro.site);
         <h2>Same content. Three points of view.</h2><p>
           Switch above to compare each direction on both boards.
         </p>
-        <a href="/design/studio/">Choose fonts and every detail ↗</a>
+        <a href="/labs/design-studio/">Choose fonts and every detail ↗</a>
       </div>
       <article>
         <h3>Seminar</h3><p>

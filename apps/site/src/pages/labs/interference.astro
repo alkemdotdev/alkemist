@@ -1,0 +1,28 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import AlkShader from '@alkemist/ui/AlkShader.astro';
+import { isPreview } from '../../lib/deployment';
+---
+
+<SiteLayout
+  title="Interference lab"
+  section="Labs / Waves & fields"
+  preview={isPreview}
+>
+  <h1>Two sources. A field of possibilities.</h1>
+  <p class="alk-lead">
+    Change the spatial frequency and source angle. Press Play to move through
+    the pattern, or pause to study a frame.
+  </p>
+  <AlkShader title="Two-source interference" />
+  <p class="alk-note">Try a low frequency, then rotate the sources.</p>
+  <p>
+    This synthetic field is a visual shader study. Frequency and angle control
+    the pattern; they do not represent calibrated physical measurements.
+  </p>
+  <div class="alk-links">
+    <a href="/labs/">All labs →</a><a href="/docs/models/#a-live-shader-study"
+      >Use this component →</a
+    >
+  </div>
+</SiteLayout>

@@ -1,5 +1,5 @@
 ---
-import AlkLayout from '@alkemist/ui/AlkLayout.astro';
+import SiteLayout from '../layouts/SiteLayout.astro';
 import { isPreview } from '../lib/deployment';
 const surface: string[] = [];
 function point(u: number, v: number) {
@@ -27,7 +27,7 @@ for (let i = 0; i < 10; i++)
   );
 ---
 
-<AlkLayout title="Alkemist" preview={isPreview}>
+<SiteLayout title="Alkemist" preview={isPreview}>
   <div class="alk-feature">
     <div>
       <p class="alk-eyebrow">For inventors & researchers</p>
@@ -37,9 +37,7 @@ for (let i = 0; i < 10; i++)
         code, data, and models. Build a place where people can explore them.
       </p>
       <div class="alk-links">
-        <a href="/docs/">Explore the documentation →</a><a href="/test/"
-          >Explore the specimen board →</a
-        >
+        <a href="/labs/">Open the labs →</a><a href="/docs/">Use Alkemist →</a>
       </div>
       <p class="alk-status">Foundation 0.1 · built on Astro 7</p>
     </div>
@@ -72,16 +70,16 @@ for (let i = 0; i < 10; i++)
     </h2>
     <div class="alk-grid">
       <article>
-        <h3>A living notebook</h3><p>
+        <h3>From the blog</h3><p>
           Articles, project notes, and the decisions behind the work. This
           website documents its own construction.
-        </p><a href="/notebook/">Read the fieldnotes →</a>
+        </p><a href="/blog/">Read the blog →</a>
       </article>
       <article>
         <h3>One component vocabulary</h3><p>
           AlkChart, AlkModel, AlkMath. A consistent API for data, geometry,
           computation, and scientific writing.
-        </p><a href="/components/">See the components →</a>
+        </p><a href="/docs/components/">See the components →</a>
       </article>
       <article>
         <h3>A base that can evolve</h3><p>
@@ -91,4 +89,4 @@ for (let i = 0; i < 10; i++)
       </article>
     </div>
   </section>
-</AlkLayout>
+</SiteLayout>

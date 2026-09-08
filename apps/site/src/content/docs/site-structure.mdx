@@ -1,0 +1,77 @@
+---
+title: Site structure and navigation
+description: Blog, Labs, Info, optional Docs, and one Test page. Keep the top bar simple and let your site own its content.
+order: 15
+---
+
+The default primary navigation is **Blog · Labs · Info**. The Alkemist demo adds a **More ›** disclosure with Docs and Test page. More supports keyboard activation, Escape to close and return focus, and dismissal by clicking outside.
+
+## What belongs where
+
+| Section  | Purpose                                                            | Example                                               |
+| -------- | ------------------------------------------------------------------ | ----------------------------------------------------- |
+| `/blog/` | Blog posts, news, development articles, research notes             | [How the theme was built](/blog/ink-and-instruments/) |
+| `/labs/` | Interactive experiments, small tools, and usable applications      | [Interference lab](/labs/interference/)               |
+| `/info/` | About the project, people, team, company, or organization          | [About Alkemist](/info/)                              |
+| `/docs/` | Component usage, configuration, architecture, and site conventions | [Component catalog](/docs/components/)                |
+| `/test/` | One comprehensive styling and interaction test application         | [Math specimens](/test/#math)                         |
+
+A lab is something to use. Its component reference lives in Docs. An article about how it was built belongs in Blog. Team biographies can use nested paths such as `/info/team/person-name/`; create those pages when you have real content for them.
+
+Use lowercase kebab-case paths and trailing slashes for pages. Files retain extensions, and section anchors let one test page cover many specimens. Keep dates out of blog URLs and keep preview paths identical to production paths.
+
+## Your site owns its documentation
+
+The theme does not inject Alkemist's documentation into your site. Omit Docs entirely, or put your project's own documentation there. The demo's reference pages live in its content collection and consume the same reusable packages as the rest of the site.
+
+`AlkLayout` accepts these optional arrays of `{ label, href }` links:
+
+| Prop               | Default                               |
+| ------------------ | ------------------------------------- |
+| `navigation`       | Blog, Labs, Info                      |
+| `moreNavigation`   | Empty; no More disclosure is rendered |
+| `footerNavigation` | Empty                                 |
+
+For example, a site with project documentation can add it explicitly:
+
+```astro
+---
+import AlkLayout from '@alkemist/ui/AlkLayout.astro';
+---
+
+<AlkLayout
+  title="Our research group"
+  moreNavigation={[{ label: 'Docs', href: '/docs/' }]}
+>
+  <slot />
+</AlkLayout>
+```
+
+The demo's `src/layouts/SiteLayout.astro` supplies its More and footer links. A site without documentation can use `AlkLayout` directly. Supplying `navigation` replaces the default main links, so unused sections need not appear either.
+
+## Current files
+
+```text
+src/
+  content/
+    blog/*.mdx
+    docs/*.mdx
+  layouts/SiteLayout.astro
+  pages/
+    blog/           # collection index and article route
+    labs/           # actual Astro applications
+    info/           # site-owned information pages
+    docs/           # collection routes and component catalog
+    test.astro      # one comprehensive test page
+public/             # public downloads and other unprocessed assets
+```
+
+The blog and docs currently require `title` and `description`; `order` defaults to 100 and `date` is optional. Blog entries sort by date descending, then order and ID. They remain MDX collections with file-derived IDs.
+
+Explicit stable IDs, separate route slugs, `.md` support, portable article folders, source-relative asset resolution, `*.alk.yaml` sidecars, and `*.figure.yaml` definitions are proposed next steps. Those file contracts are not implemented by this route change. Current charts and models still take explicit public asset URLs and their documented component props.
+
+## Existing links
+
+Published notebook pages redirect permanently to Blog, `/components/` redirects to `/docs/components/`, and the old design-study URLs redirect to their corresponding Labs pages. Published downloads retain their old URLs, including the image at `/notebook/eight-inks.jpg`.
+
+`apps/site/redirects.mjs` is the source for both Astro's static redirect pages and Cloudflare's generated `_redirects` rules. Cloudflare applies the HTTP redirects at deployment; Astro's static output supplies fallback redirect pages for other static hosts. See the [Cloudflare redirect documentation](https://developers.cloudflare.com/pages/configuration/redirects/) for hosting behavior.

@@ -1,0 +1,15 @@
+---
+import AlkLayout, { type AlkLayoutProps } from '@alkemist/ui/AlkLayout.astro';
+type Props = AlkLayoutProps;
+---
+
+<AlkLayout
+  moreNavigation={[
+    { label: 'Docs', href: '/docs/' },
+    { label: 'Test page', href: '/test/' },
+  ]}
+  footerNavigation={[{ label: 'Project status', href: '/docs/status/' }]}
+  {...Astro.props}
+>
+  <slot />
+</AlkLayout>

@@ -18,7 +18,7 @@ Use Node 24.20.0 (`.nvmrc`). Astro is pinned to 7.3.2; TypeScript 6.0.3 matches 
 
 - `packages/astro`: shared Astro integration and MDX defaults.
 - `packages/ui`: shared layouts, math, code, charts, model/shader viewers, theme tokens, and local fonts.
-- `apps/site`: demo, docs, notebook, and site-owned routes/content.
+- `apps/site`: blog, labs, info, optional docs, one test page, and site-owned content.
 - `infra/cloudflare.json`: managed Cloudflare Pages/Git/domain configuration.
 - `docs/proposal.md`: full product scope and intended component contracts.
 - `docs/progress.md`: implementation and deployment evidence.

@@ -1,0 +1,57 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import { isPreview } from '../../lib/deployment';
+const labs = [
+  {
+    name: 'Interference field',
+    href: '/labs/interference/',
+    kind: 'Shader / Interactive',
+    description:
+      'Turn two wave sources, change their frequency, and watch the field evolve.',
+  },
+  {
+    name: 'Design studio',
+    href: '/labs/design-studio/',
+    kind: 'Design / Tool',
+    description:
+      'Choose typography, inks, and board details. Share a preview or download your choices.',
+  },
+  {
+    name: 'Board studies',
+    href: '/labs/board-studies/',
+    kind: 'Design / Comparison',
+    description:
+      'Compare Seminar, Workshop, and Drafting on whiteboard and blackboard surfaces.',
+  },
+];
+---
+
+<SiteLayout
+  title="Labs"
+  section="Small apps / Open experiments"
+  preview={isPreview}
+>
+  <h1>Take an idea for a spin.</h1>
+  <p class="alk-lead">
+    Working tools and interactive experiments. Open a lab, change something, and
+    see what happens.
+  </p>
+  <div class="alk-grid alk-section">
+    {
+      labs.map((lab) => (
+        <article>
+          <>
+            <p class="alk-pill">{lab.kind}</p>
+            <h2>
+              <a href={lab.href}>
+                {lab.name} <span aria-hidden="true">↗</span>
+              </a>
+            </h2>
+            <p>{lab.description}</p>
+          </>
+        </article>
+      ))
+    }
+  </div>
+  <p class="alk-note">Leave room for the next experiment.</p>
+</SiteLayout>

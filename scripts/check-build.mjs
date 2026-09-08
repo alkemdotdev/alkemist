@@ -1,6 +1,7 @@
 import { readFile, readdir, stat } from 'node:fs/promises';
 import { join, resolve, extname } from 'node:path';
 import assert from 'node:assert/strict';
+import { redirects } from '../apps/site/redirects.mjs';
 const root = resolve('apps/site/dist');
 const required = [
   'index.html',
@@ -8,7 +9,13 @@ const required = [
   'docs/charts/index.html',
   'docs/naming/index.html',
   'docs/deployment/index.html',
-  'components/index.html',
+  'docs/components/index.html',
+  'docs/site-structure/index.html',
+  'labs/index.html',
+  'labs/interference/index.html',
+  'labs/design-studio/index.html',
+  'labs/board-studies/index.html',
+  'info/index.html',
   'test/index.html',
   'test/inks.json',
   'test/torus-knot.glb',
@@ -16,15 +23,39 @@ const required = [
   'docs/palette/index.html',
   'docs/math-code/index.html',
   'docs/models/index.html',
-  'notebook/index.html',
-  'notebook/foundation/index.html',
+  'blog/index.html',
+  'blog/foundation/index.html',
+  'notebook/eight-inks.jpg',
   '404.html',
   'build.json',
   'robots.txt',
   '_headers',
+  '_redirects',
 ];
 for (const file of required)
   assert.ok((await stat(join(root, file))).isFile(), `Missing ${file}`);
+const redirectRules = (await readFile(join(root, '_redirects'), 'utf8'))
+  .trim()
+  .split('\n');
+for (const [from, to] of Object.entries(redirects)) {
+  assert.ok(!redirects[to], `Redirect chain or loop: ${from} -> ${to}`);
+  assert.ok(
+    !from.includes('*'),
+    'Page migrations must not capture legacy downloads',
+  );
+  assert.ok(
+    (await stat(join(root, to, 'index.html'))).isFile(),
+    `Missing redirect target ${to}`,
+  );
+  assert.ok(
+    redirectRules.includes(`${from} ${to} 301`),
+    `Missing HTTP redirect ${from}`,
+  );
+  assert.ok(
+    redirectRules.includes(`${from.slice(0, -1)} ${to} 301`),
+    `Missing slashless redirect ${from}`,
+  );
+}
 async function walk(dir) {
   const files = [];
   for (const entry of await readdir(dir, { withFileTypes: true })) {
