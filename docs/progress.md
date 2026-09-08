@@ -9,7 +9,10 @@ The user authorized a public Cloudflare site at `alkemist.alkem.dev`, automatic 
 - Implemented Astro 7.3.2 workspace packages, the shared `AlkLayout`/theme, six documentation pages, the component roadmap, and a development notebook article.
 - Added managed Cloudflare configuration, repository/DNS identity guards, validation-only CI, built-link checks, and `/build.json` provenance.
 - `npm run verify` passes: zero Astro diagnostics, four deployment-contract tests, 12 built pages, internal links/assets, and production build identity.
-- Cloudflare account/zone access and existing GitHub App access are confirmed. No existing Alkemist Pages project or DNS record was found. Remote setup and deployment verification are next.
+- Production and preview-mode local builds pass; desktop/mobile browser checks confirmed docs navigation, theme persistence, and no page overflow.
+- Initial source commit `e587eef` was pushed to main, with local/remote parity verified.
+- Created the `alkemist` Cloudflare Pages project. Source repository identity, build settings, main production, all-branch previews, and disabled PR comments passed remote readback.
+- Associated `alkemist.alkem.dev` and created its proxied CNAME to `alkemist-8be.pages.dev`. Domain validation and push-triggered deployment checks are in progress.
 
 ## 2026-09-08 — Research and proposal
 

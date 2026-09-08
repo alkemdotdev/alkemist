@@ -34,7 +34,10 @@ An operator supplies `CLOUDFLARE_API_TOKEN` via their environment. Credentials a
 
 ## Live evidence
 
-Initial provisioning and remote deployment verification are in progress. See `docs/progress.md` for the latest completed steps; the configured intent above is not yet proof that the host deployed it.
+- Pages project `alkemist` was created and its managed settings passed an exact readback check on September 8, 2026.
+- Cloudflare assigned `alkemist-8be.pages.dev` as the project hostname.
+- `alkemist.alkem.dev` is associated with that Pages project and has a proxied CNAME to the assigned hostname.
+- Domain validation/certificate issuance and the first push-triggered deployments are being verified. Configuration readback alone is not deployment proof.
 
 ## Sources
 
