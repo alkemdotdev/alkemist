@@ -57,6 +57,7 @@ for (const [path, title] of [
   ['/labs/hero-studies/', 'Hero studies'],
   ['/labs/sculpture-studies/', 'Four sculpture studies'],
   ['/blog/four-new-forms/', 'Four new forms'],
+  ['/blog/form-and-structure/', 'From playful forms'],
   ['/labs/interference/', 'Interference lab'],
   ['/info/', 'Info'],
   ['/test/', 'The specimen board'],

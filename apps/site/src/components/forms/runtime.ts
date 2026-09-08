@@ -1,5 +1,5 @@
-import { ALK_INKS } from '@alkemist/ui/palette';
-import type { BufferGeometry, Material } from 'three';
+import { formColors } from './materials';
+import type { BufferGeometry, Material, WebGLRenderTarget } from 'three';
 import { formStudies } from './catalog';
 
 type Runtime = { dispose(): void; setVisible(value: boolean): void };
@@ -9,9 +9,10 @@ async function mount(
   signal: AbortSignal,
   fail: (message: string) => void,
 ): Promise<Runtime> {
-  const [THREE, { OrbitControls }] = await Promise.all([
+  const [THREE, { OrbitControls }, { RoomEnvironment }] = await Promise.all([
     import('three'),
     import('three/addons/controls/OrbitControls.js'),
+    import('three/addons/environments/RoomEnvironment.js'),
   ]);
   signal.throwIfAborted();
   const spec = formStudies
@@ -35,6 +36,8 @@ async function mount(
   });
   renderer.setClearColor(0, 0);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 0.9;
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(34, 1, 0.1, 100);
   const controls = new OrbitControls(camera, canvas);
@@ -42,7 +45,8 @@ async function mount(
   controls.enablePan = false;
   controls.enableZoom = false;
   controls.enableDamping = false;
-  const colors = Object.fromEntries(ALK_INKS.map(({ id, hex }) => [id, hex]));
+  const colors = formColors;
+  let environmentMap: WebGLRenderTarget | undefined;
   const geometries: BufferGeometry[] = [];
   const materials: Material[] = [];
   const events = new AbortController();
@@ -74,8 +78,60 @@ async function mount(
         object.rotation[1] + object.sway[1] * oscillate(0.13),
         object.rotation[2] + object.sway[2] * oscillate(0.11),
       );
-      group.position.y = object.position[1] + oscillate(0.19) * 0.025;
+      group.position.y = object.position[1] + oscillate(0.19) * 0.008;
     });
+  const point = new THREE.Vector3();
+  const annotationNodes = [
+    ...host.querySelectorAll<HTMLElement>('[data-annotation-label]'),
+  ];
+  const leaderNodes = [
+    ...host.querySelectorAll<SVGPathElement>('[data-annotation-leader]'),
+  ];
+  const anchorNodes = [
+    ...host.querySelectorAll<SVGCircleElement>('[data-annotation-anchor]'),
+  ];
+  const updateAnnotations = () => {
+    const width = viewport.clientWidth,
+      height = viewport.clientHeight;
+    const occupied = { left: 38, right: 38 };
+    const projected = (spec.annotations ?? [])
+      .map((annotation, i) => {
+        point.set(...annotation.point);
+        if (annotation.object !== undefined)
+          groups[annotation.object]?.localToWorld(point);
+        point.project(camera);
+        return {
+          annotation,
+          i,
+          px: ((point.x + 1) * width) / 2,
+          py: ((1 - point.y) * height) / 2,
+        };
+      })
+      .sort(
+        (a, b) =>
+          a.py + a.annotation.offset[1] - (b.py + b.annotation.offset[1]),
+      );
+    for (const { annotation, i, px, py } of projected) {
+      const label = annotationNodes[i];
+      if (!label || !label.offsetHeight) continue;
+      const side = annotation.offset[0] < 0 ? 'left' : 'right';
+      const x = side === 'left' ? 10 : width - label.offsetWidth - 10;
+      const y = Math.min(
+        height - label.offsetHeight - 12,
+        Math.max(occupied[side], py + annotation.offset[1]),
+      );
+      occupied[side] = y + label.offsetHeight + 14;
+      label.style.transform = `translate(${x}px,${y}px)`;
+      const endX = side === 'left' ? x + label.offsetWidth : x,
+        endY = y + 11;
+      leaderNodes[i]?.setAttribute(
+        'd',
+        `M${px},${py} L${(px + endX) / 2},${endY} L${endX},${endY}`,
+      );
+      anchorNodes[i]?.setAttribute('cx', String(px));
+      anchorNodes[i]?.setAttribute('cy', String(py));
+    }
+  };
   const render = (time: number) => {
     frame = 0;
     if (disposed || !visible || document.hidden) return;
@@ -89,6 +145,7 @@ async function mount(
     }
     previous = time;
     renderer.render(scene, camera);
+    updateAnnotations();
     if (playing) requestRender();
   };
   const dispose = () => {
@@ -100,13 +157,24 @@ async function mount(
     controls.dispose();
     geometries.forEach((g) => g.dispose());
     materials.forEach((m) => m.dispose());
+    environmentMap?.dispose();
     renderer.dispose();
-    renderer.forceContextLoss();
+    if (!context.isContextLost()) renderer.forceContextLoss();
     if (canvas.parentNode === viewport)
       canvas.replaceWith(canvas.cloneNode(false));
   };
   signal.addEventListener('abort', dispose, { once: true });
   try {
+    const room = new RoomEnvironment();
+    const pmrem = new THREE.PMREMGenerator(renderer);
+    try {
+      environmentMap = pmrem.fromScene(room);
+      scene.environment = environmentMap.texture;
+      scene.environmentIntensity = 0.8;
+    } finally {
+      room.dispose();
+      pmrem.dispose();
+    }
     for (const object of spec.objects) {
       const group = new THREE.Group();
       group.position.set(...object.position);
@@ -121,13 +189,18 @@ async function mount(
           new THREE.Float32BufferAttribute(surface.positions, 3),
         );
         geometry.setIndex(surface.indices);
-        geometry.computeVertexNormals();
+        if (surface.normals)
+          geometry.setAttribute(
+            'normal',
+            new THREE.Float32BufferAttribute(surface.normals, 3),
+          );
+        else geometry.computeVertexNormals();
         const opacity = surface.opacity ?? 1;
         const material = new THREE.MeshStandardMaterial({
           color: colors[surface.ink],
           side: THREE.DoubleSide,
-          roughness: 0.62,
-          metalness: 0.08,
+          roughness: surface.roughness ?? 0.36,
+          metalness: surface.metalness ?? 0.65,
           opacity,
           transparent: opacity < 1,
           depthWrite: opacity === 1,
@@ -155,40 +228,43 @@ async function mount(
         group.add(new THREE.Line(geometry, material));
       }
     }
-    scene.add(new THREE.HemisphereLight(0xffffff, 0x71809c, 1.7));
-    const key = new THREE.DirectionalLight(0xffffff, 2.1);
+    scene.add(new THREE.HemisphereLight(0xffffff, 0x71809c, 0.7));
+    const key = new THREE.DirectionalLight(0xffffff, 1.7);
     key.position.set(-3, 6, 8);
     scene.add(key);
-    const rim = new THREE.DirectionalLight(0xffffff, 1.4);
+    const rim = new THREE.DirectionalLight(0xc9e4ff, 1.3);
     rim.position.set(5, -1, -3);
     scene.add(rim);
-    const bounds = new THREE.Box3().setFromObject(scene);
+    // Fit the actual vertices. Rotated local bounding boxes waste most of a
+    // curved specimen's frame, especially when the object has deep folds.
+    scene.updateMatrixWorld(true);
+    const fitPoints: number[] = [];
+    for (const group of groups) {
+      for (const child of group.children) {
+        const position = (
+          child as InstanceType<typeof THREE.Mesh>
+        ).geometry.getAttribute('position');
+        for (let i = 0; i < position.count; i++) {
+          point
+            .fromBufferAttribute(position, i)
+            .applyMatrix4(group.matrixWorld);
+          fitPoints.push(point.x, point.y, point.z);
+        }
+      }
+    }
     const fitDistance = () => {
       const halfAngle = THREE.MathUtils.degToRad(camera.fov / 2);
-      if (host.dataset.form === 'interference') {
-        const halfWidth = Math.max(
-          Math.abs(bounds.min.x),
-          Math.abs(bounds.max.x),
-        );
-        const halfHeight = Math.max(
-          Math.abs(bounds.min.y),
-          Math.abs(bounds.max.y),
-        );
-        return (
-          bounds.max.z +
-          Math.max(
-            halfWidth / (Math.tan(halfAngle) * camera.aspect),
-            halfHeight / Math.tan(halfAngle),
-          ) *
-            1.2
+      const vertical = Math.tan(halfAngle) * 0.78;
+      const horizontal = vertical * camera.aspect;
+      let distance = 0;
+      for (let i = 0; i < fitPoints.length; i += 3) {
+        distance = Math.max(
+          distance,
+          fitPoints[i + 2]! + Math.abs(fitPoints[i]!) / horizontal,
+          fitPoints[i + 2]! + Math.abs(fitPoints[i + 1]!) / vertical,
         );
       }
-      return (
-        spec.radius /
-        Math.sin(
-          Math.min(halfAngle, Math.atan(Math.tan(halfAngle) * camera.aspect)),
-        )
-      );
+      return distance;
     };
     const home = () => {
       elapsed = 0;
@@ -212,6 +288,34 @@ async function mount(
     play.addEventListener('click', () => motion(!playing), {
       signal: events.signal,
     });
+    host
+      .querySelectorAll<HTMLButtonElement>('[data-form-zoom]')
+      .forEach((button) => {
+        button.disabled = false;
+        button.addEventListener(
+          'click',
+          () => {
+            motion(false);
+            const distance = fitDistance();
+            camera.position.setLength(
+              THREE.MathUtils.clamp(
+                camera.position.length() *
+                  (button.dataset.formZoom === 'in' ? 0.85 : 1 / 0.85),
+                distance * 0.6,
+                distance * 1.4,
+              ),
+            );
+            controls.update();
+            requestRender();
+          },
+          { signal: events.signal },
+        );
+      });
+    host
+      .closest('form-studies')
+      ?.addEventListener('form-details-change', requestRender, {
+        signal: events.signal,
+      });
     reset.addEventListener(
       'click',
       () => {

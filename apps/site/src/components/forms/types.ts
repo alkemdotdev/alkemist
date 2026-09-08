@@ -1,12 +1,17 @@
 import type { AlkInk } from '@alkemist/ui/palette';
 
 export type Vec3 = [number, number, number];
-export type FormLine = { points: Vec3[]; ink: AlkInk; opacity?: number };
+export type FormInk = AlkInk | 'silver' | 'graphite' | 'construction';
+export type FormLine = { points: Vec3[]; ink: FormInk; opacity?: number };
 export type FormSurface = {
   positions: number[];
   indices: number[];
-  ink: AlkInk;
+  /** Optional unit normals in the same object-local coordinates as positions. */
+  normals?: number[];
+  ink: FormInk;
   opacity?: number;
+  roughness?: number;
+  metalness?: number;
 };
 export type FormObject = {
   position: Vec3;
@@ -21,5 +26,14 @@ export type FormScene = {
   objects: FormObject[];
   /** Bounding sphere around the origin, including motion. */
   radius: number;
+  framing?: 'bounds';
+  annotations?: {
+    /** Local coordinates of the indicated object, or world coordinates if omitted. */
+    point: Vec3;
+    object?: number;
+    label: string;
+    detail: string;
+    offset: [number, number];
+  }[];
 };
 export type FormId = 'orbit' | 'strata' | 'interference' | 'assembly';

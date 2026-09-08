@@ -1,5 +1,5 @@
 ---
-import { ALK_INKS } from '@alkemist/ui/palette';
+import { formColors } from './materials';
 import type { FormScene, Vec3 } from './types';
 interface Props {
   scene: FormScene;
@@ -7,7 +7,7 @@ interface Props {
   decorative?: boolean;
 }
 const { scene, label, decorative = false } = Astro.props;
-const colors = Object.fromEntries(ALK_INKS.map(({ id, hex }) => [id, hex]));
+const colors = formColors;
 const distance = scene.radius / Math.sin((17 * Math.PI) / 180);
 const transform = (point: Vec3, rotation: Vec3, position: Vec3): Vec3 => {
   let [x, y, z] = point;
@@ -60,7 +60,7 @@ const lines = scene.objects
         d={line.path}
         fill="none"
         stroke={colors[line.ink]}
-        stroke-width="1.6"
+        stroke-width="0.9"
         stroke-linecap="round"
         stroke-linejoin="round"
         opacity={line.opacity ?? 0.9}

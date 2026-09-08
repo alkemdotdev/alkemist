@@ -2,10 +2,10 @@
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import FormArt from '../../components/forms/FormArt.astro';
 import { Image } from 'astro:assets';
-import orbitPoster from '../../assets/forms/orbit.png';
-import strataPoster from '../../assets/forms/strata.png';
-import interferencePoster from '../../assets/forms/interference.png';
-import assemblyPoster from '../../assets/forms/assembly.png';
+import orbitPoster from '../../assets/forms-engineering/orbit.png';
+import strataPoster from '../../assets/forms-engineering/strata.png';
+import interferencePoster from '../../assets/forms-engineering/interference.png';
+import assemblyPoster from '../../assets/forms-engineering/assembly.png';
 const posters = {
   orbit: orbitPoster,
   strata: strataPoster,
@@ -20,13 +20,13 @@ import '../../styles/sculpture-studies.css';
 
 <SiteLayout
   title="Four sculpture studies"
-  description="Four fresh Alkemist opening studies: Orbit, Strata, Interference, and Assembly."
+  description="Four detailed mathematical and engineering openings: Enneper, Gyroid, Dipole, and Reduction."
   preview={isPreview}
 >
   <form-studies data-notes="true" data-captions="true" data-view="compare">
     <div class="forms-toolbar">
       <a href="/labs/" class="forms-back"
-        >← Labs <span>/ Four new openings</span></a
+        >← Labs <span>/ Form & structure</span></a
       >
       <nav aria-label="Sculpture direction">
         <a href="?take=compare" data-view-link="compare" aria-current="page"
@@ -48,14 +48,14 @@ import '../../styles/sculpture-studies.css';
     >
       <div class="forms-introduction">
         <div>
-          <p class="forms-eyebrow">Four studies / one starting point</p><h1
+          <p class="forms-eyebrow">Mathematics / materials / mechanisms</p><h1
             id="forms-title"
           >
-            A little more possibility.
+            Studies in form & structure.
           </h1>
         </div><p>
-          Four new objects for the front door.<br />Open one. Turn it over. See
-          what feels right.
+          Four detailed openings for Alkemist.<br />Inspect the geometry. Follow
+          the structure.
         </p>
       </div>
       <div class="forms-grid">
@@ -112,9 +112,9 @@ import '../../styles/sculpture-studies.css';
           <div class="forms-preview-copy">
             <p class="forms-eyebrow">Alkemist · an Astro starting point</p>
             <h1>
-              A home for
+              Research, made
               <br />
-              working ideas.
+              explorable.
             </h1>
             <p class="forms-lead">
               Publish research, share experiments, and make your work something
@@ -180,16 +180,16 @@ import '../../styles/sculpture-studies.css';
     <section class="forms-review" aria-labelledby="forms-review-title">
       <div>
         <p class="forms-eyebrow">Your direction</p><h2 id="forms-review-title">
-          Keep what feels right.
+          Choose a direction.
         </h2><p data-direction-description>
-          Compare the silhouettes first, then open a study to see its scale,
-          motion, and typography.
-        </p><a href="/blog/four-new-forms/">How these forms were made ↗</a>
+          Open a study to inspect its geometry, material, and annotations in a
+          full homepage composition.
+        </p><a href="/blog/form-and-structure/">How these forms were made ↗</a>
       </div>
       <form>
         <fieldset>
           <legend>Details in the full preview</legend><label
-            ><input type="checkbox" name="notes" checked /> Handwritten annotations</label
+            ><input type="checkbox" name="notes" checked /> Technical annotations</label
           ><label
             ><input type="checkbox" name="captions" checked /> Artwork captions</label
           >

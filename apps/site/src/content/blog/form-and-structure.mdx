@@ -1,0 +1,108 @@
+---
+title: From playful forms to mathematical structure
+description: Four detailed opening studies built from surfaces, fields, and a sectioned mechanism.
+date: '2026-09-08'
+order: -6
+---
+
+import { Image } from 'astro:assets';
+import enneper from '../../assets/forms-engineering/orbit.png';
+import gyroid from '../../assets/forms-engineering/strata.png';
+import dipole from '../../assets/forms-engineering/interference.png';
+import reduction from '../../assets/forms-engineering/assembly.png';
+
+The [previous round](/blog/four-new-forms/) was too playful. Large blocks of saturated color and a few simple objects suggested toys. For a publishing toolkit aimed at inventors and researchers, the opening should invite closer inspection.
+
+The [revised comparison](/labs/sculpture-studies/?take=compare&board=black) uses four specific subjects: a minimal surface, a periodic nodal surface, an ideal dipole field, and a planetary reduction stage. Silver and graphite carry their shape. The existing cobalt, cyan, and ochre inks identify coordinates, sections, and construction witnesses. Those ink colors remain identical on both boards.
+
+## Enneper: curvature and coordinates
+
+<Image
+  src={enneper}
+  alt="A folded silver Enneper surface with a fine blue coordinate net and ochre boundary."
+  widths={[480, 800, 1200]}
+  sizes="(max-width:800px) 100vw, 800px"
+  format="webp"
+/>
+
+This is a sampled Enneper immersion, with 71,456 triangles and a conformal coordinate net. Its analytical parametrization is
+
+$$
+\mathbf r(u,v)=\left(u-\frac{u^3}{3}+uv^2,\;-v-u^2v+\frac{v^3}{3},\;u^2-v^2\right).
+$$
+
+The model samples the disk $u^2+v^2\leq 1.78^2$ and applies a uniform display scale. The smooth mathematical surface has zero mean curvature; the rendered triangle mesh approximates it. The blue curves follow constant parameter values, and the ochre curve marks the disk boundary. This is an immersion that can intersect itself, not a fabricated sheet with thickness. [Wolfram MathWorld gives the parametrization and curvature.](https://mathworld.wolfram.com/EnnepersMinimalSurface.html)
+
+## Gyroid: expose the interior
+
+<Image
+  src={gyroid}
+  alt="A silver periodic nodal surface with an oblique cut, cyan section curves, and a unit-cell dimension."
+  widths={[480, 800, 1200]}
+  sizes="(max-width:800px) 100vw, 800px"
+  format="webp"
+/>
+
+The implicit field is
+
+$$
+f(x,y,z)=\sin x\cos y+\sin y\cos z+\sin z\cos x.
+$$
+
+We extract $f=0$ with indexed marching tetrahedra on a $44^3$ grid, then remove an oblique corner to reveal the channels. A finite specimen covers multiple periods; a dimension witness marks one period. Cyan traces the cut and ochre marks a central section. Analytical gradient normals keep the 98,926-triangle mesh visually smooth across irregular triangles.
+
+This trigonometric construction is a **nodal approximation**, not the exact minimal gyroid. The distinction matters: the approximation is convenient to sample, but does not inherit every property of the exact surface. The field formulation is described in [the computational gyroid design paper](https://pmc.ncbi.nlm.nih.gov/articles/PMC9144873/); [MathWorld describes the exact gyroid](https://mathworld.wolfram.com/Gyroid.html).
+
+## Dipole: many lines, one rule
+
+<Image
+  src={dipole}
+  alt="Nested dipole field lines around a small graphite reference sphere, with selected cyan meridians."
+  widths={[480, 800, 1200]}
+  sizes="(max-width:800px) 100vw, 800px"
+  format="webp"
+/>
+
+Instead of arbitrary flowing curves, every field-line family follows
+
+$$
+r=L\sin^2\theta.
+$$
+
+Here $\theta$ is measured from the dipole axis and $L$ is the equatorial crossing radius. Thirteen shell families, sampled at multiple azimuths, produce the layered structure. Selected meridians have thin tubes for depth; the remaining curves use fine transparent lines. A missing azimuth wedge exposes the inner families. [MIT's electrodynamics notes derive this field-line equation in section 7.4.](https://web.mit.edu/8.07/fall11/materials/classNotes/ThirdSet_807_9_21_2011.pdf)
+
+The coordinates are dimensionless. A reference sphere of radius 0.34 excludes the singular origin; it is not a physical magnet model. Line spacing, tube thickness, and the removed wedge are display choices. This is an analytical illustration, not measured field data or a numerical solver.
+
+## Reduction: parts with a purpose
+
+<Image
+  src={reduction}
+  alt="A sectioned planetary gearbox with four planet gears, an internal ring, visible bearings, carrier, and fasteners."
+  widths={[480, 800, 1200]}
+  sizes="(max-width:800px) 100vw, 800px"
+  format="webp"
+/>
+
+A 24-tooth sun, four 16-tooth planets, and a 56-tooth internal ring share one module and 25-degree involute flanks. The counts satisfy
+
+$$
+z_r=z_s+2z_p=24+2(16)=56,\qquad \frac{z_s+z_r}{4}=20.
+$$
+
+These are the center-distance and equal-spacing conditions listed in [KHK's planetary gear guidance, page 2](https://khkgears.net/pdf/2025/internal-gears.pdf). With the ring fixed, the ideal sun-to-carrier reduction is $1+56/24=10/3$.
+
+The 123,548-triangle illustration includes a sectioned housing, carrier webs, 56 bearing balls, stepped and splined shafts, socket heads, and section hatching. It moves as one rigid view; the gears do not simulate transmission dynamics. Tooth roots use radial connectors below the base circle, rather than cutter-generated trochoids. Axial spacing is illustrative, with no manufacturing tolerances. It is a parametric engineering illustration, not production CAD.
+
+## Make the detail inspectable
+
+The renderer fits actual vertices into the opening; fitting rotated bounding boxes had left too much empty space around curved objects. Annotation anchors are projected from the same object coordinates as the mesh, while their labels stay in the margins. Small zoom buttons reveal detail without capturing the page's scroll wheel. Drag, arrow keys, zoom, and Reset pause the subtle motion.
+
+A room lighting environment, physically based materials, and restrained directional lights reveal curvature. The grid is a visual alignment aid; dimensions come from the labeled geometry. The equation beneath each object remains ordinary accessible KaTeX content.
+
+The comparison loads stills. Only an opened, visible study starts its graphics engine. Motion remains capped at 30 painted frames per second, stops outside the viewport, and starts paused when reduced motion is preferred. Missing graphics support leaves a contour poster and an explanation.
+
+All four images in this article are captured from the browser renderer at the resting pose. `docs/art/capture-engineering-forms.cjs` records the 1200×900 capture recipe. The earlier article retains its original images, so the development history stays legible.
+
+These remain site-owned Labs proposals. The geometry modules, renderer, and styles live in the demo; the approved homepage and shared component API have not changed. [The customization guide](/docs/homepage/) identifies what to edit.
+
+[Inspect the four studies →](/labs/sculpture-studies/?take=compare&board=black)

@@ -1,169 +1,148 @@
-import type { AlkInk } from '@alkemist/ui/palette';
-import type {
-  FormLine,
-  FormObject,
-  FormScene,
-  FormSurface,
-  Vec3,
-} from './types';
+import type { FormLine, FormScene, Vec3 } from './types';
 
-type Band = {
-  radius: number;
-  width: number;
-  start: number;
-  sweep: number;
-  ellipse: number;
-  ink: AlkInk;
-  rotation: Vec3;
-  phase: number;
-};
+const DOMAIN_RADIUS = 1.78;
+const SCALE = 0.835;
+const RADIAL_SEGMENTS = 160;
+const ANGULAR_SEGMENTS = 224;
 
-function orbitalBand(band: Band): FormObject {
-  const segments = 144;
-  const depth = 0.055;
-  const positions: number[] = [];
-  const indices: number[] = [];
-  const edges: Vec3[][] = [[], [], [], []];
-
-  for (let step = 0; step <= segments; step++) {
-    const angle = band.start + (step / segments) * band.sweep;
-    // A rectangular section gives the arcs the weight of bent sheet metal.
-    for (let corner = 0; corner < 4; corner++) {
-      const outer = corner === 0 || corner === 3;
-      const front = corner < 2;
-      const radius = band.radius + (outer ? 0.5 : -0.5) * band.width;
-      const point: Vec3 = [
-        Math.cos(angle) * radius,
-        Math.sin(angle) * radius * band.ellipse,
-        (front ? 0.5 : -0.5) * depth,
-      ];
-      positions.push(...point);
-      edges[corner].push(point);
-    }
-    if (step === segments) continue;
-    for (let side = 0; side < 4; side++) {
-      const a = step * 4 + side;
-      const b = step * 4 + ((side + 1) % 4);
-      indices.push(a, b, a + 4, b, b + 4, a + 4);
-    }
-  }
-  const end = segments * 4;
-  indices.push(
-    0,
-    3,
-    1,
-    1,
-    3,
-    2,
-    end,
-    end + 1,
-    end + 3,
-    end + 1,
-    end + 2,
-    end + 3,
-  );
-
-  const lines: FormLine[] = edges.map((points) => ({ points, ink: band.ink }));
-  for (const edge of [0, segments]) {
-    lines.push({
-      points: [
-        edges[0][edge],
-        edges[1][edge],
-        edges[2][edge],
-        edges[3][edge],
-        edges[0][edge],
-      ],
-      ink: band.ink,
-    });
-  }
-  return {
-    position: [0, 0, 0],
-    rotation: band.rotation,
-    sway: [0.05, 0.07, 0.025],
-    phase: band.phase,
-    lines,
-    surfaces: [{ positions, indices, ink: band.ink }],
-  };
+/** The classical Enneper immersion, uniformly scaled without geometric distortion. */
+function point(u: number, v: number, normalOffset = 0): Vec3 {
+  const radiusSquared = u * u + v * v;
+  const denominator = 1 + radiusSquared;
+  // Analytic unit normal of r_u × r_v. A signed lift keeps the etched net clear
+  // of the triangulated skin on either side without offsetting it along an axis.
+  return [
+    SCALE * (u - (u * u * u) / 3 + u * v * v) +
+      (normalOffset * 2 * u) / denominator,
+    SCALE * (-v - u * u * v + (v * v * v) / 3) +
+      (normalOffset * 2 * v) / denominator,
+    SCALE * (u * u - v * v) +
+      (normalOffset * (radiusSquared - 1)) / denominator,
+  ];
 }
 
-function seed(): FormObject {
-  const rows = 28;
-  const columns = 40;
-  const positions: number[] = [];
+/** A continuous minimal surface, its conformal coordinate net, and traced rim. */
+export function createOrbit(): FormScene {
+  const positions: number[] = [0, 0, 0];
   const indices: number[] = [];
   const lines: FormLine[] = [];
-  const point = (latitude: number, longitude: number): Vec3 => [
-    0.29 * Math.sin(latitude) * Math.cos(longitude),
-    0.46 * Math.cos(latitude),
-    0.29 * Math.sin(latitude) * Math.sin(longitude),
-  ];
-  for (let row = 0; row <= rows; row++) {
-    for (let column = 0; column <= columns; column++) {
-      positions.push(
-        ...point((row / rows) * Math.PI, (column / columns) * Math.PI * 2),
-      );
-      if (row === rows || column === columns) continue;
-      const a = row * (columns + 1) + column;
-      const b = a + columns + 1;
-      if (row > 0) indices.push(a, a + 1, b);
-      if (row < rows - 1) indices.push(a + 1, b + 1, b);
-    }
-  }
-  // Four meridians preserve the seed in the line-only fallback.
-  for (let meridian = 0; meridian < 4; meridian++) {
-    const points: Vec3[] = [];
-    for (let step = 0; step <= 64; step++) {
-      points.push(point((step / 64) * Math.PI * 2, (meridian / 4) * Math.PI));
-    }
-    lines.push({ points, ink: 'vermilion', opacity: 0.65 });
-  }
-  const surface: FormSurface = { positions, indices, ink: 'vermilion' };
-  return {
-    position: [0.16, -0.08, 0.13],
-    rotation: [0.2, -0.15, -0.4],
-    sway: [0.025, 0.035, 0.035],
-    phase: 1.4,
-    lines,
-    surfaces: [surface],
-  };
-}
 
-/** Open orbital arcs: width, cut positions and plane inclination are the design controls. */
-export function createOrbit(): FormScene {
+  // A disk avoids the inflated corners of a rectangular parameter patch. The
+  // shared central vertex and periodic ring indices leave no seam or tiny fan
+  // degeneracies at the pole.
+  for (let ring = 1; ring <= RADIAL_SEGMENTS; ring++) {
+    const radius = (ring / RADIAL_SEGMENTS) * DOMAIN_RADIUS;
+    for (let segment = 0; segment < ANGULAR_SEGMENTS; segment++) {
+      const angle = (segment / ANGULAR_SEGMENTS) * Math.PI * 2;
+      positions.push(
+        ...point(radius * Math.cos(angle), radius * Math.sin(angle)),
+      );
+    }
+  }
+  for (let segment = 0; segment < ANGULAR_SEGMENTS; segment++) {
+    const next = (segment + 1) % ANGULAR_SEGMENTS;
+    indices.push(0, 1 + segment, 1 + next);
+  }
+  for (let ring = 1; ring < RADIAL_SEGMENTS; ring++) {
+    const inner = 1 + (ring - 1) * ANGULAR_SEGMENTS;
+    const outer = inner + ANGULAR_SEGMENTS;
+    for (let segment = 0; segment < ANGULAR_SEGMENTS; segment++) {
+      const next = (segment + 1) % ANGULAR_SEGMENTS;
+      indices.push(
+        inner + segment,
+        outer + segment,
+        outer + next,
+        inner + segment,
+        outer + next,
+        inner + next,
+      );
+    }
+  }
+
+  // Twenty-five curves in each family show the actual u/v parameterization.
+  // The paired strokes expose the net on both faces of this two-sided sheet.
+  for (let family = 0; family < 2; family++) {
+    for (let coordinate = -12; coordinate <= 12; coordinate++) {
+      const fixed = (coordinate / 13) * DOMAIN_RADIUS;
+      const extent = Math.sqrt(DOMAIN_RADIUS * DOMAIN_RADIUS - fixed * fixed);
+      const major = coordinate % 4 === 0;
+      for (const lift of [-0.0035, 0.0035]) {
+        const points: Vec3[] = [];
+        for (let step = 0; step <= 240; step++) {
+          const variable = -extent + (2 * extent * step) / 240;
+          points.push(
+            family === 0
+              ? point(fixed, variable, lift)
+              : point(variable, fixed, lift),
+          );
+        }
+        lines.push({
+          points,
+          ink: family === 0 ? 'cobalt' : 'cyan',
+          opacity: coordinate === 0 ? 0.8 : major ? 0.48 : 0.26,
+        });
+      }
+    }
+  }
+
+  for (const lift of [-0.004, 0.004]) {
+    const boundary: Vec3[] = [];
+    for (let segment = 0; segment <= 640; segment++) {
+      const angle = (segment / 640) * Math.PI * 2;
+      boundary.push(
+        point(
+          DOMAIN_RADIUS * Math.cos(angle),
+          DOMAIN_RADIUS * Math.sin(angle),
+          lift,
+        ),
+      );
+    }
+    lines.push({ points: boundary, ink: 'ochre', opacity: 0.82 });
+  }
+
   return {
     radius: 3.2,
+    framing: 'bounds',
     objects: [
-      orbitalBand({
-        radius: 2.7,
-        width: 0.23,
-        start: -0.21,
-        sweep: Math.PI * 1.57,
-        ellipse: 0.9,
-        ink: 'cobalt',
-        rotation: [0.45, -0.34, -0.35],
+      {
+        position: [0, 0, 0],
+        rotation: [-0.72, -0.26, -0.36],
+        sway: [0.025, 0.035, 0.008],
         phase: 0,
-      }),
-      orbitalBand({
-        radius: 2.15,
-        width: 0.19,
-        start: 0.8,
-        sweep: Math.PI * 1.56,
-        ellipse: 0.95,
-        ink: 'cyan',
-        rotation: [1.08, 0.5, 0.24],
-        phase: 1.8,
-      }),
-      orbitalBand({
-        radius: 1.32,
-        width: 0.14,
-        start: -1.28,
-        sweep: Math.PI * 1.64,
-        ellipse: 0.92,
-        ink: 'cobalt',
-        rotation: [-0.55, 0.65, -0.72],
-        phase: 3.5,
-      }),
-      seed(),
+        lines,
+        surfaces: [
+          {
+            positions,
+            indices,
+            ink: 'silver',
+            roughness: 0.48,
+            metalness: 0.38,
+          },
+        ],
+      },
+    ],
+    annotations: [
+      {
+        object: 0,
+        point: point(-0.48, 0.65),
+        label: 'Conformal coordinates',
+        detail: '∂ᵤr · ∂ᵥr = 0',
+        offset: [-146, -76],
+      },
+      {
+        object: 0,
+        point: point(1.3, 0.2),
+        label: 'Minimal immersion',
+        detail: 'Mean curvature H ≡ 0',
+        offset: [52, -64],
+      },
+      {
+        object: 0,
+        point: point(-DOMAIN_RADIUS * 0.8, -DOMAIN_RADIUS * 0.6),
+        label: 'Circular parameter boundary',
+        detail: 'u² + v² = 1.78²',
+        offset: [46, 52],
+      },
     ],
   };
 }

@@ -1,5 +1,5 @@
 import { formStudies, isFormId } from './catalog';
-const storageKey = 'alkemist-four-forms-v1';
+const storageKey = 'alkemist-four-forms-v2';
 class FormStudies extends HTMLElement {
   connectedCallback() {
     if (this.dataset.ready) return;
@@ -28,10 +28,12 @@ class FormStudies extends HTMLElement {
       manual.hidden = true;
       manual.value = '';
     };
-    const applyDetails = () =>
+    const applyDetails = () => {
       details.forEach((name) => {
         this.dataset[name] = String(checkbox(name).checked);
       });
+      this.dispatchEvent(new Event('form-details-change'));
+    };
     const darkBoard = () =>
       theme.value === 'dark' ||
       (theme.value === 'system' &&
@@ -61,7 +63,7 @@ class FormStudies extends HTMLElement {
         '[data-direction-description]',
       )!.textContent =
         formStudies.find((study) => study.id === take)?.description ??
-        'Compare the silhouettes first, then open a study to see its scale, motion, and typography.';
+        'Open a study to inspect its geometry, material, and annotations in a full homepage composition.';
       clear();
     };
     const readUrl = () => {

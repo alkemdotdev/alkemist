@@ -7,45 +7,52 @@ import { createAssembly } from './assembly';
 export const formStudies = [
   {
     id: 'orbit',
-    name: 'Orbit',
-    subtitle: 'A little space around an idea.',
+    name: 'Enneper',
+    domain: 'Differential geometry',
+    subtitle: 'A minimal surface, traced in coordinates.',
     description:
-      'Open bands, an off-center nucleus, and a generous gap. A precise, airy opening.',
-    note: 'leave a little room',
-    inks: ['cobalt', 'cyan', 'vermilion'],
+      'An Enneper surface with a dense conformal coordinate net and its parameter boundary. The structure is carried by curvature, fine lines, and a restrained metallic surface.',
+    note: 'mean curvature vanishes',
+    equation: 'H = 0, \\qquad u^2 + v^2 \\leq 1.78^2',
+    inks: ['cobalt', 'cyan', 'ochre'],
     make: createOrbit,
   },
   {
     id: 'strata',
-    name: 'Strata',
-    subtitle: 'Let the layers do the talking.',
+    name: 'Gyroid',
+    domain: 'Implicit geometry',
+    subtitle: 'A periodic structure, opened in section.',
     description:
-      'A warm stack of cut contours. More tactile, with the feeling of a model on a studio table.',
-    note: 'one layer at a time',
-    inks: ['rose', 'vermilion', 'ochre'],
+      'A sectioned gyroid nodal approximation. Its connected channels, fine section curves, and specimen bounds make the interior structure visible.',
+    note: 'follow the connected channels',
+    equation: '\\sin x\\cos y + \\sin y\\cos z + \\sin z\\cos x = 0',
+    inks: ['cyan', 'ochre'],
     make: createStrata,
   },
   {
     id: 'interference',
-    name: 'Interference',
-    subtitle: 'Two thoughts, meeting in the middle.',
+    name: 'Dipole',
+    domain: 'Field geometry',
+    subtitle: 'An ideal field, resolved into its lines.',
     description:
-      'Two ribbons of fine ink occupy the whole opening. The most spacious and fluid direction.',
-    note: 'what happens in between?',
-    inks: ['cyan', 'violet', 'rose'],
+      'Nested analytical dipole field lines around a reference sphere. A section reveals the inner families, with selected meridians emphasized in cyan.',
+    note: 'an analytical field-line model',
+    equation: 'r = L\\sin^2\\theta',
+    inks: ['cyan', 'ochre'],
     make: createInterference,
   },
   {
     id: 'assembly',
-    name: 'Assembly',
-    subtitle: 'A small collection of possibilities.',
+    name: 'Reduction',
+    domain: 'Mechanical design',
+    subtitle: 'A reduction stage, inspected from within.',
     description:
-      'Three objects with different structures and equal intention. A quiet inventor’s still life.',
-    note: 'parts of the next idea',
-    inks: ['cobalt', 'ochre', 'teal'],
+      'A sectioned planetary reduction stage with involute teeth, bearing races, a carrier, and fasteners. Material and section detail give each part a clear role.',
+    note: 'section through the assembly',
+    equation: 'z_r = z_s + 2z_p = 24 + 2(16) = 56',
+    inks: ['ochre', 'cobalt'],
     make: createAssembly,
   },
 ] as const;
-
 export const isFormId = (value: unknown): value is FormId =>
   formStudies.some((study) => study.id === value);

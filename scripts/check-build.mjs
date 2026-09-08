@@ -22,6 +22,7 @@ const required = [
   'labs/hero-studies/index.html',
   'labs/sculpture-studies/index.html',
   'blog/four-new-forms/index.html',
+  'blog/form-and-structure/index.html',
   'labs/interference/index.html',
   'labs/design-studio/index.html',
   'labs/board-studies/index.html',

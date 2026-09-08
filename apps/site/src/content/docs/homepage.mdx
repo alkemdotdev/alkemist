@@ -44,13 +44,22 @@ The comparison layout is `src/pages/labs/hero-studies.astro`; its copy and secti
 
 For an image opening, import a local image from `src/assets/` into Astro's `Image` component. The demo generates multiple WebP widths with explicit dimensions and alt text. Follow [Astro's image guide](https://docs.astro.build/en/guides/images/) when changing the image or sizing behavior. The exact prompt for the demo's generated art is recorded at `docs/art/working-surface-prompt.md` in the source repository.
 
-## Four new sculpture takes
+## Mathematical and engineering openings
 
-[Orbit, Strata, Interference, and Assembly](/labs/sculpture-studies/) are a fresh round of geometric openings. Each has its own composition and a small subset of the same shared inks. The four-up comparison uses transparent stills captured from the real renderer; opening a take activates its live 3D view.
+[Enneper, Gyroid, Dipole, and Reduction](/labs/sculpture-studies/) compare four detailed subjects. The comparison uses transparent stills; opening a take activates its live 3D view. The [development article](/blog/form-and-structure/) explains the equations, construction, and model limits.
 
-`src/components/forms/orbit.ts`, `strata.ts`, `interference.ts`, and `assembly.ts` generate the geometry. Each returns surfaces, contour lines, object poses, and bounded motion amplitudes. `runtime.ts` owns the camera, materials, and lifecycle. `FormPoster.astro` projects contour lines for the no-WebGL view. The page and `src/styles/sculpture-studies.css` own composition and spacing. The capture recipe for refreshing the comparison images is in `docs/art/capture-forms.cjs` in the demo repository.
+| Take      | Geometry source                        | Editable structure                                               |
+| --------- | -------------------------------------- | ---------------------------------------------------------------- |
+| Enneper   | `src/components/forms/orbit.ts`        | Parameter domain, coordinate net, boundary                       |
+| Gyroid    | `src/components/forms/strata.ts`       | Implicit field, grid resolution, section plane, analytic normals |
+| Dipole    | `src/components/forms/interference.ts` | Shell families, meridians, reference sphere                      |
+| Reduction | `src/components/forms/assembly.ts`     | Involute gear profiles, housing section, bearings, fasteners     |
 
-These are local design studies, not installed starter presets or new shared component APIs. Use the review controls to compare boards, annotations, and captions, and to copy a preferred take.
+The source filenames and URL take identifiers are stable across rounds. `catalog.ts` supplies the current names, copy, and equations. Each geometry module returns indexed surfaces, optional analytical normals, contour lines, local annotation anchors, and a rigid pose. `materials.ts` defines neutral substrates; accent inks come from the shared palette. `runtime.ts` owns lighting, actual-vertex camera fitting, projected leaders, zoom, and lifecycle. `FormPoster.astro` projects contour lines for the no-WebGL view.
+
+The page and `src/styles/sculpture-studies.css` own composition and spacing. Refresh the stills using `docs/art/capture-engineering-forms.cjs` in the demo repository, then copy all four completed PNGs into `src/assets/forms-engineering/`. Capture into an unwatched directory first so asset hot reload does not interrupt the next view. Preserve `src/assets/forms/` as the earlier article's historical images.
+
+These are local design studies, not installed starter presets or new shared component APIs. Use the review controls to compare boards, technical annotations, and captions, and to copy a preferred take. The revised studies use a new browser preference key so a favorite from the earlier geometry is not silently treated as a selection of its replacement.
 
 ## Preserve the useful defaults
 

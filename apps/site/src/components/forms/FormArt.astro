@@ -1,5 +1,6 @@
 ---
 import FormPoster from './FormPoster.astro';
+import AlkMath from '@alkemist/ui/AlkMath.astro';
 import { formStudies } from './catalog';
 import type { FormId } from './types';
 interface Props {
@@ -7,14 +8,12 @@ interface Props {
 }
 const { take } = Astro.props;
 const study = formStudies.find((item) => item.id === take)!;
+const scene = study.make();
 ---
 
 <form-art data-form={take} data-state="idle">
   <div class="form-viewport" aria-busy="false">
-    <FormPoster
-      scene={study.make()}
-      label={`${study.name}: ${study.description}`}
-    />
+    <FormPoster scene={scene} label={`${study.name}: ${study.description}`} />
     <canvas
       tabindex="-1"
       inert
@@ -22,14 +21,48 @@ const study = formStudies.find((item) => item.id === take)!;
       role="img"
       aria-label={`${study.name}. ${study.description} Drag horizontally or use arrow keys to turn. Home resets the view.`}
     ></canvas>
-    <span class="form-annotation" data-form-note aria-hidden="true"
-      >{study.note}<svg viewBox="0 0 75 40"
-        ><path d="M5 3Q10 35 65 28m-12-6 13 6-11 9"></path></svg
-      ></span
-    >
+    <div class="form-apparatus" aria-hidden="true">
+      <span>{study.domain}</span><span>Interactive specimen / 3D</span>
+    </div>
+    <div class="form-annotations" data-form-note aria-hidden="true">
+      <svg
+        >{
+          scene.annotations?.map(() => (
+            <>
+              <>
+                <path data-annotation-leader />
+                <circle data-annotation-anchor r="2" />
+              </>
+            </>
+          ))
+        }</svg
+      >
+      {
+        scene.annotations?.map((annotation) => (
+          <span class="form-label" data-annotation-label>
+            <>
+              <strong>{annotation.label}</strong>
+              <span>{annotation.detail}</span>
+            </>
+          </span>
+        ))
+      }
+    </div>
+  </div>
+  <div class="form-equation">
+    <AlkMath tex={study.equation} display={false} /><span>{study.note}</span>
   </div>
   <div class="form-controls">
-    <span>Drag to turn <span aria-hidden="true">↔</span></span>
+    <div class="form-inspect">
+      <span>Drag to turn <span aria-hidden="true">↔</span></span><button
+        type="button"
+        data-form-zoom="out"
+        aria-label="Zoom out"
+        disabled>−</button
+      ><button type="button" data-form-zoom="in" aria-label="Zoom in" disabled
+        >+</button
+      >
+    </div>
     <div>
       <button type="button" data-form-play aria-pressed="false" disabled
         >Play motion</button
