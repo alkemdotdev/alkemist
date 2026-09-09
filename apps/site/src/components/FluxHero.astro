@@ -7,15 +7,9 @@ import poster from '../assets/fields/flux.png';
   <div class="flux-copy">
     <h1 id="home-title">Make ideas<br />explorable.</h1>
   </div>
-  <figure class="flux-art" aria-label="Interactive Flux core sculpture">
+  <div class="flux-art">
     <FormArt take="flux" poster={poster} presentation="hero" />
-    <figcaption>
-      <span class="flux-note">follow the field inward</span>
-      <a href="/blog/fields-with-substance/"
-        >Flux core <span aria-hidden="true">↗</span></a
-      >
-    </figcaption>
-  </figure>
+  </div>
   <div class="flux-summary">
     <p class="flux-intro">
       An Astro starting point for inventors and researchers, with math, code,
@@ -102,42 +96,6 @@ import poster from '../assets/fields/flux.png';
   .flux-art :global(.form-viewport) {
     aspect-ratio: 1.25;
   }
-  .flux-art :global(.form-controls) {
-    padding: 0.3rem 1.1rem;
-    font-size: 0.65rem;
-  }
-  .flux-art :global(.form-controls button) {
-    min-height: 32px;
-  }
-  .flux-art :global(.form-inspect button) {
-    min-width: 32px;
-  }
-  .flux-art :global(.form-controls button:hover:not(:disabled)) {
-    color: var(--alk-ink-cobalt);
-  }
-  figcaption {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    margin: 0.6rem 1.1rem 0;
-    padding-top: 0.8rem;
-    border-top: 1px solid var(--alk-rule);
-  }
-  .flux-note {
-    color: var(--alk-ink-rose);
-    font: 1.4rem/1.2 var(--alk-hand);
-    transform: rotate(-3deg);
-  }
-  figcaption a {
-    font: 0.65rem/1.5 var(--alk-mono);
-    color: var(--alk-muted);
-    text-decoration: none;
-  }
-  figcaption a:hover {
-    color: var(--alk-ink);
-    text-decoration: underline;
-  }
   @media (max-width: 1000px) {
     .flux-hero {
       grid-template-columns: 0.95fr 1.1fr;
@@ -150,13 +108,6 @@ import poster from '../assets/fields/flux.png';
     }
     .flux-actions {
       gap: 1rem;
-    }
-    .flux-art :global(.form-controls) {
-      padding-inline: 0;
-      font-size: 0.6rem;
-    }
-    figcaption {
-      margin-inline: 0;
     }
   }
   @media (max-width: 700px) {
@@ -200,16 +151,6 @@ import poster from '../assets/fields/flux.png';
     }
     .flux-art :global(.form-viewport) {
       aspect-ratio: 1.4;
-    }
-    .flux-art :global(.form-controls) {
-      padding-inline: 0;
-      font-size: 0.62rem;
-    }
-    .flux-note {
-      font-size: 1.25rem;
-    }
-    figcaption {
-      margin-top: 0.3rem;
     }
   }
 </style>

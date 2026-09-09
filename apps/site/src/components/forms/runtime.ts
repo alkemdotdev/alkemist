@@ -20,9 +20,10 @@ async function mount(
     .make();
   const viewport = host.querySelector<HTMLElement>('.form-viewport')!;
   const canvas = host.querySelector<HTMLCanvasElement>('canvas')!;
-  const play = host.querySelector<HTMLButtonElement>('[data-form-play]')!;
-  const reset = host.querySelector<HTMLButtonElement>('[data-form-reset]')!;
-  const status = host.querySelector<HTMLElement>('.form-status')!;
+  const hero = host.dataset.presentation === 'hero';
+  const play = host.querySelector<HTMLButtonElement>('[data-form-play]');
+  const reset = host.querySelector<HTMLButtonElement>('[data-form-reset]');
+  const status = host.querySelector<HTMLElement>('.form-status');
   const context = canvas.getContext('webgl2', { alpha: true, antialias: true });
   if (!context)
     throw new Error(
@@ -302,15 +303,19 @@ async function mount(
     const motion = (value: boolean) => {
       playing = value;
       host.dataset.motion = value ? 'playing' : 'paused';
-      play.textContent = value ? 'Pause motion' : 'Play motion';
-      play.setAttribute('aria-pressed', String(value));
-      status.textContent = value
-        ? 'Slow motion is playing.'
-        : 'Motion is paused.';
+      if (play) {
+        play.textContent = value ? 'Pause motion' : 'Play motion';
+        play.setAttribute('aria-pressed', String(value));
+      }
+      if (hero) canvas.setAttribute('aria-pressed', String(value));
+      if (status)
+        status.textContent = value
+          ? 'Slow motion is playing.'
+          : 'Motion is paused.';
       previous = 0;
       requestRender();
     };
-    play.addEventListener('click', () => motion(!playing), {
+    play?.addEventListener('click', () => motion(!playing), {
       signal: events.signal,
     });
     host
@@ -341,7 +346,7 @@ async function mount(
       ?.addEventListener('form-details-change', requestRender, {
         signal: events.signal,
       });
-    reset.addEventListener(
+    reset?.addEventListener(
       'click',
       () => {
         motion(false);
@@ -349,12 +354,73 @@ async function mount(
       },
       { signal: events.signal },
     );
-    canvas.addEventListener('pointerdown', () => motion(false), {
-      signal: events.signal,
-    });
+    let gesture:
+      | { id: number; x: number; y: number; playing: boolean; dragged: boolean }
+      | undefined;
+    canvas.addEventListener(
+      'pointerdown',
+      (event) => {
+        if (event.button !== 0) return;
+        if (hero)
+          gesture = {
+            id: event.pointerId,
+            x: event.clientX,
+            y: event.clientY,
+            playing,
+            dragged: false,
+          };
+        motion(false);
+      },
+      {
+        signal: events.signal,
+      },
+    );
+    if (hero) {
+      canvas.addEventListener(
+        'pointermove',
+        (event) => {
+          if (
+            gesture?.id === event.pointerId &&
+            Math.hypot(event.clientX - gesture.x, event.clientY - gesture.y) > 5
+          )
+            gesture.dragged = true;
+        },
+        { signal: events.signal },
+      );
+      canvas.addEventListener(
+        'pointerup',
+        (event) => {
+          if (gesture?.id !== event.pointerId) return;
+          // A tap toggles motion; a drag leaves the sculpture where the reader put it.
+          if (!gesture.dragged) motion(!gesture.playing);
+          gesture = undefined;
+        },
+        { signal: events.signal },
+      );
+      canvas.addEventListener(
+        'pointercancel',
+        () => {
+          gesture = undefined;
+        },
+        { signal: events.signal },
+      );
+      canvas.addEventListener(
+        'click',
+        (event) => {
+          // Assistive technology can activate the artwork without pointer events.
+          if (event.detail === 0) motion(!playing);
+        },
+        { signal: events.signal },
+      );
+    }
     canvas.addEventListener(
       'keydown',
       (event) => {
+        if (hero && (event.key === ' ' || event.key === 'Enter')) {
+          event.preventDefault();
+          if (!event.repeat) motion(!playing);
+          return;
+        }
         if (event.key === 'Home') {
           event.preventDefault();
           motion(false);
@@ -431,8 +497,8 @@ async function mount(
     resizeObserver.observe(viewport);
     resize();
     home();
-    play.disabled = false;
-    reset.disabled = false;
+    if (play) play.disabled = false;
+    if (reset) reset.disabled = false;
     motion(!reduced.matches && host.dataset.motion !== 'paused');
     return {
       dispose,
@@ -517,7 +583,8 @@ class FormArt extends HTMLElement {
     this.load?.abort();
     this.runtime = undefined;
     this.dataset.state = 'error';
-    this.querySelector('.form-status')!.textContent = message;
+    const status = this.querySelector('.form-status');
+    if (status) status.textContent = message;
     this.resetControls();
   }
   private resetControls() {
@@ -526,9 +593,13 @@ class FormArt extends HTMLElement {
     canvas.setAttribute('aria-hidden', 'true');
     canvas.tabIndex = -1;
     this.querySelector('.form-viewport')!.setAttribute('aria-busy', 'false');
-    const play = this.querySelector<HTMLButtonElement>('[data-form-play]')!;
-    play.textContent = 'Play motion';
-    play.setAttribute('aria-pressed', 'false');
+    if (this.dataset.presentation === 'hero')
+      canvas.setAttribute('aria-pressed', 'false');
+    const play = this.querySelector<HTMLButtonElement>('[data-form-play]');
+    if (play) {
+      play.textContent = 'Play motion';
+      play.setAttribute('aria-pressed', 'false');
+    }
     this.querySelectorAll<HTMLButtonElement>('button').forEach(
       (button) => (button.disabled = true),
     );

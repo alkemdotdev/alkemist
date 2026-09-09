@@ -28,6 +28,10 @@ form-art[data-state='ready'] canvas {
 form-art[data-state='ready'] canvas:active {
   cursor: grabbing;
 }
+form-art[data-presentation='hero'] canvas:focus-visible {
+  outline: 2px solid var(--alk-ink-cobalt);
+  outline-offset: 4px;
+}
 form-art[data-state='ready'] .form-poster {
   visibility: hidden;
 }

@@ -41,8 +41,12 @@ const scene = study.make();
       tabindex="-1"
       inert
       aria-hidden="true"
-      role="img"
-      aria-label={`${study.name}. ${study.description} Drag horizontally or use arrow keys to turn. Home resets the view.`}
+      role={presentation === 'hero' ? 'button' : 'img'}
+      aria-pressed={presentation === 'hero' ? 'false' : undefined}
+      aria-label={presentation === 'hero'
+        ? `${study.name} motion`
+        : `${study.name}. ${study.description} Drag horizontally or use arrow keys to turn. Home resets the view.`}
+      aria-description={presentation === 'hero' ? study.description : undefined}
     ></canvas>
     {
       presentation === 'study' && (
@@ -87,26 +91,55 @@ const scene = study.make();
       </div>
     )
   }
-  <div class="form-controls">
-    <div class="form-inspect">
-      <span>Drag to turn <span aria-hidden="true">↔</span></span><button
-        type="button"
-        data-form-zoom="out"
-        aria-label="Zoom out"
-        disabled>−</button
-      ><button type="button" data-form-zoom="in" aria-label="Zoom in" disabled
-        >+</button
-      >
-    </div>
-    <div>
-      <button type="button" data-form-play aria-pressed="false" disabled
-        >Play motion</button
-      ><button type="button" data-form-reset disabled>Reset view</button>
-    </div>
-  </div>
-  <p class="form-status" role="status">
-    The still composition is shown while the interactive view loads.
-  </p>
+  {
+    presentation === 'study' && (
+      <>
+        <div class="form-controls">
+          <div class="form-inspect">
+            <>
+              <span>
+                Drag to turn <span aria-hidden="true">↔</span>
+              </span>
+              <button
+                type="button"
+                data-form-zoom="out"
+                aria-label="Zoom out"
+                disabled
+              >
+                −
+              </button>
+              <button
+                type="button"
+                data-form-zoom="in"
+                aria-label="Zoom in"
+                disabled
+              >
+                +
+              </button>
+            </>
+          </div>
+          <div>
+            <>
+              <button
+                type="button"
+                data-form-play
+                aria-pressed="false"
+                disabled
+              >
+                Play motion
+              </button>
+              <button type="button" data-form-reset disabled>
+                Reset view
+              </button>
+            </>
+          </div>
+        </div>
+        <p class="form-status" role="status">
+          The still composition is shown while the interactive view loads.
+        </p>
+      </>
+    )
+  }
 </form-art>
 <script>
   import './runtime';
