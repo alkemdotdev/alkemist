@@ -4,7 +4,7 @@ description: Blog, Labs, Info, optional Docs, and one Test page. Keep the top ba
 order: 15
 ---
 
-The default primary navigation is **Blog · Labs · Info**. The Alkemist demo adds a **More ›** disclosure with Docs and Test page. On small screens, one hamburger menu contains both groups and keeps the header on a single row. These menus support keyboard activation, Escape to close and return focus, and dismissal by clicking outside. Navigation remains usable without JavaScript.
+The Alkemist demo uses **Blog · Labs · Docs · Info · More**. Docs leads directly to the component and setup references; More contains Test. The reusable layout defaults to Blog, Labs, and Info so sites without documentation need no extra configuration. On small screens, one hamburger menu contains both groups and keeps the header on a single row. These menus support keyboard activation, Escape to close and return focus, and dismissal by clicking outside. Navigation remains usable without JavaScript.
 
 The appearance icon opens **Whiteboard**, **Blackboard**, and **System** choices. Sun, moon, and monitor icons show the selected preference. The preference is restored before paint and follows operating-system changes when System is selected. Arrow keys move through the choices; selecting with a pointer closes the panel.
 
@@ -57,13 +57,19 @@ import AlkLayout from '@alkemist/ui/AlkLayout.astro';
 
 <AlkLayout
   title="Our research group"
-  moreNavigation={[{ label: 'Docs', href: '/docs/' }]}
+  navigation={[
+    { label: 'Blog', href: '/blog/' },
+    { label: 'Labs', href: '/labs/' },
+    { label: 'Docs', href: '/docs/' },
+    { label: 'Info', href: '/info/' },
+  ]}
+  moreNavigation={[{ label: 'Test', href: '/test/' }]}
 >
   <slot />
 </AlkLayout>
 ```
 
-The demo's `src/layouts/SiteLayout.astro` supplies its More and footer links. A site without documentation can use `AlkLayout` directly. Supplying `navigation` replaces the default main links, so unused sections need not appear either.
+The demo's `src/layouts/SiteLayout.astro` supplies its main, More, and footer links. A site without documentation can use `AlkLayout` directly. Supplying `navigation` replaces the default main links, so unused sections need not appear either.
 
 ## Current files
 

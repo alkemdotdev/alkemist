@@ -66,12 +66,16 @@
 .alk-header summary::-webkit-details-marker {
   display: none;
 }
-.alk-more summary span {
+.alk-more summary svg {
   display: inline-block;
+  width: 12px;
+  height: 12px;
   margin-left: 0.25rem;
-}
-.alk-more[open] summary span {
+  vertical-align: -0.1em;
   transform: rotate(90deg);
+}
+.alk-more[open] summary svg {
+  transform: rotate(270deg);
 }
 .alk-icon-button {
   display: grid;

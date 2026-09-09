@@ -5,10 +5,13 @@ type Props = AlkLayoutProps;
 
 <AlkLayout
   tagline=""
-  moreNavigation={[
+  navigation={[
+    { label: 'Blog', href: '/blog/' },
+    { label: 'Labs', href: '/labs/' },
     { label: 'Docs', href: '/docs/' },
-    { label: 'Test page', href: '/test/' },
+    { label: 'Info', href: '/info/' },
   ]}
+  moreNavigation={[{ label: 'Test', href: '/test/' }]}
   footerNavigation={[{ label: 'Project status', href: '/docs/status/' }]}
   {...Astro.props}
 >

@@ -107,7 +107,7 @@ function current(href: string) {
                   moreNavigation.some(({ href }) => current(href)) || undefined
                 }
               >
-                More <span aria-hidden="true">›</span>
+                More <HeaderIcon name="chevron" />
               </summary>
               <div class="alk-more-links alk-header-panel">
                 {moreNavigation.map(({ label, href }) => (
