@@ -14,6 +14,7 @@
 @import '@fontsource/caveat/600.css';
 @import './inks.css';
 @import './math-code.css';
+@import './header.css';
 
 :root {
   color-scheme: light dark;
@@ -153,7 +154,7 @@ th {
   top: -5rem;
   padding: 0.6rem;
   background: var(--alk-paper);
-  z-index: 10;
+  z-index: 100;
 }
 .alk-skip:focus {
   top: 1rem;
@@ -165,7 +166,6 @@ th {
   padding: 0.35rem;
   font: 12px var(--alk-mono);
 }
-.alk-header,
 .alk-footer {
   max-width: 1320px;
   margin: auto;
@@ -174,85 +174,6 @@ th {
   align-items: center;
   gap: 2rem;
   flex-wrap: wrap;
-}
-.alk-header {
-  border-bottom: 1px solid var(--alk-rule);
-}
-.alk-brand {
-  font: 700 2rem var(--alk-sans);
-  letter-spacing: -0.06em;
-  text-decoration: none;
-  color: var(--alk-ink);
-}
-.alk-brand-detail {
-  font: 0.65rem var(--alk-mono);
-  letter-spacing: 0.02em;
-  color: var(--alk-muted);
-}
-.alk-header nav {
-  display: flex;
-  gap: 1.4rem;
-  margin-left: auto;
-  align-items: center;
-}
-.alk-header nav a,
-.alk-more summary {
-  font-size: 0.85rem;
-  text-decoration: none;
-  color: var(--alk-muted);
-  padding: 0.35rem 0;
-}
-.alk-header nav a[aria-current],
-.alk-more summary[data-current] {
-  color: var(--alk-ink);
-  border-bottom: 1px solid var(--alk-accent);
-}
-.alk-more {
-  position: relative;
-  border: 0;
-  padding: 0;
-  margin: 0;
-}
-.alk-more summary {
-  cursor: pointer;
-  list-style: none;
-  white-space: nowrap;
-}
-.alk-more summary::-webkit-details-marker {
-  display: none;
-}
-.alk-more summary span {
-  display: inline-block;
-  margin-left: 0.25rem;
-}
-.alk-more[open] summary span {
-  transform: rotate(90deg);
-}
-.alk-more-links {
-  position: absolute;
-  z-index: 20;
-  top: calc(100% + 0.6rem);
-  right: 0;
-  min-width: 10rem;
-  padding: 0.4rem;
-  background: var(--alk-paper);
-  border: 1px solid var(--alk-rule);
-  box-shadow: 0 0.7rem 1.5rem #0002;
-  margin-top: 0;
-}
-.alk-header nav .alk-more-links a {
-  display: block;
-  padding: 0.7rem;
-}
-.alk-more-links a:hover {
-  background: var(--alk-field);
-}
-.alk-theme-label select {
-  color: var(--alk-muted);
-  background: var(--alk-paper);
-  border: 1px solid var(--alk-rule);
-  padding: 0.3rem;
-  font: 12px var(--alk-mono);
 }
 .alk-main {
   max-width: 1320px;
@@ -411,9 +332,6 @@ th {
   color: var(--alk-muted);
 }
 @media (max-width: 900px) {
-  .alk-brand-detail {
-    display: none;
-  }
   .alk-feature {
     gap: 2rem;
   }
@@ -429,19 +347,9 @@ th {
   :root {
     font-size: 16px;
   }
-  .alk-header,
   .alk-footer {
     padding: 1.1rem 1.25rem;
     gap: 1rem;
-  }
-  .alk-header nav {
-    order: 3;
-    width: 100%;
-    margin: 0;
-    justify-content: space-between;
-  }
-  .alk-theme-label {
-    margin-left: auto;
   }
   .alk-main {
     padding: 2.4rem 1.25rem 3.5rem;
@@ -474,8 +382,6 @@ th {
     align-items: flex-start;
     flex-direction: column;
   }
-  .alk-header nav a,
-  .alk-more summary,
   .alk-sidebar a {
     min-height: 32px;
   }
@@ -493,8 +399,8 @@ th {
   :root {
     color-scheme: light;
   }
-  .alk-header nav,
-  .alk-theme-label,
+  .alk-header .alk-desktop-nav,
+  .alk-header-actions,
   .alk-sidebar,
   .alk-preview {
     display: none;

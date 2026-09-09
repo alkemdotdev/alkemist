@@ -4,7 +4,23 @@ description: Blog, Labs, Info, optional Docs, and one Test page. Keep the top ba
 order: 15
 ---
 
-The default primary navigation is **Blog · Labs · Info**. The Alkemist demo adds a **More ›** disclosure with Docs and Test page. More supports keyboard activation, Escape to close and return focus, and dismissal by clicking outside.
+The default primary navigation is **Blog · Labs · Info**. The Alkemist demo adds a **More ›** disclosure with Docs and Test page. On small screens, one hamburger menu contains both groups and keeps the header on a single row. These menus support keyboard activation, Escape to close and return focus, and dismissal by clicking outside. Navigation remains usable without JavaScript.
+
+The appearance icon opens **Whiteboard**, **Blackboard**, and **System** choices. Sun, moon, and monitor icons show the selected preference. The preference is restored before paint and follows operating-system changes when System is selected. Arrow keys move through the choices; selecting with a pointer closes the panel.
+
+Client-side widgets can share the same preference without depending on header markup:
+
+```ts
+import { getTheme, setTheme } from '@alkemist/ui/theme';
+
+setTheme('dark'); // 'light', 'dark', or 'system'
+const preference = getTheme();
+window.addEventListener('alk:theme-change', () => {
+  // Redraw a visualization using the current theme tokens.
+});
+```
+
+These helpers run in the browser. `AlkLayout` initializes them; `setTheme` persists the preference when browser storage is available.
 
 ## What belongs where
 

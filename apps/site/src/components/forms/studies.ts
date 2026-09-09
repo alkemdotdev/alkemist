@@ -1,3 +1,4 @@
+import { getTheme, setTheme } from '@alkemist/ui/theme';
 import { formStudies, fieldStudies } from './catalog';
 class FormStudies extends HTMLElement {
   connectedCallback() {
@@ -13,7 +14,6 @@ class FormStudies extends HTMLElement {
     const form = this.querySelector<HTMLFormElement>('form')!;
     const favorite =
       form.querySelector<HTMLSelectElement>('[name="favorite"]')!;
-    const theme = document.querySelector<HTMLSelectElement>('#alk-theme')!;
     const feedback = form.querySelector<HTMLElement>('[data-copy-status]')!;
     const manual =
       form.querySelector<HTMLTextAreaElement>('[data-manual-copy]')!;
@@ -44,8 +44,8 @@ class FormStudies extends HTMLElement {
       this.dispatchEvent(new Event('form-details-change'));
     };
     const darkBoard = () =>
-      theme.value === 'dark' ||
-      (theme.value === 'system' &&
+      getTheme() === 'dark' ||
+      (getTheme() === 'system' &&
         matchMedia('(prefers-color-scheme: dark)').matches);
     const syncBoard = () => {
       const board = darkBoard() ? 'black' : 'white';
@@ -75,6 +75,7 @@ class FormStudies extends HTMLElement {
         'Open a study to inspect its geometry, material, and annotations in a full homepage composition.';
       clear();
     };
+    let readingUrl = false;
     const readUrl = () => {
       const params = new URL(location.href).searchParams;
       show(params.get('take') ?? 'compare');
@@ -88,8 +89,12 @@ class FormStudies extends HTMLElement {
       );
       const board = params.get('board');
       if (board === 'white' || board === 'black') {
-        theme.value = board === 'white' ? 'light' : 'dark';
-        theme.dispatchEvent(new Event('change'));
+        readingUrl = true;
+        try {
+          setTheme(board === 'white' ? 'light' : 'dark');
+        } finally {
+          readingUrl = false;
+        }
       }
       applyDetails();
       syncBoard();
@@ -149,15 +154,16 @@ class FormStudies extends HTMLElement {
     favorite.addEventListener('change', save);
     form.querySelectorAll<HTMLInputElement>('[name="board"]').forEach((radio) =>
       radio.addEventListener('change', () => {
-        theme.value = radio.value === 'black' ? 'dark' : 'light';
-        theme.dispatchEvent(new Event('change'));
+        setTheme(radio.value === 'black' ? 'dark' : 'light');
       }),
     );
-    theme.addEventListener('change', () => {
+    let previousTheme = getTheme();
+    window.addEventListener('alk:theme-change', () => {
       syncBoard();
-      save();
+      const theme = getTheme();
+      if (!readingUrl && theme !== previousTheme) save();
+      previousTheme = theme;
     });
-    window.addEventListener('alk:theme-change', syncBoard);
     window.addEventListener('popstate', readUrl);
     form
       .querySelector('[data-copy-direction]')!

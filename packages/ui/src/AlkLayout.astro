@@ -1,5 +1,6 @@
 ---
 import './theme.css';
+import HeaderIcon from './HeaderIcon.astro';
 const base = import.meta.env.BASE_URL;
 const home = base.endsWith('/') ? base : `${base}/`;
 export interface AlkNavLink {
@@ -55,6 +56,19 @@ function current(href: string) {
     <meta name="viewport" content="width=device-width" />
     <meta name="description" content={description} />
     <meta name="color-scheme" content="light dark" />
+    <script is:inline>
+      try {
+        const saved = localStorage.getItem('alk-theme');
+        const theme = ['light', 'dark', 'system'].includes(saved)
+          ? saved
+          : 'system';
+        document.documentElement.dataset.alkTheme = theme;
+        document.documentElement.style.colorScheme =
+          theme === 'system' ? 'light dark' : theme;
+      } catch {
+        /* The system palette works without browser storage. */
+      }
+    </script>
     {preview && <meta name="robots" content="noindex, nofollow" />}
     <link rel="canonical" href={canonical} />
     <link rel="icon" href={faviconHref} type="image/svg+xml" />
@@ -73,7 +87,7 @@ function current(href: string) {
           tagline && <span class="alk-brand-detail"> / {tagline}</span>
         }</a
       >
-      <nav aria-label="Main navigation">
+      <nav class="alk-desktop-nav" aria-label="Main navigation">
         {
           navigation.map(({ label, href }) => (
             <a href={href} aria-current={current(href)}>
@@ -83,7 +97,11 @@ function current(href: string) {
         }
         {
           moreNavigation.length > 0 && (
-            <details class="alk-more">
+            <details
+              class="alk-more"
+              data-header-panel
+              name="alk-header-panels"
+            >
               <summary
                 data-current={
                   moreNavigation.some(({ href }) => current(href)) || undefined
@@ -91,7 +109,7 @@ function current(href: string) {
               >
                 More <span aria-hidden="true">›</span>
               </summary>
-              <div class="alk-more-links">
+              <div class="alk-more-links alk-header-panel">
                 {moreNavigation.map(({ label, href }) => (
                   <a href={href} aria-current={current(href)}>
                     {label}
@@ -102,15 +120,92 @@ function current(href: string) {
           )
         }
       </nav>
-      <label class="alk-theme-label"
-        ><span class="alk-sr-only">Color theme</span><select
-          id="alk-theme"
-          aria-label="Color theme"
-          ><option value="system">System</option><option value="light"
-            >Whiteboard</option
-          ><option value="dark">Blackboard</option></select
-        ></label
-      >
+      <div class="alk-header-actions">
+        <details
+          class="alk-theme-menu"
+          data-header-panel
+          name="alk-header-panels"
+          hidden
+        >
+          <summary class="alk-icon-button" title="Color theme: System">
+            {
+              (['light', 'dark', 'system'] as const).map((theme) => (
+                <span data-theme-icon={theme}>
+                  <HeaderIcon name={theme} />
+                </span>
+              ))
+            }
+            <span class="alk-sr-only" data-theme-label>Color theme: System</span
+            >
+          </summary>
+          <div class="alk-theme-panel alk-header-panel">
+            <fieldset>
+              <legend>Appearance</legend>
+              {
+                (
+                  [
+                    ['light', 'Whiteboard'],
+                    ['dark', 'Blackboard'],
+                    ['system', 'System'],
+                  ] as const
+                ).map(([value, label]) => (
+                  <label class="alk-theme-choice">
+                    <input
+                      type="radio"
+                      name="alk-theme"
+                      value={value}
+                      checked={value === 'system'}
+                    />
+                    <HeaderIcon name={value} />
+                    <span>{label}</span>
+                    <span class="alk-choice-check">
+                      <HeaderIcon name="check" />
+                    </span>
+                  </label>
+                ))
+              }
+            </fieldset>
+          </div>
+        </details>
+        {
+          (navigation.length > 0 || moreNavigation.length > 0) && (
+            <details
+              class="alk-mobile-menu"
+              data-header-panel
+              name="alk-header-panels"
+            >
+              <summary
+                class="alk-icon-button"
+                aria-label="Navigation menu"
+                title="Navigation menu"
+              >
+                <HeaderIcon name="menu" />
+              </summary>
+              <nav
+                class="alk-mobile-links alk-header-panel"
+                aria-label="Main navigation"
+              >
+                {navigation.map(({ label, href }) => (
+                  <a href={href} aria-current={current(href)}>
+                    <span>{label}</span>
+                    <HeaderIcon name="chevron" />
+                  </a>
+                ))}
+                {moreNavigation.length > 0 && (
+                  <div class="alk-mobile-secondary">
+                    {moreNavigation.map(({ label, href }) => (
+                      <a href={href} aria-current={current(href)}>
+                        <span>{label}</span>
+                        <HeaderIcon name="chevron" />
+                      </a>
+                    ))}
+                  </div>
+                )}
+              </nav>
+            </details>
+          )
+        }
+      </div>
     </header>
     <main id="main" class="alk-main">
       {section && <p class="alk-eyebrow">{section}</p>}
@@ -124,49 +219,7 @@ function current(href: string) {
     </footer>
     <script>
       import './code-copy';
-      const more = document.querySelector<HTMLDetailsElement>('.alk-more');
-      document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape' && more?.open) {
-          more.open = false;
-          more.querySelector('summary')?.focus();
-        }
-      });
-      document.addEventListener('click', (event) => {
-        if (
-          event.target instanceof Node &&
-          more?.open &&
-          !more.contains(event.target)
-        )
-          more.open = false;
-      });
-      const select = document.querySelector<HTMLSelectElement>('#alk-theme');
-      function applyTheme(value: string) {
-        document.documentElement.style.colorScheme =
-          value === 'system' ? 'light dark' : value;
-        if (select) select.value = value;
-        window.dispatchEvent(new CustomEvent('alk:theme-change'));
-      }
-      try {
-        const saved = localStorage.getItem('alk-theme');
-        if (saved && ['light', 'dark', 'system'].includes(saved))
-          applyTheme(saved);
-      } catch {
-        /* Storage can be disabled; the system theme remains usable. */
-      }
-      matchMedia('(prefers-color-scheme: dark)').addEventListener(
-        'change',
-        () => {
-          if (select?.value === 'system') applyTheme('system');
-        },
-      );
-      select?.addEventListener('change', () => {
-        applyTheme(select.value);
-        try {
-          localStorage.setItem('alk-theme', select.value);
-        } catch {
-          /* Preference is session-only without storage. */
-        }
-      });
+      import './header';
     </script>
   </body>
 </html>

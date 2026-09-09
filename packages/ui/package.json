@@ -5,6 +5,7 @@
   "exports": {
     "./AlkLayout.astro": "./src/AlkLayout.astro",
     "./theme.css": "./src/theme.css",
+    "./theme": "./src/theme.ts",
     "./AlkMath.astro": "./src/AlkMath.astro",
     "./AlkCode.astro": "./src/AlkCode.astro",
     "./AlkModel.astro": "./src/AlkModel.astro",

@@ -1,3 +1,5 @@
+import { getTheme, setTheme } from '@alkemist/ui/theme';
+
 type HeroTake = 'sculpture' | 'flow' | 'surface';
 const validTake = (value: unknown): value is HeroTake =>
   ['sculpture', 'flow', 'surface'].includes(String(value));
@@ -65,6 +67,7 @@ class HeroStudies extends HTMLElement {
       if (typeof saved[name] === 'boolean')
         checkbox(name).checked = saved[name];
     });
+    let readingUrl = false;
     const readUrl = () => {
       const params = new URL(location.href).searchParams;
       const take = params.get('take');
@@ -79,10 +82,13 @@ class HeroStudies extends HTMLElement {
         if (params.has(name)) checkbox(name).checked = params.get(name) !== '0';
       });
       const board = params.get('board');
-      const theme = document.querySelector<HTMLSelectElement>('#alk-theme');
-      if (theme && (board === 'white' || board === 'black')) {
-        theme.value = board === 'white' ? 'light' : 'dark';
-        theme.dispatchEvent(new Event('change'));
+      if (board === 'white' || board === 'black') {
+        readingUrl = true;
+        try {
+          setTheme(board === 'white' ? 'light' : 'dark');
+        } finally {
+          readingUrl = false;
+        }
       }
       applyDetails();
     };
@@ -102,8 +108,7 @@ class HeroStudies extends HTMLElement {
       detailNames.forEach((name) =>
         url.searchParams.set(name, checkbox(name).checked ? '1' : '0'),
       );
-      const theme =
-        document.querySelector<HTMLSelectElement>('#alk-theme')?.value;
+      const theme = getTheme();
       if (theme === 'light' || theme === 'dark')
         url.searchParams.set('board', theme === 'light' ? 'white' : 'black');
       else url.searchParams.delete('board');
@@ -143,7 +148,12 @@ class HeroStudies extends HTMLElement {
       }),
     );
     comments.addEventListener('input', save);
-    document.querySelector('#alk-theme')?.addEventListener('change', save);
+    let previousTheme = getTheme();
+    window.addEventListener('alk:theme-change', () => {
+      const theme = getTheme();
+      if (!readingUrl && theme !== previousTheme) save();
+      previousTheme = theme;
+    });
     window.addEventListener('popstate', readUrl);
     const selectionText = () =>
       [
