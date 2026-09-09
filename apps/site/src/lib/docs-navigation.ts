@@ -5,22 +5,20 @@ export interface DocsLink {
 
 export interface DocsGroup {
   label: string;
-  description: string;
   links: DocsLink[];
 }
 
 export const docsGroups: DocsGroup[] = [
   {
     label: 'Getting started',
-    description: 'Create a site and organize your content.',
     links: [
       { label: 'Create your site', href: '/docs/getting-started/' },
+      { label: 'Agent instructions', href: '/docs/agent-setup.md' },
       { label: 'Site structure', href: '/docs/site-structure/' },
     ],
   },
   {
     label: 'Components',
-    description: 'Try the components, then copy an example.',
     links: [
       { label: 'Component catalog', href: '/docs/components/' },
       { label: 'Charts and data', href: '/docs/charts/' },
@@ -30,7 +28,6 @@ export const docsGroups: DocsGroup[] = [
   },
   {
     label: 'Customization',
-    description: 'Set your typography, palette, and homepage.',
     links: [
       { label: 'Boards, fonts, and inks', href: '/docs/palette/' },
       { label: 'Your homepage', href: '/docs/homepage/' },
@@ -38,7 +35,6 @@ export const docsGroups: DocsGroup[] = [
   },
   {
     label: 'Hosting',
-    description: 'Publish from your own repository and account.',
     links: [
       { label: 'Cloudflare Pages', href: '/docs/hosting/cloudflare/' },
       { label: 'GitLab Pages', href: '/docs/hosting/gitlab-pages/' },

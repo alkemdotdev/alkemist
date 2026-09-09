@@ -10,7 +10,7 @@ import '../styles/start-using.css';
 interface Props {
   heading?: string;
 }
-const { heading = 'Start using Alkemist.' } = Astro.props;
+const { heading = 'Start using Alkemist' } = Astro.props;
 const id = `setup-${crypto.randomUUID().slice(0, 8)}`;
 ---
 
@@ -21,10 +21,7 @@ const id = `setup-${crypto.randomUUID().slice(0, 8)}`;
         {heading}
       </h2>
     </div>
-    <p>
-      Create your own site with an agent or the terminal. Choose where to host
-      it.
-    </p>
+    <p>Choose your hosting provider, then copy the setup instructions.</p>
   </div>
   <div class="start-workbench">
     <div class="start-options">
@@ -66,9 +63,6 @@ const id = `setup-${crypto.randomUUID().slice(0, 8)}`;
       aria-labelledby={`${id}-agent-tab`}
       data-method-panel="agent"
     >
-      <p class="start-instruction">
-        Give your coding agent a complete setup brief.
-      </p>
       {
         setupProviders.map((provider, i) => (
           <div data-provider-panel={provider.id} hidden={i !== 0}>

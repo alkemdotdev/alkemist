@@ -5,7 +5,6 @@ import poster from '../assets/fields/flux.png';
 
 <section class="flux-hero" aria-labelledby="home-title">
   <div class="flux-copy">
-    <p class="flux-eyebrow">For inventors & researchers</p>
     <h1 id="home-title">Make ideas<br />explorable.</h1>
   </div>
   <figure class="flux-art" aria-label="Interactive Flux core sculpture">
@@ -19,14 +18,14 @@ import poster from '../assets/fields/flux.png';
   </figure>
   <div class="flux-summary">
     <p class="flux-intro">
-      Publish research with code, charts, and interactive models. An Astro
-      foundation you can make your own.
+      An Astro starting point for inventors and researchers, with math, code,
+      charts, and interactive models.
     </p>
     <div class="flux-actions">
       <a class="start-primary" href="#start"
         >Start using Alkemist <span aria-hidden="true">↗</span></a
       >
-      <a href="/test/">Explore the toolkit <span aria-hidden="true">→</span></a>
+      <a href="/test/">See examples <span aria-hidden="true">→</span></a>
     </div>
     <p class="flux-source">
       <a href="/docs/status/">Source preview</a> · repository access required
@@ -52,11 +51,6 @@ import poster from '../assets/fields/flux.png';
   .flux-summary {
     grid-area: summary;
     align-self: start;
-  }
-  .flux-eyebrow {
-    margin: 0 0 1.5rem;
-    color: var(--alk-muted);
-    font: 0.78rem/1.5 var(--alk-mono);
   }
   h1 {
     font: 400 clamp(3.5rem, 5.5vw, 4.9rem)/1.04 var(--alk-sans);
@@ -179,10 +173,6 @@ import poster from '../assets/fields/flux.png';
     .flux-summary {
       align-self: stretch;
       margin-top: 1.8rem;
-    }
-    .flux-eyebrow {
-      margin-bottom: 1.1rem;
-      font-size: 0.7rem;
     }
     h1 {
       font-size: clamp(3.2rem, 10.8vw, 4.8rem);

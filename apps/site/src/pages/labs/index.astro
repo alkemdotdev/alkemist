@@ -5,13 +5,11 @@ const tools = [
   {
     name: 'Interference field',
     href: '/labs/interference/',
-    kind: 'Shader',
     description: 'Adjust two wave sources and inspect the resulting field.',
   },
   {
     name: 'Theme studio',
     href: '/labs/design-studio/',
-    kind: 'Design tool',
     description:
       'Try fonts, inks, and board details. Copy or download your choices.',
   },
@@ -60,7 +58,6 @@ const studies = [
       tools.map((tool) => (
         <a class="labs-tool" href={tool.href}>
           <>
-            <span class="labs-kind">{tool.kind}</span>
             <h2>
               {tool.name} <span aria-hidden="true">↗</span>
             </h2>
@@ -75,32 +72,23 @@ const studies = [
       >Open the test page →</a
     >
   </p>
-  <section class="labs-history" aria-labelledby="history-title">
-    <div>
-      <h2 id="history-title">Design notebook</h2><p>
-        The studies behind this site.
-      </p>
-    </div>
-    <details>
-      <summary
-        >Browse the design studies <span>{studies.length} studies</span
-        ></summary
-      ><ul>
-        {
-          studies.map((study) => (
-            <li>
-              <>
-                <a href={study.href}>
-                  {study.name} <span aria-hidden="true">↗</span>
-                </a>
-                <p>{study.description}</p>
-              </>
-            </li>
-          ))
-        }
-      </ul>
-    </details>
-  </section>
+  <details class="labs-history">
+    <summary>Design studies</summary>
+    <ul>
+      {
+        studies.map((study) => (
+          <li>
+            <>
+              <a href={study.href}>
+                {study.name} <span aria-hidden="true">↗</span>
+              </a>
+              <p>{study.description}</p>
+            </>
+          </li>
+        ))
+      }
+    </ul>
+  </details>
 </SiteLayout>
 
 <style>
@@ -128,19 +116,12 @@ const studies = [
   .labs-tool:hover {
     border-color: var(--alk-muted);
   }
-  .labs-kind {
-    color: var(--alk-ink-cobalt);
-    font: 0.72rem var(--alk-mono);
-  }
-  .labs-tool:nth-child(2) .labs-kind {
-    color: var(--alk-ink-teal);
-  }
   .labs-tool h2 {
     display: flex;
     justify-content: space-between;
     gap: 1rem;
     font-size: 1.3rem;
-    margin: 0.9rem 0 0.7rem;
+    margin: 0 0 0.7rem;
   }
   .labs-tool h2 span {
     font: 1rem var(--alk-mono);
@@ -160,13 +141,6 @@ const studies = [
     border-top: 1px solid var(--alk-rule);
     margin-top: 3rem;
     padding-top: 1.7rem;
-    display: grid;
-    grid-template-columns: 0.65fr 1.35fr;
-    gap: 2rem;
-  }
-  .labs-history h2 {
-    font-size: 1.3rem;
-    margin: 0 0 0.4rem;
   }
   .labs-history p {
     color: var(--alk-muted);
@@ -181,11 +155,6 @@ const studies = [
     cursor: pointer;
     padding: 0.2rem 0;
     font-size: 0.95rem;
-  }
-  summary span {
-    float: right;
-    color: var(--alk-muted);
-    font: 0.75rem/1.7 var(--alk-mono);
   }
   ul {
     list-style: none;
@@ -209,12 +178,10 @@ const studies = [
     margin-top: 0.3rem;
   }
   @media (max-width: 650px) {
-    .labs-tools,
-    .labs-history {
+    .labs-tools {
       grid-template-columns: 1fr;
     }
     .labs-history {
-      gap: 1rem;
       margin-top: 2rem;
     }
     .labs-tool {

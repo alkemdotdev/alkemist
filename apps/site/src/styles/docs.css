@@ -77,11 +77,6 @@
   margin-bottom: 0.55rem;
 }
 
-.docs-sidebar .docs-agent-link {
-  margin-top: 1rem;
-  font-size: 0.75rem;
-}
-
 .docs-article {
   max-width: 820px;
   min-width: 0;
@@ -90,12 +85,6 @@
 
 .docs-heading {
   margin-bottom: 1.9rem;
-}
-
-.docs-kicker {
-  margin: 0 0 0.65rem;
-  font: 0.72rem var(--alk-mono);
-  color: var(--alk-muted);
 }
 
 .docs-article .docs-heading h1 {
@@ -145,36 +134,6 @@
 
 .docs-contents li {
   padding: 0.2rem 0;
-}
-
-.docs-start {
-  padding: 1.35rem 1.5rem;
-  border: 1px solid var(--alk-rule);
-  border-left: 3px solid var(--alk-ink-cobalt);
-  background: var(--alk-field);
-}
-
-.docs-start h2 {
-  margin: 0 0 0.55rem;
-  font-size: 1.35rem;
-}
-
-.docs-start p {
-  margin-bottom: 1rem;
-  color: var(--alk-muted);
-  max-width: 54ch;
-}
-
-.docs-start-links {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem 1.5rem;
-  flex-wrap: wrap;
-  font-size: 0.85rem;
-}
-
-.docs-primary {
-  font-weight: 700;
 }
 
 .docs-directory {
@@ -350,8 +309,7 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 1rem;
   }
-  .docs-home,
-  .docs-agent-link {
+  .docs-home {
     grid-column: 1 / -1;
   }
   .docs-nav-group {
@@ -366,9 +324,6 @@
   }
   .docs-heading {
     margin-bottom: 1.5rem;
-  }
-  .docs-start {
-    padding: 1.1rem;
   }
 }
 

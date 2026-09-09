@@ -13,54 +13,35 @@ import FluxHero from '../components/FluxHero.astro';
   <FluxHero />
   <section class="home-tools" aria-label="Inside the toolkit">
     <a href="/docs/math-code/">
-      <span class="tool-format">MDX + math + code</span>
-      <h2>Write with math and code.</h2>
-      <p>Write with equations, diagrams, and readable source.</p>
-      <span class="tool-link"
-        >Write & explain <span aria-hidden="true">↗</span></span
-      >
+      <h2>Math and code <span aria-hidden="true">→</span></h2>
+      <p>Typeset equations and publish code with syntax highlighting.</p>
     </a>
     <a href="/docs/charts/">
-      <span class="tool-format">CSV → interactive charts</span>
-      <h2>Plot your data.</h2>
-      <p>Turn a data file into a chart your reader can explore.</p>
-      <span class="tool-link"
-        >Plot & explore <span aria-hidden="true">↗</span></span
-      >
+      <h2>Charts <span aria-hidden="true">→</span></h2>
+      <p>Plot CSV data as line, bar, scatter, and pie charts.</p>
     </a>
     <a href="/docs/models/">
-      <span class="tool-format">GLB / glTF → 3D</span>
-      <h2>Publish interactive models.</h2>
-      <p>Put the model beside the explanation. Turn it over.</p>
-      <span class="tool-link"
-        >Build & inspect <span aria-hidden="true">↗</span></span
-      >
+      <h2>3D models <span aria-hidden="true">→</span></h2>
+      <p>Embed models readers can rotate, zoom, and inspect.</p>
     </a>
   </section>
   <StartUsing />
   <section class="home-notebook" aria-labelledby="notebook-title">
     <div>
-      <p class="alk-eyebrow">Development notes</p>
-      <h2 id="notebook-title">Built with Alkemist.</h2>
-      <p>
-        We document the components and experiments used to build this site.
-        Follow the work or use the same pieces in your own project.
-      </p>
-      <a href="/blog/">Read the notebook <span aria-hidden="true">→</span></a>
+      <h2 id="notebook-title">How this site works</h2>
+      <a href="/blog/">All build notes <span aria-hidden="true">→</span></a>
     </div>
     <div class="home-notebook-links">
       <a href="/blog/home-for-working-ideas/"
-        ><span>Design notes</span><strong>An opening you can explore</strong
-        ><span aria-hidden="true">↗</span></a
+        ><strong>Building the homepage</strong><span aria-hidden="true">↗</span
+        ></a
       >
       <a href="/labs/"
-        ><span>Working experiments</span><strong>A place to try things</strong
-        ><span aria-hidden="true">↗</span></a
+        ><strong>Experiments</strong><span aria-hidden="true">↗</span></a
       >
       <a href="/docs/homepage/"
-        ><span>Make it yours</span><strong
-          >Your content. Your composition.</strong
-        ><span aria-hidden="true">↗</span></a
+        ><strong>Customize the homepage</strong><span aria-hidden="true">↗</span
+        ></a
       >
     </div>
   </section>
@@ -78,18 +59,12 @@ import FluxHero from '../components/FluxHero.astro';
     color: inherit;
     text-decoration: none;
   }
-  .tool-format {
-    color: var(--alk-ink-cobalt);
-    font: 0.72rem/1.5 var(--alk-mono);
-  }
-  .home-tools > a:nth-child(2) .tool-format {
-    color: var(--alk-ink-teal);
-  }
-  .home-tools > a:nth-child(3) .tool-format {
-    color: var(--alk-ink-violet);
-  }
   .home-tools h2 {
-    margin: 0.9rem 0 0.55rem;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 0 0 0.55rem;
     font-size: 1.15rem;
     font-weight: 500;
     letter-spacing: -0.025em;
@@ -101,12 +76,11 @@ import FluxHero from '../components/FluxHero.astro';
     font-size: 0.92rem;
     line-height: 1.65;
   }
-  .tool-link {
-    display: inline-block;
-    margin-top: 1.1rem;
-    font-size: 0.8rem;
+  .home-tools h2 span {
+    color: var(--alk-muted);
+    font: 0.85rem var(--alk-mono);
   }
-  .home-tools a:hover .tool-link {
+  .home-tools a:hover h2 {
     text-decoration: underline;
     text-underline-offset: 0.25em;
   }
@@ -119,17 +93,11 @@ import FluxHero from '../components/FluxHero.astro';
     border-top: 1px solid var(--alk-rule);
   }
   .home-notebook h2 {
-    font-size: clamp(1.8rem, 3vw, 2.7rem);
+    font-size: clamp(1.4rem, 2.5vw, 1.8rem);
     line-height: 1.12;
     letter-spacing: -0.04em;
     max-width: 20ch;
-    margin: 0 0 1.3rem;
-  }
-  .home-notebook p:not(.alk-eyebrow) {
-    max-width: 43ch;
-    color: var(--alk-muted);
-    line-height: 1.75;
-    font-size: 0.95rem;
+    margin: 0 0 1rem;
   }
   .home-notebook > div > a {
     font-size: 0.85rem;
@@ -137,18 +105,16 @@ import FluxHero from '../components/FluxHero.astro';
   .home-notebook-links a {
     display: grid;
     grid-template-columns: 1fr auto;
-    padding: 1.2rem 0;
+    padding: 1rem 0;
     border-bottom: 1px solid var(--alk-rule);
     text-decoration: none;
   }
   .home-notebook-links a:first-child {
     padding-top: 0;
   }
-  .home-notebook-links a > span:first-child {
-    grid-column: 1/-1;
+  .home-notebook-links a > span {
     color: var(--alk-muted);
-    font: 0.7rem/1.5 var(--alk-mono);
-    margin-bottom: 0.45rem;
+    font: 0.85rem/1.5 var(--alk-mono);
   }
   .home-notebook-links strong {
     font-size: 1rem;
@@ -164,34 +130,12 @@ import FluxHero from '../components/FluxHero.astro';
       gap: 1.5rem;
       padding-top: 1.5rem;
     }
-    .home-tools > a {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      align-items: baseline;
-      gap: 0;
-    }
-    .tool-format,
-    .home-tools h2,
-    .home-tools p {
-      grid-column: 1;
-    }
     .home-tools h2 {
       font-size: 1.1rem;
-      margin-top: 0.6rem;
     }
     .home-tools p {
       max-width: 34ch;
       font-size: 0.88rem;
-    }
-    .tool-link {
-      grid-column: 2;
-      grid-row: 1;
-      font-size: 0.68rem;
-      margin: 0;
-      padding-left: 0.4rem;
-    }
-    .tool-format {
-      font-size: 0.65rem;
     }
     .home-notebook {
       grid-template-columns: 1fr;

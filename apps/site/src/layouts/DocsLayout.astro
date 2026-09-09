@@ -21,7 +21,6 @@ const sections = headings.filter((heading) => heading.depth === 2);
       class:list={['docs-article', 'alk-prose', { 'docs-catalog': catalog }]}
     >
       <header class="docs-heading">
-        {title !== 'Documentation' && <p class="docs-kicker">Documentation</p>}
         <h1>{title}</h1>
         <p class="docs-description">{description}</p>
       </header>

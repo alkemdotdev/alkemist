@@ -7,27 +7,11 @@ import { docsGroups, docsReference } from '../../lib/docs-navigation';
   title="Documentation"
   description="Build, customize, and publish your Alkemist site."
 >
-  <div class="docs-start">
-    <div>
-      <h2>Start with your own site.</h2>
-      <p>
-        Follow the setup guide, or give the same instructions to your coding
-        agent.
-      </p>
-    </div>
-    <div class="docs-start-links">
-      <a class="docs-primary" href="/docs/getting-started/"
-        >Create a site <span aria-hidden="true">→</span></a
-      >
-      <a href="/docs/agent-setup.md">Read the agent instructions</a>
-    </div>
-  </div>
   <div class="docs-directory">
     {
       docsGroups.map((group) => (
         <section>
           <h2>{group.label}</h2>
-          <p>{group.description}</p>
           <ul>
             {group.links.map((link) => (
               <li>
@@ -44,7 +28,6 @@ import { docsGroups, docsReference } from '../../lib/docs-navigation';
   </div>
   <div class="docs-reference-links">
     <h2>Project reference</h2>
-    <p>Package boundaries, API conventions, and this demo's configuration.</p>
     <ul>
       {
         docsReference.map((link) => (

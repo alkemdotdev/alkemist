@@ -4,12 +4,8 @@ import AlkShader from '@alkemist/ui/AlkShader.astro';
 import { isPreview } from '../../lib/deployment';
 ---
 
-<SiteLayout
-  title="Interference lab"
-  section="Labs / Waves & fields"
-  preview={isPreview}
->
-  <h1>Two sources. A field of possibilities.</h1>
+<SiteLayout title="Interference lab" preview={isPreview}>
+  <h1>Interference field</h1>
   <p class="alk-lead">
     Change the spatial frequency and source angle. Press Play to move through
     the pattern, or pause to study a frame.
