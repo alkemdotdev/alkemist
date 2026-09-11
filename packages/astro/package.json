@@ -2,6 +2,27 @@
   "name": "@alkemist/astro",
   "version": "0.1.0",
   "private": true,
+  "description": "Astro integration for Alkemist technical publishing defaults.",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alkemdotdev/alkemist.git",
+    "directory": "packages/astro"
+  },
+  "homepage": "https://alkemist.alkem.dev",
+  "bugs": {
+    "url": "https://github.com/alkemdotdev/alkemist/issues"
+  },
+  "keywords": [
+    "astro-integration",
+    "withastro",
+    "mdx",
+    "math",
+    "technical-publishing"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "type": "module",
   "exports": {
     ".": "./src/index.ts"

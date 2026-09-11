@@ -2,6 +2,27 @@
   "name": "@alkemist/ui",
   "version": "0.1.0",
   "private": true,
+  "description": "Astro components and themes for technical publishing.",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alkemdotdev/alkemist.git",
+    "directory": "packages/ui"
+  },
+  "homepage": "https://alkemist.alkem.dev",
+  "bugs": {
+    "url": "https://github.com/alkemdotdev/alkemist/issues"
+  },
+  "keywords": [
+    "astro-component",
+    "withastro",
+    "technical-publishing",
+    "scientific-publishing",
+    "data-visualization"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "type": "module",
   "exports": {
     "./AlkLayout.astro": "./src/AlkLayout.astro",

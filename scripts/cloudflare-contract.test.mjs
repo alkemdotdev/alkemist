@@ -15,6 +15,15 @@ test('readback rejects an ignored repository rebind', () => {
   actual.source.config.repo_id = 'old-repository';
   assert.throws(() => assertProjectIdentity(actual, project), /repo_id/);
 });
+test('readback permits an owner rename only when the immutable owner ID matches', () => {
+  const actual = structuredClone(project);
+  actual.source.config.owner = 'alkemdev';
+  assert.doesNotThrow(() => assertProjectIdentity(actual, project));
+  assert.doesNotThrow(() => assertSubset(actual, project));
+
+  actual.source.config.owner_id = 'different-owner';
+  assert.throws(() => assertProjectIdentity(actual, project), /owner_id/);
+});
 test('readback detects disabled previews and allows provider-added fields', () => {
   assert.doesNotThrow(() =>
     assertSubset({ ...project, id: 'server-assigned' }, project),

@@ -64,3 +64,7 @@ Ubuntu/Ubuntu Mono, handwritten annotations, #eee/#111 boards, and eight invaria
 Splats, point clouds, robotics, compressed-asset pipelines, more statistical charts, and a general shader API remain future work. There is no published `create-alkemist` or npm release yet.
 
 Run `npm run generate:palette` to regenerate CSS/JSON from the shared palette and `npm run generate:fixtures` to regenerate the synthetic datasets and GLB.
+
+## License
+
+[Apache-2.0](LICENSE). The packages are source-preview only and explicitly private until an intentional npm beta release.
