@@ -1,5 +1,13 @@
 # Alkemist progress
 
+## 2026-09-11 — Public source preview
+
+Alkemist is now public at [github.com/alkemdotdev/alkemist](https://github.com/alkemdotdev/alkemist). The repository has an Apache-2.0 license, a public description and homepage, and explicit source-preview boundaries: `@alkemist/ui` and `@alkemist/astro` carry complete future npm metadata but remain `private` until a deliberate beta release. `.npmrc` is ignored so local registry credentials cannot be added accidentally.
+
+The complete Git history was scanned with Gitleaks with no findings. `npm run format:check`, `npm run verify` (76 Astro files, zero diagnostics, 26 tests, 43 pages, links/assets/build identity), and `npm run check:starter` all passed. The starter gate used packed dependencies in an external installation and confirmed changed-snapshot updates preserve site content, configuration, and assets byte-for-byte.
+
+The Cloudflare reconciler now identifies a repository by immutable `owner_id` and `repo_id`; it still refuses a rebind, while tolerating Cloudflare's stale legacy owner name after a verified organization rename. Its managed readback passed. Preview and production deployments of `202a42347d4fb82abf26ed468c8721cb67fbb915` passed the HTTPS deployment contract: exact `/build.json` identity, canonical routes, machine-readable guides, legacy redirects, robots policy, and 404 response. GitHub Actions independently rebuilt and verified the same main revision successfully.
+
 ## 2026-09-08 — Ubuntu and aesthetic decision studio
 
 - Added `/design/studio/` on the existing design preview branch, with Ubuntu + Ubuntu Mono as the suggested pairing and IBM Plex as an actual font comparison.

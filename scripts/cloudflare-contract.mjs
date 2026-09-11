@@ -21,7 +21,10 @@ export function assertProjectIdentity(actual, expected) {
     return;
   }
 
-  if (String(actual.source?.config?.owner) !== String(expected.source.config.owner)) {
+  if (
+    String(actual.source?.config?.owner) !==
+    String(expected.source.config.owner)
+  ) {
     throw new Error(
       'Pages repository identity differs at owner; refusing to repoint the project.',
     );
