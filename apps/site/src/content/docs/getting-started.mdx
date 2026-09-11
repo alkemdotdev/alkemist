@@ -8,16 +8,16 @@ import StartUsing from '../../components/StartUsing.astro';
 
 Create a website you own: your content, your Git repository, your hosting account. Alkemist supplies the scientific components and board themes. Start with a coding agent or follow the same steps in a terminal.
 
-**Source preview:** the Alkemist GitHub repository currently requires access. The generator runs from an authenticated source checkout; the packages are not published on npm. There is no `npx create-alkemist` command yet.
+**Source preview:** the Alkemist GitHub repository is public, but the packages are not published on npm. Clone the source repository to use the generator; there is no `npx create-alkemist` command yet.
 
 <StartUsing heading="Choose how to start." />
 
 ## Create a separate site
 
-Use Node **24.20.0**, matching the repository's `.nvmrc`. Clone with your existing GitHub access, then generate into a new, empty directory:
+Use Node **24.20.0**, matching the repository's `.nvmrc`. Clone the repository, then generate into a new, empty directory:
 
 ```sh
-git clone https://github.com/alkemdev/alkemist.git alkemist-source
+git clone https://github.com/alkemdotdev/alkemist.git alkemist-source
 cd alkemist-source
 npm ci
 npm run create:site -- ../my-lab --provider cloudflare

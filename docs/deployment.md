@@ -5,7 +5,7 @@ The user authorized the public Cloudflare deployment, automatic deployment from 
 ## Managed target
 
 - Project: `alkemist`, Cloudflare Pages in Alkemical Development Admin.
-- Source: GitHub `alkemdev/alkemist`, repository ID `1361643737`.
+- Source: GitHub `alkemdotdev/alkemist`, repository ID `1361643737`.
 - Production branch: `main`.
 - Preview branches: all other repository branches.
 - Domain: `alkemist.alkem.dev`.
@@ -13,7 +13,7 @@ The user authorized the public Cloudflare deployment, automatic deployment from 
 - Output: `apps/site/dist`.
 - Node: `24.20.0`; automatic dependency installation disabled because the build command runs `npm ci`.
 - Native GitHub integration owns deployment; GitHub Actions is validation-only.
-- PR comments are disabled. The source repository remains private; published site content and preview links are public.
+- PR comments are disabled. The source repository, published site content, and preview links are public.
 
 `infra/cloudflare.json` is the desired configuration. `scripts/cloudflare.mjs` reconciles it and verifies readback. It refuses to repoint an existing project at another repository or overwrite unrelated DNS.
 

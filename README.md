@@ -6,7 +6,7 @@ An Astro workbench for inventors and researchers. The demo website, documentatio
 
 ## Start your own site
 
-This is a source preview: repository access is required and the packages are not published on npm yet. From an authenticated checkout, use Node 24.20.0 and create a separate site:
+This is a public source preview: the packages are not published on npm yet. Clone the repository, use Node 24.20.0, and create a separate site:
 
 ```sh
 npm ci

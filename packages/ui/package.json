@@ -1,6 +1,7 @@
 {
   "name": "@alkemist/ui",
   "version": "0.1.0",
+  "private": true,
   "type": "module",
   "exports": {
     "./AlkLayout.astro": "./src/AlkLayout.astro",

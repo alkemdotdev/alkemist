@@ -1,5 +1,5 @@
 export const sourceAccess =
-  'Repository access required · packages are not on npm yet';
+  'Public source preview · packages are not on npm yet';
 
 export const setupProviders = [
   {
@@ -31,7 +31,7 @@ export const setupProviders = [
 export type AlkSetupProvider = (typeof setupProviders)[number];
 
 export function setupCommands(provider: AlkSetupProvider) {
-  return `git clone https://github.com/alkemdev/alkemist.git alkemist-source
+  return `git clone https://github.com/alkemdotdev/alkemist.git alkemist-source
 cd alkemist-source
 npm ci
 npm run create:site -- ../my-lab --provider ${provider.id}
@@ -46,7 +46,7 @@ export function setupPrompt(provider: AlkSetupProvider) {
 
 Read https://alkemist.alkem.dev/docs/agent-setup.md and https://alkemist.alkem.dev${provider.guide} first.
 
-Inspect my current workspace and its instructions. Establish the site name, destination directory/repository, hosting account, and intended URL from available context; ask together for the missing details. The Alkemist source repository currently requires GitHub access. Do not assume an npm starter has been published.
+Inspect my current workspace and its instructions. Establish the site name, destination directory/repository, hosting account, and intended URL from available context; ask together for the missing details. The Alkemist source repository is public, but no npm starter has been published.
 
 Use the source repository's create:site generator with --provider ${provider.id} to create a separate site. Preserve existing work and make the site identity, content, and Git remote mine. Include Blog, Labs, and Info; add my own Docs only if needed. Keep a small Test page for styling and interactions.
 
@@ -59,7 +59,7 @@ export function agentSetupGuide() {
   return `# Set up an Alkemist website
 
 This is the agent-readable companion to https://alkemist.alkem.dev/docs/getting-started/.
-Contract version: 1. Source access is required while https://github.com/alkemdev/alkemist is private. No create-alkemist command or public npm release is claimed.
+Contract version: 2. https://github.com/alkemdotdev/alkemist is public, but no create-alkemist command or npm release is claimed.
 
 ## Inputs and workspace
 
@@ -69,7 +69,7 @@ Read the destination's instructions and inspect Git status/remotes before edits.
 
 ## Generate and customize
 
-Use Node 24.20.0, matching the source .nvmrc. Clone the source with the user's GitHub access, run npm ci in that checkout, and run its create:site generator with the chosen provider. The generated site uses real local npm package tarballs under vendor/; retain those files and commit the generated package-lock.json. Package snapshots are not a public registry release.
+Use Node 24.20.0, matching the source .nvmrc. Clone the public source, run npm ci in that checkout, and run its create:site generator with the chosen provider. The generated site uses real local npm package tarballs under vendor/; retain those files and commit the generated package-lock.json. Package snapshots are not a public registry release.
 
 Set the site's name, description, navigation, content, favicon, and canonical URL in its own configuration. Keep user-owned content and custom styles out of the shared packages. The main sections are Blog, Labs, and Info. Docs is optional project documentation; Test is one styling/interaction page. Link to installed component docs, and use current explicit component props and public asset URLs. File-relative figure APIs and metadata sidecars are still proposals.
 

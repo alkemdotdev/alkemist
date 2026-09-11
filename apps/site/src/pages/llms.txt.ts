@@ -2,7 +2,7 @@ export function GET() {
   return new Response(
     `# Alkemist
 
-> An Astro publishing toolkit for inventors and researchers. Source preview; repository access is currently required and npm packages are not published.
+> An Astro publishing toolkit for inventors and researchers. Public source preview; npm packages are not published yet.
 
 ## Setup
 - [Agent setup instructions](https://alkemist.alkem.dev/docs/agent-setup.md): workspace inspection, standalone generation, customization, hosting, and completion evidence.

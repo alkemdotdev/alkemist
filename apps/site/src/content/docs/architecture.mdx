@@ -15,7 +15,7 @@ Your Astro site
   └─ @alkemist/ui     → layouts, figure shells, theme tokens
 ```
 
-The site consumes the actual workspace packages. This is the initial reusable boundary; published npm releases, migration commands, and a standalone starter test are still to come.
+The site consumes the actual workspace packages. Published npm releases and migration commands are still to come. A separate generated consumer is already installed and checked in CI; it proves the current tarball snapshot boundary rather than future registry-release compatibility.
 
 Starlight is the architectural precedent: a maintained Astro integration with configuration and component overrides. Alkemist's interface centers on scientific articles, notebooks, and experiments. [Starlight overrides](https://starlight.astro.build/reference/overrides/) and [Astro integration API](https://docs.astro.build/en/reference/integrations-reference/).
 
