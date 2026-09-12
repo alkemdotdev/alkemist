@@ -78,7 +78,27 @@ import AlkModel from '@alkemdotdev/alkemist-components/AlkModel.astro';
 ---
 <html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Standalone figures</title></head><body><h1>Figures in my existing site</h1><AlkChart src="/sample.csv" type="line" x="x" y="y" title="Measurements" description="Three sample readings."/><AlkModel src="/sample.gltf" title="Sample mesh" description="A model figure."/></body></html>`,
   );
+  if (!registryMode) {
+    await write(
+      'src/pages/posts.astro',
+      `---
+import AlkPostList from '@alkemdotdev/alkemist-components/AlkPostList.astro';
+import type { AlkPostListProps, AlkPostListItem, AlkPostListLayout } from '@alkemdotdev/alkemist-components';
+const items: AlkPostListItem[] = [
+  {href:'/new/',title:'Newest note',description:'A post without an image.',date:'2026-09-12'},
+  {href:'/lead/',title:'Chosen lead',description:'Explicit editorial selection.',cover:{src:'/cover.svg',alt:'Sample diagram',fit:'contain'}},
+];
+const layout: AlkPostListLayout = 'featured-grid';
+const props: AlkPostListProps = {items,layout,selectable:true,featuredHref:'/lead/'};
+---
+<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Reusable post lists</title></head><body><h1>Posts on an existing website</h1><AlkPostList {...props}/><AlkPostList items={items} layout="rows" label="Independent list"/><AlkPostList items={[]} label="Empty list"/></body></html>`,
+    );
+  }
   await mkdir(join(temporary, 'public'));
+  await write(
+    'public/cover.svg',
+    '<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200"><circle cx="150" cy="100" r="60" fill="royalblue"/></svg>',
+  );
   await write('public/sample.csv', 'x,y\n0,1\n1,3\n2,2\n');
   await write(
     'public/sample.gltf',
@@ -104,6 +124,22 @@ import AlkModel from '@alkemdotdev/alkemist-components/AlkModel.astro';
       html.includes('const') &&
       html.includes('My existing website'),
   );
+  if (!registryMode) {
+    const posts = await readFile(
+      join(temporary, 'dist/posts/index.html'),
+      'utf8',
+    );
+    assert(posts.includes('Chosen lead') && posts.includes('Newest note'));
+    assert.equal(
+      (posts.match(/href="\/lead\/"/g) ?? []).length,
+      2,
+      'Each component renders a post once',
+    );
+    assert(
+      posts.indexOf('href="/lead/"') < posts.indexOf('href="/new/"'),
+      'Explicit lead precedes remaining posts',
+    );
+  }
   let css = '';
   for (const file of await readdir(join(temporary, 'dist/_astro')))
     if (file.endsWith('.css'))

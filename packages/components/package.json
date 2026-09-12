@@ -30,6 +30,7 @@
     "./AlkCode.astro": "./src/AlkCode.astro",
     "./AlkModel.astro": "./src/AlkModel.astro",
     "./AlkChart.astro": "./src/AlkChart.astro",
+    "./AlkPostList.astro": "./src/AlkPostList.astro",
     "./code-theme": "./src/code-theme.ts",
     "./code-copy": "./src/code-copy.ts",
     "./AlkShader.astro": "./src/AlkShader.astro",

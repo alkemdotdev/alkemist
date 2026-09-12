@@ -1,3 +1,5 @@
+import type { AlkPostListProps } from '@alkemdotdev/alkemist-components';
+
 export const siteName = 'My Lab';
 export const tagline = 'Ideas, experiments, and work in progress';
 
@@ -29,3 +31,9 @@ export const navigation = enabledSections.map((section) => ({
   label: sections[section].label,
   href: withBase(sectionPath(section)),
 }));
+
+/** Choose a fixed layout or let readers switch between the available views. */
+export const blogDisplay = {
+  layout: 'featured-grid',
+  selectable: true,
+} satisfies Pick<AlkPostListProps, 'layout' | 'selectable' | 'featuredHref'>;

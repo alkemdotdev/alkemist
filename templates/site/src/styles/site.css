@@ -46,24 +46,6 @@
   object-fit: contain;
   background: var(--alk-field);
 }
-.lab-cover--thumbnail .lab-cover-frame {
-  aspect-ratio: 3 / 2;
-  overflow: hidden;
-  border: 1px solid var(--alk-rule);
-}
-.lab-card--with-cover {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) clamp(10rem, 24vw, 14rem);
-  column-gap: 1.5rem;
-}
-.lab-card--with-cover > .lab-cover {
-  grid-column: 2;
-  grid-row: 1 / span 4;
-  margin: 0;
-}
-.lab-card--with-cover > :not(.lab-cover) {
-  grid-column: 1;
-}
 .lab-cover--article img {
   height: auto;
 }
@@ -72,16 +54,6 @@
   color: var(--alk-muted);
   font: 0.8rem/1.4 var(--alk-mono);
 }
-@media (max-width: 600px) {
-  .lab-card--with-cover {
-    display: block;
-  }
-  .lab-card--with-cover > .lab-cover {
-    max-width: 18rem;
-    margin: 0 0 1rem;
-  }
-}
-
 /* Leave room for project-defined labels without squeezing the site identity. */
 @media (max-width: 1000px) {
   .alk-brand-detail {

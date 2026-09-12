@@ -1,0 +1,113 @@
+---
+title: Post lists and layouts
+description: Reuse a post collection with rows, a featured lead, a grid, or a combination.
+order: 17
+---
+
+`AlkPostList` presents links and optional images from any source. Your site owns the collection, filtering, sorting, URLs, and editorial selection. The component owns the reading layout.
+
+This API is available in the source checkout and packed source starter. It is pending the next npm release; it is not included in `1.0.0-beta.1`.
+
+## Choose a layout
+
+| Layout          | Presentation                                |
+| --------------- | ------------------------------------------- |
+| `rows`          | Compact text rows with optional thumbnails. |
+| `featured`      | One lead post followed by compact rows.     |
+| `grid`          | Images above text in a responsive grid.     |
+| `featured-grid` | One lead post above the remaining grid.     |
+
+Without an explicit selection, the first supplied item is the lead. Set `featuredHref` to an item's URL to choose another post. It appears once, followed by the remaining items in their supplied order. Coverless posts remain readable text entries without artificial image placeholders.
+
+## Use it in an existing site
+
+```astro
+---
+import AlkPostList from '@alkemdotdev/alkemist-components/AlkPostList.astro';
+import type { AlkPostListItem } from '@alkemdotdev/alkemist-components';
+import cover from '../assets/experiment.png';
+
+const posts: AlkPostListItem[] = [
+  {
+    href: '/blog/experiment/',
+    title: 'The first experiment',
+    description: 'What the measurements helped us notice.',
+    date: '2026-09-12',
+    cover: { src: cover, alt: 'Measured response over time.', fit: 'contain' },
+  },
+  {
+    href: '/blog/next-question/',
+    title: 'The next question',
+    description: 'A short entry without an image.',
+  },
+];
+---
+
+<AlkPostList items={posts} layout="featured-grid" selectable />
+```
+
+Omit `selectable` for a fixed layout. When enabled, readers can change the presentation without changing the content or navigating away. Each list has independent controls. The initial layout still renders without JavaScript; the selector appears only when it can operate.
+
+Local imported images use Astro's image pipeline. String image URLs use an ordinary image element; the host owns their delivery. Include any deployment subpath in item URLs. The component does not fetch content, install a router, or import the full theme.
+
+## Configure the starter
+
+The source starter exposes `blogDisplay` in `src/lib/site.ts`:
+
+```ts
+export const blogDisplay = {
+  layout: 'featured-grid',
+  selectable: true,
+};
+```
+
+The Alkemist demo keeps the same setting in `apps/site/src/lib/sections.ts`, including its editorial `featuredHref`. Image selection and crop controls remain in each post's [cover metadata](/docs/post-images/).
+
+## Try the layouts
+
+import AlkPostList from '@alkemdotdev/alkemist-components/AlkPostList.astro';
+import exampleCover from '../../assets/fields/flux.png';
+
+The first example lets you change layouts. The second is a separate fixed list; changing the first does not affect it.
+
+<AlkPostList
+  label="Layout example"
+  layout="featured-grid"
+  selectable
+  items={[
+    {
+      href: '/blog/fields-with-substance/',
+      title: 'Fields with substance',
+      description: 'A visual study with an optional cover.',
+      cover: {
+        src: exampleCover,
+        alt: 'Blue and violet ribbons around a warm center.',
+        fit: 'contain',
+      },
+    },
+    {
+      href: '/blog/choosing-publishing-sections/',
+      title: 'Different ways to publish an idea',
+      description: 'A text entry without a cover.',
+    },
+  ]}
+/>
+
+### A fixed compact list
+
+<AlkPostList
+  label="Compact example"
+  layout="rows"
+  items={[
+    {
+      href: '/blog/fields-with-substance/',
+      title: 'Fields with substance',
+      description: 'The same content can be used in a smaller space.',
+      cover: {
+        src: exampleCover,
+        alt: 'Blue and violet ribbons around a warm center.',
+        fit: 'contain',
+      },
+    },
+  ]}
+/>
