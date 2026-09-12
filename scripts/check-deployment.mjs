@@ -111,7 +111,7 @@ for (const [path, type, required] of [
     '/docs/agent-setup.md',
     /^text\/markdown/,
     [
-      'npm create alkemist@beta',
+      'npm run create:site',
       '--provider cloudflare',
       '--provider gitlab',
       '--provider custom',

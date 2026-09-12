@@ -12,28 +12,28 @@ The demo homepage uses **Flux core**. `src/components/FluxHero.astro` owns its h
 
 The hero uses the same `FormArt.astro` and `flux-core.ts` geometry as the [field study](/labs/field-studies/?take=flux). Its `presentation="hero"` renders the artwork without a toolbar, instructions, caption, annotations, or equations. It prioritizes the still image and fits the object a little closer. Click or tap the art to pause or resume its subtle motion; dragging turns it and leaves it paused. Keyboard users can focus the art, toggle motion with Space or Enter, turn with arrow keys, and reset with Home. Reduced motion starts still, and unavailable graphics retain the poster without a diagnostic paragraph. Shared canvas styles live in `src/components/forms/art.css`; gallery controls and layouts stay in the studies.
 
-Replace the hero with your own image, `AlkModel`, or site-owned visual without changing the theme package. The [homepage development note](/blog/home-for-working-ideas/) explains the composition. This demo artwork is not installed automatically by the starter.
+Replace the hero with your own image, `Model`, or site-owned visual without changing the theme package. The [homepage development note](/blog/home-for-working-ideas/) explains the composition. This demo artwork is not installed automatically by the starter.
 
 ## A small composition
 
-Use `AlkLayout` for the surrounding navigation and theme, then compose your own content inside it. `siteName` and `tagline` control the identity; the generated starter's `SiteLayout.astro` sets those values for your site.
+Use `Layout` for the surrounding navigation and theme, then compose your own content inside it. `siteName` and `tagline` control the identity; the generated starter's `SiteLayout.astro` sets those values for your site.
 
 ```astro
 ---
-import AlkLayout from '@alkemdotdev/alkemist-components/AlkLayout.astro';
-import AlkModel from '@alkemdotdev/alkemist-components/AlkModel.astro';
+import Layout from '@alkemdotdev/alkemist-components/layout';
+import Model from '@alkemdotdev/alkemist-components/model';
 ---
 
-<AlkLayout title="Our lab" siteName="Our lab" tagline="research notes">
+<Layout title="Our lab" siteName="Our lab" tagline="research notes">
   <h1>A place for our working ideas.</h1>
   <p>Experiments, data, and what we are learning.</p>
-  <AlkModel
+  <Model
     src="/models/prototype.glb"
     title="Our current prototype"
     poster="/models/prototype.webp"
   />
   <a href="/blog/">Read the notebook →</a>
-</AlkLayout>
+</Layout>
 ```
 
 Supply your own assets at those public paths. For a site deployed under a subpath, build asset and navigation URLs from `import.meta.env.BASE_URL`, as the starter does. See [model support and limits](/docs/models/) for the current GLB/glTF contract.
@@ -48,7 +48,7 @@ The demo's [hero studies](/labs/hero-studies/) compare three compositions. These
 | Flow field      | `src/components/hero/FlowHero.astro`, `flow.ts`, `flow.css`                | Fragment shader, compositions, and framing                     |
 | Working surface | `src/assets/hero/working-surface.png`                                      | Replace the generated illustration with your own project image |
 
-The comparison layout is `src/pages/labs/hero-studies.astro`; its copy and section order are local to the demo. The shared `AlkChart`, `AlkModel`, `AlkMath`, and `AlkCode` components remain usable independently. The custom sculpture and flow experiments do not imply a generalized shader, splat, or NeRF API.
+The comparison layout is `src/pages/labs/hero-studies.astro`; its copy and section order are local to the demo. The shared `Chart`, `Model`, `Math`, and `Code` components remain usable independently. The custom sculpture and flow experiments do not imply a generalized shader, splat, or NeRF API.
 
 For an image opening, import a local image from `src/assets/` into Astro's `Image` component. The demo generates multiple WebP widths with explicit dimensions and alt text. Follow [Astro's image guide](https://docs.astro.build/en/guides/images/) when changing the image or sizing behavior. The exact prompt for the demo's generated art is recorded at `docs/art/working-surface-prompt.md` in the source repository.
 

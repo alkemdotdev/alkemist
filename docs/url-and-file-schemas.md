@@ -22,7 +22,7 @@ The trade-off is a little explicit metadata in exchange for reliable links, repe
 | View state       | Design studies use allowlisted query parameters. The general board theme is a local browser preference. Other widget state does not yet have a shared URL contract.                                                     |
 | Machine files    | `/build.json`, `/robots.txt`, and static asset downloads. No published Alkemist JSON Schemas or asset catalog yet.                                                                                                      |
 
-The existing packages are `@alkemist/astro` and `@alkemist/ui`; the demo owns its content and pages. The current integration is `alkemist()` without the configuration API described in future proposals.
+The existing packages are `@alkemdotdev/alkemist-astro`, `@alkemdotdev/alkemist-components`, and `@alkemdotdev/alkemist-theme`; the demo owns its content and pages. The current integration is `alkemist()` without the configuration API described in future proposals.
 
 ## Accepted public URLs and navigation
 
@@ -138,7 +138,7 @@ defaultView:
   y: position
 ```
 
-`AlkAsset` is a discriminated union: dataset, model, mesh, point cloud, splat, shader, and other supported adapters each validate their own fields. Only implement a variant when its adapter exists; listing a future kind does not establish renderer support.
+`Asset` is a discriminated union: dataset, model, mesh, point cloud, splat, shader, and other supported adapters each validate their own fields. Only implement a variant when its adapter exists; listing a future kind does not establish renderer support.
 
 Metadata records meaning: column types, missing-value conventions, units, coordinate conventions, attribution, provenance, and an explicit license when known. Never invent a license, turn a missing measurement into zero, infer units from magnitudes, or treat identifiers as measurements merely because their values look numeric. Timestamp columns need explicit timezone handling; article publication dates are a separate concept.
 
@@ -164,14 +164,14 @@ title: Displacement over time
 Proposed component syntax; **these abbreviated and file-relative forms do not work in the current implementation**:
 
 ```mdx
-<AlkChart src="./data/run.csv" />
-<AlkChart figure="./figures/displacement.figure.yaml" />
-<AlkModel src="./models/pendulum.glb" />
+<Chart src="./data/run.csv" />
+<Chart figure="./figures/displacement.figure.yaml" />
+<Model src="./models/pendulum.glb" />
 ```
 
 The first form can use the sidecar for the title, column meaning, and default view. `src` and `figure` are mutually exclusive inputs. Explicit presentation props override the figure definition, then the asset's `defaultView`, then component defaults. Missing required descriptions produce an authoring diagnostic instead of fabricated scientific interpretation. Presentation overrides do not silently rewrite intrinsic asset metadata.
 
-Use `AlkEntry`, `AlkAsset`, `AlkFigure`, and `AlkWidgetState` for exported types. Keep ordinary field names such as `id`, `kind`, and `src` in YAML/JSON; the `Alk` prefix belongs on the public programming API, not every field or URL.
+Use `Entry`, `Asset`, `Figure`, and `WidgetState` for exported types. Keep ordinary field names such as `id`, `kind`, and `src` in YAML/JSON; public programming names remain plain.
 
 ## Source resolution and published assets
 
@@ -203,7 +203,7 @@ Each widget defines and validates its state schema. Omit default values, bound v
 
 ## Schema evolution and implementation order
 
-Keep runtime validators and generated types together in the owning package, initially `@alkemist/astro` for content and asset contracts. Derive editor JSON Schemas from the same definitions. Astro already generates collection JSON Schemas; reuse that mechanism where possible, and add exports for Alkemist-specific sidecars. [Astro content schemas](https://docs.astro.build/en/guides/content-collections/).
+Keep runtime validators and generated types together in the owning package, initially `@alkemdotdev/alkemist-astro` for content and asset contracts. Derive editor JSON Schemas from the same definitions. Astro already generates collection JSON Schemas; reuse that mechanism where possible, and add exports for Alkemist-specific sidecars. [Astro content schemas](https://docs.astro.build/en/guides/content-collections/).
 
 Custom authored schemas carry `schemaVersion: 1`; served JSON Schema URLs include the major version. Breaking changes require a new major contract and a migration that shows its diff. Use a namespaced `extensions` field for registered plugin metadata instead of silently accepting misspelled core fields. Schemas improve AI assistance without making an AI service part of site rendering.
 

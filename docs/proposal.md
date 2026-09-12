@@ -31,11 +31,9 @@ apps/
 examples/
   starter/              Minimal user-owned Astro site; packaged-consumer fixture
 packages/
-  astro/                @alkemist/astro: integration, config, content, asset manifests
-  ui/                   @alkemist/ui: layouts, themes, figure shell, authoring blocks
-  data/                 @alkemist/data: charts, tables, schema inspection
-  spatial/              @alkemist/spatial: models, points, lazy splat/robot adapters
-  lab/                  @alkemist/lab: shaders, algorithms, simulations, WASM hooks
+  astro/                @alkemdotdev/alkemist-astro: integration, config, content, asset manifests
+  components/           @alkemdotdev/alkemist-components: layouts and authoring blocks
+  theme/                @alkemdotdev/alkemist-theme: themes and palette helpers
   cli/                  Asset inspection, scaffolding, validation, migrations
 docs/
   decisions/            Accepted decisions and the constraints behind them
@@ -50,23 +48,23 @@ Routine upgrades update dependencies. Semver, Changesets, release notes, a teste
 
 ## Authoring contract
 
-Public Alkemist components and custom exported types use the `Alk` prefix: `AlkChart`, `AlkFigure`, `AlkChartProps`, `AlkAssetManifest`, and `AlkWidgetState`. Packages remain `@alkemist/*`, the integration function is `alkemist()`, and CSS tokens use `--alk-*`. Canonical docs and generated examples use the prefixed names; authors may explicitly create shorter local aliases.
+Public Alkemist components and custom exported types use plain names: `Chart`, `Figure`, `ChartProps`, `AssetManifest`, and `WidgetState`. Packages remain `@alkemdotdev/alkemist-*`, the integration function is `alkemist()`, and CSS tokens use `--alk-*`. Canonical docs and generated examples use these names directly.
 
 Proposed MDX syntax, supplied by the Alkemist article wrapper:
 
 ```mdx
-<AlkChart src="./trial.csv" />
-<AlkChart type="line" src="./trial.csv" x="time_s" y="temperature_c" />
-<AlkChart type="bar" src="./results.csv" x="method" y="score" />
-<AlkChart type="pie" src="./materials.csv" category="material" value="mass_g" />
-<AlkChart engine="vega-lite" spec={experimentSpec} />
-<AlkModel src="./prototype.glb" />
-<AlkMesh src="./bracket.stl" units="mm" />
-<AlkPointCloud src="./scan.ply" />
-<AlkSplat src="./workshop.spz" />
-<AlkRobot src="./arm.urdf" />
-<AlkShader src="./field.frag" />
-<AlkDiagram src="./architecture.mmd" />
+<Chart src="./trial.csv" />
+<Chart type="line" src="./trial.csv" x="time_s" y="temperature_c" />
+<Chart type="bar" src="./results.csv" x="method" y="score" />
+<Chart type="pie" src="./materials.csv" category="material" value="mass_g" />
+<Chart engine="vega-lite" spec={experimentSpec} />
+<Model src="./prototype.glb" />
+<Mesh src="./bracket.stl" units="mm" />
+<PointCloud src="./scan.ply" />
+<Splat src="./workshop.spz" />
+<Robot src="./arm.urdf" />
+<Shader src="./field.frag" />
+<Diagram src="./architecture.mmd" />
 ```
 
 These are a proposed API, not runnable commands or existing components. A plain `.astro` page uses explicit imports. Alkemist will need to implement and test the shared MDX component mapping and file-relative asset resolver; Astro does not automatically make arbitrary component names or relative file URLs work this way. [MDX component mapping](https://docs.astro.build/en/guides/integrations-guide/mdx/#passing-components-to-mdx-content).
@@ -85,7 +83,7 @@ Shared figure behavior:
 
 ### Broad chart contract
 
-`AlkChart` is a general chart surface. Planned presets cover vertical/horizontal/grouped/stacked/percentage/diverging/ranged bars; pie/donut/radial charts; line/step/area/stacked-area charts; scatter/bubble/connected scatter; histograms/density/box plots/error bands/regression/heatmaps; layered annotations/facets/small multiples/linked selections; and geographic points/routes/choropleths with explicit geographic data.
+`Chart` is a general chart surface. Planned presets cover vertical/horizontal/grouped/stacked/percentage/diverging/ranged bars; pie/donut/radial charts; line/step/area/stacked-area charts; scatter/bubble/connected scatter; histograms/density/box plots/error bands/regression/heatmaps; layered annotations/facets/small multiples/linked selections; and geographic points/routes/choropleths with explicit geographic data.
 
 Vega-Lite demonstrates these families in its [example gallery](https://vega.github.io/vega-lite/examples/). Pie/donut charts use its [arc mark](https://vega.github.io/vega-lite/docs/arc.html). Qualification as an Alkemist preset requires implementation and a working documented example.
 

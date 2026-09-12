@@ -22,7 +22,7 @@ window.addEventListener('alk:theme-change', () => {
 });
 ```
 
-These helpers run in the browser. `AlkLayout` initializes them; `setTheme` persists the preference when browser storage is available.
+These helpers run in the browser. `Layout` initializes them; `setTheme` persists the preference when browser storage is available.
 
 ## What belongs where
 
@@ -45,7 +45,7 @@ Use lowercase kebab-case paths and trailing slashes for pages. Files retain exte
 
 The theme does not inject Alkemist's documentation into your site. Omit Docs entirely, or put your project's own documentation there. The demo's reference pages live in its content collection and consume the same reusable packages as the rest of the site.
 
-`AlkLayout` accepts these optional arrays of `{ label, href }` links:
+`Layout` accepts these optional arrays of `{ label, href }` links:
 
 | Prop               | Default                               |
 | ------------------ | ------------------------------------- |
@@ -57,10 +57,10 @@ For example, a site with project documentation can add it explicitly:
 
 ```astro
 ---
-import AlkLayout from '@alkemdotdev/alkemist-components/AlkLayout.astro';
+import Layout from '@alkemdotdev/alkemist-components/layout';
 ---
 
-<AlkLayout
+<Layout
   title="Our research group"
   navigation={[
     { label: 'Blog', href: '/blog/' },
@@ -71,10 +71,10 @@ import AlkLayout from '@alkemdotdev/alkemist-components/AlkLayout.astro';
   moreNavigation={[{ label: 'Test', href: '/test/' }]}
 >
   <slot />
-</AlkLayout>
+</Layout>
 ```
 
-The demo's `src/layouts/SiteLayout.astro` supplies its main, More, and footer links. A site without documentation can use `AlkLayout` directly. Supplying `navigation` replaces the default main links, so unused sections need not appear either.
+The demo's `src/layouts/SiteLayout.astro` supplies its main, More, and footer links. A site without documentation can use `Layout` directly. Supplying `navigation` replaces the default main links, so unused sections need not appear either.
 
 ## Configure an adopting project
 

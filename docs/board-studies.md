@@ -19,9 +19,9 @@ The requested backgrounds are exactly `#111111` and `#eeeeee`. The board is the 
 
 ## Review surface
 
-`/design/boards/` offers three directions and two board surfaces. The URL preserves the selection for sharing. A damping slider changes an analytic oscillator, and the annotation control shows/hides figure notes. These interactions are study-local; they are not a released AlkChart API or a CSV demonstration.
+`/design/boards/` offers three directions and two board surfaces. The URL preserves the selection for sharing. A damping slider changes an analytic oscillator, and the annotation control shows/hides figure notes. These interactions are study-local; they are not a released Chart API or a CSV demonstration.
 
-The production theme remains unchanged until a direction is selected. The studio lives in the demo app; selected tokens and components will move into `@alkemist/ui` when the design is adopted.
+The production theme remains unchanged until a direction is selected. The studio lives in the demo app; selected tokens and components will move into `@alkemdotdev/alkemist-theme` and `@alkemdotdev/alkemist-components` when the design is adopted.
 
 ## Interactive decision studio
 

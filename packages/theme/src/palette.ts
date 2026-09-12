@@ -1,5 +1,5 @@
 /** Inks keep their identity on both boards. Use neutral ink for small text. */
-export const ALK_INKS = [
+export const INKS = [
   { id: 'cobalt', name: 'Cobalt', hex: '#1982f2' },
   { id: 'cyan', name: 'Cyan', hex: '#158eab' },
   { id: 'teal', name: 'Teal', hex: '#199287' },
@@ -9,7 +9,7 @@ export const ALK_INKS = [
   { id: 'rose', name: 'Rose', hex: '#e24a7a' },
   { id: 'violet', name: 'Violet', hex: '#a464e3' },
 ] as const;
-export type AlkInk = (typeof ALK_INKS)[number]['id'];
+export type Ink = (typeof INKS)[number]['id'];
 
 export function relativeLuminance(hex: string): number {
   const rgb = hex

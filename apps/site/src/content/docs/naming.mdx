@@ -1,34 +1,35 @@
 ---
 title: Names and public types
-description: A recognizable Alk prefix without long authoring names.
+description: Plain public names and direct component entrypoints.
 order: 3
 ---
 
-Use **Alk** for public components and exported custom types:
+Use plain names for public components and exported custom types:
 
 ```ts
-AlkLayout;
-AlkChart;
-AlkModel;
-AlkFigure;
-AlkChartProps;
-AlkAssetManifest;
-AlkWidgetState;
+Layout;
+Chart;
+Model;
+Figure;
+ChartProps;
+AssetManifest;
+WidgetState;
 ```
 
-`AlkLayout`, `AlkChart`, `AlkModel`, `AlkMath`, `AlkCode`, and the fixed-study `AlkShader` are implemented. Their prop types use the same prefix. `AlkFigure`, `AlkAssetManifest`, and `AlkWidgetState` above remain proposed names.
+`Layout`, `Chart`, `Model`, `Math`, `Code`, and the fixed-study `Shader` are implemented. `Figure`, `AssetManifest`, and `WidgetState` above remain proposed names.
 
-The prefix makes Alkemist components easy for people and AI assistants to identify, avoids collisions with a site's own `Chart` or `Model`, and keeps examples consistent.
+The package path identifies Alkemist's public API while authors can use familiar component names in their own pages.
 
-Package names stay `@alkemist/*`. The integration function is `alkemist()`, and CSS tokens use `--alk-*`. Internal variables do not need the prefix.
+Package names stay `@alkemdotdev/alkemist-*`. The integration function is `alkemist()`, and CSS tokens use `--alk-*`.
 
-## Local aliases
+## Direct entries
 
-Authors can explicitly alias a component in their own files. Canonical documentation and generated examples use `Alk*`; aliases do not create a second public API to maintain.
+Import each component from its lowercase, extensionless entry. Import its prop and content types from that same entry; the package has no root component barrel.
 
 ```astro
 ---
-import Layout from '@alkemdotdev/alkemist-components/AlkLayout.astro';
+import Layout from '@alkemdotdev/alkemist-components/layout';
+import type { LayoutProps } from '@alkemdotdev/alkemist-components/layout';
 ---
 
 <Layout title="My notebook"><slot /></Layout>

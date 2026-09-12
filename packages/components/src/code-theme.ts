@@ -1,10 +1,10 @@
 import type { ShikiTransformer, ThemeRegistration } from 'shiki';
-import { ALK_INKS } from '@alkemdotdev/alkemist-theme/palette';
+import { INKS } from '@alkemdotdev/alkemist-theme/palette';
 
-const inks = Object.fromEntries(ALK_INKS.map(({ id, hex }) => [id, hex]));
+const inks = Object.fromEntries(INKS.map(({ id, hex }) => [id, hex]));
 
 /** One fixed ink set on a black code surface, independent of the page theme. */
-export const AlkCodeTheme: ThemeRegistration = {
+export const codeTheme: ThemeRegistration = {
   name: 'alkemist-board',
   type: 'dark',
   colors: { 'editor.background': '#111111', 'editor.foreground': '#eeeeee' },
@@ -62,13 +62,13 @@ export const AlkCodeTheme: ThemeRegistration = {
   ],
 };
 
-export interface AlkCodeOptions {
+export interface CodeOptions {
   title?: string;
   highlightLines?: number[];
   lineNumbers?: boolean;
 }
 
-function metadata(raw: string, options: AlkCodeOptions) {
+function metadata(raw: string, options: CodeOptions) {
   let metaTitle: string | undefined;
   // Quoted captions are content; their braces and flag words must stay inert.
   const flags = raw.replace(
@@ -114,9 +114,9 @@ function metadata(raw: string, options: AlkCodeOptions) {
   };
 }
 
-/** Shared by Markdown fences and AlkCode; all source and metadata become HAST text. */
-export function createAlkCodeTransformer(
-  options: AlkCodeOptions = {},
+/** Shared by Markdown fences and Code; all source and metadata become HAST text. */
+export function createCodeTransformer(
+  options: CodeOptions = {},
 ): ShikiTransformer {
   return {
     name: 'alkemist-code',

@@ -1,14 +1,14 @@
 ---
 import DocsLayout from '../../layouts/DocsLayout.astro';
-import AlkChart from '@alkemdotdev/alkemist-components/AlkChart.astro';
-import AlkModel from '@alkemdotdev/alkemist-components/AlkModel.astro';
-import AlkMath from '@alkemdotdev/alkemist-components/AlkMath.astro';
-import AlkCode from '@alkemdotdev/alkemist-components/AlkCode.astro';
-import AlkShader from '@alkemdotdev/alkemist-components/AlkShader.astro';
+import Chart from '@alkemdotdev/alkemist-components/chart';
+import Model from '@alkemdotdev/alkemist-components/model';
+import Math from '@alkemdotdev/alkemist-components/math';
+import Code from '@alkemdotdev/alkemist-components/code';
+import Shader from '@alkemdotdev/alkemist-components/shader';
 
-const chartCode = `import AlkChart from '@alkemdotdev/alkemist-components/AlkChart.astro';
+const chartCode = `import Chart from '@alkemdotdev/alkemist-components/chart';
 
-<AlkChart
+<Chart
   src="/test/oscillation.csv"
   type="line" x="time" y="position"
   title="Damped oscillator"
@@ -16,36 +16,36 @@ const chartCode = `import AlkChart from '@alkemdotdev/alkemist-components/AlkCha
   xLabel="Time (s)" yLabel="Position (m)"
   height={220} sample
 />`;
-const modelCode = `import AlkModel from '@alkemdotdev/alkemist-components/AlkModel.astro';
+const modelCode = `import Model from '@alkemdotdev/alkemist-components/model';
 
-<AlkModel
+<Model
   src="/test/torus-knot.glb"
   poster="/test/torus-knot.svg"
   title="A torus knot"
   description="A generated teaching mesh. Drag to inspect it."
 />`;
 const mathCode =
-  'import AlkMath from \'@alkemdotdev/alkemist-components/AlkMath.astro\';\n\n<AlkMath\n  tex={String.raw`\\int_{\\partial\\Omega} \\omega = \\int_\\Omega d\\omega`}\n  label="Stokes’ theorem"\n/>';
+  'import Math from \'@alkemdotdev/alkemist-components/math\';\n\n<Math\n  tex={String.raw`\\int_{\\partial\\Omega} \\omega = \\int_\\Omega d\\omega`}\n  label="Stokes’ theorem"\n/>';
 const source =
   'function advance(position: number, velocity: number, dt: number) {\n  return position + velocity * dt;\n}';
-const codeCode = `import AlkCode from '@alkemdotdev/alkemist-components/AlkCode.astro';
+const codeCode = `import Code from '@alkemdotdev/alkemist-components/code';
 import source from './integrator.ts?raw';
 
-<AlkCode
+<Code
   code={source} lang="typescript"
   title="integrator.ts" highlightLines={[2]}
 />`;
-const shaderCode = `import AlkShader from '@alkemdotdev/alkemist-components/AlkShader.astro';
+const shaderCode = `import Shader from '@alkemdotdev/alkemist-components/shader';
 
-<AlkShader title="Two wave sources" frequency={9} angle={24} />`;
+<Shader title="Two wave sources" frequency={9} angle={24} />`;
 const layoutCode = `---
-import AlkLayout from '@alkemdotdev/alkemist-components/AlkLayout.astro';
+import Layout from '@alkemdotdev/alkemist-components/layout';
 ---
 
-<AlkLayout title="Research notes" siteName="My lab">
+<Layout title="Research notes" siteName="My lab">
   <h1>Research notes</h1>
   <p>What we are working on.</p>
-</AlkLayout>`;
+</Layout>`;
 const catalog = [
   ['charts', 'Charts'],
   ['models', '3D models'],
@@ -66,9 +66,9 @@ const catalog = [
     {catalog.map(([id, label]) => <a href={`#${id}`}>{label}</a>)}
   </nav>
   <p class="docs-footnote">
-    Examples use the <code>@alkemdotdev/alkemist-components</code> beta package. Put
-    data and models in your site's <code>public/</code> directory; use the corresponding
-    URL in <code>src</code>.
+    Examples use the current <code>@alkemdotdev/alkemist-components</code> source
+    package. Put data and models in your site's <code>public/</code> directory; use
+    the corresponding URL in <code>src</code>.
   </p>
 
   <section class="docs-example" aria-labelledby="install-components">
@@ -85,8 +85,8 @@ const catalog = [
         >@alkemdotdev/alkemist-astro</code
       > only for its integration defaults.
     </p>
-    <AlkCode
-      code={'npm install @alkemdotdev/alkemist-components@1.0.0-beta.1'}
+    <Code
+      code={'# In your Alkemist source checkout\nnpm ci\nnpm run release:pack\n\n# In your existing Astro project; adjust the source path\nnpm install ../alkemist/.alkemist/release/alkemdotdev-alkemist-theme-*.tgz ../alkemist/.alkemist/release/alkemdotdev-alkemist-components-*.tgz'}
       lang="sh"
       title="An existing Astro project"
       lineNumbers={false}
@@ -95,7 +95,7 @@ const catalog = [
 
   <section class="docs-example" id="post-lists">
     <div class="docs-example-heading">
-      <h2>AlkPostList</h2><a href="/docs/post-lists/"
+      <h2>PostList</h2><a href="/docs/post-lists/"
         >Post list reference and examples <span aria-hidden="true">↗</span></a
       >
     </div>
@@ -108,7 +108,7 @@ const catalog = [
 
   <section class="docs-example" id="charts">
     <div class="docs-example-heading">
-      <h2>AlkChart</h2><a href="/docs/charts/"
+      <h2>Chart</h2><a href="/docs/charts/"
         >Chart reference <span aria-hidden="true">↗</span></a
       >
     </div>
@@ -116,7 +116,7 @@ const catalog = [
       CSV to line, bar, scatter, pie, donut, or heatmap. Inspect the data table
       or zoom a line or scatter plot.
     </p>
-    <AlkChart
+    <Chart
       src="/test/oscillation.csv"
       type="line"
       x="time"
@@ -129,7 +129,7 @@ const catalog = [
       sample
     />
     <details class="docs-source">
-      <summary>Code</summary><AlkCode
+      <summary>Code</summary><Code
         code={chartCode}
         lang="mdx"
         title="oscillator.mdx"
@@ -140,7 +140,7 @@ const catalog = [
 
   <section class="docs-example" id="models">
     <div class="docs-example-heading">
-      <h2>AlkModel</h2><a href="/docs/models/"
+      <h2>Model</h2><a href="/docs/models/"
         >Model reference <span aria-hidden="true">↗</span></a
       >
     </div>
@@ -148,14 +148,14 @@ const catalog = [
       Uncompressed GLB or glTF with orbit controls, wireframe, and a static
       poster.
     </p>
-    <AlkModel
+    <Model
       src="/test/torus-knot.glb"
       poster="/test/torus-knot.svg"
       title="A torus knot"
       description="A generated teaching mesh. Drag to inspect it."
     />
     <details class="docs-source">
-      <summary>Code</summary><AlkCode
+      <summary>Code</summary><Code
         code={modelCode}
         lang="mdx"
         title="model.mdx"
@@ -166,7 +166,7 @@ const catalog = [
 
   <section class="docs-example" id="math">
     <div class="docs-example-heading">
-      <h2>AlkMath</h2><a href="/docs/math-code/#the-component-form"
+      <h2>Math</h2><a href="/docs/math-code/#the-component-form"
         >Math reference <span aria-hidden="true">↗</span></a
       >
     </div>
@@ -174,12 +174,12 @@ const catalog = [
       TeX equations with accessible MathML. Inline and display math also work
       directly in Markdown.
     </p>
-    <AlkMath
+    <Math
       tex={String.raw`\int_{\partial\Omega} \omega = \int_\Omega d\omega`}
       label="Stokes’ theorem"
     />
     <details class="docs-source">
-      <summary>Code</summary><AlkCode
+      <summary>Code</summary><Code
         code={mathCode}
         lang="mdx"
         title="equation.mdx"
@@ -190,7 +190,7 @@ const catalog = [
 
   <section class="docs-example" id="code">
     <div class="docs-example-heading">
-      <h2>AlkCode</h2><a href="/docs/math-code/#the-code-component"
+      <h2>Code</h2><a href="/docs/math-code/#the-code-component"
         >Code reference <span aria-hidden="true">↗</span></a
       >
     </div>
@@ -198,14 +198,14 @@ const catalog = [
       Highlighted source with a file title, line numbers, and a copy button.
       Markdown code fences use the same styling.
     </p>
-    <AlkCode
+    <Code
       code={source}
       lang="typescript"
       title="integrator.ts"
       highlightLines={[2]}
     />
     <details class="docs-source">
-      <summary>Usage</summary><AlkCode
+      <summary>Usage</summary><Code
         code={codeCode}
         lang="mdx"
         title="code.mdx"
@@ -216,7 +216,7 @@ const catalog = [
 
   <section class="docs-example" id="shaders">
     <div class="docs-example-heading">
-      <h2>AlkShader</h2><a href="/docs/models/#a-live-shader-study"
+      <h2>Shader</h2><a href="/docs/models/#a-live-shader-study"
         >Shader reference <span aria-hidden="true">↗</span></a
       >
     </div>
@@ -224,9 +224,9 @@ const catalog = [
       A two-source interference study with frequency and angle controls. This
       component currently renders this fixed study.
     </p>
-    <AlkShader title="Two wave sources" frequency={9} angle={24} />
+    <Shader title="Two wave sources" frequency={9} angle={24} />
     <details class="docs-source">
-      <summary>Code</summary><AlkCode
+      <summary>Code</summary><Code
         code={shaderCode}
         lang="mdx"
         title="field.mdx"
@@ -237,7 +237,7 @@ const catalog = [
 
   <section class="docs-example" id="layout">
     <div class="docs-example-heading">
-      <h2>AlkLayout</h2><a
+      <h2>Layout</h2><a
         href="/docs/site-structure/#your-site-owns-its-documentation"
         >Layout reference <span aria-hidden="true">↗</span></a
       >
@@ -247,7 +247,7 @@ const catalog = [
       and print styles. Set your site name and navigation; keep your content
       inside.
     </p>
-    <AlkCode
+    <Code
       code={layoutCode}
       lang="astro"
       title="index.astro"

@@ -16,22 +16,22 @@ Your Astro site
   └─ @alkemdotdev/alkemist-astro      → optional integration and MDX defaults
 ```
 
-Every public package is available as `1.0.0-beta.1` on npm. Use the registry generator for a new site, or use the source generator for a local tarball-backed start when you want its explicit `--update` snapshot refresh path.
+Use the source generator for a new site and its explicit `--update` snapshot refresh path. The published `1.0.0-beta.1` packages use the earlier interface; the next deliberate package release will publish this source interface.
 
 Starlight is the architectural precedent: a maintained Astro integration with configuration and component overrides. Alkemist's interface centers on scientific articles, notebooks, and experiments. [Starlight overrides](https://starlight.astro.build/reference/overrides/) and [Astro integration API](https://docs.astro.build/en/reference/integrations-reference/).
 
 ## Theme the shared components
 
-`AlkLayout` provides the shared page shell. Its public props are `title`, `description`, `section`, and `preview`; `siteName`, `tagline`, and `faviconHref` set your identity. It also accepts `navigation`, `moreNavigation`, and `footerNavigation`. Home, favicon, and default navigation links respect Astro's configured base path. See [site structure and navigation](/docs/site-structure/) for the link arrays and how to omit Docs in a consuming site.
+`Layout` provides the shared page shell. Its public props are `title`, `description`, `section`, and `preview`; `siteName`, `tagline`, and `faviconHref` set your identity. It also accepts `navigation`, `moreNavigation`, and `footerNavigation`. Home, favicon, and default navigation links respect Astro's configured base path. See [site structure and navigation](/docs/site-structure/) for the link arrays and how to omit Docs in a consuming site.
 
 ```astro
 ---
-import AlkLayout from '@alkemdotdev/alkemist-components/AlkLayout.astro';
+import Layout from '@alkemdotdev/alkemist-components/layout';
 ---
 
-<AlkLayout title="A research notebook" section="Experiments">
+<Layout title="A research notebook" section="Experiments">
   <h1>Working notes</h1>
-</AlkLayout>
+</Layout>
 ```
 
 Theme tokens use the `--alk-` prefix. Whiteboard (`#eee`) and Blackboard (`#111`) share Ubuntu typography and the same eight ink values. Neutral foreground text follows the surface; annotations and graph marks keep their color. Fonts are served locally. Override tokens in your application's stylesheet instead of editing package internals.

@@ -1,24 +1,24 @@
-export type AlkTheme = 'system' | 'light' | 'dark';
+export type Theme = 'system' | 'light' | 'dark';
 
-const isTheme = (value: unknown): value is AlkTheme =>
+const isTheme = (value: unknown): value is Theme =>
   value === 'system' || value === 'light' || value === 'dark';
 
 let initialized = false;
 
-/** Read the preference seeded before paint by AlkLayout. */
-export function getTheme(): AlkTheme {
+/** Read the preference seeded before paint by Layout. */
+export function getTheme(): Theme {
   const value = document.documentElement.dataset.alkTheme;
   return isTheme(value) ? value : 'system';
 }
 
-function applyTheme(value: AlkTheme) {
+function applyTheme(value: Theme) {
   document.documentElement.dataset.alkTheme = value;
   document.documentElement.style.colorScheme =
     value === 'system' ? 'light dark' : value;
   window.dispatchEvent(new CustomEvent('alk:theme-change'));
 }
 
-export function setTheme(value: AlkTheme) {
+export function setTheme(value: Theme) {
   if (!isTheme(value)) throw new TypeError(`Unknown Alkemist theme: ${value}`);
   try {
     localStorage.setItem('alk-theme', value);

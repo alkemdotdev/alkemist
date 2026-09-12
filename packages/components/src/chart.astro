@@ -1,11 +1,11 @@
 ---
 import './chart.css';
 import './figure.css';
-import { alkChartCanZoom, type AlkChartProps } from './charts';
-export type { AlkChartProps } from './charts';
-type Props = AlkChartProps;
+import { chartCanZoom, type ChartProps } from './charts';
+export type { ChartProps } from './charts';
+type Props = ChartProps;
 const props = Astro.props;
-const canZoom = alkChartCanZoom(props);
+const canZoom = chartCanZoom(props);
 ---
 
 <alk-chart class="alk-chart" data-config={JSON.stringify(props)}>
@@ -85,5 +85,5 @@ const canZoom = alkChartCanZoom(props);
 </alk-chart>
 
 <script>
-  import './chart';
+  import './chart-client';
 </script>

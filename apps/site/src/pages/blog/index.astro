@@ -1,5 +1,5 @@
 ---
-import AlkPostList from '@alkemdotdev/alkemist-components/AlkPostList.astro';
+import PostList from '@alkemdotdev/alkemist-components/post-list';
 import { blogDisplay } from '../../lib/sections';
 import { getCollection } from 'astro:content';
 import SiteLayout from '../../layouts/SiteLayout.astro';
@@ -21,7 +21,7 @@ const notes = (await getCollection('blog'))
 >
   <h1>Blog</h1>
   <p class="alk-lead">Build notes, experiments, and releases.</p>
-  <AlkPostList
+  <PostList
     {...blogDisplay}
     items={notes.map((note) => ({
       href: `/blog/${note.id}/`,

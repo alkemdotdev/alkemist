@@ -6,41 +6,31 @@ An Astro publishing toolkit for inventors and researchers. The demo website, doc
 
 ## Adopt Alkemist
 
-The public package interface is fixed at `1.0.0-beta.1`:
+The current source checkout is the supported way to adopt Alkemist:
 
 - `@alkemdotdev/alkemist-components` supplies layouts, math, code, charts, models, and the bounded shader study.
 - `@alkemdotdev/alkemist-theme` supplies optional tokens, global CSS, palette data, and theme helpers.
 - `@alkemdotdev/alkemist-astro` supplies optional Astro integration and MDX defaults.
 - `create-alkemist` generates a complete site.
 
-All four packages are available on npm with the `beta` tag. Install the fixed
-`1.0.0-beta.1` release while the beta line is active.
+The published `1.0.0-beta.1` packages use the earlier interface. Use the
+source generator below until a new deliberate package release publishes this
+interface.
 
 ### Add a component to an existing Astro site
 
-```sh
-npm install @alkemdotdev/alkemist-components@1.0.0-beta.1
-```
-
-Import exactly the component you need, such as `@alkemdotdev/alkemist-components/AlkChart.astro`. Add `@alkemdotdev/alkemist-theme@1.0.0-beta.1` for Alkemist's visual system, and `@alkemdotdev/alkemist-astro@1.0.0-beta.1` only when you want its integration defaults.
+Generate a site from source, then import exactly the component you need, such
+as `@alkemdotdev/alkemist-components/chart`. The generated project installs
+packed source dependencies locally; add the theme or integration only when its
+visual system or integration defaults serve the site.
 
 ### Generate a complete site
-
-```sh
-npm create alkemist@beta -- my-lab --provider cloudflare
-cd my-lab
-npm install
-npm run verify
-npm run dev
-```
-
-Choose `cloudflare`, `gitlab`, or `custom`. `create-alkemist` writes an empty-destination project once. It does not initialize Git, install dependencies, provision hosting, deploy, or modify the site's files after creation.
 
 ### Choose your publishing sections
 
 The source starter offers optional Blog (developed writing), Logs (quick notes), Labs (interactive apps), Docs (project reference), and Book (an ordered guide), with Info for project background. Enable only what your project needs and choose your own labels. These conventions live in your generated site, not in the component package.
 
-The published `create-alkemist@1.0.0-beta.1` predates this scaffold. Use the source generator below for the new sections until the next deliberate npm release; existing generated sites keep their own files.
+The source starter includes these sections; generated sites keep their own files.
 
 ### Use the source generator
 
@@ -82,7 +72,9 @@ Use Node 24.20.0 (`.nvmrc`). Astro is pinned to 7.3.2; TypeScript 6.0.3 matches 
 - `docs/proposal.md`: full product scope and intended component contracts.
 - `docs/progress.md`: implementation and deployment evidence.
 
-Public custom components/types use `Alk*`. Packages use `@alkemist/*`.
+Public components and types use plain names. Import components and their types
+from lowercase, extensionless entries such as
+`@alkemdotdev/alkemist-components/chart`.
 
 ## Alkemist demo deployment
 
@@ -107,4 +99,4 @@ Run `npm run generate:palette` to regenerate CSS/JSON from the shared palette an
 
 ## License
 
-[Apache-2.0](LICENSE). The source and `1.0.0-beta.1` npm packages are public.
+[Apache-2.0](LICENSE).

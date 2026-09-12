@@ -1,7 +1,7 @@
-import type { AlkInk } from '@alkemdotdev/alkemist-theme/palette';
+import type { Ink } from '@alkemdotdev/alkemist-theme/palette';
 
 export type Vec3 = [number, number, number];
-export type FormInk = AlkInk | 'silver' | 'graphite' | 'construction';
+export type FormInk = Ink | 'silver' | 'graphite' | 'construction';
 export type FormLine = { points: Vec3[]; ink: FormInk; opacity?: number };
 export type FormSurface = {
   positions: number[];

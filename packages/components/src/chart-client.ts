@@ -1,19 +1,19 @@
-import { ALK_INKS } from '@alkemdotdev/alkemist-theme/palette';
+import { INKS } from '@alkemdotdev/alkemist-theme/palette';
 import type embed from 'vega-embed';
 import type { Result } from 'vega-embed';
 import {
-  alkChartInks,
-  createAlkChartSpec,
-  prepareAlkChartRows,
-  type AlkChartProps,
-  type AlkChartRow,
-  type AlkChartTheme,
+  chartInks,
+  createChartSpec,
+  prepareChartRows,
+  type ChartProps,
+  type ChartRow,
+  type ChartTheme,
 } from './charts';
 
-class AlkChartElement extends HTMLElement {
-  private config!: AlkChartProps;
-  private rows?: AlkChartRow[];
-  private raw?: AlkChartRow[];
+class ChartElement extends HTMLElement {
+  private config!: ChartProps;
+  private rows?: ChartRow[];
+  private raw?: ChartRow[];
   private embed?: typeof embed;
   private result?: Result;
   private visible?: IntersectionObserver;
@@ -114,8 +114,8 @@ class AlkChartElement extends HTMLElement {
         throw new Error(`CSV request failed (${response.status}).`);
       const csv = await response.text();
       if (!this.isConnected || generation !== this.generation) return;
-      const raw = vega.read(csv, { type: 'csv' }) as AlkChartRow[];
-      this.rows = prepareAlkChartRows(raw, this.config);
+      const raw = vega.read(csv, { type: 'csv' }) as ChartRow[];
+      this.rows = prepareChartRows(raw, this.config);
       this.raw = raw;
       this.embed = embedModule.default;
       this.renderTable();
@@ -126,7 +126,7 @@ class AlkChartElement extends HTMLElement {
     }
   }
 
-  private resolveTheme(): AlkChartTheme {
+  private resolveTheme(): ChartTheme {
     const probe = document.createElement('span');
     probe.style.display = 'none';
     const figure = this.querySelector<HTMLElement>('.alk-figure')!;
@@ -135,18 +135,18 @@ class AlkChartElement extends HTMLElement {
       probe.style.color = `var(${property}, ${fallback})`;
       return getComputedStyle(probe).color;
     };
-    const theme: AlkChartTheme = {
+    const theme: ChartTheme = {
       text: getComputedStyle(figure).color,
       rule: resolve('--alk-rule', '#ccc'),
       inks: Object.fromEntries(
-        alkChartInks.map((ink) => [
+        chartInks.map((ink) => [
           ink,
           resolve(
             `--alk-ink-${ink}`,
-            ALK_INKS.find((color) => color.id === ink)!.hex,
+            INKS.find((color) => color.id === ink)!.hex,
           ),
         ]),
-      ) as AlkChartTheme['inks'],
+      ) as ChartTheme['inks'],
     };
     probe.remove();
     return theme;
@@ -162,7 +162,7 @@ class AlkChartElement extends HTMLElement {
       const mount = document.createElement('div');
       const result = await this.embed(
         mount,
-        createAlkChartSpec(
+        createChartSpec(
           this.config,
           this.rows,
           this.resolveTheme(),
@@ -229,4 +229,4 @@ class AlkChartElement extends HTMLElement {
 }
 
 if (!customElements.get('alk-chart'))
-  customElements.define('alk-chart', AlkChartElement);
+  customElements.define('alk-chart', ChartElement);

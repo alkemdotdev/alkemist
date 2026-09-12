@@ -1,5 +1,5 @@
 ---
-import AlkCode from '@alkemdotdev/alkemist-components/AlkCode.astro';
+import Code from '@alkemdotdev/alkemist-components/code';
 
 interface Props {
   code: string;
@@ -20,7 +20,7 @@ const {
 
 <details class="example-source">
   <summary>{label} source</summary>
-  <AlkCode code={code} lang="astro" title="example.astro" lineNumbers={false} />
+  <Code code={code} lang="astro" title="example.astro" lineNumbers={false} />
   <div class="example-source-links">
     <a href={reference}>{referenceLabel} →</a>
     {

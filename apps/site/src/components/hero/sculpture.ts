@@ -1,7 +1,7 @@
 import type { BufferGeometry, Material } from 'three';
-import { ALK_INKS } from '@alkemdotdev/alkemist-theme/palette';
+import { INKS } from '@alkemdotdev/alkemist-theme/palette';
 
-export const SCULPTURE_INKS = ALK_INKS.map(({ hex }) => hex);
+export const SCULPTURE_INKS = INKS.map(({ hex }) => hex);
 export const COMPANION_CENTER = [-2.6, 1.3, 0.6] as const;
 const companionRadius = 0.27;
 export const COMPANION_VERTICES: [number, number, number][] = [

@@ -2,7 +2,7 @@
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import ProofBench from '../../components/homepage/ProofBench.astro';
 import SiteCompositions from '../../components/homepage/SiteCompositions.astro';
-import AlkCode from '@alkemdotdev/alkemist-components/AlkCode.astro';
+import Code from '@alkemdotdev/alkemist-components/code';
 import { setupProviders, setupPrompt, sourceAccess } from '../../lib/setup';
 import { isPreview } from '../../lib/deployment';
 import '../../styles/homepage-studies.css';
@@ -338,7 +338,7 @@ const choices = [
           </h2><p>
             Start with a real chart, a real model, or an equation. Open the
             source to see what creates the result.
-          </p><AlkCode
+          </p><Code
             title="From the source checkout"
             lang="sh"
             code="npm run create:site -- ../my-lab --provider cloudflare"

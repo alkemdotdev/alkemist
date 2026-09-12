@@ -3,7 +3,7 @@
 Alkemist is a reusable Astro publishing toolkit for inventors and researchers.
 
 - `packages/components` owns reusable layouts and scientific components; `packages/theme` owns tokens, fonts, palette data, and theme helpers; `packages/astro` owns the integration. Their public names are `@alkemdotdev/alkemist-components`, `@alkemdotdev/alkemist-theme`, and `@alkemdotdev/alkemist-astro`. `apps/site` consumes them and owns site content.
-- Public components and exported prop/config types use `Alk`: `AlkLayout`, `AlkLayoutProps`, `AlkChart`. Packages remain `@alkemist/*`; the integration function is `alkemist()`.
+- Public components and exported prop/config types use plain names: `Layout`, `LayoutProps`, `Chart`. Import a component from its lowercase, extensionless entry (for example, `@alkemdotdev/alkemist-components/layout`); import its types from that same entry. Packages remain `@alkemdotdev/alkemist-*`; the integration function is `alkemist()`.
 - Demo, documentation, and notebook use the same packages. Mark proposed APIs and incomplete features explicitly.
 - Keep heavy visualization engines lazy and domain-specific. Prefer existing engines and build/document the Alkemist authoring and lifecycle layer.
 - Run `npm run verify`. Validate visible changes in a browser at desktop/mobile widths.

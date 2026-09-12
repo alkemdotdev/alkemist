@@ -5,14 +5,13 @@ date: '2026-09-12'
 order: 2
 ---
 
-Alkemist now has three public package boundaries, published together as
-`1.0.0-beta.1` on npm.
+Alkemist has three public package boundaries in the current source checkout.
 
 ## Components begin with one useful thing
 
-`@alkemdotdev/alkemist-components` contains the visible building blocks: `AlkLayout`,
-`AlkChart`, `AlkModel`, `AlkMath`, `AlkCode`, and the bounded
-`AlkShader` study. An existing Astro site can import a single component without
+`@alkemdotdev/alkemist-components` contains the visible building blocks: `Layout`,
+`Chart`, `Model`, `Math`, `Code`, and the bounded
+`Shader` study. An existing Astro site can import a single component without
 adopting a starter, a stylesheet system, or an integration.
 
 That is the smallest useful promise. A chart remains a chart in the site's own
@@ -35,17 +34,12 @@ theme's global CSS or integration behavior.
 
 ## A generator is an initial handoff
 
-`npm create alkemist@beta` creates a complete
-site in an empty directory. The command writes files once. It does not create a
-repository, provision a host, deploy a page, or revisit the project to update
-it later. Its owner makes the next changes.
-
-The repository's source generator remains available for a tarball-backed
-workflow. It places packed package snapshots in `vendor/`; its explicit
+The repository's source generator creates a complete site in an empty directory.
+It places packed package snapshots in `vendor/`; its explicit
 `--update` refreshes those snapshots while preserving the generated site's
 content, assets, configuration, and custom source. The two paths make different
 ownership promises on purpose.
 
-The [getting-started guide](/docs/getting-started/) now presents all three
-adoption paths, and [the publishing guide](https://github.com/alkemdotdev/alkemist/blob/main/docs/publishing.md)
-records the beta-to-stable release policy.
+The [getting-started guide](/docs/getting-started/) explains the source workflow,
+and [the publishing guide](https://github.com/alkemdotdev/alkemist/blob/main/docs/publishing.md)
+records the release policy.

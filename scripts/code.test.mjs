@@ -2,8 +2,8 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { codeToHast, codeToHtml } from 'shiki';
 import {
-  AlkCodeTheme,
-  createAlkCodeTransformer,
+  codeTheme,
+  createCodeTransformer,
 } from '../packages/components/src/code-theme.ts';
 
 function nodes(root) {
@@ -26,9 +26,9 @@ function hasClass(node, name) {
 function options(meta, props = {}) {
   return {
     lang: 'typescript',
-    theme: AlkCodeTheme,
+    theme: codeTheme,
     meta: { __raw: meta },
-    transformers: [createAlkCodeTransformer(props)],
+    transformers: [createCodeTransformer(props)],
   };
 }
 

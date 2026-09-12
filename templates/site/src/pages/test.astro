@@ -1,7 +1,7 @@
 ---
 import SiteLayout from '../layouts/SiteLayout.astro';
-import AlkCode from '@alkemdotdev/alkemist-components/AlkCode.astro';
-import AlkMath from '@alkemdotdev/alkemist-components/AlkMath.astro';
+import Code from '@alkemdotdev/alkemist-components/code';
+import Math from '@alkemdotdev/alkemist-components/math';
 import { isSectionEnabled, withBase } from '../lib/site';
 ---
 
@@ -30,10 +30,10 @@ import { isSectionEnabled, withBase } from '../lib/site';
     </blockquote>
   </section>
   <section class="lab-section">
-    <h2>Math and code</h2><AlkMath
+    <h2>Math and code</h2><Math
       tex={String.raw`E = \frac{1}{2}m\dot{x}^2 + \frac{1}{2}kx^2`}
       label="Oscillator energy"
-    /><AlkCode
+    /><Code
       code={'const energy = (m * v ** 2 + k * x ** 2) / 2;'}
       lang="typescript"
       title="energy.ts"

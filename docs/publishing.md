@@ -109,16 +109,14 @@ No npm token is stored in GitHub, source, or Cloudflare.
 
 ## Consumer ownership
 
-`npm create alkemist@beta -- my-lab --provider cloudflare` generates into an
-empty directory. The generator takes dependency versions from its own released
-version and bundles its template. It does not initialize Git, install packages,
-provision hosting, or update existing files after creation. The consumer owns
-content, configuration, styles, and the generated lockfile.
+The source generator creates an independent site in an empty directory and
+packs its dependencies into `vendor/`. It does not initialize Git, provision
+hosting, or update existing files after creation. The consumer owns content,
+configuration, styles, and the generated lockfile.
 
-The source generator remains useful for local development. It packs local
-packages into `vendor/`; its explicit `--update` mode refreshes those snapshots
-while preserving consumer files. Registry-based consumers upgrade ordinary npm
-dependencies; template changes are explicit migrations, not forced overwrites.
+Its explicit `--update` mode refreshes those snapshots while preserving
+consumer files. Template changes are explicit migrations, not forced
+overwrites.
 
 Cloudflare's native Git integration continues to deploy the demo and docs.
 The npm workflow is not a second website deployment system.

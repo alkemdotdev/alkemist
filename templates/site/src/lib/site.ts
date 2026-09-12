@@ -1,4 +1,4 @@
-import type { AlkPostListProps } from '@alkemdotdev/alkemist-components';
+import type { PostListProps } from '@alkemdotdev/alkemist-components/post-list';
 
 export const siteName = 'My Lab';
 export const tagline = 'Ideas, experiments, and work in progress';
@@ -36,4 +36,4 @@ export const navigation = enabledSections.map((section) => ({
 export const blogDisplay = {
   layout: 'featured-grid',
   selectable: true,
-} satisfies Pick<AlkPostListProps, 'layout' | 'selectable' | 'featuredHref'>;
+} satisfies Pick<PostListProps, 'layout' | 'selectable' | 'featuredHref'>;

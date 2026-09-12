@@ -1,19 +1,19 @@
 ---
 import { Image } from 'astro:assets';
 import {
-  prepareAlkPostListItems,
-  type AlkPostListLayout,
-  type AlkPostListProps,
-} from './post-list';
+  preparePostListItems,
+  type PostListLayout,
+  type PostListProps,
+} from './post-list-helpers';
 
 export type {
-  AlkPostListCover,
-  AlkPostListItem,
-  AlkPostListLayout,
-  AlkPostListProps,
-} from './post-list';
+  PostListCover,
+  PostListItem,
+  PostListLayout,
+  PostListProps,
+} from './post-list-helpers';
 
-type Props = AlkPostListProps;
+type Props = PostListProps;
 
 const {
   items,
@@ -22,8 +22,8 @@ const {
   featuredHref,
   label = 'Posts',
 } = Astro.props;
-const orderedItems = prepareAlkPostListItems(items, featuredHref);
-const layoutOptions: { value: AlkPostListLayout; label: string }[] = [
+const orderedItems = preparePostListItems(items, featuredHref);
+const layoutOptions: { value: PostListLayout; label: string }[] = [
   { value: 'rows', label: 'Rows' },
   { value: 'featured', label: 'Featured + rows' },
   { value: 'grid', label: 'Grid' },
@@ -114,7 +114,7 @@ const layoutOptions: { value: AlkPostListLayout; label: string }[] = [
 </alk-post-list>
 
 <script>
-  import './post-list';
+  import './post-list-client';
 </script>
 
 <style>

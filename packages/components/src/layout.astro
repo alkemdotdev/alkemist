@@ -4,11 +4,11 @@ import './header.css';
 import HeaderIcon from './HeaderIcon.astro';
 const base = import.meta.env.BASE_URL;
 const home = base.endsWith('/') ? base : `${base}/`;
-export interface AlkNavLink {
+export interface NavLink {
   label: string;
   href: string;
 }
-export interface AlkLayoutProps {
+export interface LayoutProps {
   title: string;
   description?: string;
   section?: string;
@@ -16,11 +16,11 @@ export interface AlkLayoutProps {
   siteName?: string;
   tagline?: string;
   faviconHref?: string;
-  navigation?: AlkNavLink[];
-  moreNavigation?: AlkNavLink[];
-  footerNavigation?: AlkNavLink[];
+  navigation?: NavLink[];
+  moreNavigation?: NavLink[];
+  footerNavigation?: NavLink[];
 }
-type Props = AlkLayoutProps;
+type Props = LayoutProps;
 const {
   title,
   description = 'An open workbench for publishing technical ideas. Built on Astro.',

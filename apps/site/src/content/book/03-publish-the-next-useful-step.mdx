@@ -21,7 +21,7 @@ Create `src/pages/chart.astro`:
 
 ```astro
 ---
-import AlkChart from '@alkemdotdev/alkemist-components/AlkChart.astro';
+import Chart from '@alkemdotdev/alkemist-components/chart';
 import SiteLayout from '../layouts/SiteLayout.astro';
 import { withBase } from '../lib/site';
 ---
@@ -32,7 +32,7 @@ import { withBase } from '../lib/site';
 >
   <article class="alk-prose">
     <h1>Measurements</h1>
-    <AlkChart
+    <Chart
       title="Measured values over time"
       description="Three example readings from the accompanying CSV."
       src={withBase('data/measurements.csv')}

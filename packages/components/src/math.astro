@@ -2,12 +2,12 @@
 import katex from 'katex';
 import '@alkemdotdev/alkemist-theme/math-code.css';
 
-export interface AlkMathProps {
+export interface MathProps {
   tex: string;
   display?: boolean;
   label?: string;
 }
-type Props = AlkMathProps;
+type Props = MathProps;
 const { tex, display = true, label } = Astro.props;
 const html = katex.renderToString(tex, {
   displayMode: display,

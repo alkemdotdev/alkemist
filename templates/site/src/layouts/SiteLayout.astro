@@ -1,5 +1,5 @@
 ---
-import AlkLayout from '@alkemdotdev/alkemist-components/AlkLayout.astro';
+import Layout from '@alkemdotdev/alkemist-components/layout';
 import { siteName, tagline, navigation, withBase } from '../lib/site';
 import { resolveDeployment } from '../../scripts/deployment.mjs';
 import '../styles/site.css';
@@ -12,7 +12,7 @@ interface Props {
 const { preview } = resolveDeployment(process.env);
 ---
 
-<AlkLayout
+<Layout
   {...Astro.props}
   siteName={siteName}
   tagline={tagline}
@@ -21,4 +21,4 @@ const { preview } = resolveDeployment(process.env);
   preview={preview}
 >
   <slot />
-</AlkLayout>
+</Layout>

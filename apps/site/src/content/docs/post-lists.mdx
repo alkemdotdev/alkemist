@@ -4,7 +4,7 @@ description: Reuse a post collection with rows, a featured lead, a grid, or a co
 order: 17
 ---
 
-`AlkPostList` presents links and optional images from any source. Your site owns the collection, filtering, sorting, URLs, and editorial selection. The component owns the reading layout.
+`PostList` presents links and optional images from any source. Your site owns the collection, filtering, sorting, URLs, and editorial selection. The component owns the reading layout.
 
 This API is available in the source checkout and packed source starter. It is pending the next npm release; it is not included in `1.0.0-beta.1`.
 
@@ -23,11 +23,11 @@ Without an explicit selection, the first supplied item is the lead. Set `feature
 
 ```astro
 ---
-import AlkPostList from '@alkemdotdev/alkemist-components/AlkPostList.astro';
-import type { AlkPostListItem } from '@alkemdotdev/alkemist-components';
+import PostList from '@alkemdotdev/alkemist-components/post-list';
+import type { PostListItem } from '@alkemdotdev/alkemist-components/post-list';
 import cover from '../assets/experiment.png';
 
-const posts: AlkPostListItem[] = [
+const posts: PostListItem[] = [
   {
     href: '/blog/experiment/',
     title: 'The first experiment',
@@ -43,7 +43,7 @@ const posts: AlkPostListItem[] = [
 ];
 ---
 
-<AlkPostList items={posts} layout="featured-grid" selectable />
+<PostList items={posts} layout="featured-grid" selectable />
 ```
 
 Omit `selectable` for a fixed layout. When enabled, readers can change the presentation without changing the content or navigating away. Each list has independent controls. The initial layout still renders without JavaScript; the selector appears only when it can operate.
@@ -65,12 +65,12 @@ The Alkemist demo keeps the same setting in `apps/site/src/lib/sections.ts`, inc
 
 ## Try the layouts
 
-import AlkPostList from '@alkemdotdev/alkemist-components/AlkPostList.astro';
+import PostList from '@alkemdotdev/alkemist-components/post-list';
 import exampleCover from '../../assets/fields/flux.png';
 
 The first example lets you change layouts. The second is a separate fixed list; changing the first does not affect it.
 
-<AlkPostList
+<PostList
   label="Layout example"
   layout="featured-grid"
   selectable
@@ -95,7 +95,7 @@ The first example lets you change layouts. The second is a separate fixed list; 
 
 ### A fixed compact list
 
-<AlkPostList
+<PostList
   label="Compact example"
   layout="rows"
   items={[
