@@ -1,0 +1,55 @@
+{
+  "name": "@alkemdotdev/alkemist-components",
+  "version": "1.0.0-beta.1",
+  "description": "Astro components for Alkemist technical publishing.",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alkemdotdev/alkemist.git",
+    "directory": "packages/components"
+  },
+  "homepage": "https://alkemist.alkem.dev",
+  "bugs": {
+    "url": "https://github.com/alkemdotdev/alkemist/issues"
+  },
+  "keywords": [
+    "astro-component",
+    "withastro",
+    "technical-publishing",
+    "scientific-publishing",
+    "data-visualization"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./AlkLayout.astro": "./src/AlkLayout.astro",
+    "./AlkMath.astro": "./src/AlkMath.astro",
+    "./AlkCode.astro": "./src/AlkCode.astro",
+    "./AlkModel.astro": "./src/AlkModel.astro",
+    "./AlkChart.astro": "./src/AlkChart.astro",
+    "./code-theme": "./src/code-theme.ts",
+    "./code-copy": "./src/code-copy.ts",
+    "./AlkShader.astro": "./src/AlkShader.astro",
+    "./shader": "./src/shader.ts"
+  },
+  "files": [
+    "src",
+    "CHANGELOG.md"
+  ],
+  "peerDependencies": {
+    "astro": "^7.3.2"
+  },
+  "dependencies": {
+    "@alkemdotdev/alkemist-theme": "1.0.0-beta.1",
+    "@types/three": "0.185.4",
+    "katex": "0.18.7",
+    "shiki": "4.4.3",
+    "three": "0.185.1",
+    "vega": "6.4.0",
+    "vega-embed": "7.2.0",
+    "vega-lite": "6.4.3"
+  }
+}

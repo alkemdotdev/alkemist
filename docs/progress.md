@@ -277,3 +277,44 @@ Cloudflare's live managed configuration matches `infra/cloudflare.json`. Publica
 The demo header now reads Blog, Labs, Docs, Info, and More. More contains only Test and uses the shared line icon as a downward chevron. The mobile menu preserves that order, with Test in its secondary group. Docs remains optional for consuming sites: the demo owns the extra primary link in SiteLayout, while AlkLayout's default links are unchanged. Updated the navigation reference and development articles to describe the current layout.
 
 `npm run verify` passed with zero Astro diagnostics, 25 tests, and 51 checked HTML pages. The independent starter gate passed packed installation, changed-package updates, production and GitLab preview subpaths, lockfile reinstall, and provider scaffolds. Browser validation passed 63 assertions without page exceptions: both boards at 1440px, 768px, 651px, 650px, 390px, and 320px; single-row layout and unclipped identity; exact link order; direct Docs navigation and nested-section highlighting; keyboard and outside-click dismissal; mobile appearance/menu exclusion; and no-JavaScript navigation. Desktop, narrow desktop, and mobile-menu screenshots were inspected. Evidence is retained under ignored `.alkemist/docs-nav-*` files. Publication uses the native Git preview-then-main workflow.
+
+## 2026-09-12 — Coordinated package beta preparation
+
+Prepared the public package boundary as `@alkemdotdev/alkemist-components`,
+`@alkemdotdev/alkemist-theme`, `@alkemdotdev/alkemist-astro`, and `create-alkemist` at
+`1.0.0-beta.1`. The site, adoption guide, agent instructions, component catalog,
+and package publishing guide now distinguish importing one component, opting
+into theme or integration behavior, generating a complete npm site, and using
+the existing tarball source generator with `--update`.
+
+Registry publication remains pending npm organization bootstrap. The release
+policy records fixed versions through Changesets, `beta` before promotion to
+`latest`, GitHub OIDC rather than an npm secret, and unchanged Cloudflare Git
+builds. This entry records prepared documentation and package boundaries; it
+does not claim an npm publication or deployment.
+
+## 2026-09-12 — Component release validation
+
+The npm account is authenticated as `alkemdotdev` and account-level 2FA is enabled. Public packages use `@alkemdotdev/alkemist-{components,theme,astro}` plus `create-alkemist`. GitHub permits automated release PRs while keeping default workflow permissions read-only; the npm environment permits `main` only.
+
+Local verification passed: `npm run verify` (77 checked files, no errors/warnings; 52 output pages checked), independent starter and upgrade preservation, and actual packed package consumption with standalone styles, host-owned MDX, strict invalid-math rejection, and lockfile reinstall. Browser review exercised desktop/mobile docs and standalone figures. It exposed and corrected component box-sizing and palette fallbacks that had relied on the full theme. Registry publication and deployed release identity are still pending.
+
+## 2026-09-12 — npm bootstrap and trusted publishers
+
+All four `1.0.0-beta.1` publish commands succeeded. npm trusted publishers are configured for repository `alkemdotdev/alkemist`, workflow `release.yml`, environment `npm`; each binding was read back. The initial publication used local authentication, so it does not establish OIDC publication provenance. The registry consumer gate is still pending: the npm website shows public packages, but components and Astro initially returned registry 404 responses. Initial publication also attached `latest` to beta versions; its removal requires a separate npm authentication. Main promotion remains pending these checks.
+
+GitHub CI and the Cloudflare branch preview passed. Live deployment validation confirmed the source identity, pages, machine guides, redirects, and preview indexing rules. The updated published-state docs pass the full local verify gate.
+
+## 2026-09-12 — Optional publishing sections
+
+Added the project-owned Blog, Logs, Labs, Docs, and Book conventions while retaining Info. The demo enables all five: Logs renders short entries in a dated feed with permalinks, and Book provides a three-chapter practical guide with contents, heading links, and previous/next navigation. Existing published Blog, Docs, and Labs URLs remain intact. The homepage, adoption reference, and agent setup guide explain the distinction and the configurable source starter.
+
+The source starter uses an ordered `sections` object in `src/lib/site.ts` for labels, navigation, and route generation. Disabled sections produce no index or detail pages; content remains editable. Blog/Logs require publication dates, Book requires chapter order, and drafts stay out of generated pages. The configuration and content belong to the adopting project. No package version was bumped or published; the scaffold is recorded in a Changeset for a future deliberate release.
+
+Local checks passed: full verify (80 Astro files without diagnostics; 60 generated HTML pages checked), formatting, independent starter install and upgrade preservation, draft exclusion, chronological logs, disabled routes, renamed/reordered navigation, root and project-subpath deployment, and packed component consumers. Browser review exercised log permalinks, chapter contents and next/previous links, and navigation at 1440, 1001, 1000, 760, and 390 pixels. It caught and corrected custom starter labels squeezing the brand at tablet widths; the site-owned compact-menu breakpoint now preserves the name. No page overflow or browser errors were observed in the final demo checks.
+
+## 2026-09-12 — Optional post thumbnails and covers
+
+Blog frontmatter now accepts one optional local cover image with alt text, caption, cover/contain fit, bounded focal coordinates, and a switch for including it above the article body. The demo uses small 3:2 thumbnails alongside consistently aligned titles; articles retain natural image proportions. Coverless entries remain text rows, and thumbnail-only posts do not duplicate an existing body figure. Astro resolves local assets and produces responsive image output. The source starter includes the same fields and an editable original SVG illustration.
+
+Full site verification passed with 61 checked output pages. The independent starter checks passed coverless, thumbnail-only, and article-cover cases alongside the section/upgrade checks. Browser review covered desktop/mobile thumbnail rows and a natural-aspect article cover with caption and no page overflow. Copying the Book's actual log and chart snippets into an independent generated site exposed missing required chart descriptions; the examples were corrected and the generated site then passed verification under `/sections/`.

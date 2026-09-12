@@ -1,5 +1,5 @@
 import { defineConfig } from 'astro/config';
-import alkemist from '@alkemist/astro';
+import alkemist from '@alkemdotdev/alkemist-astro';
 import { existsSync } from 'node:fs';
 import { loadEnvFile } from 'node:process';
 import { resolveDeployment } from './scripts/deployment.mjs';

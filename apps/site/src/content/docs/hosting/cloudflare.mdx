@@ -10,7 +10,16 @@ This guide is for **your generated site**. The separate [demo deployment guide](
 
 ## Generate and personalize
 
-This is currently a public source-preview workflow: the packages are not published on npm. Clone the Alkemist repository, then with Node 24 run these commands from its root:
+Create a site from npm, then install and verify it:
+
+```sh
+npm create alkemist@beta -- my-lab --provider cloudflare
+cd my-lab
+npm install
+npm run verify
+```
+
+Use the source generator with Node 24 from a cloned Alkemist checkout only when you want its tarball-backed update workflow:
 
 ```sh
 npm ci
@@ -21,7 +30,7 @@ npm run verify
 npm run dev
 ```
 
-The generated directory is an independent Astro application. Its Alkemist packages are packed into `vendor/`; they do not depend on an npm release or the continued presence of the source checkout. Keep those tarballs and the generated `package-lock.json` in your repository.
+The generated directory is an independent Astro application. Commit its generated `package-lock.json`. A source-generated site also carries its package snapshots in `vendor/`; retain those tarballs when you choose that workflow.
 
 Edit the identity and navigation in `src/lib/site.ts`, then replace the starter content before publishing. Use the generated `AGENTS.md` and setup documentation when working with an agent. Your repository and Cloudflare account become the source of deployment settings; do not copy the demo's account IDs, domain, or `infra/cloudflare.json`.
 

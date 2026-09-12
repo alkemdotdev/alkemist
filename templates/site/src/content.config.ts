@@ -1,14 +1,42 @@
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
 
+const entrySchema = z.object({
+  title: z.string(),
+  description: z.string(),
+  draft: z.boolean().default(false),
+});
+const datedEntrySchema = entrySchema.extend({
+  published: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+});
 export const collections = {
   blog: defineCollection({
     loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/blog' }),
-    schema: z.object({
-      title: z.string(),
-      description: z.string(),
-      published: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-      draft: z.boolean().default(false),
-    }),
+    schema: ({ image }) =>
+      datedEntrySchema.extend({
+        cover: z
+          .object({
+            src: image(),
+            alt: z.string().trim().min(1),
+            caption: z.string().optional(),
+            fit: z.enum(['cover', 'contain']).default('cover'),
+            focalX: z.number().min(0).max(100).default(50),
+            focalY: z.number().min(0).max(100).default(50),
+            showInPost: z.boolean().default(true),
+          })
+          .optional(),
+      }),
+  }),
+  logs: defineCollection({
+    loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/logs' }),
+    schema: datedEntrySchema,
+  }),
+  docs: defineCollection({
+    loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/docs' }),
+    schema: entrySchema,
+  }),
+  book: defineCollection({
+    loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/book' }),
+    schema: entrySchema.extend({ order: z.number().int().positive() }),
   }),
 };

@@ -1,0 +1,37 @@
+---
+title: Choose the sections your site needs
+description: Select routes for developed writing, quick notes, applications, reference, and a sequential guide.
+order: 1
+---
+
+A technical site is more than a collection of rendered files. It is a record of choices, evidence, revisions, and things a reader can inspect. The reader sees the published result; the author needs a way to keep the result connected to the work that produced it.
+
+Alkemist starts from a simple ownership boundary. Your site owns its writing, datasets, page composition, and identity. The reusable packages own layout primitives, theme tokens, and integration defaults. That boundary makes upgrades possible without treating your research material as generated output.
+
+## Start from the local source scaffold
+
+Use the source workflow when you want the current optional-section scaffold:
+
+```sh
+git clone https://github.com/alkemdotdev/alkemist.git alkemist-source
+cd alkemist-source
+npm ci
+npm run create:site -- ../my-lab --provider cloudflare
+cd ../my-lab
+npm install
+npm run verify
+```
+
+The published `1.0.0-beta.1` generator predates this configuration, so it does not yet produce the section file. The source workflow does. The generated project owns `src/lib/site.ts`; change its `sections` export there rather than modifying a package.
+
+## Choose the shape of each piece of work
+
+Before adding a page, decide what it asks of the reader. A developed argument belongs in Blog. A concise observation belongs in Logs. A tool or simulation belongs in Labs. Docs holds material people will return to while using the project. Book is for a sequence whose order matters.
+
+Set `enabled: false` for a section you do not need. Its navigation link disappears, and the generated site omits that section's list and detail routes. This applies to Blog, Logs, Labs, Docs, Book, and Info.
+
+The route is not a taxonomy exercise. It tells a reader whether to settle in, scan, operate, look something up, or follow a path.
+
+## Keep the first slice small
+
+Make one route, one piece of content, and one reader action work end to end. The next chapter creates a first log entry; the final chapter adds a chart, verifies the result, and points to a hosting guide.

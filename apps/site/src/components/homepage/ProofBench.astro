@@ -1,8 +1,8 @@
 ---
-import AlkChart from '@alkemist/ui/AlkChart.astro';
-import AlkModel from '@alkemist/ui/AlkModel.astro';
-import AlkMath from '@alkemist/ui/AlkMath.astro';
-import AlkCode from '@alkemist/ui/AlkCode.astro';
+import AlkChart from '@alkemdotdev/alkemist-components/AlkChart.astro';
+import AlkModel from '@alkemdotdev/alkemist-components/AlkModel.astro';
+import AlkMath from '@alkemdotdev/alkemist-components/AlkMath.astro';
+import AlkCode from '@alkemdotdev/alkemist-components/AlkCode.astro';
 import './proof-bench.css';
 
 interface Props {
@@ -48,7 +48,7 @@ function source(name: string, props: Record<string, unknown>) {
       return `  ${key}="${value}"`;
     return `  ${key}={${JSON.stringify(value)}}`;
   });
-  return `---\nimport ${name} from '@alkemist/ui/${name}.astro';\n---\n\n<${name}\n${attributes.join('\n')}\n/>`;
+  return `---\nimport ${name} from '@alkemdotdev/alkemist-components/${name}.astro';\n---\n\n<${name}\n${attributes.join('\n')}\n/>`;
 }
 
 function signalPath(frequency: number) {

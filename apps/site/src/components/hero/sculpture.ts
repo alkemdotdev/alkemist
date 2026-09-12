@@ -1,5 +1,5 @@
 import type { BufferGeometry, Material } from 'three';
-import { ALK_INKS } from '@alkemist/ui/palette';
+import { ALK_INKS } from '@alkemdotdev/alkemist-theme/palette';
 
 export const SCULPTURE_INKS = ALK_INKS.map(({ hex }) => hex);
 export const COMPANION_CENTER = [-2.6, 1.3, 0.6] as const;

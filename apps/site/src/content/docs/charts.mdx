@@ -4,7 +4,7 @@ description: Turn CSV files into interactive charts with stable inks, visible gr
 order: 4
 ---
 
-import AlkChart from '@alkemist/ui/AlkChart.astro';
+import AlkChart from '@alkemdotdev/alkemist-components/AlkChart.astro';
 
 `AlkChart` renders a CSV file as a **line, bar, scatter, pie, donut, or heatmap**. The chart engine loads when the figure approaches the viewport. Vega-Lite supplies the chart specification and Vega supplies the runtime; Alkemist adds the reusable figure, theme, loading state, table, and source download. [Vega-Lite data model](https://vega.github.io/vega-lite/docs/data.html).
 
@@ -13,7 +13,7 @@ import AlkChart from '@alkemist/ui/AlkChart.astro';
 Place a CSV in your Astro site's `public` directory, then name the fields and explain their meaning. This example uses a deterministic teaching fixture, not measured research data.
 
 ```mdx
-import AlkChart from '@alkemist/ui/AlkChart.astro';
+import AlkChart from '@alkemdotdev/alkemist-components/AlkChart.astro';
 
 <AlkChart
   src="/test/oscillation.csv"

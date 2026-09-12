@@ -1,0 +1,34 @@
+---
+title: Write the first useful entry
+description: Add a small, source-controlled log entry with concrete frontmatter and a clear reader action.
+order: 2
+---
+
+Readers cannot evaluate a result from confidence alone. They need the claim, the boundary of the claim, and a route to the material that supports it. For a computation that might be a data file and method. For an interactive model it may be the controls, initial conditions, and a description of what changes when a parameter moves.
+
+## Add a log entry
+
+Create `src/content/logs/first-note.mdx`:
+
+```mdx
+---
+title: Deciding what the chart needs to show
+description: The first chart should answer one question before it grows controls.
+published: '2026-09-12'
+---
+
+The chart will compare the measured values in `public/data/measurements.csv`.
+The next step is to publish the data and the chart together.
+```
+
+The generated starter requires `published` in canonical `YYYY-MM-DD` form, and the filename becomes the route: `/logs/first-note/`. Use the date the note was actually published. Add `draft: true` while the note is not ready for the public site. Draft entries are excluded from generated section lists and detail pages.
+
+## Say what the page establishes
+
+A successful local build establishes that the site compiled under that environment. A browser check establishes that the tested route rendered and responded at the tested viewport. Neither proves an untested deployment, hardware device, or scientific conclusion. Write the page so those boundaries remain visible.
+
+This is not a burden of ceremony. It lets later work build on the result without guessing whether an observation, an inference, and a verified fact were being treated as the same thing.
+
+## Give the reader a next action
+
+Useful pages offer a concrete continuation: inspect the data, try the lab, read the implementation reference, or advance to the next chapter. In the next chapter, the continuation is a minimal chart that uses public data and documented component props.

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800" role="img" aria-labelledby="title desc">
+  <title id="title">Synthetic signal on a measurement grid</title>
+  <desc id="desc">A cobalt oscillating line crosses a warm grid with a violet measurement marker.</desc>
+  <rect width="1200" height="800" fill="#f4f0e7"/>
+  <g stroke="#cf6d36" stroke-width="3" opacity=".44">
+    <path d="M100 120H1100M100 240H1100M100 360H1100M100 480H1100M100 600H1100M100 720H1100"/>
+    <path d="M100 80V720M260 80V720M420 80V720M580 80V720M740 80V720M900 80V720M1060 80V720"/>
+  </g>
+  <path d="M100 400C175 165 265 165 340 400S505 635 580 400 745 165 820 400 985 635 1100 280" fill="none" stroke="#1f67a8" stroke-width="24" stroke-linecap="round"/>
+  <circle cx="820" cy="400" r="38" fill="#6f4e9e"/>
+  <path d="M820 400V170M780 170H860" fill="none" stroke="#6f4e9e" stroke-width="12" stroke-linecap="round"/>
+</svg>

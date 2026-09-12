@@ -1,0 +1,44 @@
+{
+  "name": "create-alkemist",
+  "version": "1.0.0-beta.1",
+  "description": "Create a versioned Alkemist publishing site.",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alkemdotdev/alkemist.git",
+    "directory": "packages/create-alkemist"
+  },
+  "homepage": "https://alkemist.alkem.dev",
+  "bugs": {
+    "url": "https://github.com/alkemdotdev/alkemist/issues"
+  },
+  "keywords": [
+    "create-astro",
+    "astro",
+    "technical-publishing",
+    "scientific-publishing"
+  ],
+  "type": "module",
+  "bin": {
+    "create-alkemist": "./bin/create-alkemist.mjs"
+  },
+  "files": [
+    "bin",
+    "lib",
+    "template",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "build": "node ./scripts/prepare-template.mjs",
+    "prepare-template": "node ./scripts/prepare-template.mjs",
+    "prepack": "node ./scripts/prepare-template.mjs"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "tag": "beta"
+  }
+}

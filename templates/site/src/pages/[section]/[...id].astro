@@ -1,0 +1,152 @@
+---
+import { getCollection, render } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import {
+  enabledSections,
+  sections,
+  type ContentSectionId,
+  withBase,
+} from '../../lib/site';
+
+type ContentEntry =
+  | CollectionEntry<'blog'>
+  | CollectionEntry<'logs'>
+  | CollectionEntry<'docs'>
+  | CollectionEntry<'book'>;
+
+export async function getStaticPaths() {
+  const paths = [];
+  if (enabledSections.includes('blog'))
+    paths.push(
+      ...(await getCollection('blog', ({ data }) => !data.draft)).map(
+        (entry) => ({
+          params: { section: 'blog', id: entry.id },
+          props: { entry, section: 'blog' as const },
+        }),
+      ),
+    );
+  if (enabledSections.includes('logs'))
+    paths.push(
+      ...(await getCollection('logs', ({ data }) => !data.draft)).map(
+        (entry) => ({
+          params: { section: 'logs', id: entry.id },
+          props: { entry, section: 'logs' as const },
+        }),
+      ),
+    );
+  if (enabledSections.includes('docs'))
+    paths.push(
+      ...(await getCollection('docs', ({ data }) => !data.draft)).map(
+        (entry) => ({
+          params: { section: 'docs', id: entry.id },
+          props: { entry, section: 'docs' as const },
+        }),
+      ),
+    );
+  if (enabledSections.includes('book'))
+    paths.push(
+      ...(await getCollection('book', ({ data }) => !data.draft)).map(
+        (entry) => ({
+          params: { section: 'book', id: entry.id },
+          props: { entry, section: 'book' as const },
+        }),
+      ),
+    );
+  return paths;
+}
+
+interface Props {
+  entry: ContentEntry;
+  section: ContentSectionId;
+}
+const { entry, section } = Astro.props as Props;
+const { Content } = await render(entry);
+const data = entry.data as {
+  title: string;
+  description: string;
+  published?: string;
+  order?: number;
+  cover?: {
+    src: {
+      src: string;
+      width: number;
+      height: number;
+      format:
+        | 'jpeg'
+        | 'jpg'
+        | 'png'
+        | 'apng'
+        | 'tiff'
+        | 'webp'
+        | 'gif'
+        | 'svg'
+        | 'avif';
+    };
+    alt: string;
+    caption?: string;
+    fit: 'cover' | 'contain';
+    focalX: number;
+    focalY: number;
+    showInPost: boolean;
+  };
+};
+const bookEntries =
+  section === 'book'
+    ? (await getCollection('book', ({ data }) => !data.draft)).sort(
+        (a, b) => a.data.order - b.data.order || a.id.localeCompare(b.id),
+      )
+    : [];
+const position = bookEntries.findIndex(
+  (candidate) => candidate.id === entry.id,
+);
+const previous = position > 0 ? bookEntries[position - 1] : undefined;
+const next = position >= 0 ? bookEntries[position + 1] : undefined;
+---
+
+<SiteLayout
+  title={data.title}
+  description={data.description}
+  section={sections[section].label}
+>
+  <article class="lab-reading">
+    {
+      data.published && (
+        <time class="alk-eyebrow" datetime={data.published}>
+          {data.published}
+        </time>
+      )
+    }
+    {section === 'book' && <p class="alk-eyebrow">Chapter {data.order}</p>}
+    <h1>{data.title}</h1><p>{data.description}</p>
+    {
+      section === 'blog' && data.cover?.showInPost && (
+        <figure
+          class="lab-cover lab-cover--article"
+          data-fit={data.cover.fit}
+          style={`--cover-focal-x: ${data.cover.focalX}%; --cover-focal-y: ${data.cover.focalY}%;`}
+        >
+          <Image src={data.cover.src} alt={data.cover.alt} />
+          {data.cover.caption && <figcaption>{data.cover.caption}</figcaption>}
+        </figure>
+      )
+    }
+    <Content />
+    {
+      section === 'book' && (
+        <nav class="lab-links" aria-label="Book chapters">
+          <a href={withBase('book/')}>Contents</a>
+          {previous && (
+            <a href={withBase(`book/${previous.id}/`)}>
+              ← {previous.data.title}
+            </a>
+          )}
+          {next && (
+            <a href={withBase(`book/${next.id}/`)}>{next.data.title} →</a>
+          )}
+        </nav>
+      )
+    }
+  </article>
+</SiteLayout>

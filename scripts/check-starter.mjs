@@ -5,6 +5,7 @@ import {
   readFile,
   readdir,
   rm,
+  writeFile,
 } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
@@ -48,6 +49,9 @@ function run(args, env = baseEnv) {
     throw error;
   }
 }
+function installedPackageFile(packageName, ...segments) {
+  return join(site, 'node_modules', ...packageName.split('/'), ...segments);
+}
 async function snapshot(directory) {
   const result = {};
   async function walk(folder) {
@@ -63,6 +67,20 @@ async function snapshot(directory) {
   await walk(directory);
   return result;
 }
+async function configureSections(configuration) {
+  const source = await readFile(join(site, 'src/lib/site.ts'), 'utf8');
+  const replacement = `export const sections = ${JSON.stringify(configuration, null, 2)} as const;`;
+  const configured = source.replace(
+    /export const sections = \{[\s\S]*?\} as const;/,
+    replacement,
+  );
+  assert.notEqual(
+    configured,
+    source,
+    'Starter section configuration was not found.',
+  );
+  await writeFile(join(site, 'src/lib/site.ts'), configured);
+}
 try {
   const initial = await createSite({ destination: site, provider: 'custom' });
   await assert.rejects(createSite({ destination: site }), /not empty/);
@@ -73,12 +91,109 @@ try {
   );
   console.log('Installing actual npm pack tarballs outside the workspace…');
   run(['install', '--no-audit', '--no-fund']);
+  await writeFile(
+    join(site, 'src/content/logs/draft.md'),
+    `---
+title: Unpublished log
+description: This note must not become a public feed entry.
+published: '2026-09-12'
+draft: true
+---
+
+This draft stays out of the feed and its detail route.\n`,
+  );
+  await writeFile(
+    join(site, 'src/content/book/draft.md'),
+    `---
+title: Unpublished chapter
+description: This chapter must not become a public guide entry.
+order: 99
+draft: true
+---
+
+This draft stays out of the guide and its detail route.\n`,
+  );
+  await writeFile(
+    join(site, 'src/content/logs/later-reading.md'),
+    `---
+title: Later reading
+description: A newer note proves the feed order.
+published: '2026-09-13'
+---
+
+This entry appears before the first reading.\n`,
+  );
+  await writeFile(
+    join(site, 'src/content/blog/thumbnail-only.md'),
+    `---
+title: A thumbnail without an article cover
+description: The listing and article can make different presentation choices.
+published: '2026-09-12'
+cover:
+  src: ./assets/first-experiment-cover.svg
+  alt: A blue oscillation on an orange measurement grid.
+  fit: contain
+  focalX: 25
+  showInPost: false
+---
+
+The thumbnail remains in the listing.\n`,
+  );
+  await writeFile(
+    join(site, 'src/content/blog/text-only.md'),
+    `---
+title: A post without an image
+description: A cover is optional.
+published: '2026-09-12'
+---
+
+This entry uses a text-only listing.\n`,
+  );
   run(['run', 'verify']);
-  for (const name of ['astro', 'ui']) {
+  const imageListing = await readFile(
+    join(site, 'dist/blog/index.html'),
+    'utf8',
+  );
+  const withCover = await readFile(
+    join(site, 'dist/blog/first-experiment/index.html'),
+    'utf8',
+  );
+  const thumbnailOnly = await readFile(
+    join(site, 'dist/blog/thumbnail-only/index.html'),
+    'utf8',
+  );
+  const textOnly = await readFile(
+    join(site, 'dist/blog/text-only/index.html'),
+    'utf8',
+  );
+  assert(imageListing.includes('lab-cover--thumbnail'));
+  assert(imageListing.includes('data-fit="contain"'));
+  assert(imageListing.includes('A post without an image'));
+  assert(withCover.includes('lab-cover--article'));
+  assert(!thumbnailOnly.includes('lab-cover--article'));
+  assert(!textOnly.includes('lab-cover--article'));
+  const defaultLogs = await readFile(
+    join(site, 'dist/logs/index.html'),
+    'utf8',
+  );
+  const defaultBook = await readFile(
+    join(site, 'dist/book/index.html'),
+    'utf8',
+  );
+  assert(!defaultLogs.includes('Unpublished log'));
+  assert(!defaultBook.includes('Unpublished chapter'));
+  assert(defaultLogs.includes('Later reading'));
+  assert(defaultLogs.includes('First reading'));
+  assert(
+    defaultLogs.indexOf('Later reading') < defaultLogs.indexOf('First reading'),
+  );
+  await assert.rejects(readFile(join(site, 'dist/logs/draft/index.html')));
+  await assert.rejects(readFile(join(site, 'dist/book/draft/index.html')));
+  for (const snapshot of initial.packages) {
     assert(
       !(
         await readFile(
-          join(site, `node_modules/@alkemist/${name}/package.json`),
+          installedPackageFile(snapshot.name, 'package.json'),
           'utf8',
         )
       ).includes('workspace:'),
@@ -103,7 +218,7 @@ try {
     filter: (source) => !source.split(sep).includes('node_modules'),
   });
   await appendFile(
-    join(fixture, 'packages/ui/src/theme.css'),
+    join(fixture, 'packages/theme/src/theme.css'),
     '\n/* Consumer upgrade fixture: changed package bytes. */\n',
   );
   const updated = await createSite({
@@ -111,15 +226,23 @@ try {
     update: true,
     sourceRoot: fixture,
   });
-  assert.notEqual(
-    initial.packages.find((pkg) => pkg.name === '@alkemist/ui').sha256,
-    updated.packages.find((pkg) => pkg.name === '@alkemist/ui').sha256,
+  const themePackage = initial.packages.find((pkg) =>
+    pkg.name.endsWith('alkemist-theme'),
   );
+  assert(themePackage, 'Starter did not include an Alkemist theme package.');
+  const updatedThemePackage = updated.packages.find(
+    (pkg) => pkg.name === themePackage.name,
+  );
+  assert(
+    updatedThemePackage,
+    'Updated starter did not include the original theme package.',
+  );
+  assert.notEqual(themePackage.sha256, updatedThemePackage.sha256);
   run(['install', '--no-audit', '--no-fund']);
   assert(
     (
       await readFile(
-        join(site, 'node_modules/@alkemist/ui/src/theme.css'),
+        installedPackageFile(themePackage.name, 'src', 'theme.css'),
         'utf8',
       )
     ).includes('Consumer upgrade fixture'),
@@ -158,6 +281,40 @@ try {
   // for optional browser inspection at the printed --keep location.
   run(['ci', '--no-audit', '--no-fund']);
   run(['run', 'verify']);
+  const sectionEnv = { ...baseEnv, BASE_PATH: '/sections/' };
+  await configureSections({
+    blog: { enabled: false, label: 'Blog' },
+    logs: { enabled: false, label: 'Logs' },
+    labs: { enabled: false, label: 'Labs' },
+    docs: { enabled: false, label: 'Docs' },
+    book: { enabled: false, label: 'Book' },
+    info: { enabled: false, label: 'Info' },
+  });
+  run(['run', 'verify'], sectionEnv);
+  for (const section of ['blog', 'logs', 'labs', 'docs', 'book', 'info'])
+    assert.equal(
+      (await readdir(join(site, 'dist'))).includes(section),
+      false,
+      `Disabled ${section} route was emitted.`,
+    );
+  const disabledHome = await readFile(join(site, 'dist/index.html'), 'utf8');
+  for (const section of ['blog', 'logs', 'labs', 'docs', 'book', 'info'])
+    assert(!disabledHome.includes(`/sections/${section}/`));
+  await configureSections({
+    docs: { enabled: true, label: 'Reference' },
+    book: { enabled: true, label: 'Guide' },
+    blog: { enabled: true, label: 'Writing' },
+    logs: { enabled: true, label: 'Field notes' },
+    labs: { enabled: true, label: 'Apps' },
+    info: { enabled: true, label: 'Project' },
+  });
+  run(['run', 'verify'], sectionEnv);
+  const configuredHome = await readFile(join(site, 'dist/index.html'), 'utf8');
+  assert(configuredHome.includes('Reference'));
+  assert(configuredHome.includes('Field notes'));
+  assert(
+    configuredHome.indexOf('Reference') < configuredHome.indexOf('Writing'),
+  );
   for (const provider of ['gitlab', 'cloudflare']) {
     const destination = join(temporary, provider);
     await createSite({ destination, provider });

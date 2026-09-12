@@ -4,7 +4,7 @@ description: Publish a real glTF model with orbit controls, a static poster, and
 order: 4.2
 ---
 
-import AlkModel from '@alkemist/ui/AlkModel.astro';
+import AlkModel from '@alkemdotdev/alkemist-components/AlkModel.astro';
 
 `AlkModel` displays an uncompressed **glTF 2.0 `.glb` or `.gltf`** file with Three.js. Alkemist provides the figure shell, lazy loading, camera controls, theming, fallback, and cleanup. The file itself stays downloadable.
 
@@ -13,7 +13,7 @@ import AlkModel from '@alkemist/ui/AlkModel.astro';
 Place the model and any associated textures in your site's `public` directory. A self-contained GLB is convenient for publishing; a `.gltf` document can reference separate binary and texture files, whose relative URLs must remain valid.
 
 ```mdx
-import AlkModel from '@alkemist/ui/AlkModel.astro';
+import AlkModel from '@alkemdotdev/alkemist-components/AlkModel.astro';
 
 <AlkModel
   src="/test/torus-knot.glb"
@@ -75,7 +75,7 @@ This version has no animation timeline, skeletal animation controls, measurement
 `AlkShader` is a reusable, bounded two-source interference specimen. It evaluates a dimensionless field in GLSL, with frequency and source-angle controls. The eight categorical inks distinguish contour bands; a static SVG remains visible until the GPU renderer is ready.
 
 ```mdx
-import AlkShader from '@alkemist/ui/AlkShader.astro';
+import AlkShader from '@alkemdotdev/alkemist-components/AlkShader.astro';
 
 <AlkShader title="Interference field" frequency={9} angle={24} />
 ```

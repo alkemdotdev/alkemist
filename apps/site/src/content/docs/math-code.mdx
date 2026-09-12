@@ -4,8 +4,8 @@ description: Build-time mathematical typesetting and readable, copyable source l
 order: 6
 ---
 
-import AlkMath from '@alkemist/ui/AlkMath.astro';
-import AlkCode from '@alkemist/ui/AlkCode.astro';
+import AlkMath from '@alkemdotdev/alkemist-components/AlkMath.astro';
+import AlkCode from '@alkemdotdev/alkemist-components/AlkCode.astro';
 
 **Available.** `AlkMath`, `AlkCode`, Markdown equations, and styled code fences work in the current site. Math and syntax highlighting render during the build. Readers receive the equation and source immediately; only copying needs a small browser script.
 
@@ -51,7 +51,7 @@ A fenced `math` block also produces a display equation. Use a `tex` or `latex` f
 
 ```astro title="research-note.astro" {5-8}
 ---
-import AlkMath from '@alkemist/ui/AlkMath.astro';
+import AlkMath from '@alkemdotdev/alkemist-components/AlkMath.astro';
 ---
 
 <AlkMath
@@ -115,7 +115,7 @@ Use `AlkCode` when the source already exists as a string, including source files
 
 ```astro title="algorithm.astro"
 ---
-import AlkCode from '@alkemist/ui/AlkCode.astro';
+import AlkCode from '@alkemdotdev/alkemist-components/AlkCode.astro';
 import source from './solver.ts?raw';
 ---
 

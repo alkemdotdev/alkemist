@@ -1,4 +1,4 @@
-import { ALK_INKS } from '@alkemist/ui/palette';
+import { ALK_INKS } from '@alkemdotdev/alkemist-theme/palette';
 
 /** Material colors are neutral substrates; accent inks keep their shared identities. */
 export const formColors: Record<string, string> = {

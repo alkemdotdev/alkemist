@@ -1,0 +1,84 @@
+.alk-chart {
+  display: block;
+  min-width: 0;
+  width: 100%;
+  margin: 1.5rem 0;
+}
+.alk-chart-canvas {
+  width: 100%;
+  min-width: 0;
+  position: relative;
+  padding: 0 0.5rem 0.75rem;
+}
+.alk-chart-canvas .vega-embed {
+  display: block;
+  padding: 0;
+  width: 100%;
+}
+.alk-chart-canvas svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+.alk-chart[data-state='error'] .alk-chart-canvas {
+  min-height: 0 !important;
+}
+.alk-chart[data-state='error'] .alk-chart-hint {
+  display: none;
+}
+.alk-chart-tools:not(:has(button:not([hidden]))) {
+  display: none;
+}
+.alk-chart-hint {
+  color: var(--alk-muted, #5e5e5e);
+  font: 0.7rem/1.5 var(--alk-mono, ui-monospace, monospace);
+}
+.alk-chart-table {
+  border-top: 1px solid var(--alk-rule, #ccc);
+  margin: 0 var(--alk-figure-gutter);
+  font-size: 0.76rem;
+}
+.alk-chart-table summary {
+  cursor: pointer;
+  padding: 0.7rem 0;
+}
+.alk-chart-table-scroll {
+  max-height: 23rem;
+  overflow: auto;
+  margin-bottom: 0.85rem;
+}
+.alk-chart-table-scroll table {
+  font: 0.75rem var(--alk-mono, ui-monospace, monospace);
+  width: 100%;
+}
+.alk-chart-table-scroll caption {
+  text-align: left;
+  padding-bottom: 0.8rem;
+  color: var(--alk-muted, #5e5e5e);
+}
+.alk-chart-table-scroll th {
+  position: sticky;
+  top: 0;
+  background: var(--alk-paper, #fff);
+}
+.alk-chart-table-scroll td,
+.alk-chart-table-scroll th {
+  white-space: nowrap;
+  padding: 0.55rem 0.7rem;
+}
+#vg-tooltip-element {
+  font-family: var(--alk-sans, system-ui, sans-serif);
+  background: var(--alk-paper, #fff);
+  color: var(--alk-ink, #111);
+  border: 1px solid var(--alk-rule, #ccc);
+  border-radius: 4px;
+  box-shadow: 0 3px 18px #0002;
+}
+#vg-tooltip-element td.key {
+  color: var(--alk-muted, #5e5e5e);
+}
+@media (max-width: 600px) {
+  .alk-chart-hint {
+    width: 100%;
+  }
+}

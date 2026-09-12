@@ -1,5 +1,10 @@
 import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
+import { cp, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { test } from 'node:test';
+import { fileURLToPath } from 'node:url';
 import { posix, win32 } from 'node:path';
 import {
   isOutsideSource,
@@ -7,6 +12,12 @@ import {
   parseArguments,
 } from './create-site.mjs';
 import { resolveDeployment } from '../templates/site/scripts/deployment.mjs';
+import {
+  packages as publishedPackages,
+  parseArguments as parseCreateArguments,
+} from '../packages/create-alkemist/lib/create-alkemist.mjs';
+
+const root = fileURLToPath(new URL('../', import.meta.url));
 
 test('source boundary distinguishes POSIX siblings, descendants, and dot-prefixed names', () => {
   assert.equal(isOutsideSource('/work/alkemist', '/work/my-lab', posix), true);
@@ -98,6 +109,96 @@ test('starter accepts only explicit providers and a single destination', () => {
     /requires/,
   );
   assert.throws(() => parseArguments(['../my-lab', 'another']), /Unexpected/);
+});
+
+test('packed create-alkemist uses its own bumped version outside this source checkout', async () => {
+  const temporary = await mkdtemp(join(tmpdir(), 'alkemist-create-packed-'));
+  const packageDir = join(root, 'packages', 'create-alkemist');
+  const stagedPackage = join(temporary, 'bumped-create-alkemist');
+  const site = join(temporary, 'my-lab');
+  const bumpedVersion = '9.8.7-test.0';
+  try {
+    execFileSync('npm', ['run', 'build'], {
+      cwd: packageDir,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
+    await cp(packageDir, stagedPackage, { recursive: true });
+    const stagedManifest = JSON.parse(
+      await readFile(join(stagedPackage, 'package.json'), 'utf8'),
+    );
+    stagedManifest.version = bumpedVersion;
+    await writeFile(
+      join(stagedPackage, 'package.json'),
+      `${JSON.stringify(stagedManifest, null, 2)}\n`,
+    );
+    const output = execFileSync(
+      'npm',
+      ['pack', '--json', '--ignore-scripts', '--pack-destination', temporary],
+      {
+        cwd: stagedPackage,
+        encoding: 'utf8',
+        stdio: ['ignore', 'pipe', 'pipe'],
+      },
+    );
+    const report = JSON.parse(output);
+    const packed = Array.isArray(report)
+      ? report[0]
+      : report['create-alkemist'];
+    assert.ok(packed?.filename, 'npm pack did not report create-alkemist');
+    assert(
+      packed.files.some((file) => file.path === 'template/package.json'),
+      'packed create-alkemist is missing its template bundle',
+    );
+    execFileSync(
+      'npm',
+      [
+        'exec',
+        '--yes',
+        '--package',
+        join(temporary, packed.filename),
+        'create-alkemist',
+        '--',
+        site,
+        '--provider',
+        'custom',
+      ],
+      { cwd: temporary, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] },
+    );
+    const generated = JSON.parse(
+      await readFile(join(site, 'package.json'), 'utf8'),
+    );
+    for (const name of publishedPackages)
+      assert.equal(generated.dependencies[name], bumpedVersion);
+    const starterManifest = JSON.parse(
+      await readFile(join(site, 'alkemist.starter.json'), 'utf8'),
+    );
+    assert.equal(starterManifest.generatorVersion, bumpedVersion);
+    await assert.rejects(readFile(join(site, 'package-lock.json')));
+    await assert.rejects(readFile(join(site, 'vendor')));
+    await assert.rejects(readFile(join(site, '.git')));
+    assert.match(
+      await readFile(join(site, '.gitignore'), 'utf8'),
+      /node_modules/,
+    );
+  } finally {
+    await rm(temporary, { recursive: true, force: true });
+  }
+});
+
+test('create-alkemist accepts an explicit provider and one destination', () => {
+  assert.deepEqual(parseCreateArguments(['my-lab', '--provider', 'gitlab']), {
+    destination: 'my-lab',
+    provider: 'gitlab',
+  });
+  assert.throws(
+    () => parseCreateArguments(['my-lab', '--update']),
+    /Unexpected/,
+  );
+  assert.throws(
+    () => parseCreateArguments(['my-lab', '--provider', 'unknown']),
+    /requires/,
+  );
 });
 
 test('GitLab preview uses the complete provider URL, not production overrides', () => {

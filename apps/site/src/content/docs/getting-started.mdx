@@ -6,15 +6,65 @@ order: 1
 
 import StartUsing from '../../components/StartUsing.astro';
 
-Create a website you own: your content, your Git repository, your hosting account. Alkemist supplies the scientific components and board themes. Start with a coding agent or follow the same steps in a terminal.
+Create a website you own: your content, your Git repository, your hosting account. Alkemist can supply one component, an optional visual system, or a complete generated site. Start with a coding agent or follow the same steps in a terminal.
 
-**Source preview:** the Alkemist GitHub repository is public, but the packages are not published on npm. Clone the source repository to use the generator; there is no `npx create-alkemist` command yet.
+**Registry status:** `@alkemdotdev/alkemist-components`, `@alkemdotdev/alkemist-theme`, `@alkemdotdev/alkemist-astro`, and `create-alkemist` are available on npm as `1.0.0-beta.1`. Use the `beta` tag for a generated site or pin the fixed version for a direct dependency.
 
 <StartUsing heading="Choose how to start." />
 
-## Create a separate site
+## Add one component
 
-Use Node **24.20.0**, matching the repository's `.nvmrc`. Clone the repository, then generate into a new, empty directory:
+For an existing Astro application, install only the component you need:
+
+```sh
+npm install @alkemdotdev/alkemist-components@1.0.0-beta.1
+```
+
+Then import it directly. No generated site, theme, or integration is required:
+
+```astro
+---
+import AlkChart from '@alkemdotdev/alkemist-components/AlkChart.astro';
+---
+
+<AlkChart
+  title="Measured values over time"
+  description="Readings from the accompanying CSV."
+  src="/data/measurements.csv"
+  type="line"
+  x="time"
+  y="value"
+/>
+```
+
+## Add the optional theme or integration
+
+Install `@alkemdotdev/alkemist-theme@1.0.0-beta.1` when you want the board tokens, CSS, or browser theme helpers. Install `@alkemdotdev/alkemist-astro@1.0.0-beta.1` only when you want Alkemist's integration and MDX defaults. Components remain usable without either package.
+
+```ts
+import { defineConfig } from 'astro/config';
+import alkemist from '@alkemdotdev/alkemist-astro';
+
+export default defineConfig({ integrations: [alkemist()] });
+```
+
+## Generate a separate site
+
+The quickest full site is:
+
+```sh
+npm create alkemist@beta -- my-lab --provider cloudflare
+cd my-lab
+npm install
+npm run verify
+npm run dev
+```
+
+The generator only creates files in an empty directory. It does not initialize Git, install dependencies, create a hosting account, deploy, or retain ownership of your site after creation.
+
+## Use the source generator
+
+Use Node **24.20.0**, clone the repository, and generate into a new, empty directory when you want the tarball-backed source workflow and its explicit update command:
 
 ```sh
 git clone https://github.com/alkemdotdev/alkemist.git alkemist-source
@@ -29,13 +79,13 @@ npm run dev
 
 Use `--provider gitlab` for GitLab Pages or `--provider custom` for another static host. Open the local address printed by Astro. The generator refuses a nonempty destination and does not create a remote repository, push code, or deploy your site.
 
-The result is a standalone Astro application. Alkemist's two packages are stored as npm tarballs under `vendor/`, so the application does not need the original checkout to install or build. Keep those tarballs and the generated `package-lock.json` in Git.
+The result is a standalone Astro application. Its package snapshots are stored as npm tarballs under `vendor/`, so it does not need the original checkout to install or build. Keep those tarballs and the generated `package-lock.json` in Git.
 
 ## Make it yours
 
 Edit the site identity and navigation in `src/lib/site.ts`. Replace the example blog, lab, information page, and favicon with your content. Shared behavior stays in the packages; your content, configuration, and custom styles stay in your application.
 
-The starter uses **Blog · Labs · Info**, with a small Test page under More. Docs is optional: add it for your own project documentation, or omit it. The starter's `AGENTS.md` describes ownership, commands, hosting, and the verification steps for a coding agent.
+The source starter offers optional **Blog · Logs · Labs · Docs · Book**, plus **Info**, with a small Test page under More. Choose only what your project needs: developed writing, quick notes, interactive apps, reference, or a curated learning path. These are conventions you can change. See [site structure](/docs/site-structure/) for configuration. The published `1.0.0-beta.1` generator predates this section configuration; use the source generator above for the updated scaffold until the next package release. The starter's `AGENTS.md` describes ownership, commands, hosting, and the verification steps for a coding agent.
 
 Charts and models use their currently documented explicit props and public asset URLs. Portable source-relative figures and metadata sidecars remain proposed APIs; the setup generator does not make those forms available yet.
 
@@ -59,7 +109,7 @@ The copyable prompt above selects a hosting recipe. The [complete plain-Markdown
 
 A useful starting request supplies your site name, intended directory or repository, hosting provider, and domain if you have one. The agent should recover existing settings from your workspace and ask for the missing details together. Its final report should include a working URL and observed deployment evidence, or identify the exact account-dependent step that remains.
 
-## Keep the base updatable
+## Keep a source-generated site updatable
 
 From a reviewed newer Alkemist source checkout, use the explicit update mode:
 
@@ -72,6 +122,8 @@ npm run verify
 ```
 
 Review the package and lockfile changes, then exercise your customized pages. The update mode refreshes package snapshots and dependency references; it preserves site-owned content and configuration. The consumer check tests that boundary, including a subpath build. It is not a guarantee that every future major version needs no migration.
+
+`--update` belongs only to the source generator because it refreshes the committed tarballs. The registry generator deliberately has no update command and never rewrites user files after creation; upgrade its dependencies with ordinary package-manager changes and the release notes.
 
 ## Contribute to Alkemist itself
 

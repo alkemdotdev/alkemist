@@ -1,0 +1,86 @@
+alk-shader.alk-shader {
+  display: block;
+  margin: 1.5rem 0;
+  min-width: 0;
+}
+.alk-shader-viewport {
+  position: relative;
+  height: clamp(280px, 42vw, 520px);
+  overflow: hidden;
+  background: var(--alk-paper, #fff);
+}
+.alk-shader-viewport canvas,
+.alk-shader-poster {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.alk-shader-viewport canvas {
+  visibility: hidden;
+  position: absolute;
+  inset: 0;
+}
+.alk-shader[data-state='ready'] canvas {
+  visibility: visible;
+}
+.alk-shader[data-state='ready'] .alk-shader-poster {
+  visibility: hidden;
+}
+.alk-shader-coordinate {
+  position: absolute;
+  left: var(--alk-figure-gutter);
+  bottom: 1rem;
+  margin: 0;
+  background: var(--alk-paper, #fff);
+  color: var(--alk-muted, #5e5e5e);
+  font: 0.7rem/1.6 var(--alk-mono, ui-monospace, monospace);
+  padding: 0.3rem 0.5rem;
+  pointer-events: none;
+}
+.alk-shader-controls.alk-figure-controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 1.25rem;
+}
+.alk-shader-controls label {
+  display: block;
+  min-width: 0;
+}
+.alk-shader-controls label > span {
+  display: flex;
+  gap: 0.6rem;
+  justify-content: space-between;
+  margin-bottom: 0.4rem;
+}
+.alk-shader-controls output {
+  color: var(--alk-muted, #5e5e5e);
+}
+.alk-shader-controls input {
+  display: block;
+  width: 100%;
+  accent-color: var(--alk-ink-violet, #a464e3);
+}
+@media (max-width: 600px) {
+  .alk-shader-controls.alk-figure-controls {
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  .alk-shader-controls button {
+    grid-column: 1 / -1;
+  }
+  .alk-shader-coordinate {
+    font-size: 0.6rem;
+  }
+}
+@media print {
+  .alk-shader canvas,
+  .alk-shader-coordinate {
+    display: none;
+  }
+  .alk-shader .alk-shader-poster {
+    visibility: visible !important;
+  }
+  .alk-shader-viewport {
+    height: 300px;
+  }
+}

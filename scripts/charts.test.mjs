@@ -5,8 +5,8 @@ import { parse, View } from 'vega';
 import {
   createAlkChartSpec,
   prepareAlkChartRows,
-} from '../packages/ui/src/charts.ts';
-import { ALK_INKS } from '../packages/ui/src/palette.ts';
+} from '../packages/components/src/charts.ts';
+import { ALK_INKS } from '../packages/theme/src/palette.ts';
 
 const theme = {
   text: '#111111',

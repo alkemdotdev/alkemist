@@ -1,4 +1,4 @@
-import { ALK_INKS } from '@alkemist/ui/palette';
+import { ALK_INKS } from '@alkemdotdev/alkemist-theme/palette';
 
 const VERTEX = `#version 300 es
 precision highp float;

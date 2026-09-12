@@ -4,8 +4,10 @@
   "include": [
     ".astro/types.d.ts",
     "**/*",
-    "../../packages/**/*.ts",
-    "../../packages/**/*.astro"
+    "../../packages/astro/src/**/*.ts",
+    "../../packages/components/src/**/*.ts",
+    "../../packages/components/src/**/*.astro",
+    "../../packages/theme/src/**/*.ts"
   ],
   "exclude": ["dist"]
 }

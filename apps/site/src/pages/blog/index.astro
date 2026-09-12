@@ -1,13 +1,16 @@
 ---
-import SiteLayout from '../../layouts/SiteLayout.astro';
+import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
+import SiteLayout from '../../layouts/SiteLayout.astro';
 import { isPreview } from '../../lib/deployment';
-const notes = (await getCollection('blog')).sort(
-  (a, b) =>
-    (b.data.date ?? '').localeCompare(a.data.date ?? '') ||
-    a.data.order - b.data.order ||
-    a.id.localeCompare(b.id),
-);
+const notes = (await getCollection('blog'))
+  .filter((entry) => !entry.data.draft)
+  .sort(
+    (a, b) =>
+      (b.data.date ?? '').localeCompare(a.data.date ?? '') ||
+      a.data.order - b.data.order ||
+      a.id.localeCompare(b.id),
+  );
 const dateLabel = (value: string) =>
   new Intl.DateTimeFormat('en', {
     month: 'short',
@@ -22,22 +25,36 @@ const dateLabel = (value: string) =>
   description="Build notes, experiments, and releases from Alkemist."
   preview={isPreview}
 >
-  <h1>Blog</h1><p class="alk-lead">Build notes, experiments, and releases.</p>
+  <h1>Blog</h1>
+  <p class="alk-lead">Build notes, experiments, and releases.</p>
   <ul class="blog-list">
     {
       notes.map((note) => (
-        <li>
-          {note.data.date && (
-            <time datetime={note.data.date}>{dateLabel(note.data.date)}</time>
-          )}
-          <div>
-            <>
-              <h2>
-                <a href={`/blog/${note.id}/`}>{note.data.title}</a>
-              </h2>
-              <p>{note.data.description}</p>
-            </>
-          </div>
+        <li class:list={{ 'has-cover': Boolean(note.data.cover) }}>
+          <a class="blog-entry" href={`/blog/${note.id}/`}>
+            {note.data.date && (
+              <time datetime={note.data.date}>{dateLabel(note.data.date)}</time>
+            )}
+            {note.data.cover && (
+              <span
+                class="blog-thumbnail"
+                style={`--cover-fit: ${note.data.cover.fit}; --cover-position: ${note.data.cover.focalX}% ${note.data.cover.focalY}%;`}
+              >
+                <Image
+                  src={note.data.cover.src}
+                  alt=""
+                  widths={[320, 480, 640]}
+                  sizes="(max-width: 650px) 6.5rem, 11rem"
+                  loading="lazy"
+                  format="webp"
+                />
+              </span>
+            )}
+            <span class="blog-copy">
+              <h2>{note.data.title}</h2>
+              <span>{note.data.description}</span>
+            </span>
+          </a>
         </li>
       ))
     }
@@ -55,40 +72,90 @@ const dateLabel = (value: string) =>
     max-width: 970px;
   }
   .blog-list li {
+    margin: 0;
+    border-top: 1px solid var(--alk-rule);
+  }
+  .blog-entry {
     display: grid;
     grid-template-columns: 120px minmax(0, 1fr);
     gap: 1.7rem;
-    margin: 0;
+    color: inherit;
     padding: 1.25rem 0;
-    border-top: 1px solid var(--alk-rule);
+    text-decoration: none;
+  }
+  .blog-list li.has-cover .blog-entry {
+    grid-template-columns: 120px minmax(0, 1fr) 11rem;
   }
   time {
+    grid-column: 1;
+    grid-row: 1;
     color: var(--alk-muted);
     font: 0.75rem/1.7 var(--alk-mono);
     padding-top: 0.12rem;
   }
-  .blog-list h2 {
+  .blog-copy {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .blog-thumbnail {
+    grid-column: 3;
+    grid-row: 1;
+    aspect-ratio: 3 / 2;
+    display: block;
+    overflow: hidden;
+    background: var(--alk-field);
+  }
+  .blog-thumbnail :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: var(--cover-fit);
+    object-position: var(--cover-position);
+  }
+  .blog-copy h2 {
     font-size: 1.16rem;
     line-height: 1.4;
     margin: 0;
   }
-  .blog-list h2 a {
-    text-decoration: none;
-  }
-  .blog-list h2 a:hover {
+  .blog-entry:hover h2 {
     text-decoration: underline;
   }
-  .blog-list p {
+  .blog-copy > span {
     color: var(--alk-muted);
+    display: block;
     font-size: 0.9rem;
-    margin: 0.4rem 0 0;
+    margin-top: 0.4rem;
     max-width: 64ch;
   }
+  @media (max-width: 900px) {
+    .blog-entry {
+      grid-template-columns: 90px minmax(0, 1fr);
+      gap: 1rem;
+    }
+    .blog-list li.has-cover .blog-entry {
+      grid-template-columns: 90px minmax(0, 1fr) 11rem;
+    }
+  }
   @media (max-width: 650px) {
-    .blog-list li {
+    .blog-entry {
       grid-template-columns: 1fr;
-      gap: 0.4rem;
+      gap: 0.55rem;
       padding: 1.1rem 0;
+    }
+    .blog-list li.has-cover .blog-entry {
+      grid-template-columns: minmax(0, 1fr) 6.5rem;
+      gap: 0.55rem 1rem;
+    }
+    time {
+      grid-column: 1 / -1;
+      grid-row: 1;
+    }
+    .blog-copy {
+      grid-column: 1;
+      grid-row: 2;
+    }
+    .blog-thumbnail {
+      grid-column: 2;
+      grid-row: 2;
     }
   }
 </style>

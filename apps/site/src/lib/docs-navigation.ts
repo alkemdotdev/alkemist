@@ -14,6 +14,10 @@ export const docsGroups: DocsGroup[] = [
     links: [
       { label: 'Create your site', href: '/docs/getting-started/' },
       { label: 'Agent instructions', href: '/docs/agent-setup.md' },
+      {
+        label: 'Package publishing',
+        href: 'https://github.com/alkemdotdev/alkemist/blob/main/docs/publishing.md',
+      },
       { label: 'Site structure', href: '/docs/site-structure/' },
     ],
   },
