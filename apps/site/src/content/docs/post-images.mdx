@@ -8,6 +8,8 @@ A post can have one optional `cover` in its frontmatter. The blog listing uses t
 
 ## One image, two presentations
 
+Listings use the reusable [AlkPostList component](/docs/post-lists/), which offers rows, grids, and featured lead layouts. Each site can choose a default or enable a reader layout selector.
+
 The thumbnail has a consistent **3:2 landscape frame** so mixed source images do not make the listing jump between shapes. `fit: cover` fills that frame and crops its edges. Use `focalX` and `focalY` to keep the subject visible: `0` is the left or top edge, and `100` is the right or bottom edge.
 
 For diagrams, screenshots, or images whose edges contain information, choose `fit: contain`. The entire image remains visible inside the frame. The article cover keeps the image's natural proportions; it does not inherit the thumbnail crop.

@@ -166,7 +166,7 @@ This entry uses a text-only listing.\n`,
     join(site, 'dist/blog/text-only/index.html'),
     'utf8',
   );
-  assert(imageListing.includes('lab-cover--thumbnail'));
+  assert(imageListing.includes('alk-post-thumbnail'));
   assert(imageListing.includes('data-fit="contain"'));
   assert(imageListing.includes('A post without an image'));
   assert(withCover.includes('lab-cover--article'));

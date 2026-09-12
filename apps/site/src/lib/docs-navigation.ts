@@ -25,6 +25,7 @@ export const docsGroups: DocsGroup[] = [
     label: 'Components',
     links: [
       { label: 'Component catalog', href: '/docs/components/' },
+      { label: 'Post lists and layouts', href: '/docs/post-lists/' },
       { label: 'Charts and data', href: '/docs/charts/' },
       { label: 'Math and code', href: '/docs/math-code/' },
       { label: 'Models and shaders', href: '/docs/models/' },

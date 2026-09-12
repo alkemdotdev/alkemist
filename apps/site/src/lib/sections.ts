@@ -1,3 +1,5 @@
+import type { AlkPostListProps } from '@alkemdotdev/alkemist-components';
+
 export const siteSectionIds = [
   'blog',
   'logs',
@@ -63,3 +65,10 @@ export const navigationSections = siteSectionIds.flatMap((id) => {
   const section = siteSections[id];
   return section.enabled ? [{ label: section.label, href: section.href }] : [];
 });
+
+/** Editorial selection and reading layouts belong to the adopting site. */
+export const blogDisplay = {
+  layout: 'featured-grid',
+  selectable: true,
+  featuredHref: '/blog/fields-with-substance/',
+} satisfies Pick<AlkPostListProps, 'layout' | 'selectable' | 'featuredHref'>;

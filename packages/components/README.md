@@ -1,7 +1,7 @@
 # @alkemdotdev/alkemist-components
 
 Astro components for technical publishing: `AlkLayout`, `AlkMath`, `AlkCode`,
-`AlkChart`, `AlkModel`, and `AlkShader`.
+`AlkChart`, `AlkModel`, `AlkShader`, and `AlkPostList`.
 
 Import a component directly, for example:
 

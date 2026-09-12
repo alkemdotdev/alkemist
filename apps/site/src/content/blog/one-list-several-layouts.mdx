@@ -1,0 +1,14 @@
+---
+title: One list, several ways to read
+description: A reusable post list combines a featured lead with a grid while keeping compact rows available.
+date: '2026-09-12'
+order: 1
+---
+
+A visual experiment benefits from a large image. A short announcement may need only a title and a few lines. A publishing toolkit should accommodate both without requiring every post to become an illustrated card.
+
+`AlkPostList` takes ordinary post metadata and presents it as compact rows, a featured lead followed by rows, an image grid, or a featured lead above a grid. The Alkemist blog uses the last option by default and lets readers switch views.
+
+The collection remains owned by the site. Filtering drafts, ordering posts, resolving URLs, and choosing a lead happen before the component renders. A chosen lead appears once. Posts without covers remain text entries, and an optional selector changes presentation without duplicating content.
+
+The same component can be imported into an existing Astro site without adopting Alkemist's navigation or full theme. Source starters use it too, with defaults in their own configuration. The new export is pending the next npm release; its [reference and example](/docs/post-lists/) describe the source API.

@@ -1,0 +1,335 @@
+---
+import { Image } from 'astro:assets';
+import {
+  prepareAlkPostListItems,
+  type AlkPostListLayout,
+  type AlkPostListProps,
+} from './post-list';
+
+export type {
+  AlkPostListCover,
+  AlkPostListItem,
+  AlkPostListLayout,
+  AlkPostListProps,
+} from './post-list';
+
+type Props = AlkPostListProps;
+
+const {
+  items,
+  layout = 'rows',
+  selectable = false,
+  featuredHref,
+  label = 'Posts',
+} = Astro.props;
+const orderedItems = prepareAlkPostListItems(items, featuredHref);
+const layoutOptions: { value: AlkPostListLayout; label: string }[] = [
+  { value: 'rows', label: 'Rows' },
+  { value: 'featured', label: 'Featured + rows' },
+  { value: 'grid', label: 'Grid' },
+  { value: 'featured-grid', label: 'Featured + grid' },
+];
+---
+
+<alk-post-list class="alk-post-list" data-layout={layout}>
+  {
+    selectable && (
+      <label class="alk-post-list-layout-control">
+        <span>Layout</span>
+        <select
+          data-post-list-layout
+          value={layout}
+          aria-label={`${label} layout`}
+        >
+          {layoutOptions.map((option) => (
+            <option value={option.value} selected={option.value === layout}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      </label>
+    )
+  }
+  <section class="alk-post-list-collection" aria-label={label}>
+    <div class="alk-post-list-items" role="list">
+      {
+        orderedItems.map((item, index) => {
+          const cover = item.cover;
+          const localImage =
+            cover && typeof cover.src !== 'string' ? cover.src : undefined;
+          const remoteImage =
+            cover && typeof cover.src === 'string' ? cover.src : undefined;
+          const fit = cover?.fit ?? 'cover';
+          const focalStyle = cover
+            ? `--alk-post-focal-x: ${cover.focalX ?? 50}%; --alk-post-focal-y: ${cover.focalY ?? 50}%;`
+            : undefined;
+
+          return (
+            <article
+              class="alk-post-list-item"
+              role="listitem"
+              data-lead={index === 0 || undefined}
+              data-has-cover={Boolean(cover) || undefined}
+            >
+              <a class="alk-post-list-link" href={item.href}>
+                {cover && (
+                  <div
+                    class="alk-post-thumbnail"
+                    data-fit={fit}
+                    style={focalStyle}
+                  >
+                    {localImage ? (
+                      <Image
+                        src={localImage}
+                        alt={cover.alt}
+                        widths={[480, 800, 1200]}
+                        sizes="(max-width: 42rem) 100vw, 50vw"
+                        loading={index === 0 ? 'eager' : 'lazy'}
+                        fetchpriority={index === 0 ? 'high' : 'auto'}
+                      />
+                    ) : (
+                      <img
+                        src={remoteImage}
+                        alt={cover.alt}
+                        width="1200"
+                        height="800"
+                        loading={index === 0 ? 'eager' : 'lazy'}
+                        fetchpriority={index === 0 ? 'high' : 'auto'}
+                      />
+                    )}
+                  </div>
+                )}
+                <div class="alk-post-list-copy">
+                  <h2>{item.title}</h2>
+                  <p>{item.description}</p>
+                  {item.date && <time datetime={item.date}>{item.date}</time>}
+                </div>
+              </a>
+            </article>
+          );
+        })
+      }
+    </div>
+  </section>
+</alk-post-list>
+
+<script>
+  import './post-list';
+</script>
+
+<style>
+  alk-post-list {
+    --alk-post-rule: var(--alk-rule, #ccc);
+    --alk-post-paper: var(--alk-paper, #fff);
+    --alk-post-field: var(--alk-field, #f2f2f2);
+    --alk-post-ink: var(--alk-ink, #111);
+    --alk-post-muted: var(--alk-muted, #5e5e5e);
+    --alk-post-sans: var(--alk-sans, system-ui, sans-serif);
+    --alk-post-mono: var(--alk-mono, ui-monospace, monospace);
+    display: block;
+    color: var(--alk-post-ink);
+    container-type: inline-size;
+  }
+
+  .alk-post-list-layout-control {
+    display: none;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.55rem;
+    margin-bottom: 0.8rem;
+    color: var(--alk-post-muted);
+    font: 0.72rem/1.4 var(--alk-post-mono);
+  }
+
+  alk-post-list[data-enhanced='true'] .alk-post-list-layout-control {
+    display: flex;
+  }
+
+  .alk-post-list-layout-control select {
+    border: 1px solid var(--alk-post-rule);
+    border-radius: 0;
+    background: var(--alk-post-paper);
+    color: var(--alk-post-ink);
+    font: inherit;
+    padding: 0.32rem 0.45rem;
+  }
+
+  .alk-post-list-items {
+    display: grid;
+    gap: 0;
+  }
+
+  .alk-post-list-item {
+    min-width: 0;
+    border-top: 1px solid var(--alk-post-rule);
+  }
+
+  .alk-post-list-item:last-child {
+    border-bottom: 1px solid var(--alk-post-rule);
+  }
+
+  .alk-post-list-link {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 6.5rem;
+    gap: 0.9rem;
+    color: inherit;
+    padding: 1rem 0;
+    text-decoration: none;
+  }
+
+  .alk-post-list-link:focus-visible {
+    outline: 2px solid var(--alk-ink-cobalt, #1982f2);
+    outline-offset: 4px;
+  }
+
+  .alk-post-thumbnail {
+    width: 100%;
+    grid-column: 2;
+    grid-row: 1;
+    aspect-ratio: 3 / 2;
+    background: var(--alk-post-field);
+    overflow: hidden;
+  }
+
+  .alk-post-thumbnail :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-position: var(--alk-post-focal-x) var(--alk-post-focal-y);
+  }
+
+  .alk-post-thumbnail[data-fit='cover'] :global(img) {
+    object-fit: cover;
+  }
+
+  .alk-post-thumbnail[data-fit='contain'] :global(img) {
+    object-fit: contain;
+  }
+
+  .alk-post-list-copy {
+    align-self: center;
+    grid-column: 1;
+    grid-row: 1;
+    min-width: 0;
+  }
+
+  .alk-post-list-copy h2 {
+    margin: 0;
+    font: 500 clamp(1.15rem, 2cqi, 1.4rem) / 1.35 var(--alk-post-sans);
+  }
+
+  .alk-post-list-copy p {
+    margin: 0.45rem 0 0;
+    color: var(--alk-post-muted);
+    font: 0.94rem/1.55 var(--alk-post-sans);
+  }
+
+  .alk-post-list-copy time {
+    display: block;
+    margin-top: 0.7rem;
+    color: var(--alk-post-muted);
+    font: 0.7rem/1.4 var(--alk-post-mono);
+  }
+
+  .alk-post-list-item:not([data-has-cover]) .alk-post-list-link {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  alk-post-list[data-layout='grid'] .alk-post-list-link,
+  alk-post-list[data-layout='featured-grid'] .alk-post-list-link,
+  alk-post-list[data-layout='featured']
+    .alk-post-list-item[data-lead]
+    .alk-post-list-link {
+    display: block;
+  }
+
+  alk-post-list[data-layout='grid'] .alk-post-thumbnail,
+  alk-post-list[data-layout='featured-grid'] .alk-post-thumbnail,
+  alk-post-list[data-layout='featured']
+    .alk-post-list-item[data-lead]
+    .alk-post-thumbnail {
+    margin-bottom: 0.9rem;
+  }
+
+  alk-post-list[data-layout='featured']
+    .alk-post-list-item[data-lead]
+    .alk-post-thumbnail,
+  alk-post-list[data-layout='featured-grid']
+    .alk-post-list-item[data-lead]
+    .alk-post-thumbnail {
+    max-height: 22rem;
+  }
+
+  @container (min-width: 42rem) {
+    .alk-post-list-link {
+      grid-template-columns: minmax(0, 1fr) 11rem;
+      gap: clamp(1.25rem, 4cqi, 3rem);
+      padding: clamp(1.1rem, 3cqi, 1.8rem) 0;
+    }
+
+    alk-post-list[data-layout='grid'] .alk-post-list-items,
+    alk-post-list[data-layout='featured-grid'] .alk-post-list-items {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: clamp(1rem, 3cqi, 2rem);
+    }
+
+    alk-post-list[data-layout='grid'] .alk-post-list-link,
+    alk-post-list[data-layout='featured-grid']
+      .alk-post-list-item:not([data-lead])
+      .alk-post-list-link {
+      display: block;
+    }
+
+    alk-post-list[data-layout='grid'] .alk-post-thumbnail,
+    alk-post-list[data-layout='featured-grid']
+      .alk-post-list-item:not([data-lead])
+      .alk-post-thumbnail {
+      margin-bottom: 0.9rem;
+    }
+
+    alk-post-list[data-layout='grid'] .alk-post-list-item:nth-last-child(2),
+    alk-post-list[data-layout='grid'] .alk-post-list-item:last-child,
+    alk-post-list[data-layout='featured-grid']
+      .alk-post-list-item:nth-last-child(2),
+    alk-post-list[data-layout='featured-grid'] .alk-post-list-item:last-child {
+      border-bottom: 1px solid var(--alk-post-rule);
+    }
+
+    alk-post-list[data-layout='featured']
+      .alk-post-list-item[data-lead]
+      .alk-post-list-link,
+    alk-post-list[data-layout='featured-grid'] .alk-post-list-item[data-lead] {
+      grid-column: 1 / -1;
+    }
+
+    alk-post-list[data-layout='featured']
+      .alk-post-list-item[data-lead]
+      .alk-post-list-link,
+    alk-post-list[data-layout='featured-grid']
+      .alk-post-list-item[data-lead]
+      .alk-post-list-link {
+      display: block;
+    }
+
+    alk-post-list[data-layout='featured']
+      .alk-post-list-item[data-lead]
+      .alk-post-thumbnail,
+    alk-post-list[data-layout='featured-grid']
+      .alk-post-list-item[data-lead]
+      .alk-post-thumbnail {
+      aspect-ratio: 16 / 7;
+      margin-bottom: clamp(1rem, 3cqi, 1.8rem);
+    }
+
+    alk-post-list[data-layout='featured']
+      .alk-post-list-item[data-lead]
+      .alk-post-list-copy
+      h2,
+    alk-post-list[data-layout='featured-grid']
+      .alk-post-list-item[data-lead]
+      .alk-post-list-copy
+      h2 {
+      font-size: clamp(1.55rem, 4cqi, 2.5rem);
+    }
+  }
+</style>
