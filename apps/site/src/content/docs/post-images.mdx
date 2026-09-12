@@ -1,0 +1,45 @@
+---
+title: Blog thumbnails and covers
+description: Give an article one optional image, with a thumbnail crop and an optional full-width cover.
+order: 16
+---
+
+A post can have one optional `cover` in its frontmatter. The blog listing uses that image as a thumbnail. The article can show the same image above its body, with a caption, or keep it only in the listing. Posts without images remain ordinary text entries.
+
+## One image, two presentations
+
+The thumbnail has a consistent **3:2 landscape frame** so mixed source images do not make the listing jump between shapes. `fit: cover` fills that frame and crops its edges. Use `focalX` and `focalY` to keep the subject visible: `0` is the left or top edge, and `100` is the right or bottom edge.
+
+For diagrams, screenshots, or images whose edges contain information, choose `fit: contain`. The entire image remains visible inside the frame. The article cover keeps the image's natural proportions; it does not inherit the thumbnail crop.
+
+## Add an image to a post
+
+In a source-starter blog entry, put the image next to your content and reference it relative to that entry:
+
+```yaml
+---
+title: The first experiment
+description: What the first measurements helped us notice.
+published: '2026-09-12'
+cover:
+  src: ./assets/first-experiment-cover.svg
+  alt: A blue oscillating line crosses an orange grid, with a violet measurement marker.
+  caption: An illustration of the experiment, not measured data.
+  fit: contain
+  focalX: 50
+  focalY: 50
+  showInPost: true
+---
+```
+
+The Alkemist demo uses `date` for its existing blog dates; the generated starter uses `published`. The cover fields are the same. Local source images are resolved by Astro's content schema and rendered with its image component, including intrinsic dimensions. Listing thumbnails load lazily.
+
+`src` and `alt` are required when a cover is present. `caption` is optional. The defaults are `fit: cover`, centered focal coordinates, and `showInPost: true`.
+
+## Keep the article intentional
+
+A cover is part of the post's metadata, not automatically the first image found in its body. That makes the listing predictable and lets the article use additional figures where they support the writing.
+
+Set `showInPost: false` if the illustration is only useful as a thumbnail, or if the same image already appears at the right place in the article. Set a caption when readers need context or attribution. Write alt text for what the image communicates; nearby post titles are not a substitute for the image's description.
+
+The source starter supplies these fields and layouts as editable site files. They do not impose a media library or authoring service on adopting projects. The published `1.0.0-beta.1` scaffold is unchanged; use the source starter for these additions until the next package release.

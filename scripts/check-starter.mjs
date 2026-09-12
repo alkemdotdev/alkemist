@@ -123,7 +123,55 @@ published: '2026-09-13'
 
 This entry appears before the first reading.\n`,
   );
+  await writeFile(
+    join(site, 'src/content/blog/thumbnail-only.md'),
+    `---
+title: A thumbnail without an article cover
+description: The listing and article can make different presentation choices.
+published: '2026-09-12'
+cover:
+  src: ./assets/first-experiment-cover.svg
+  alt: A blue oscillation on an orange measurement grid.
+  fit: contain
+  focalX: 25
+  showInPost: false
+---
+
+The thumbnail remains in the listing.\n`,
+  );
+  await writeFile(
+    join(site, 'src/content/blog/text-only.md'),
+    `---
+title: A post without an image
+description: A cover is optional.
+published: '2026-09-12'
+---
+
+This entry uses a text-only listing.\n`,
+  );
   run(['run', 'verify']);
+  const imageListing = await readFile(
+    join(site, 'dist/blog/index.html'),
+    'utf8',
+  );
+  const withCover = await readFile(
+    join(site, 'dist/blog/first-experiment/index.html'),
+    'utf8',
+  );
+  const thumbnailOnly = await readFile(
+    join(site, 'dist/blog/thumbnail-only/index.html'),
+    'utf8',
+  );
+  const textOnly = await readFile(
+    join(site, 'dist/blog/text-only/index.html'),
+    'utf8',
+  );
+  assert(imageListing.includes('lab-cover--thumbnail'));
+  assert(imageListing.includes('data-fit="contain"'));
+  assert(imageListing.includes('A post without an image'));
+  assert(withCover.includes('lab-cover--article'));
+  assert(!thumbnailOnly.includes('lab-cover--article'));
+  assert(!textOnly.includes('lab-cover--article'));
   const defaultLogs = await readFile(
     join(site, 'dist/logs/index.html'),
     'utf8',

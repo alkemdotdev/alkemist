@@ -1,5 +1,6 @@
 ---
 import { getCollection, render } from 'astro:content';
+import { Image } from 'astro:assets';
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import {
   enabledSections,
@@ -16,6 +17,29 @@ type DisplayEntry = {
     description: string;
     published?: string;
     order?: number;
+    cover?: {
+      src: {
+        src: string;
+        width: number;
+        height: number;
+        format:
+          | 'jpeg'
+          | 'jpg'
+          | 'png'
+          | 'apng'
+          | 'tiff'
+          | 'webp'
+          | 'gif'
+          | 'svg'
+          | 'avif';
+      };
+      alt: string;
+      caption?: string;
+      fit: 'cover' | 'contain';
+      focalX: number;
+      focalY: number;
+      showInPost: boolean;
+    };
   };
 };
 const descriptions: Record<SectionId, string> = {
@@ -123,7 +147,33 @@ const orderedEntries = [...entries].sort((a, b) => {
           <p>{descriptions[section]}</p>
         </>
         {orderedEntries.map((entry) => (
-          <article class="lab-card lab-section">
+          <article
+            class:list={[
+              'lab-card',
+              'lab-section',
+              {
+                'lab-card--with-cover':
+                  section === 'blog' && Boolean(entry.data.cover),
+              },
+            ]}
+          >
+            {section === 'blog' && entry.data.cover && (
+              <figure
+                class="lab-cover lab-cover--thumbnail"
+                data-fit={entry.data.cover.fit}
+                style={`--cover-focal-x: ${entry.data.cover.focalX}%; --cover-focal-y: ${entry.data.cover.focalY}%;`}
+              >
+                <div class="lab-cover-frame">
+                  <Image
+                    src={entry.data.cover.src}
+                    alt={entry.data.cover.alt}
+                    loading="lazy"
+                    widths={[240, 480, 720]}
+                    sizes="(max-width: 600px) 18rem, 14rem"
+                  />
+                </div>
+              </figure>
+            )}
             {entry.data.published && (
               <p class="alk-eyebrow">{entry.data.published}</p>
             )}

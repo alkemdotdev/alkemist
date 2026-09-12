@@ -25,3 +25,9 @@ The four `1.0.0-beta.1` npm packages exist, and fresh registry consumers plus th
 ## Validation completed
 
 Full verify, format, independent starter (including optional sections/drafts/base paths), and packed consumers pass. Browser chapter flow, log permalinks, and responsive navigation pass. Evidence: `.alkemist/verify-sections.log`, `.alkemist/starter-sections.log`, `.alkemist/packages-sections.log`. Starter fixture `/var/folders/vw/dfz65vvd78n17m0mty_gr1ww0000gn/T/alkemist-consumer-4SL2sm/my-lab` was reviewed under `/sections/`. Remaining delivery: branch preview and main production identity checks.
+
+## Added scope: post images
+
+User requested thumbnail display and asked about using the same image in posts. Implement optional blog `cover` frontmatter shared by listing thumbnail and article header, with crop/contain, focal coordinates, caption, and `showInPost`. Clarification about “form fill” is pending; do not infer a CMS or authoring form. Keep source-starter and demo contracts aligned and test missing covers and thumbnail-only covers.
+
+Post-image implementation complete. Full verify and independent starter image cases pass. Docs examples were copied into a generated site and passed its build/link check. User did not clarify “form fill”; implementation uses fit/crop controls, not an authoring UI. Remaining: final branch preview, CI, main promotion, and production check.

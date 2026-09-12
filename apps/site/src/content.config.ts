@@ -31,7 +31,20 @@ export const collections = {
   }),
   blog: defineCollection({
     loader: glob({ pattern: '**/*.mdx', base: './src/content/blog' }),
-    schema,
+    schema: ({ image }) =>
+      schema.extend({
+        cover: z
+          .object({
+            src: image(),
+            alt: z.string().min(1),
+            caption: z.string().optional(),
+            fit: z.enum(['cover', 'contain']).default('cover'),
+            focalX: z.number().min(0).max(100).default(50),
+            focalY: z.number().min(0).max(100).default(50),
+            showInPost: z.boolean().default(true),
+          })
+          .optional(),
+      }),
   }),
   logs: defineCollection({
     loader: glob({ pattern: '**/*.mdx', base: './src/content/logs' }),

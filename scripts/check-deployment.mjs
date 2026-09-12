@@ -50,6 +50,8 @@ for (const [path, title] of [
   ['/docs/charts/', 'Charts and data'],
   ['/docs/components/', 'Components'],
   ['/docs/site-structure/', 'Site structure and navigation'],
+  ['/docs/post-images/', 'Blog thumbnails and covers'],
+  ['/blog/three-homepage-directions/', 'Three ways to introduce the workbench'],
   ['/blog/', 'Blog'],
   ['/logs/', 'Logs'],
   ['/book/', 'Book'],

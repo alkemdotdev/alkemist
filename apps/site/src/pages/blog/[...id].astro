@@ -1,13 +1,16 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
+import { Image } from 'astro:assets';
 import { getCollection, render } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
 import { isPreview } from '../../lib/deployment';
 export async function getStaticPaths() {
-  return (await getCollection('blog')).map((entry) => ({
-    params: { id: entry.id },
-    props: { entry },
-  }));
+  return (await getCollection('blog'))
+    .filter((entry) => !entry.data.draft)
+    .map((entry) => ({
+      params: { id: entry.id },
+      props: { entry },
+    }));
 }
 const { entry } = Astro.props as { entry: CollectionEntry<'blog'> };
 const { Content } = await render(entry);
@@ -24,7 +27,26 @@ const { Content } = await render(entry);
       >
     </p><h1>{entry.data.title}</h1><p class="alk-lead">
       {entry.data.description}
-    </p><Content />
+    </p>{
+      entry.data.cover?.showInPost && (
+        <figure
+          class="blog-cover"
+          style={`--cover-fit: ${entry.data.cover.fit}; --cover-position: ${entry.data.cover.focalX}% ${entry.data.cover.focalY}%;`}
+        >
+          <Image
+            src={entry.data.cover.src}
+            alt={entry.data.cover.alt}
+            widths={[720, 1200, 1600]}
+            sizes="(max-width: 800px) calc(100vw - 2.5rem), 800px"
+            loading="eager"
+            format="webp"
+          />
+          {entry.data.cover.caption && (
+            <figcaption>{entry.data.cover.caption}</figcaption>
+          )}
+        </figure>
+      )
+    }<Content />
   </article></SiteLayout
 >
 
@@ -43,5 +65,20 @@ const { Content } = await render(entry);
   }
   .blog-meta a:hover {
     text-decoration: underline;
+  }
+  .blog-cover {
+    margin: 2rem 0;
+  }
+  .blog-cover :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-fit: var(--cover-fit);
+    object-position: var(--cover-position);
+  }
+  .blog-cover figcaption {
+    color: var(--alk-muted);
+    font-size: 0.82rem;
+    margin-top: 0.55rem;
   }
 </style>

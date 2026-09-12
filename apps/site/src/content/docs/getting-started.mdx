@@ -27,7 +27,14 @@ Then import it directly. No generated site, theme, or integration is required:
 import AlkChart from '@alkemdotdev/alkemist-components/AlkChart.astro';
 ---
 
-<AlkChart src="/data/measurements.csv" type="line" x="time" y="value" />
+<AlkChart
+  title="Measured values over time"
+  description="Readings from the accompanying CSV."
+  src="/data/measurements.csv"
+  type="line"
+  x="time"
+  y="value"
+/>
 ```
 
 ## Add the optional theme or integration

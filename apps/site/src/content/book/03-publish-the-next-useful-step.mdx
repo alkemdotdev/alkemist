@@ -33,6 +33,8 @@ import { withBase } from '../lib/site';
   <article class="alk-prose">
     <h1>Measurements</h1>
     <AlkChart
+      title="Measured values over time"
+      description="Three example readings from the accompanying CSV."
       src={withBase('data/measurements.csv')}
       type="line"
       x="time"
