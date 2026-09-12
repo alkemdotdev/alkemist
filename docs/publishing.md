@@ -32,10 +32,9 @@ run when it creates a PR; Verify supports explicit workflow dispatch.
 
 On main, `.github/workflows/release.yml` verifies the project and independent
 starter, packs the four packages, and tests those exact tarballs in an existing
-Astro site. It publishes only when package versions change or the workflow is
-explicitly dispatched, and only when no changesets remain to be versioned.
-The npm environment permits the main branch only. Documentation-only changes
-do not publish packages.
+Astro site. The beta/stable release path publishes only when package versions
+change or the workflow is explicitly dispatched, and only when no changesets
+remain to be versioned. The npm environment permits the main branch only.
 
 Publishing runs in its own job with `id-token: write`, using npm OIDC trusted
 publishing. The job downloads the verified artifacts; it does not reinstall
@@ -60,15 +59,36 @@ npm run check:packages -- --registry
 ```
 
 `release:pack` builds the bundled starter template and records tarball hashes
-in `.alkemist/release/manifest.json`. `release:publish` requires clean committed
-source and derives the tag from the package version. It skips an existing
-version only if registry integrity matches exactly. A partially completed
-publish can be resumed using the same artifacts. Changed published bytes
-require a new version.
+in `.alkemist/release/manifest.json`. Normal `release:publish` requires clean
+committed source and derives the tag from the package version. It skips an
+existing version only if registry integrity matches exactly. A partially
+completed publish can be resumed using the same artifacts. Changed published
+bytes require a new version.
 
 `release:verify` checks registry integrity and tags; `check:packages --registry`
 performs fresh installations. A successful build alone does not prove either
 registry publication or website deployment.
+
+## Main-branch canaries
+
+Every passing push to `main` also publishes all four packages under the
+`canary` tag. The version is the checked-in package version followed by
+`-canary.<full commit SHA>`, so it is deterministic, unique to that commit,
+and never moves `beta` or `latest`. The component packages, integration, and
+the starter's bundled template all use that exact same canary version.
+
+The workflow derives those versions only after the normal source checks pass,
+packs the resulting tarballs, and exercises an independent existing-site
+consumer before uploading the artifact. Its OIDC publication job checks out
+the same commit, recreates only the four package-manifest and starter-template
+version edits, and rejects every other worktree change before publishing the
+downloaded tarballs. It then performs the registry consumer check. Canary
+publication creates no GitHub Release.
+
+Canaries coexist with the Changesets release PR flow. A pending changeset
+still creates a beta or stable version PR; once that versioned PR is merged,
+the ordinary release job publishes the checked release artifacts with `beta`
+or `latest` and records its GitHub Release.
 
 ## Account bootstrap
 

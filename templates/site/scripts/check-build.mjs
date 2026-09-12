@@ -27,6 +27,13 @@ const htmlFiles = (await files(root)).filter((file) => file.endsWith('.html'));
 const failures = [];
 for (const file of htmlFiles) {
   const html = await readFile(file, 'utf8');
+  if (
+    html.includes('<alk-search') &&
+    !existsSync(join(root, 'pagefind/pagefind.js'))
+  )
+    failures.push(
+      `${file}: search control is present but the generated index is missing`,
+    );
   if (environment === 'preview' && !html.includes('noindex, nofollow'))
     failures.push(`${file}: missing preview noindex`);
   for (const match of html.matchAll(/(?:href|src)="(\/[^"\s]*)"/g)) {

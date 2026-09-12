@@ -1,4 +1,4 @@
-export const sourceAccess = 'Current source API · next npm release pending';
+export const sourceAccess = 'Current API · source and npm canary';
 
 export const setupProviders = [
   {
@@ -45,7 +45,7 @@ export function setupPrompt(provider: SetupProvider) {
 
 Read https://alkemist.alkem.dev/docs/agent-setup.md and https://alkemist.alkem.dev${provider.guide} first.
 
-Inspect my current workspace and its instructions. Establish the site name, destination directory/repository, hosting account, and intended URL from available context; ask together for the missing details. Use the current source generator for the documented component API and starter. The next npm release is pending.
+Inspect my current workspace and its instructions. Establish the site name, destination directory/repository, hosting account, and intended URL from available context; ask together for the missing details. Use the current source generator for the documented component API and starter. The npm canary channel also carries the current API; deliberate beta/stable releases remain separate.
 
 Clone https://github.com/alkemdotdev/alkemist, run \`npm ci\`, then \`npm run create:site -- ../my-lab --provider ${provider.id}\` into an empty destination. The generated site owns its files and consumes packed local packages. Preserve existing work and make the site identity, content, and Git remote mine. Choose only the sections my project needs: Blog for developed writing, Logs for quick notes, Labs for interactive one-off apps, Docs for project reference, and Book for a curated learning path. Keep Info for project background. These are optional conventions, not required content categories. Keep a small Test page for styling and interactions.
 
@@ -58,7 +58,7 @@ export function agentSetupGuide() {
   return `# Set up an Alkemist website
 
 This is the agent-readable companion to https://alkemist.alkem.dev/docs/getting-started/.
-Contract version: 5. Use the current source checkout for the documented API. Components use plain names and direct extensionless imports such as @alkemdotdev/alkemist-components/chart; types come from the same entry. The next npm release is pending. Record the source revision and installed package versions.
+Contract version: 6. Use the current source checkout for the documented API. Components use plain names and direct extensionless imports such as @alkemdotdev/alkemist-components/chart; types come from the same entry. The npm canary channel also carries the current API; deliberate beta/stable releases remain separate. Record the source revision and installed package versions.
 
 ## Inputs and workspace
 

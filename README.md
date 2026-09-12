@@ -6,25 +6,34 @@ An Astro publishing toolkit for inventors and researchers. The demo website, doc
 
 ## Adopt Alkemist
 
-The current source checkout is the supported way to adopt Alkemist:
+Adopt individual packages or generate a complete site:
 
 - `@alkemdotdev/alkemist-components` supplies layouts, math, code, charts, models, and the bounded shader study.
 - `@alkemdotdev/alkemist-theme` supplies optional tokens, global CSS, palette data, and theme helpers.
 - `@alkemdotdev/alkemist-astro` supplies optional Astro integration and MDX defaults.
 - `create-alkemist` generates a complete site.
 
-The published `1.0.0-beta.1` packages use the earlier interface. Use the
-source generator below until a new deliberate package release publishes this
-interface.
+The `canary` npm channel follows verified `main` revisions automatically. It carries the current API and may contain breaking changes. The older `1.0.0-beta.1` release uses the earlier interface. Coordinated beta/stable releases remain separate from canaries.
 
 ### Add a component to an existing Astro site
 
-Generate a site from source, then import exactly the component you need, such
-as `@alkemdotdev/alkemist-components/chart`. The generated project installs
-packed source dependencies locally; add the theme or integration only when its
-visual system or integration defaults serve the site.
+```sh
+npm install --save-exact @alkemdotdev/alkemist-components@canary
+```
+
+Import exactly the component you need, such as `@alkemdotdev/alkemist-components/chart`. Install optional theme and integration packages from the same channel when needed. Commit your lockfile to retain the tested versions.
 
 ### Generate a complete site
+
+```sh
+npm create alkemist@canary -- my-lab --provider cloudflare
+cd my-lab
+npm install
+npm run verify
+npm run dev
+```
+
+Search is enabled in the starter. Use `npm run build` followed by `npm run preview` to exercise the production search index locally. The source generator below remains available for tarball-backed adoption.
 
 ### Choose your publishing sections
 

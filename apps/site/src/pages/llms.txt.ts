@@ -2,7 +2,7 @@ export function GET() {
   return new Response(
     `# Alkemist
 
-> An Astro publishing toolkit for inventors and researchers. Use the current source checkout for the documented component API; the next npm release is pending.
+> An Astro publishing toolkit for inventors and researchers. Use the current source checkout or npm canary channel for the documented component API.
 
 ## Setup
 - [The Alkemist book](https://alkemist.alkem.dev/book/): a curated path from choosing sections to publishing a working site.

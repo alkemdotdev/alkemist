@@ -27,10 +27,21 @@ export function runNpm(args, cwd = root, inherit = false) {
 export function releaseTag(version) {
   assert.match(
     version,
-    /^\d+\.\d+\.\d+(?:-beta\.\d+)?$/,
-    'Only stable or numbered beta releases are supported',
+    /^\d+\.\d+\.\d+(?:-beta\.\d+)?(?:-canary\.[a-f0-9]{40})?$/,
+    'Only stable, numbered beta, or commit-addressed canary releases are supported',
   );
+  if (version.includes('-canary.')) return 'canary';
   return version.includes('-') ? 'beta' : 'latest';
+}
+export function canaryVersion(version, commit) {
+  const tag = releaseTag(version);
+  assert.notEqual(
+    tag,
+    'canary',
+    'Canary source must start from a release version',
+  );
+  assert.match(commit, /^[a-f0-9]{40}$/, 'Canary commits must be full SHA-1s');
+  return `${version}-canary.${commit}`;
 }
 export function assertReleasePackages(packages) {
   assert.equal(
@@ -190,10 +201,6 @@ async function registryPackage(name) {
 }
 export async function publish() {
   const manifest = await readManifest();
-  assert(
-    !manifest.dirty,
-    'Publish only artifacts packed from a clean committed revision',
-  );
   const sha = execFileSync('git', ['rev-parse', 'HEAD'], {
     cwd: root,
     encoding: 'utf8',
@@ -203,22 +210,33 @@ export async function publish() {
     manifest.commit,
     'Checkout must match packed release revision',
   );
-  assert.equal(
-    execFileSync('git', ['status', '--porcelain'], {
-      cwd: root,
-      encoding: 'utf8',
-    }).trim(),
-    '',
-    'Publish requires a clean worktree',
+  assert(
+    !manifest.dirty || manifest.tag === 'canary',
+    'Publish only artifacts packed from a clean committed revision',
   );
+  const worktree = execFileSync('git', ['status', '--porcelain'], {
+    cwd: root,
+    encoding: 'utf8',
+  }).trim();
+  if (manifest.tag === 'canary')
+    assert(
+      worktree,
+      'Canary publication requires its constrained version edits',
+    );
+  else assert.equal(worktree, '', 'Publish requires a clean worktree');
+  if (manifest.tag === 'canary') {
+    const { assertCanarySource } = await import('./release-canary.mjs');
+    await assertCanarySource(manifest.version, manifest.commit);
+  }
   const pending = (await readdir(join(root, '.changeset'))).filter(
     (f) => f.endsWith('.md') && f !== 'README.md',
   );
-  assert.equal(
-    pending.length,
-    0,
-    'Version pending changesets before publishing',
-  );
+  if (manifest.tag !== 'canary')
+    assert.equal(
+      pending.length,
+      0,
+      'Version pending changesets before publishing',
+    );
   const sourcePackages = await Promise.all(
     directories.map((d) => readJson(join(root, 'packages', d, 'package.json'))),
   );

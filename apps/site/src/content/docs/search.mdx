@@ -1,0 +1,55 @@
+---
+title: Site search
+description: Search rendered pages with a reusable header control and a static index.
+order: 8
+---
+
+Search covers the rendered text of Blog, Logs, Labs, Docs, Book, and other generated pages. It runs in the reader's browser, with an index generated during the site build. No search account or server is required.
+
+The demo and generated starter enable both pieces:
+
+```ts
+// astro.config.ts
+import alkemist from '@alkemdotdev/alkemist-astro';
+
+// Include in defineConfig({ integrations: [...] })
+alkemist({ search: true });
+```
+
+```astro
+---
+import Layout from '@alkemdotdev/alkemist-components/layout';
+---
+
+<Layout title="My notebook" search>
+  <h1>My notebook</h1>
+</Layout>
+```
+
+Use the header control or press **Command K** on macOS or **Control K** elsewhere. Type a query, follow a result, or press Escape to close search. The compact mobile control opens the same interface.
+
+## Add search to an existing site
+
+The control is also available on its own:
+
+```astro
+---
+import Search from '@alkemdotdev/alkemist-components/search';
+---
+
+<Search />
+```
+
+Enable indexing in the Alkemist integration as above, or provide your own [Pagefind index](https://pagefind.app/docs/). The component loads `pagefind/pagefind.js` beneath Astro's configured base path. An `indexUrl` prop can point to another Pagefind JavaScript bundle on your site.
+
+## Choose what is searchable
+
+`Layout` marks the main page content for indexing and excludes the shared header, footer, and search controls. In a custom layout, put `data-pagefind-body` on your content container. Add `data-pagefind-ignore` to elements such as repeated navigation that should not contribute results. Build-time indexing excludes redirect documents and 404/500 pages. Drafts and disabled sections that do not generate pages cannot enter the index.
+
+Search includes rendered text, not the contents of linked PDFs, datasets, or interactive canvases. Add a written explanation to make those resources discoverable. Site search is not an access-control boundary: any content shipped to the browser remains public.
+
+## Test and deploy
+
+Run `npm run build`, then `npm run preview` to test real search results locally. The development server does not generate the production index. Each deployment rebuilds the index with the site's current content, including sites hosted beneath a subpath. Deploy the entire build output, including its `pagefind/` directory.
+
+For a site without search, remove the `search` prop from `Layout` and set `search: false` in the integration.

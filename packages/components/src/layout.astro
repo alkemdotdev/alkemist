@@ -2,6 +2,7 @@
 import '@alkemdotdev/alkemist-theme/theme.css';
 import './header.css';
 import HeaderIcon from './HeaderIcon.astro';
+import Search, { type SearchProps } from './search.astro';
 const base = import.meta.env.BASE_URL;
 const home = base.endsWith('/') ? base : `${base}/`;
 export interface NavLink {
@@ -19,6 +20,8 @@ export interface LayoutProps {
   navigation?: NavLink[];
   moreNavigation?: NavLink[];
   footerNavigation?: NavLink[];
+  /** Enables Pagefind-backed site search in the shared header. */
+  search?: boolean | SearchProps;
 }
 type Props = LayoutProps;
 const {
@@ -36,7 +39,9 @@ const {
   ],
   moreNavigation = [],
   footerNavigation = [],
+  search = false,
 } = Astro.props;
+const searchProps = search === true ? {} : search || undefined;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 function current(href: string) {
   if (Astro.url.pathname === href) return 'page';
@@ -82,7 +87,7 @@ function current(href: string) {
         <div class="alk-preview">Branch preview · development build</div>
       )
     }
-    <header class="alk-header">
+    <header class="alk-header" data-pagefind-ignore>
       <a class="alk-brand" href={home} aria-label={`${siteName} home`}
         >{siteName === 'Alkemist' ? 'alkemist' : siteName}{
           tagline && <span class="alk-brand-detail"> / {tagline}</span>
@@ -122,6 +127,7 @@ function current(href: string) {
         }
       </nav>
       <div class="alk-header-actions">
+        {searchProps && <Search variant="header" {...searchProps} />}
         <details
           class="alk-theme-menu"
           data-header-panel
@@ -208,11 +214,11 @@ function current(href: string) {
         }
       </div>
     </header>
-    <main id="main" class="alk-main">
+    <main id="main" class="alk-main" data-pagefind-body>
       {section && <p class="alk-eyebrow">{section}</p>}
       <slot />
     </main>
-    <footer class="alk-footer">
+    <footer class="alk-footer" data-pagefind-ignore>
       <a href={home}>{siteName}</a><span
         >Made with the Alkemist theme on Astro.</span
       >

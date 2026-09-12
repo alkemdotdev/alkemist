@@ -25,6 +25,7 @@
   "type": "module",
   "exports": {
     "./layout": "./src/layout/index.ts",
+    "./search": "./src/search/index.ts",
     "./math": "./src/math/index.ts",
     "./code": "./src/code/index.ts",
     "./chart": "./src/chart/index.ts",
