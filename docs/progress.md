@@ -277,3 +277,24 @@ Cloudflare's live managed configuration matches `infra/cloudflare.json`. Publica
 The demo header now reads Blog, Labs, Docs, Info, and More. More contains only Test and uses the shared line icon as a downward chevron. The mobile menu preserves that order, with Test in its secondary group. Docs remains optional for consuming sites: the demo owns the extra primary link in SiteLayout, while AlkLayout's default links are unchanged. Updated the navigation reference and development articles to describe the current layout.
 
 `npm run verify` passed with zero Astro diagnostics, 25 tests, and 51 checked HTML pages. The independent starter gate passed packed installation, changed-package updates, production and GitLab preview subpaths, lockfile reinstall, and provider scaffolds. Browser validation passed 63 assertions without page exceptions: both boards at 1440px, 768px, 651px, 650px, 390px, and 320px; single-row layout and unclipped identity; exact link order; direct Docs navigation and nested-section highlighting; keyboard and outside-click dismissal; mobile appearance/menu exclusion; and no-JavaScript navigation. Desktop, narrow desktop, and mobile-menu screenshots were inspected. Evidence is retained under ignored `.alkemist/docs-nav-*` files. Publication uses the native Git preview-then-main workflow.
+
+## 2026-09-12 — Coordinated package beta preparation
+
+Prepared the public package boundary as `@alkemdotdev/alkemist-components`,
+`@alkemdotdev/alkemist-theme`, `@alkemdotdev/alkemist-astro`, and `create-alkemist` at
+`1.0.0-beta.1`. The site, adoption guide, agent instructions, component catalog,
+and package publishing guide now distinguish importing one component, opting
+into theme or integration behavior, generating a complete npm site, and using
+the existing tarball source generator with `--update`.
+
+Registry publication remains pending npm organization bootstrap. The release
+policy records fixed versions through Changesets, `beta` before promotion to
+`latest`, GitHub OIDC rather than an npm secret, and unchanged Cloudflare Git
+builds. This entry records prepared documentation and package boundaries; it
+does not claim an npm publication or deployment.
+
+## 2026-09-12 — Component release validation
+
+The npm account is authenticated as `alkemdotdev` and account-level 2FA is enabled. Public packages use `@alkemdotdev/alkemist-{components,theme,astro}` plus `create-alkemist`. GitHub permits automated release PRs while keeping default workflow permissions read-only; the npm environment permits `main` only.
+
+Local verification passed: `npm run verify` (77 checked files, no errors/warnings; 52 output pages checked), independent starter and upgrade preservation, and actual packed package consumption with standalone styles, host-owned MDX, strict invalid-math rejection, and lockfile reinstall. Browser review exercised desktop/mobile docs and standalone figures. It exposed and corrected component box-sizing and palette fallbacks that had relied on the full theme. Registry publication and deployed release identity are still pending.

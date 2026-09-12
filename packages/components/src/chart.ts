@@ -1,3 +1,4 @@
+import { ALK_INKS } from '@alkemdotdev/alkemist-theme/palette';
 import type embed from 'vega-embed';
 import type { Result } from 'vega-embed';
 import {
@@ -128,16 +129,23 @@ class AlkChartElement extends HTMLElement {
   private resolveTheme(): AlkChartTheme {
     const probe = document.createElement('span');
     probe.style.display = 'none';
-    this.append(probe);
-    const resolve = (property: string) => {
-      probe.style.color = `var(${property})`;
+    const figure = this.querySelector<HTMLElement>('.alk-figure')!;
+    figure.append(probe);
+    const resolve = (property: string, fallback: string) => {
+      probe.style.color = `var(${property}, ${fallback})`;
       return getComputedStyle(probe).color;
     };
     const theme: AlkChartTheme = {
-      text: getComputedStyle(this).color,
-      rule: resolve('--alk-rule'),
+      text: getComputedStyle(figure).color,
+      rule: resolve('--alk-rule', '#ccc'),
       inks: Object.fromEntries(
-        alkChartInks.map((ink) => [ink, resolve(`--alk-ink-${ink}`)]),
+        alkChartInks.map((ink) => [
+          ink,
+          resolve(
+            `--alk-ink-${ink}`,
+            ALK_INKS.find((color) => color.id === ink)!.hex,
+          ),
+        ]),
       ) as AlkChartTheme['inks'],
     };
     probe.remove();

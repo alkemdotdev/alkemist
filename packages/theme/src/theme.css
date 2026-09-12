@@ -12,23 +12,11 @@
 @import '@fontsource/ubuntu-mono/700.css';
 @import '@fontsource/caveat/400.css';
 @import '@fontsource/caveat/600.css';
-@import './inks.css';
+@import './tokens.css';
 @import './math-code.css';
-@import './header.css';
 
 :root {
   color-scheme: light dark;
-  --alk-paper: light-dark(#eee, #111);
-  --alk-ink: light-dark(#111, #eee);
-  --alk-muted: light-dark(#5e5e5e, #aaa);
-  --alk-rule: light-dark(#ccc, #383838);
-  --alk-accent: var(--alk-ink);
-  --alk-field: light-dark(#e5e5e5, #191919);
-  --alk-code: #111;
-  --alk-sans: 'Ubuntu', sans-serif;
-  --alk-serif: 'IBM Plex Serif', serif;
-  --alk-mono: 'Ubuntu Mono', monospace;
-  --alk-hand: 'Caveat', cursive;
   font-family: var(--alk-sans);
   font-size: 17px;
   line-height: 1.65;

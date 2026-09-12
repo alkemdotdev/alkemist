@@ -1,4 +1,9 @@
-import { getTheme, initTheme, setTheme, type AlkTheme } from './theme';
+import {
+  getTheme,
+  initTheme,
+  setTheme,
+  type AlkTheme,
+} from '@alkemdotdev/alkemist-theme';
 
 const header = document.querySelector<HTMLElement>('.alk-header');
 if (header) {

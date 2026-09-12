@@ -1,5 +1,5 @@
 import { defineConfig } from 'astro/config';
-import alkemist from '@alkemist/astro';
+import alkemist from '@alkemdotdev/alkemist-astro';
 import { redirects } from './redirects.mjs';
 import { writeFile } from 'node:fs/promises';
 

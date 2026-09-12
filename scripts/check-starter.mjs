@@ -48,6 +48,9 @@ function run(args, env = baseEnv) {
     throw error;
   }
 }
+function installedPackageFile(packageName, ...segments) {
+  return join(site, 'node_modules', ...packageName.split('/'), ...segments);
+}
 async function snapshot(directory) {
   const result = {};
   async function walk(folder) {
@@ -74,11 +77,11 @@ try {
   console.log('Installing actual npm pack tarballs outside the workspace…');
   run(['install', '--no-audit', '--no-fund']);
   run(['run', 'verify']);
-  for (const name of ['astro', 'ui']) {
+  for (const snapshot of initial.packages) {
     assert(
       !(
         await readFile(
-          join(site, `node_modules/@alkemist/${name}/package.json`),
+          installedPackageFile(snapshot.name, 'package.json'),
           'utf8',
         )
       ).includes('workspace:'),
@@ -103,7 +106,7 @@ try {
     filter: (source) => !source.split(sep).includes('node_modules'),
   });
   await appendFile(
-    join(fixture, 'packages/ui/src/theme.css'),
+    join(fixture, 'packages/theme/src/theme.css'),
     '\n/* Consumer upgrade fixture: changed package bytes. */\n',
   );
   const updated = await createSite({
@@ -111,15 +114,23 @@ try {
     update: true,
     sourceRoot: fixture,
   });
-  assert.notEqual(
-    initial.packages.find((pkg) => pkg.name === '@alkemist/ui').sha256,
-    updated.packages.find((pkg) => pkg.name === '@alkemist/ui').sha256,
+  const themePackage = initial.packages.find((pkg) =>
+    pkg.name.endsWith('alkemist-theme'),
   );
+  assert(themePackage, 'Starter did not include an Alkemist theme package.');
+  const updatedThemePackage = updated.packages.find(
+    (pkg) => pkg.name === themePackage.name,
+  );
+  assert(
+    updatedThemePackage,
+    'Updated starter did not include the original theme package.',
+  );
+  assert.notEqual(themePackage.sha256, updatedThemePackage.sha256);
   run(['install', '--no-audit', '--no-fund']);
   assert(
     (
       await readFile(
-        join(site, 'node_modules/@alkemist/ui/src/theme.css'),
+        installedPackageFile(themePackage.name, 'src', 'theme.css'),
         'utf8',
       )
     ).includes('Consumer upgrade fixture'),

@@ -23,7 +23,13 @@
     "create:site": "node scripts/create-site.mjs",
     "check:starter": "node scripts/check-starter.mjs",
     "generate:palette": "node scripts/generate-palette.mjs",
-    "generate:fixtures": "node scripts/generate-test-data.mjs && node scripts/generate-test-model.mjs"
+    "generate:fixtures": "node scripts/generate-test-data.mjs && node scripts/generate-test-model.mjs",
+    "changeset": "changeset",
+    "version:packages": "changeset version && npm install --package-lock-only --ignore-scripts",
+    "release:pack": "node scripts/release.mjs pack",
+    "check:packages": "node scripts/check-packages.mjs",
+    "release:publish": "node scripts/release.mjs publish",
+    "release:verify": "node scripts/release.mjs verify"
   },
   "allowScripts": {
     "esbuild@0.28.2": true,
@@ -31,7 +37,8 @@
   },
   "devDependencies": {
     "prettier": "3.9.6",
-    "prettier-plugin-astro": "0.14.1"
+    "prettier-plugin-astro": "0.14.1",
+    "@changesets/cli": "3.0.2"
   },
   "overrides": {
     "rehype-katex": {

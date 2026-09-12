@@ -6,7 +6,7 @@ order: 9
 
 ## Available in the repository
 
-- Astro 7.3.2 with an integration package and reusable UI package.
+- Astro 7.3.2 with separate integration, component, and optional theme packages.
 - `AlkLayout`, Ubuntu and Ubuntu Mono, handwritten annotations, #eee/#111 boards, and eight fixed inks.
 - `AlkMath` and math in Markdown/MDX: KaTeX HTML and MathML, with invalid expressions rejected during the build.
 - `AlkCode` and enhanced code fences: Shiki highlighting, captions, line numbers, highlighted lines, and copy controls.
@@ -18,7 +18,7 @@ order: 9
 - An independent [site generator](/docs/getting-started/) with packaged dependencies, content-preserving snapshot updates, and an external consumer validation gate.
 - Copyable agent setup prompts, a [plain Markdown setup contract](/docs/agent-setup.md), and guides for Cloudflare, GitLab Pages, and custom hosting.
 
-The source repository is public. These packages can be installed from the generated starter's local tarballs; there is no npm release yet. The demo fixtures are synthetic and labeled as such. Cloudflare hosts this demo; GitLab and custom-provider guides are setup recipes, not claims of a completed deployment on your account.
+The source repository is public. The `1.0.0-beta.1` package set is prepared, but registry publishing awaits the first npm publication; until then, the source generator installs local tarballs. The registry generator will create a new project without owning it afterward, while the source generator remains the supported tarball update path. The demo fixtures are synthetic and labeled as such. Cloudflare hosts this demo; GitLab and custom-provider guides are setup recipes, not claims of a completed deployment on your account.
 
 ## Further work
 

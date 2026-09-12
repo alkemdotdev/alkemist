@@ -6,4 +6,4 @@ dist/
 !.env.example
 .DS_Store
 
-# Commit vendor/*.tgz and package-lock.json: CI installs these exact snapshots.
+# Commit package-lock.json: CI installs the exact dependency graph.

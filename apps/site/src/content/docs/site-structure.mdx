@@ -11,7 +11,7 @@ The appearance icon opens **Whiteboard**, **Blackboard**, and **System** choices
 Client-side widgets can share the same preference without depending on header markup:
 
 ```ts
-import { getTheme, setTheme } from '@alkemist/ui/theme';
+import { getTheme, setTheme } from '@alkemdotdev/alkemist-theme';
 
 setTheme('dark'); // 'light', 'dark', or 'system'
 const preference = getTheme();
@@ -52,7 +52,7 @@ For example, a site with project documentation can add it explicitly:
 
 ```astro
 ---
-import AlkLayout from '@alkemist/ui/AlkLayout.astro';
+import AlkLayout from '@alkemdotdev/alkemist-components/AlkLayout.astro';
 ---
 
 <AlkLayout

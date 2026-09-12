@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { ALK_INKS, inkContrast } from '../packages/ui/src/palette.ts';
+import { ALK_INKS, inkContrast } from '../packages/theme/src/palette.ts';
 
 test('each invariant ink clears 3:1 on both boards and 4.5:1 in code panels', () => {
   for (const ink of ALK_INKS) {

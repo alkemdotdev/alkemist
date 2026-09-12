@@ -9,7 +9,7 @@ alk-model.alk-model {
   width: 100%;
   height: clamp(300px, 48vw, 570px);
   overflow: hidden;
-  background: var(--alk-paper);
+  background: var(--alk-paper, #fff);
 }
 .alk-model canvas,
 .alk-model-poster {
@@ -38,7 +38,7 @@ alk-model.alk-model {
   bottom: 1rem;
   display: flex;
   gap: 0.6rem;
-  font: 0.7rem/1 var(--alk-mono);
+  font: 0.7rem/1 var(--alk-mono, ui-monospace, monospace);
   pointer-events: none;
 }
 .alk-model-axis span:nth-child(1) {
@@ -55,8 +55,8 @@ alk-model.alk-model {
   left: var(--alk-figure-gutter);
   bottom: 1rem;
   margin: 0;
-  font: 0.7rem/1.4 var(--alk-mono);
-  color: var(--alk-muted);
+  font: 0.7rem/1.4 var(--alk-mono, ui-monospace, monospace);
+  color: var(--alk-muted, #5e5e5e);
   pointer-events: none;
 }
 .alk-model-presets,

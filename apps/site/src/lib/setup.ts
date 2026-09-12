@@ -1,5 +1,5 @@
 export const sourceAccess =
-  'Public source preview · packages are not on npm yet';
+  'Beta packages are prepared · registry publication awaits the first npm publication';
 
 export const setupProviders = [
   {
@@ -31,11 +31,8 @@ export const setupProviders = [
 export type AlkSetupProvider = (typeof setupProviders)[number];
 
 export function setupCommands(provider: AlkSetupProvider) {
-  return `git clone https://github.com/alkemdotdev/alkemist.git alkemist-source
-cd alkemist-source
-npm ci
-npm run create:site -- ../my-lab --provider ${provider.id}
-cd ../my-lab
+  return `npm create alkemist@beta -- my-lab --provider ${provider.id}
+cd my-lab
 npm install
 npm run verify
 npm run dev`;
@@ -46,9 +43,9 @@ export function setupPrompt(provider: AlkSetupProvider) {
 
 Read https://alkemist.alkem.dev/docs/agent-setup.md and https://alkemist.alkem.dev${provider.guide} first.
 
-Inspect my current workspace and its instructions. Establish the site name, destination directory/repository, hosting account, and intended URL from available context; ask together for the missing details. The Alkemist source repository is public, but no npm starter has been published.
+Inspect my current workspace and its instructions. Establish the site name, destination directory/repository, hosting account, and intended URL from available context; ask together for the missing details. The beta package interface is prepared as 1.0.0-beta.1, but registry publication awaits the first npm publication; if npm cannot resolve it, use the documented source generator instead of treating that as a successful install.
 
-Use the source repository's create:site generator with --provider ${provider.id} to create a separate site. Preserve existing work and make the site identity, content, and Git remote mine. Include Blog, Labs, and Info; add my own Docs only if needed. Keep a small Test page for styling and interactions.
+Use \`npm create alkemist@beta -- my-lab --provider ${provider.id}\` in an empty destination when the beta is published. The registry generator creates files once and never takes ownership of user files afterward. To use the source workflow, clone Alkemist and run \`npm run create:site -- ../my-lab --provider ${provider.id}\`; it creates tarball-backed packages and its explicit \`--update\` is the supported snapshot refresh path. Preserve existing work and make the site identity, content, and Git remote mine. Include Blog, Labs, and Info; add my own Docs only if needed. Keep a small Test page for styling and interactions.
 
 Install dependencies, commit the lockfile and vendored packages, verify the build, and exercise the site on desktop and mobile. Set up the chosen provider's Git deployment and domain using my account and the documented recipe. Follow my existing authorization for external changes; identify any missing account access or consequential decision clearly.
 
@@ -59,7 +56,7 @@ export function agentSetupGuide() {
   return `# Set up an Alkemist website
 
 This is the agent-readable companion to https://alkemist.alkem.dev/docs/getting-started/.
-Contract version: 2. https://github.com/alkemdotdev/alkemist is public, but no create-alkemist command or npm release is claimed.
+Contract version: 3. The public package interface is versioned at 1.0.0-beta.1, but registry publication awaits the first npm publication. Do not report an npm install as available until the registry resolves it.
 
 ## Inputs and workspace
 
@@ -69,7 +66,7 @@ Read the destination's instructions and inspect Git status/remotes before edits.
 
 ## Generate and customize
 
-Use Node 24.20.0, matching the source .nvmrc. Clone the public source, run npm ci in that checkout, and run its create:site generator with the chosen provider. The generated site uses real local npm package tarballs under vendor/; retain those files and commit the generated package-lock.json. Package snapshots are not a public registry release.
+For a new site after the beta is published, use \`npm create alkemist@beta -- <directory> --provider cloudflare|gitlab|custom\`. The registry generator writes an empty-destination project once; it does not initialize Git, install dependencies, create a deployment, or own user files after creation. If the registry beta is unavailable, use Node 24.20.0, clone the public source, run npm ci there, and run its create:site generator. That generated site uses local npm tarballs under vendor/; retain them and commit the generated package-lock.json. Its explicit \`--update\` refreshes snapshots while preserving user-owned files.
 
 Set the site's name, description, navigation, content, favicon, and canonical URL in its own configuration. Keep user-owned content and custom styles out of the shared packages. The main sections are Blog, Labs, and Info. Docs is optional project documentation; Test is one styling/interaction page. Link to installed component docs, and use current explicit component props and public asset URLs. File-relative figure APIs and metadata sidecars are still proposals.
 
@@ -103,6 +100,6 @@ Record setup, hosting configuration, and checked results in the new repository. 
 
 ## Updates
 
-Use the generator's explicit --update mode from a reviewed newer Alkemist source checkout to refresh package snapshots in a generated site. Review the dependency diff, reinstall to update the lockfile, run verification, and exercise customized pages. Source snapshot refresh checks preservation of user files; it does not guarantee compatibility with every future Alkemist version.
+For a source-generated site, use the generator's explicit \`--update\` mode from a reviewed newer Alkemist source checkout to refresh package snapshots. Review the dependency diff, reinstall to update the lockfile, run verification, and exercise customized pages. Source snapshot refresh checks preservation of user files; it does not guarantee compatibility with every future Alkemist version. For a registry-generated site, update dependencies through the package manager and follow the release notes; the generator never modifies files after creation.
 `;
 }

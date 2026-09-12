@@ -1,0 +1,53 @@
+---
+title: Three packages, one site you own
+description: Alkemist separates reusable components, optional theme behavior, and Astro defaults so an existing site can adopt only what it needs.
+date: '2026-09-12'
+order: 2
+---
+
+Alkemist now has three public package boundaries. They are prepared together as
+`1.0.0-beta.1`; registry publication is pending the the first npm publication,
+so this is a documented release interface, not a claim that the beta is already
+available to install.
+
+## Components begin with one useful thing
+
+`@alkemdotdev/alkemist-components` contains the visible building blocks: `AlkLayout`,
+`AlkChart`, `AlkModel`, `AlkMath`, `AlkCode`, and the bounded
+`AlkShader` study. An existing Astro site can import a single component without
+adopting a starter, a stylesheet system, or an integration.
+
+That is the smallest useful promise. A chart remains a chart in the site's own
+page and data model; Alkemist supplies the supported rendering and interaction
+contract around it.
+
+## Theme and integration are choices
+
+`@alkemdotdev/alkemist-theme` holds the board tokens, local fonts, invariant palette, CSS,
+and browser preference helpers. A site can use those pieces when it wants the
+Alkemist visual language, or keep its own theme while using a component.
+
+`@alkemdotdev/alkemist-astro` holds the optional integration and Markdown/MDX defaults. It
+is useful when a site wants those authoring defaults, but component imports do
+not depend on configuring the integration.
+
+The split keeps the dependency graph legible: components need the theme's
+shared values internally, while an author chooses whether the page imports the
+theme's global CSS or integration behavior.
+
+## A generator is an initial handoff
+
+After registry publication, `npm create alkemist@beta` will create a complete
+site in an empty directory. The command writes files once. It does not create a
+repository, provision a host, deploy a page, or revisit the project to update
+it later. Its owner makes the next changes.
+
+Before that beta is published, the repository's source generator remains the
+working path. It places packed package snapshots in `vendor/`; its explicit
+`--update` refreshes those snapshots while preserving the generated site's
+content, assets, configuration, and custom source. The two paths make different
+ownership promises on purpose.
+
+The [getting-started guide](/docs/getting-started/) now presents all three
+adoption paths, and [the publishing guide](https://github.com/alkemdotdev/alkemist/blob/main/docs/publishing.md)
+records the beta-to-stable release policy.

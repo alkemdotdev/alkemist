@@ -1,7 +1,6 @@
 {
-  "name": "@alkemist/astro",
-  "version": "0.1.0",
-  "private": true,
+  "name": "@alkemdotdev/alkemist-astro",
+  "version": "1.0.0-beta.1",
   "description": "Astro integration for Alkemist technical publishing defaults.",
   "license": "Apache-2.0",
   "repository": {
@@ -28,13 +27,14 @@
     ".": "./src/index.ts"
   },
   "files": [
-    "src"
+    "src",
+    "CHANGELOG.md"
   ],
   "peerDependencies": {
     "astro": "^7.3.2"
   },
   "dependencies": {
-    "@alkemist/ui": "0.1.0",
+    "@alkemdotdev/alkemist-components": "1.0.0-beta.1",
     "@astrojs/markdown-remark": "7.3.1",
     "@astrojs/mdx": "8.0.1",
     "katex": "0.18.7",

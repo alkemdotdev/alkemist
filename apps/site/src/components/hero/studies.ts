@@ -1,4 +1,4 @@
-import { getTheme, setTheme } from '@alkemist/ui/theme';
+import { getTheme, setTheme } from '@alkemdotdev/alkemist-theme';
 
 type HeroTake = 'sculpture' | 'flow' | 'surface';
 const validTake = (value: unknown): value is HeroTake =>

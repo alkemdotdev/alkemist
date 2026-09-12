@@ -30,11 +30,11 @@
   display: none;
 }
 .alk-chart-hint {
-  color: var(--alk-muted);
-  font: 0.7rem/1.5 var(--alk-mono);
+  color: var(--alk-muted, #5e5e5e);
+  font: 0.7rem/1.5 var(--alk-mono, ui-monospace, monospace);
 }
 .alk-chart-table {
-  border-top: 1px solid var(--alk-rule);
+  border-top: 1px solid var(--alk-rule, #ccc);
   margin: 0 var(--alk-figure-gutter);
   font-size: 0.76rem;
 }
@@ -48,18 +48,18 @@
   margin-bottom: 0.85rem;
 }
 .alk-chart-table-scroll table {
-  font: 0.75rem var(--alk-mono);
+  font: 0.75rem var(--alk-mono, ui-monospace, monospace);
   width: 100%;
 }
 .alk-chart-table-scroll caption {
   text-align: left;
   padding-bottom: 0.8rem;
-  color: var(--alk-muted);
+  color: var(--alk-muted, #5e5e5e);
 }
 .alk-chart-table-scroll th {
   position: sticky;
   top: 0;
-  background: var(--alk-paper);
+  background: var(--alk-paper, #fff);
 }
 .alk-chart-table-scroll td,
 .alk-chart-table-scroll th {
@@ -67,15 +67,15 @@
   padding: 0.55rem 0.7rem;
 }
 #vg-tooltip-element {
-  font-family: var(--alk-sans);
-  background: var(--alk-paper);
-  color: var(--alk-ink);
-  border: 1px solid var(--alk-rule);
+  font-family: var(--alk-sans, system-ui, sans-serif);
+  background: var(--alk-paper, #fff);
+  color: var(--alk-ink, #111);
+  border: 1px solid var(--alk-rule, #ccc);
   border-radius: 4px;
   box-shadow: 0 3px 18px #0002;
 }
 #vg-tooltip-element td.key {
-  color: var(--alk-muted);
+  color: var(--alk-muted, #5e5e5e);
 }
 @media (max-width: 600px) {
   .alk-chart-hint {

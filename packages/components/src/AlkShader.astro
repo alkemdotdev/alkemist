@@ -1,6 +1,7 @@
 ---
 import './shader.css';
 import './figure.css';
+import { ALK_INKS } from '@alkemdotdev/alkemist-theme/palette';
 
 export interface AlkShaderProps {
   title?: string;
@@ -25,16 +26,7 @@ const initialAngle = Math.max(
   0,
   Math.min(180, Number.isFinite(angle) ? angle : 24),
 );
-const fallbackInks = [
-  'cobalt',
-  'cyan',
-  'teal',
-  'fern',
-  'ochre',
-  'vermilion',
-  'rose',
-  'violet',
-];
+const fallbackInks = ALK_INKS;
 ---
 
 <alk-shader class:list={['alk-shader', className]} data-state="idle">
@@ -60,12 +52,15 @@ const fallbackInks = [
               fill="none"
               stroke-width="2"
             >
-              {Array.from({ length: 14 }, (_, index) => (
-                <circle
-                  r={28 + index * 22}
-                  style={`stroke:var(--alk-ink-${fallbackInks[index % 8]})`}
-                />
-              ))}
+              {Array.from({ length: 14 }, (_, index) => {
+                const { id, hex } = fallbackInks[index % fallbackInks.length];
+                return (
+                  <circle
+                    r={28 + index * 22}
+                    style={`stroke:var(--alk-ink-${id}, ${hex})`}
+                  />
+                );
+              })}
             </g>
           ))
         }

@@ -1,4 +1,4 @@
-import type { AlkInk } from '@alkemist/ui/palette';
+import type { AlkInk } from '@alkemdotdev/alkemist-theme/palette';
 
 export type Vec3 = [number, number, number];
 export type FormInk = AlkInk | 'silver' | 'graphite' | 'construction';

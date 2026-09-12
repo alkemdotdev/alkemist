@@ -1,4 +1,4 @@
-import { getTheme, setTheme } from '@alkemist/ui/theme';
+import { getTheme, setTheme } from '@alkemdotdev/alkemist-theme';
 import { formStudies, fieldStudies } from './catalog';
 class FormStudies extends HTMLElement {
   connectedCallback() {

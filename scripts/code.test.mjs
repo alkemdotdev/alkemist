@@ -4,7 +4,7 @@ import { codeToHast, codeToHtml } from 'shiki';
 import {
   AlkCodeTheme,
   createAlkCodeTransformer,
-} from '../packages/ui/src/code-theme.ts';
+} from '../packages/components/src/code-theme.ts';
 
 function nodes(root) {
   return [root, ...(root.children ?? []).flatMap(nodes)];

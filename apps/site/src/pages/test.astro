@@ -1,11 +1,11 @@
 ---
 import SiteLayout from '../layouts/SiteLayout.astro';
-import AlkMath from '@alkemist/ui/AlkMath.astro';
-import AlkCode from '@alkemist/ui/AlkCode.astro';
-import AlkChart from '@alkemist/ui/AlkChart.astro';
-import AlkShader from '@alkemist/ui/AlkShader.astro';
-import AlkModel from '@alkemist/ui/AlkModel.astro';
-import { ALK_INKS } from '@alkemist/ui/palette';
+import AlkMath from '@alkemdotdev/alkemist-components/AlkMath.astro';
+import AlkCode from '@alkemdotdev/alkemist-components/AlkCode.astro';
+import AlkChart from '@alkemdotdev/alkemist-components/AlkChart.astro';
+import AlkShader from '@alkemdotdev/alkemist-components/AlkShader.astro';
+import AlkModel from '@alkemdotdev/alkemist-components/AlkModel.astro';
+import { ALK_INKS } from '@alkemdotdev/alkemist-theme/palette';
 import RichSpecimen from '../components/RichSpecimen.mdx';
 import ExampleSource from '../components/ExampleSource.astro';
 import { isPreview } from '../lib/deployment';
@@ -96,7 +96,7 @@ outColor = vec4(mix(board, ink, contour), 1.0);`,
     <ExampleSource
       label="Model"
       code={`---
-import AlkModel from '@alkemist/ui/AlkModel.astro';
+import AlkModel from '@alkemdotdev/alkemist-components/AlkModel.astro';
 ---
 
 <AlkModel
@@ -212,7 +212,7 @@ import AlkModel from '@alkemist/ui/AlkModel.astro';
     </div>
     <ExampleSource
       label="Equation"
-      code={'---\nimport AlkMath from \'@alkemist/ui/AlkMath.astro\';\n---\n\n<AlkMath tex={String.raw`e^{i\\pi} + 1 = 0`} label="Euler’s identity" />'}
+      code={'---\nimport AlkMath from \'@alkemdotdev/alkemist-components/AlkMath.astro\';\n---\n\n<AlkMath tex={String.raw`e^{i\\pi} + 1 = 0`} label="Euler’s identity" />'}
       reference="/docs/math-code/"
     />
   </section>
@@ -242,7 +242,7 @@ import AlkModel from '@alkemist/ui/AlkModel.astro';
       <ExampleSource
         label="Line chart"
         code={`---
-import AlkChart from '@alkemist/ui/AlkChart.astro';
+import AlkChart from '@alkemdotdev/alkemist-components/AlkChart.astro';
 ---
 
 <AlkChart
@@ -280,7 +280,7 @@ import AlkChart from '@alkemist/ui/AlkChart.astro';
         <ExampleSource
           label="Bar chart"
           code={`---
-import AlkChart from '@alkemist/ui/AlkChart.astro';
+import AlkChart from '@alkemdotdev/alkemist-components/AlkChart.astro';
 ---
 
 <AlkChart
@@ -316,7 +316,7 @@ import AlkChart from '@alkemist/ui/AlkChart.astro';
         <ExampleSource
           label="Donut chart"
           code={`---
-import AlkChart from '@alkemist/ui/AlkChart.astro';
+import AlkChart from '@alkemdotdev/alkemist-components/AlkChart.astro';
 ---
 
 <AlkChart
@@ -352,7 +352,7 @@ import AlkChart from '@alkemist/ui/AlkChart.astro';
         <ExampleSource
           label="Scatter chart"
           code={`---
-import AlkChart from '@alkemist/ui/AlkChart.astro';
+import AlkChart from '@alkemdotdev/alkemist-components/AlkChart.astro';
 ---
 
 <AlkChart
@@ -390,7 +390,7 @@ import AlkChart from '@alkemist/ui/AlkChart.astro';
         <ExampleSource
           label="Heatmap chart"
           code={`---
-import AlkChart from '@alkemist/ui/AlkChart.astro';
+import AlkChart from '@alkemdotdev/alkemist-components/AlkChart.astro';
 ---
 
 <AlkChart
@@ -430,7 +430,7 @@ import AlkChart from '@alkemist/ui/AlkChart.astro';
         <ExampleSource
           label="Pie chart"
           code={`---
-import AlkChart from '@alkemist/ui/AlkChart.astro';
+import AlkChart from '@alkemdotdev/alkemist-components/AlkChart.astro';
 ---
 
 <AlkChart
@@ -516,7 +516,7 @@ import AlkChart from '@alkemist/ui/AlkChart.astro';
     <ExampleSource
       label="Code component"
       code={`---
-import AlkCode from '@alkemist/ui/AlkCode.astro';
+import AlkCode from '@alkemdotdev/alkemist-components/AlkCode.astro';
 
 const code = \`${tabs[0].code}\`;
 ---
@@ -544,7 +544,7 @@ const code = \`${tabs[0].code}\`;
     <ExampleSource
       label="Shader"
       code={`---
-import AlkShader from '@alkemist/ui/AlkShader.astro';
+import AlkShader from '@alkemdotdev/alkemist-components/AlkShader.astro';
 ---
 
 <AlkShader title="Two-source interference" frequency={9} angle={24} />`}

@@ -7,7 +7,7 @@ alk-shader.alk-shader {
   position: relative;
   height: clamp(280px, 42vw, 520px);
   overflow: hidden;
-  background: var(--alk-paper);
+  background: var(--alk-paper, #fff);
 }
 .alk-shader-viewport canvas,
 .alk-shader-poster {
@@ -31,9 +31,9 @@ alk-shader.alk-shader {
   left: var(--alk-figure-gutter);
   bottom: 1rem;
   margin: 0;
-  background: var(--alk-paper);
-  color: var(--alk-muted);
-  font: 0.7rem/1.6 var(--alk-mono);
+  background: var(--alk-paper, #fff);
+  color: var(--alk-muted, #5e5e5e);
+  font: 0.7rem/1.6 var(--alk-mono, ui-monospace, monospace);
   padding: 0.3rem 0.5rem;
   pointer-events: none;
 }
@@ -53,12 +53,12 @@ alk-shader.alk-shader {
   margin-bottom: 0.4rem;
 }
 .alk-shader-controls output {
-  color: var(--alk-muted);
+  color: var(--alk-muted, #5e5e5e);
 }
 .alk-shader-controls input {
   display: block;
   width: 100%;
-  accent-color: var(--alk-ink-violet);
+  accent-color: var(--alk-ink-violet, #a464e3);
 }
 @media (max-width: 600px) {
   .alk-shader-controls.alk-figure-controls {

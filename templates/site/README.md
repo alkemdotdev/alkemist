@@ -1,6 +1,6 @@
 # Your Alkemist site
 
-This is an independent Astro project. Its content, navigation, styles, and hosting configuration belong to you. Alkemist is installed from two local package snapshots in `vendor/`; no unpublished npm command is required.
+This is an independent Astro project. Its content, navigation, styles, and hosting configuration belong to you. Alkemist is installed from versioned npm packages pinned in `package.json`.
 
 ```sh
 npm install
@@ -20,12 +20,6 @@ Follow HOSTING.md for the provider selected when generating this site. Set `SITE
 
 ## Updating the installed packages
 
-Obtain a newer Alkemist source checkout and run its `npm ci`. From that source checkout, run:
+Choose a newer documented Alkemist release, update the three `@alkemdotdev/alkemist-*` versions together in `package.json`, then run `npm install` and `npm run verify`. Inspect the dependency diff and changed pages before committing the package manifest and lockfile.
 
-```sh
-npm run create:site -- /absolute/path/to/this-site --update
-```
-
-Then, in this site, run `npm install` and `npm run verify`, inspect the changes, and exercise the browser. Commit the new vendor files, package.json, and package-lock.json together when satisfied. Keep the previous package snapshot for rollback.
-
-The update command only changes package references, vendor snapshots, and `alkemist.starter.json`; it preserves your content, styles, navigation, and provider setup. This workflow checks snapshot replacement, not compatibility with every future release. Read release migration notes before changing a package's major version. It does not automatically migrate your site's Astro version.
+The packages do not replace your content, styles, navigation, or provider setup. Read release migration notes before changing a package's major version. This workflow does not automatically migrate your site's Astro version.

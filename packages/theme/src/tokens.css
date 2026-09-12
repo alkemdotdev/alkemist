@@ -1,0 +1,16 @@
+@import './inks.css';
+
+/* Tokens only: the host retains its fonts, layout, and color-scheme policy. */
+:root {
+  --alk-paper: light-dark(#eee, #111);
+  --alk-ink: light-dark(#111, #eee);
+  --alk-muted: light-dark(#5e5e5e, #aaa);
+  --alk-rule: light-dark(#ccc, #383838);
+  --alk-accent: var(--alk-ink);
+  --alk-field: light-dark(#e5e5e5, #191919);
+  --alk-code: #111;
+  --alk-sans: 'Ubuntu', sans-serif;
+  --alk-serif: 'IBM Plex Serif', serif;
+  --alk-mono: 'Ubuntu Mono', monospace;
+  --alk-hand: 'Caveat', cursive;
+}

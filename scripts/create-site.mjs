@@ -127,7 +127,7 @@ export async function createSite({
   const temporary = await mkdtemp(join(tmpdir(), 'alkemist-pack-'));
   try {
     const snapshots = [];
-    for (const name of ['ui', 'astro']) {
+    for (const name of ['components', 'theme', 'astro']) {
       const packageDir = join(root, 'packages', name);
       const pkg = await readJson(join(packageDir, 'package.json'));
       const invocation = npmInvocation([

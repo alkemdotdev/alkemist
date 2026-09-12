@@ -1,0 +1,117 @@
+name: Release packages
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions: {}
+concurrency:
+  group: alkemist-release
+  cancel-in-progress: false
+jobs:
+  prepare:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      pending: ${{ steps.mode.outputs.pending }}
+      publish: ${{ steps.mode.outputs.publish }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
+      - run: npm ci
+      - name: Check for pending release notes
+        id: mode
+        run: node scripts/release-mode.mjs
+      - run: npm run format:check
+      - run: npm run verify
+      - run: npm run check:starter
+      - run: npm run release:pack
+      - run: npm run check:packages
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: steps.mode.outputs.publish == 'true'
+        with:
+          name: npm-release
+          path: .alkemist/release/
+          retention-days: 30
+          if-no-files-found: error
+  version:
+    needs: prepare
+    if: needs.prepare.outputs.pending == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
+      - run: npm ci
+      - uses: changesets/action/version@0138f456ec3d73906fcd11169ce59502d8d241c1 # v2 source revision
+        with:
+          script: npm run version:packages
+          commit-message: 'chore: version Alkemist packages'
+          pr-title: 'chore: release Alkemist packages'
+  publish:
+    needs: prepare
+    if: needs.prepare.outputs.publish == 'true'
+    runs-on: ubuntu-latest
+    environment: npm
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: npm-release
+          path: .alkemist/release/
+      - name: Publish the verified tarballs through npm OIDC
+        id: publish
+        run: node scripts/release.mjs publish
+      - name: Record GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_VERSION: ${{ steps.publish.outputs.version }}
+          RELEASE_CHANNEL: ${{ steps.publish.outputs.tag }}
+        run: |
+          release_tag="v${RELEASE_VERSION}"
+          if ! gh release view "$release_tag" > /dev/null 2>&1; then
+            release_args=()
+            if [ "$RELEASE_CHANNEL" = beta ]; then release_args+=(--prerelease); fi
+            gh release create "$release_tag" --target "$GITHUB_SHA" --title "Alkemist $RELEASE_VERSION" --generate-notes "${release_args[@]}" .alkemist/release/*.tgz .alkemist/release/manifest.json
+          fi
+  registry-consumer:
+    needs: publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: npm-release
+          path: .alkemist/release/
+      - run: node scripts/check-packages.mjs --registry

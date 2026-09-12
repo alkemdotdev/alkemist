@@ -1,5 +1,5 @@
 import type { ShikiTransformer, ThemeRegistration } from 'shiki';
-import { ALK_INKS } from './palette.ts';
+import { ALK_INKS } from '@alkemdotdev/alkemist-theme/palette';
 
 const inks = Object.fromEntries(ALK_INKS.map(({ id, hex }) => [id, hex]));
 

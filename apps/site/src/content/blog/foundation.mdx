@@ -11,7 +11,7 @@ Before building those viewers, we need a foundation that can keep evolving. The 
 
 ## A maintained package, a site of your own
 
-The example application lives in `apps/site`. Its routes and articles consume `@alkemist/astro` and `@alkemist/ui`, which own the common behavior and visual system.
+The example application lives in `apps/site`. Its routes and articles consume `@alkemdotdev/alkemist-components`, with `@alkemdotdev/alkemist-theme` supplying the visual system and `@alkemdotdev/alkemist-astro` supplying integration defaults.
 
 This is the upgrade boundary: future package improvements should not overwrite the site's articles, raw datasets, or custom pages. The current repository demonstrates that separation; standalone package release and migration tests are still ahead.
 

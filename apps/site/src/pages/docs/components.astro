@@ -1,12 +1,12 @@
 ---
 import DocsLayout from '../../layouts/DocsLayout.astro';
-import AlkChart from '@alkemist/ui/AlkChart.astro';
-import AlkModel from '@alkemist/ui/AlkModel.astro';
-import AlkMath from '@alkemist/ui/AlkMath.astro';
-import AlkCode from '@alkemist/ui/AlkCode.astro';
-import AlkShader from '@alkemist/ui/AlkShader.astro';
+import AlkChart from '@alkemdotdev/alkemist-components/AlkChart.astro';
+import AlkModel from '@alkemdotdev/alkemist-components/AlkModel.astro';
+import AlkMath from '@alkemdotdev/alkemist-components/AlkMath.astro';
+import AlkCode from '@alkemdotdev/alkemist-components/AlkCode.astro';
+import AlkShader from '@alkemdotdev/alkemist-components/AlkShader.astro';
 
-const chartCode = `import AlkChart from '@alkemist/ui/AlkChart.astro';
+const chartCode = `import AlkChart from '@alkemdotdev/alkemist-components/AlkChart.astro';
 
 <AlkChart
   src="/test/oscillation.csv"
@@ -16,7 +16,7 @@ const chartCode = `import AlkChart from '@alkemist/ui/AlkChart.astro';
   xLabel="Time (s)" yLabel="Position (m)"
   height={220} sample
 />`;
-const modelCode = `import AlkModel from '@alkemist/ui/AlkModel.astro';
+const modelCode = `import AlkModel from '@alkemdotdev/alkemist-components/AlkModel.astro';
 
 <AlkModel
   src="/test/torus-knot.glb"
@@ -25,21 +25,21 @@ const modelCode = `import AlkModel from '@alkemist/ui/AlkModel.astro';
   description="A generated teaching mesh. Drag to inspect it."
 />`;
 const mathCode =
-  'import AlkMath from \'@alkemist/ui/AlkMath.astro\';\n\n<AlkMath\n  tex={String.raw`\\int_{\\partial\\Omega} \\omega = \\int_\\Omega d\\omega`}\n  label="Stokes’ theorem"\n/>';
+  'import AlkMath from \'@alkemdotdev/alkemist-components/AlkMath.astro\';\n\n<AlkMath\n  tex={String.raw`\\int_{\\partial\\Omega} \\omega = \\int_\\Omega d\\omega`}\n  label="Stokes’ theorem"\n/>';
 const source =
   'function advance(position: number, velocity: number, dt: number) {\n  return position + velocity * dt;\n}';
-const codeCode = `import AlkCode from '@alkemist/ui/AlkCode.astro';
+const codeCode = `import AlkCode from '@alkemdotdev/alkemist-components/AlkCode.astro';
 import source from './integrator.ts?raw';
 
 <AlkCode
   code={source} lang="typescript"
   title="integrator.ts" highlightLines={[2]}
 />`;
-const shaderCode = `import AlkShader from '@alkemist/ui/AlkShader.astro';
+const shaderCode = `import AlkShader from '@alkemdotdev/alkemist-components/AlkShader.astro';
 
 <AlkShader title="Two wave sources" frequency={9} angle={24} />`;
 const layoutCode = `---
-import AlkLayout from '@alkemist/ui/AlkLayout.astro';
+import AlkLayout from '@alkemdotdev/alkemist-components/AlkLayout.astro';
 ---
 
 <AlkLayout title="Research notes" siteName="My lab">
@@ -65,10 +65,32 @@ const catalog = [
     {catalog.map(([id, label]) => <a href={`#${id}`}>{label}</a>)}
   </nav>
   <p class="docs-footnote">
-    Examples use the current source packages. Put data and models in your site's <code
-      >public/</code
-    > directory; use the corresponding URL in <code>src</code>.
+    Examples use the <code>@alkemdotdev/alkemist-components</code> beta package. Put
+    data and models in your site's <code>public/</code> directory; use the corresponding
+    URL in <code>src</code>.
   </p>
+
+  <section class="docs-example" aria-labelledby="install-components">
+    <div class="docs-example-heading">
+      <h2 id="install-components">Install in an existing Astro site</h2><a
+        href="/docs/getting-started/#add-one-component"
+        >Installation guide <span aria-hidden="true">↗</span></a
+      >
+    </div>
+    <p>
+      Install only the component package for a chart, model, math, code, or
+      layout. Add <code>@alkemdotdev/alkemist-theme</code> only when you want the
+      board tokens and theme preference helpers; add <code
+        >@alkemdotdev/alkemist-astro</code
+      > only for its integration defaults.
+    </p>
+    <AlkCode
+      code={'npm install @alkemdotdev/alkemist-components@1.0.0-beta.1'}
+      lang="sh"
+      title="An existing Astro project"
+      lineNumbers={false}
+    />
+  </section>
 
   <section class="docs-example" id="charts">
     <div class="docs-example-heading">
