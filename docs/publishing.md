@@ -8,8 +8,7 @@ organization is required.
 
 ## Versions and public contracts
 
-The initial release is prepared as `1.0.0-beta.1`. Registry publication is
-pending the first authenticated publish. Beta prerelease mode is active in
+The initial release is published as `1.0.0-beta.1`. Beta prerelease mode is active in
 `.changeset/pre.json`. Changesets advances the four packages together.
 
 - Patch: compatible corrections.
@@ -73,6 +72,10 @@ registry publication or website deployment.
 
 ## Account bootstrap
 
+All four packages have trusted publisher bindings to `alkemdotdev/alkemist`,
+`release.yml`, environment `npm`. The initial beta was published locally;
+the first new version published by Actions will verify the OIDC path end to end.
+
 The first real release must be published from the authenticated npm account
 before a trusted publisher can be configured for those package names. Use
 `npm login` and complete npm's normal 2FA challenge. Never create placeholder
@@ -87,6 +90,11 @@ for package_name in @alkemdotdev/alkemist-theme @alkemdotdev/alkemist-components
   npm trust list "$package_name"
 done
 ```
+
+Inspect dist-tags after a package's first publication: npm may also attach
+`latest` even when publishing with `--tag beta`. If `latest` points to this
+prerelease, remove it with `npm dist-tag rm <package> latest`; retain `beta`.
+The release verification deliberately rejects a prerelease on `latest`.
 
 Use npm 12 for account setup. Account-level 2FA must be enabled. Review any
 existing trust entry before adding one; never silently revoke or replace a

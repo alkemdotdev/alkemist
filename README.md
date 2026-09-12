@@ -13,7 +13,8 @@ The public package interface is fixed at `1.0.0-beta.1`:
 - `@alkemdotdev/alkemist-astro` supplies optional Astro integration and MDX defaults.
 - `create-alkemist` generates a complete site.
 
-Registry publication awaits the first npm publication. The commands below describe the beta interface and must not be read as a claim that the packages can be installed from npm yet.
+All four packages are available on npm with the `beta` tag. Install the fixed
+`1.0.0-beta.1` release while the beta line is active.
 
 ### Add a component to an existing Astro site
 
@@ -25,8 +26,6 @@ Import exactly the component you need, such as `@alkemdotdev/alkemist-components
 
 ### Generate a complete site
 
-After the beta is published:
-
 ```sh
 npm create alkemist@beta -- my-lab --provider cloudflare
 cd my-lab
@@ -37,7 +36,7 @@ npm run dev
 
 Choose `cloudflare`, `gitlab`, or `custom`. `create-alkemist` writes an empty-destination project once. It does not initialize Git, install dependencies, provision hosting, deploy, or modify the site's files after creation.
 
-### Use the source generator now
+### Use the source generator
 
 Clone the repository, use Node 24.20.0, and create a separate site:
 
@@ -102,4 +101,4 @@ Run `npm run generate:palette` to regenerate CSS/JSON from the shared palette an
 
 ## License
 
-[Apache-2.0](LICENSE). The source is public. Registry publication is pending the first npm publication; no package publication is claimed here.
+[Apache-2.0](LICENSE). The source and `1.0.0-beta.1` npm packages are public.

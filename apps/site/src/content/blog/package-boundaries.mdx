@@ -5,10 +5,8 @@ date: '2026-09-12'
 order: 2
 ---
 
-Alkemist now has three public package boundaries. They are prepared together as
-`1.0.0-beta.1`; registry publication is pending the the first npm publication,
-so this is a documented release interface, not a claim that the beta is already
-available to install.
+Alkemist now has three public package boundaries, published together as
+`1.0.0-beta.1` on npm.
 
 ## Components begin with one useful thing
 
@@ -37,13 +35,13 @@ theme's global CSS or integration behavior.
 
 ## A generator is an initial handoff
 
-After registry publication, `npm create alkemist@beta` will create a complete
+`npm create alkemist@beta` creates a complete
 site in an empty directory. The command writes files once. It does not create a
 repository, provision a host, deploy a page, or revisit the project to update
 it later. Its owner makes the next changes.
 
-Before that beta is published, the repository's source generator remains the
-working path. It places packed package snapshots in `vendor/`; its explicit
+The repository's source generator remains available for a tarball-backed
+workflow. It places packed package snapshots in `vendor/`; its explicit
 `--update` refreshes those snapshots while preserving the generated site's
 content, assets, configuration, and custom source. The two paths make different
 ownership promises on purpose.

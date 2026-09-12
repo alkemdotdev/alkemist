@@ -298,3 +298,9 @@ does not claim an npm publication or deployment.
 The npm account is authenticated as `alkemdotdev` and account-level 2FA is enabled. Public packages use `@alkemdotdev/alkemist-{components,theme,astro}` plus `create-alkemist`. GitHub permits automated release PRs while keeping default workflow permissions read-only; the npm environment permits `main` only.
 
 Local verification passed: `npm run verify` (77 checked files, no errors/warnings; 52 output pages checked), independent starter and upgrade preservation, and actual packed package consumption with standalone styles, host-owned MDX, strict invalid-math rejection, and lockfile reinstall. Browser review exercised desktop/mobile docs and standalone figures. It exposed and corrected component box-sizing and palette fallbacks that had relied on the full theme. Registry publication and deployed release identity are still pending.
+
+## 2026-09-12 — npm bootstrap and trusted publishers
+
+All four `1.0.0-beta.1` publish commands succeeded. npm trusted publishers are configured for repository `alkemdotdev/alkemist`, workflow `release.yml`, environment `npm`; each binding was read back. The initial publication used local authentication, so it does not establish OIDC publication provenance. The registry consumer gate is still pending: the npm website shows public packages, but components and Astro initially returned registry 404 responses. Initial publication also attached `latest` to beta versions; its removal requires a separate npm authentication. Main promotion remains pending these checks.
+
+GitHub CI and the Cloudflare branch preview passed. Live deployment validation confirmed the source identity, pages, machine guides, redirects, and preview indexing rules. The updated published-state docs pass the full local verify gate.

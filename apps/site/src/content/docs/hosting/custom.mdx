@@ -8,7 +8,16 @@ The generated Alkemist site builds to ordinary static files in `dist/`. A custom
 
 ## Generate and build
 
-The registry beta interface is prepared but awaits the first npm publication. Until it is published, use the source generator from an Alkemist checkout with Node 24:
+Create a site from npm, then install and verify it:
+
+```sh
+npm create alkemist@beta -- my-lab --provider custom
+cd my-lab
+npm install
+npm run verify
+```
+
+Use the source generator from an Alkemist checkout with Node 24 only when you want its tarball-backed update workflow:
 
 ```sh
 npm ci
@@ -19,7 +28,7 @@ npm run verify
 npm run dev
 ```
 
-Edit the identity and navigation in `src/lib/site.ts`, then replace the starter content. Its Alkemist dependencies are packed under `vendor/`, so keep that directory and `package-lock.json` in the new repository. The custom provider option does not invent an upload command or assume an account.
+Edit the identity and navigation in `src/lib/site.ts`, then replace the starter content. Keep the generated `package-lock.json`; source-generated sites also retain their `vendor/` directory. The custom provider option does not invent an upload command or assume an account.
 
 For a new generated directory, create the initial Git history:
 
