@@ -4,10 +4,10 @@ description: Build-time mathematical typesetting and readable, copyable source l
 order: 6
 ---
 
-import AlkMath from '@alkemdotdev/alkemist-components/AlkMath.astro';
-import AlkCode from '@alkemdotdev/alkemist-components/AlkCode.astro';
+import Math from '@alkemdotdev/alkemist-components/math';
+import Code from '@alkemdotdev/alkemist-components/code';
 
-**Available.** `AlkMath`, `AlkCode`, Markdown equations, and styled code fences work in the current site. Math and syntax highlighting render during the build. Readers receive the equation and source immediately; only copying needs a small browser script.
+**Available.** `Math`, `Code`, Markdown equations, and styled code fences work in the current site. Math and syntax highlighting render during the build. Readers receive the equation and source immediately; only copying needs a small browser script.
 
 ## Write mathematics naturally
 
@@ -47,20 +47,20 @@ A fenced `math` block also produces a display equation. Use a `tex` or `latex` f
 
 ## The component form
 
-`AlkMath` works in Astro and MDX. `String.raw` keeps TeX backslashes intact when the source is a JavaScript string.
+`Math` works in Astro and MDX. `String.raw` keeps TeX backslashes intact when the source is a JavaScript string.
 
 ```astro title="research-note.astro" {5-8}
 ---
-import AlkMath from '@alkemdotdev/alkemist-components/AlkMath.astro';
+import Math from '@alkemdotdev/alkemist-components/math';
 ---
 
-<AlkMath
+<Math
   tex={String.raw`\int_{\partial\Omega}\omega = \int_\Omega d\omega`}
   label="Stokes’ theorem, for a smooth oriented manifold and suitable differential form."
 />
 ```
 
-<AlkMath
+<Math
   tex={String.raw`\int_{\partial\Omega}\omega = \int_\Omega d\omega`}
   label="Stokes’ theorem, for a smooth oriented manifold and suitable differential form."
 />
@@ -111,15 +111,15 @@ Highlight individual lines with `{2,4}` or inclusive ranges with `{4-7}`. Add `n
 
 ## The code component
 
-Use `AlkCode` when the source already exists as a string, including source files imported with Vite's `?raw` suffix.
+Use `Code` when the source already exists as a string, including source files imported with Vite's `?raw` suffix.
 
 ```astro title="algorithm.astro"
 ---
-import AlkCode from '@alkemdotdev/alkemist-components/AlkCode.astro';
+import Code from '@alkemdotdev/alkemist-components/code';
 import source from './solver.ts?raw';
 ---
 
-<AlkCode
+<Code
   code={source}
   lang="typescript"
   title="solver.ts"
@@ -127,7 +127,7 @@ import source from './solver.ts?raw';
 />
 ```
 
-<AlkCode
+<Code
   code={
     'def advance(position, velocity, dt):\n    return position + velocity * dt\n'
   }

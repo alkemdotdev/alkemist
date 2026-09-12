@@ -1,7 +1,7 @@
 ---
-import AlkChart from '@alkemdotdev/alkemist-components/AlkChart.astro';
-import AlkMath from '@alkemdotdev/alkemist-components/AlkMath.astro';
-import AlkModel from '@alkemdotdev/alkemist-components/AlkModel.astro';
+import Chart from '@alkemdotdev/alkemist-components/chart';
+import Math from '@alkemdotdev/alkemist-components/math';
+import Model from '@alkemdotdev/alkemist-components/model';
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import { isSectionEnabled, sections, withBase } from '../../lib/site';
 
@@ -21,11 +21,11 @@ export async function getStaticPaths() {
   </p>
   <section class="lab-section" id="signal">
     <h2>A synthetic signal</h2>
-    <AlkMath
+    <Math
       tex={String.raw`x(t) = \cos(2\pi t)`}
       label="Normalized harmonic motion"
     />
-    <AlkChart
+    <Chart
       src={withBase('data/oscillation.csv')}
       type="line"
       x="time"
@@ -40,7 +40,7 @@ export async function getStaticPaths() {
   </section>
   <section class="lab-section" id="model">
     <h2>A shape to inspect</h2>
-    <AlkModel
+    <Model
       src={withBase('models/tetrahedron.gltf')}
       title="An original tetrahedron"
       description="A small, uncompressed glTF fixture with four triangular faces. Drag to orbit or use the camera controls."

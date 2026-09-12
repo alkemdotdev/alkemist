@@ -2,7 +2,7 @@
 import './model.css';
 import './figure.css';
 
-export interface AlkModelProps {
+export interface ModelProps {
   /** A glTF 2.0 .glb or .gltf URL. Compression decoders are not included. */
   src: string;
   title: string;
@@ -12,7 +12,7 @@ export interface AlkModelProps {
   class?: string;
 }
 
-type Props = AlkModelProps;
+type Props = ModelProps;
 const { src, title, description, poster, class: className } = Astro.props;
 ---
 
@@ -96,5 +96,5 @@ const { src, title, description, poster, class: className } = Astro.props;
 </alk-model>
 
 <script>
-  import './model';
+  import './model-client';
 </script>

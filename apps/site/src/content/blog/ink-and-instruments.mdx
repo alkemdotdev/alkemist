@@ -25,15 +25,15 @@ _Browser capture of the actual palette, September 8, 2026._
 
 We chose existing engines for the difficult rendering work and built the shared authoring and lifecycle layer around them:
 
-| Author writes                      | Engine does                  | Alkemist supplies                                     |
-| ---------------------------------- | ---------------------------- | ----------------------------------------------------- |
-| `AlkMath` or dollar-delimited math | KaTeX typesetting            | Shared fonts/options, MathML, build errors            |
-| `AlkCode` or a code fence          | Shiki tokenization           | Inks, captions, line highlights, copy                 |
-| `AlkChart` with a CSV path         | Vega-Lite and Vega rendering | Presets, grids, tables, lazy loading, theme updates   |
-| `AlkModel` with a GLB path         | Three.js rendering           | Orbit controls, camera presets, poster, cleanup       |
-| `AlkShader`                        | WebGL2 fragment shading      | A bounded interactive study, controls, pause behavior |
+| Author writes                   | Engine does                  | Alkemist supplies                                     |
+| ------------------------------- | ---------------------------- | ----------------------------------------------------- |
+| `Math` or dollar-delimited math | KaTeX typesetting            | Shared fonts/options, MathML, build errors            |
+| `Code` or a code fence          | Shiki tokenization           | Inks, captions, line highlights, copy                 |
+| `Chart` with a CSV path         | Vega-Lite and Vega rendering | Presets, grids, tables, lazy loading, theme updates   |
+| `Model` with a GLB path         | Three.js rendering           | Orbit controls, camera presets, poster, cleanup       |
+| `Shader`                        | WebGL2 fragment shading      | A bounded interactive study, controls, pause behavior |
 
-The public names keep the `Alk` prefix. Heavy clients load when their figure approaches the viewport. Math and code are rendered at build time. Model and shader animation starts only when requested and stops doing work when offscreen.
+Public component names are plain. Heavy clients load when their figure approaches the viewport. Math and code are rendered at build time. Model and shader animation starts only when requested and stops doing work when offscreen.
 
 ## Real examples, explicit provenance
 

@@ -1,12 +1,12 @@
 ---
-import AlkLayout, {
-  type AlkLayoutProps,
-} from '@alkemdotdev/alkemist-components/AlkLayout.astro';
+import Layout, {
+  type LayoutProps,
+} from '@alkemdotdev/alkemist-components/layout';
 import { navigationSections, siteSections } from '../lib/sections';
-type Props = AlkLayoutProps;
+type Props = LayoutProps;
 ---
 
-<AlkLayout
+<Layout
   tagline=""
   navigation={navigationSections}
   moreNavigation={[{ label: 'Test', href: '/test/' }]}
@@ -16,7 +16,7 @@ type Props = AlkLayoutProps;
   {...Astro.props}
 >
   <slot />
-</AlkLayout>
+</Layout>
 
 <style is:global>
   /* Six section links need the compact header before the package default. */

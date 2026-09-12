@@ -24,17 +24,15 @@
   },
   "type": "module",
   "exports": {
-    ".": "./src/index.ts",
-    "./AlkLayout.astro": "./src/AlkLayout.astro",
-    "./AlkMath.astro": "./src/AlkMath.astro",
-    "./AlkCode.astro": "./src/AlkCode.astro",
-    "./AlkModel.astro": "./src/AlkModel.astro",
-    "./AlkChart.astro": "./src/AlkChart.astro",
-    "./AlkPostList.astro": "./src/AlkPostList.astro",
+    "./layout": "./src/layout/index.ts",
+    "./math": "./src/math/index.ts",
+    "./code": "./src/code/index.ts",
+    "./chart": "./src/chart/index.ts",
+    "./model": "./src/model/index.ts",
+    "./shader": "./src/shader/index.ts",
+    "./post-list": "./src/post-list/index.ts",
     "./code-theme": "./src/code-theme.ts",
-    "./code-copy": "./src/code-copy.ts",
-    "./AlkShader.astro": "./src/AlkShader.astro",
-    "./shader": "./src/shader.ts"
+    "./code-copy": "./src/code-copy.ts"
   },
   "files": [
     "src",

@@ -1,5 +1,5 @@
 ---
-import AlkCode from '@alkemdotdev/alkemist-components/AlkCode.astro';
+import Code from '@alkemdotdev/alkemist-components/code';
 import {
   setupProviders,
   setupCommands,
@@ -102,7 +102,7 @@ const id = `setup-${crypto.randomUUID().slice(0, 8)}`;
       {
         setupProviders.map((provider, i) => (
           <div data-provider-panel={provider.id} hidden={i !== 0}>
-            <AlkCode
+            <Code
               title={`Create a site for ${provider.name}`}
               lang="sh"
               code={setupCommands(provider)}
@@ -136,7 +136,7 @@ const id = `setup-${crypto.randomUUID().slice(0, 8)}`;
 </alk-start>
 
 <script>
-  class AlkStart extends HTMLElement {
+  class Start extends HTMLElement {
     connectedCallback() {
       if (this.dataset.ready) return;
       this.dataset.ready = 'true';
@@ -202,5 +202,5 @@ const id = `setup-${crypto.randomUUID().slice(0, 8)}`;
     }
   }
   if (!customElements.get('alk-start'))
-    customElements.define('alk-start', AlkStart);
+    customElements.define('alk-start', Start);
 </script>

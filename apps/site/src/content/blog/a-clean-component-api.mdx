@@ -1,0 +1,21 @@
+---
+title: A smaller component API
+description: Plain names, direct imports, and one public entry for each component and its types.
+date: '2026-09-12'
+order: 0
+---
+
+Alkemist components now use plain names: `Layout`, `Math`, `Code`, `Chart`, `Model`, `Shader`, and `PostList`. The package path identifies the toolkit, so each name can describe its job.
+
+```ts
+import Chart, { type ChartProps } from '@alkemdotdev/alkemist-components/chart';
+import PostList, {
+  type PostListItem,
+} from '@alkemdotdev/alkemist-components/post-list';
+```
+
+Each component has a lowercase, extensionless entry. Its default export is the component; related types and pure helpers are named exports from that same entry. There is no root component barrel or alternate legacy spelling. Applications can choose a local import alias when a name collides with their own code.
+
+Browser behavior stays with the component that needs it. Chart, model, and shader engines remain lazy, while helper imports can run without browser globals. CSS and custom elements retain the `alk-` namespace so embedded components remain distinguishable from a host site's styles.
+
+The demo, documentation, and generated starter use this API together. Independent package and starter checks cover installation outside the workspace. This is the current source API; npm publication is deferred. The [getting started guide](/docs/getting-started/) explains how to generate a site from source, and the [component catalog](/docs/components/) covers individual adoption.

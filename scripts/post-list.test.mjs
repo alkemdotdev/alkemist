@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { prepareAlkPostListItems } from '../packages/components/src/post-list.ts';
+import { preparePostListItems } from '../packages/components/src/post-list-helpers.ts';
 
 test('an explicit lead appears once without mutating the supplied order', () => {
   const items = [
@@ -8,7 +8,7 @@ test('an explicit lead appears once without mutating the supplied order', () => 
     { href: '/middle/', title: 'Middle', description: '' },
     { href: '/lead/', title: 'Lead', description: '' },
   ];
-  const result = prepareAlkPostListItems(items, '/lead/');
+  const result = preparePostListItems(items, '/lead/');
   assert.deepEqual(
     result.map((item) => item.href),
     ['/lead/', '/new/', '/middle/'],
@@ -21,8 +21,8 @@ test('an explicit lead appears once without mutating the supplied order', () => 
 });
 
 test('empty collections and absent featured items preserve supplied order', () => {
-  assert.deepEqual(prepareAlkPostListItems([], '/missing/'), []);
+  assert.deepEqual(preparePostListItems([], '/missing/'), []);
   const items = [{ href: '/one/', title: 'One', description: '' }];
-  assert.deepEqual(prepareAlkPostListItems(items), items);
-  assert.deepEqual(prepareAlkPostListItems(items, '/missing/'), items);
+  assert.deepEqual(preparePostListItems(items), items);
+  assert.deepEqual(preparePostListItems(items, '/missing/'), items);
 });

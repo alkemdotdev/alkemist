@@ -2,7 +2,7 @@ import {
   getTheme,
   initTheme,
   setTheme,
-  type AlkTheme,
+  type Theme,
 } from '@alkemdotdev/alkemist-theme';
 
 const header = document.querySelector<HTMLElement>('.alk-header');
@@ -35,7 +35,7 @@ if (header) {
   syncTheme();
   if (theme) theme.hidden = false;
   radios.forEach((input) => {
-    input.addEventListener('change', () => setTheme(input.value as AlkTheme));
+    input.addEventListener('change', () => setTheme(input.value as Theme));
     input.addEventListener('click', (event) => {
       // Arrow keys synthesize clicks on radios; keep that keyboard group open.
       if (theme && event.detail > 0) close(theme, true);

@@ -3,15 +3,15 @@ import test from 'node:test';
 import { compile } from 'vega-lite';
 import { parse, View } from 'vega';
 import {
-  createAlkChartSpec,
-  prepareAlkChartRows,
+  createChartSpec,
+  prepareChartRows,
 } from '../packages/components/src/charts.ts';
-import { ALK_INKS } from '../packages/theme/src/palette.ts';
+import { INKS } from '../packages/theme/src/palette.ts';
 
 const theme = {
   text: '#111111',
   rule: '#aaaaaa',
-  inks: Object.fromEntries(ALK_INKS.map(({ id, hex }) => [id, hex])),
+  inks: Object.fromEntries(INKS.map(({ id, hex }) => [id, hex])),
 };
 const base = {
   src: '/test.csv',
@@ -27,24 +27,24 @@ test('narrow vertical category labels rotate and avoid overlap without rotating 
     { category: 'Aluminium', value: 2 },
     { category: 'Composite', value: 3 },
   ];
-  const narrow = createAlkChartSpec(base, rows, theme, 335);
+  const narrow = createChartSpec(base, rows, theme, 335);
   assert.equal(narrow.encoding.x.axis.labelAngle, -55);
   assert.equal(narrow.encoding.x.axis.labelLimit, 70);
   assert.equal(narrow.encoding.x.axis.labelOverlap, 'greedy');
-  const horizontal = createAlkChartSpec(
+  const horizontal = createChartSpec(
     { ...base, horizontal: true },
     rows,
     theme,
     335,
   );
   assert.equal(horizontal.encoding.y.axis.labelAngle, 0);
-  const wide = createAlkChartSpec(base, rows, theme, 800);
+  const wide = createChartSpec(base, rows, theme, 800);
   assert.equal(wide.encoding.x.axis.labelAngle, 0);
 });
 
 async function rendered(config, raw, check) {
-  const rows = prepareAlkChartRows(raw, config);
-  const spec = createAlkChartSpec(config, rows, theme, 640);
+  const rows = prepareChartRows(raw, config);
+  const spec = createChartSpec(config, rows, theme, 640);
   const view = await new View(parse(compile(spec).spec), {
     renderer: 'none',
   }).runAsync();
@@ -130,20 +130,20 @@ test('numeric categories retain their identity in the rendered color scale', asy
 
 test('invalid numbers, missing columns, and misleading pie values are rejected', () => {
   assert.throws(
-    () => prepareAlkChartRows([{ category: 'A', value: 'oops' }], base),
+    () => prepareChartRows([{ category: 'A', value: 'oops' }], base),
     /finite number/,
   );
   assert.throws(
-    () => prepareAlkChartRows([{ category: 'A' }], base),
+    () => prepareChartRows([{ category: 'A' }], base),
     /missing.*value/,
   );
   assert.throws(
-    () => prepareAlkChartRows([{ category: 'A', value: '' }], base),
+    () => prepareChartRows([{ category: 'A', value: '' }], base),
     /no numeric values/,
   );
   assert.throws(
     () =>
-      prepareAlkChartRows([{ category: 'A', value: '-1' }], {
+      prepareChartRows([{ category: 'A', value: '-1' }], {
         ...base,
         type: 'pie',
       }),
@@ -151,7 +151,7 @@ test('invalid numbers, missing columns, and misleading pie values are rejected',
   );
   assert.throws(
     () =>
-      prepareAlkChartRows([{ category: 'A', value: '0' }], {
+      prepareChartRows([{ category: 'A', value: '0' }], {
         ...base,
         type: 'donut',
       }),
@@ -166,7 +166,7 @@ test('missing dates stay missing and never become an epoch-zero observation', as
     { category: '2026-09-08T00:00:00Z', value: '2' },
     { category: '2026-09-09T00:00:00Z', value: '3' },
   ];
-  assert.equal(prepareAlkChartRows(raw, config)[0].category, null);
+  assert.equal(prepareChartRows(raw, config)[0].category, null);
   await rendered(config, raw, (view) => {
     assert.deepEqual(view.scale('x').domain().map(Number), [
       Date.parse(raw[1].category),
@@ -174,11 +174,11 @@ test('missing dates stay missing and never become an epoch-zero observation', as
     ]);
   });
   assert.throws(
-    () => prepareAlkChartRows([{ category: 'not-a-date', value: '1' }], config),
+    () => prepareChartRows([{ category: 'not-a-date', value: '1' }], config),
     /valid date/,
   );
   assert.throws(
-    () => prepareAlkChartRows([{ category: '  ', value: '1' }], config),
+    () => prepareChartRows([{ category: '  ', value: '1' }], config),
     /no dates/,
   );
 });

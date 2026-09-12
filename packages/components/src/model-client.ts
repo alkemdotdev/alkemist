@@ -156,10 +156,10 @@ async function createModel(
       for (const material of Array.isArray(mesh.material)
         ? mesh.material
         : [mesh.material]) {
-        if (material.userData.alkForeground && 'color' in material) {
+        if (material.userData.foreground && 'color' in material) {
           (material.color as InstanceType<typeof THREE.Color>).set(style.color);
         }
-        const ink = material.userData.alkInk;
+        const ink = material.userData.ink;
         if (
           typeof ink === 'string' &&
           /^[a-z]+$/.test(ink) &&
@@ -225,7 +225,7 @@ async function createModel(
       material.transparent = true;
       material.opacity = 0.24;
       material.depthWrite = false;
-      material.userData.alkForeground = true;
+      material.userData.foreground = true;
     }
     scene.add(grid);
 
@@ -395,7 +395,7 @@ async function createModel(
   }
 }
 
-class AlkModelElement extends HTMLElement {
+class ModelElement extends HTMLElement {
   private runtime?: ModelRuntime;
   private load?: AbortController;
   private lifetime?: AbortController;
@@ -506,4 +506,4 @@ class AlkModelElement extends HTMLElement {
 }
 
 if (!customElements.get('alk-model'))
-  customElements.define('alk-model', AlkModelElement);
+  customElements.define('alk-model', ModelElement);

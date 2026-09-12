@@ -1,9 +1,9 @@
 ---
 import './shader.css';
 import './figure.css';
-import { ALK_INKS } from '@alkemdotdev/alkemist-theme/palette';
+import { INKS } from '@alkemdotdev/alkemist-theme/palette';
 
-export interface AlkShaderProps {
+export interface ShaderProps {
   title?: string;
   /** Spatial frequency, clamped to the visible control's range of 3–18. */
   frequency?: number;
@@ -11,7 +11,7 @@ export interface AlkShaderProps {
   angle?: number;
   class?: string;
 }
-type Props = AlkShaderProps;
+type Props = ShaderProps;
 const {
   title = 'Interference field',
   frequency = 9,
@@ -26,7 +26,7 @@ const initialAngle = Math.max(
   0,
   Math.min(180, Number.isFinite(angle) ? angle : 24),
 );
-const fallbackInks = ALK_INKS;
+const fallbackInks = INKS;
 ---
 
 <alk-shader class:list={['alk-shader', className]} data-state="idle">
@@ -126,5 +126,5 @@ const fallbackInks = ALK_INKS;
 </alk-shader>
 
 <script>
-  import './shader';
+  import './shader-client';
 </script>

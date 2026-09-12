@@ -1,4 +1,4 @@
-import type { AlkPostListProps } from '@alkemdotdev/alkemist-components';
+import type { PostListProps } from '@alkemdotdev/alkemist-components/post-list';
 
 export const siteSectionIds = [
   'blog',
@@ -71,4 +71,4 @@ export const blogDisplay = {
   layout: 'featured-grid',
   selectable: true,
   featuredHref: '/blog/fields-with-substance/',
-} satisfies Pick<AlkPostListProps, 'layout' | 'selectable' | 'featuredHref'>;
+} satisfies Pick<PostListProps, 'layout' | 'selectable' | 'featuredHref'>;

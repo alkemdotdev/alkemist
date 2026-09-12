@@ -1,8 +1,8 @@
 ---
-import AlkChart from '@alkemdotdev/alkemist-components/AlkChart.astro';
-import AlkModel from '@alkemdotdev/alkemist-components/AlkModel.astro';
-import AlkMath from '@alkemdotdev/alkemist-components/AlkMath.astro';
-import AlkCode from '@alkemdotdev/alkemist-components/AlkCode.astro';
+import Chart from '@alkemdotdev/alkemist-components/chart';
+import Model from '@alkemdotdev/alkemist-components/model';
+import MathBlock from '@alkemdotdev/alkemist-components/math';
+import Code from '@alkemdotdev/alkemist-components/code';
 import './proof-bench.css';
 
 interface Props {
@@ -48,7 +48,7 @@ function source(name: string, props: Record<string, unknown>) {
       return `  ${key}="${value}"`;
     return `  ${key}={${JSON.stringify(value)}}`;
   });
-  return `---\nimport ${name} from '@alkemdotdev/alkemist-components/${name}.astro';\n---\n\n<${name}\n${attributes.join('\n')}\n/>`;
+  return `---\nimport ${name} from '@alkemdotdev/alkemist-components/${name.toLowerCase()}';\n---\n\n<${name}\n${attributes.join('\n')}\n/>`;
 }
 
 function signalPath(frequency: number) {
@@ -95,15 +95,15 @@ function signalPath(frequency: number) {
         data-proof-panel={key}
         hidden={initial !== key}
       >
-        {key === 'data' && <AlkChart {...chart} />}
-        {key === 'geometry' && <AlkModel {...model} />}
+        {key === 'data' && <Chart {...chart} />}
+        {key === 'geometry' && <Model {...model} />}
         {key === 'math' && (
           <div class="proof-math">
             <div class="proof-math-heading">
               <p>Mathematical writing</p>
               <h3>An equation you can explore.</h3>
             </div>
-            <AlkMath {...equation} />
+            <MathBlock {...equation} />
             <svg
               class="proof-math-plot"
               viewBox="0 0 600 190"
@@ -160,7 +160,7 @@ function signalPath(frequency: number) {
               />
             </div>
             <p class="proof-math-caption">
-              AlkMath renders the equation; this small site widget draws the
+              Math renders the equation; this small site widget draws the
               signal.
             </p>
           </div>
@@ -170,13 +170,9 @@ function signalPath(frequency: number) {
             <span>Show {key === 'math' ? 'equation ' : ''}source</span>
             <code>{file}</code>
           </summary>
-          <AlkCode
+          <Code
             code={source(
-              key === 'data'
-                ? 'AlkChart'
-                : key === 'geometry'
-                  ? 'AlkModel'
-                  : 'AlkMath',
+              key === 'data' ? 'Chart' : key === 'geometry' ? 'Model' : 'Math',
               key === 'data' ? chart : key === 'geometry' ? model : equation,
             )}
             lang="astro"
@@ -205,7 +201,7 @@ function signalPath(frequency: number) {
 </alk-proof-bench>
 
 <script>
-  class AlkProofBench extends HTMLElement {
+  class ProofBench extends HTMLElement {
     private lifetime?: AbortController;
 
     connectedCallback() {
@@ -291,5 +287,5 @@ function signalPath(frequency: number) {
   }
 
   if (!customElements.get('alk-proof-bench'))
-    customElements.define('alk-proof-bench', AlkProofBench);
+    customElements.define('alk-proof-bench', ProofBench);
 </script>

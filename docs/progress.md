@@ -2,7 +2,7 @@
 
 ## 2026-09-11 — Public source preview
 
-Alkemist is now public at [github.com/alkemdotdev/alkemist](https://github.com/alkemdotdev/alkemist). The repository has an Apache-2.0 license, a public description and homepage, and explicit source-preview boundaries: `@alkemist/ui` and `@alkemist/astro` carry complete future npm metadata but remain `private` until a deliberate beta release. `.npmrc` is ignored so local registry credentials cannot be added accidentally.
+Alkemist is now public at [github.com/alkemdotdev/alkemist](https://github.com/alkemdotdev/alkemist). The repository has an Apache-2.0 license, a public description and homepage, and explicit source-preview boundaries: `@alkemdotdev/alkemist-components`, `@alkemdotdev/alkemist-theme`, and `@alkemdotdev/alkemist-astro` carry complete future npm metadata but remain `private` until a deliberate beta release. `.npmrc` is ignored so local registry credentials cannot be added accidentally.
 
 The complete Git history was scanned with Gitleaks with no findings. `npm run format:check`, `npm run verify` (76 Astro files, zero diagnostics, 26 tests, 43 pages, links/assets/build identity), and `npm run check:starter` all passed. The starter gate used packed dependencies in an external installation and confirmed changed-snapshot updates preserve site content, configuration, and assets byte-for-byte.
 
@@ -34,9 +34,9 @@ The Cloudflare reconciler now identifies a repository by immutable `owner_id` an
 
 The user authorized a public Cloudflare site at `alkemist.alkem.dev`, automatic main deployments, other-branch previews, integrated docs, and a shared theme foundation before continuing full widget implementation.
 
-- Adopted `Alk*` for public component and exported type names.
+- Adopted the initial public component and exported type names; the current source uses their plain forms.
 - Expanded the chart design to bars, pies/donuts, statistical charts, composition, and full Vega-Lite/Vega specifications.
-- Implemented Astro 7.3.2 workspace packages, the shared `AlkLayout`/theme, six documentation pages, the component roadmap, and a development notebook article.
+- Implemented Astro 7.3.2 workspace packages, the shared `Layout`/theme, six documentation pages, the component roadmap, and a development notebook article.
 - Added managed Cloudflare configuration, repository/DNS identity guards, validation-only CI, built-link checks, and `/build.json` provenance.
 - `npm run verify` passes: zero Astro diagnostics, four deployment-contract tests, 12 built pages, internal links/assets, and production build identity.
 - Production and preview-mode local builds pass; desktop/mobile browser checks confirmed docs navigation, theme persistence, and no page overflow.
@@ -83,7 +83,7 @@ Build the first real meta article with math, a diagram, an actual CSV chart, and
 
 Implemented the accepted Ubuntu/Ubuntu Mono typography across the shared theme, with locally served Caveat annotations. Whiteboard and blackboard now use #eee and #111. Eight named ink tokens have identical values on both surfaces; palette.ts is the source for generated CSS and downloadable /test/inks.json. Contrast regression tests distinguish graphical marks/large notes from normal text; code panels remain #111 in both themes so the same syntax inks retain normal-text contrast.
 
-New reusable package components: AlkMath (KaTeX HTML+MathML), AlkCode (Shiki with captions/highlighted lines/copy), AlkChart (six CSV presets through Vega-Lite/Vega), AlkModel (real GLB/glTF through Three.js), and AlkShader (fixed WebGL2 interference study with frequency/angle/play controls). Shared Markdown/MDX processing has the same code and math defaults. Resolved rehype-katex's transitive KaTeX version to the same 0.18.7 renderer/CSS used by AlkMath; malformed math fails builds. Rendering engines are lazy; model/shader motion is opt-in and stops offscreen.
+New reusable package components: Math (KaTeX HTML+MathML), Code (Shiki with captions/highlighted lines/copy), Chart (six CSV presets through Vega-Lite/Vega), Model (real GLB/glTF through Three.js), and Shader (fixed WebGL2 interference study with frequency/angle/play controls). Shared Markdown/MDX processing has the same code and math defaults. Resolved rehype-katex's transitive KaTeX version to the same 0.18.7 renderer/CSS used by Math; malformed math fails builds. Rendering engines are lazy; model/shader motion is opt-in and stops offscreen.
 
 Created /test/ as a long interactive specimen with a generated torus-knot GLB, six chart treatments, mathematical typography and proof, language tabs, GLSL art, accessible SVG diagram, image/poster, rich MDX, and an actual local form/dialog flow. Data fixtures are synthetic and deterministic. Reference docs cover real supported APIs and limits; the notebook article explains the design and includes a browser screenshot of the palette.
 
@@ -116,7 +116,7 @@ Validation: `npm run verify` passed, and Prettier passed for both changed Markdo
 
 Implemented the user's chosen information architecture: Blog, Labs, and Info in the primary navigation, with Docs and Test page in More. Renamed the notebook collection and routes to Blog, moved the component catalog into Docs, and moved both design apps into Labs. Added an actual standalone interference lab, a Labs index, and an Info page using known project information. The single `/test/` application remains intact. Added the public site-structure guide and a blog article explaining the decision; updated the file-schema proposal to distinguish accepted routes from the still-proposed asset metadata and stable-ID contracts.
 
-The shared `AlkLayout` exposes main, More, and footer link arrays. Extra links default to empty; the demo's `SiteLayout` owns its documentation links. Consuming projects can omit Docs or use it for their own documentation. More uses native details/summary with Escape focus return and outside-click dismissal.
+The shared `Layout` exposes main, More, and footer link arrays. Extra links default to empty; the demo's `SiteLayout` owns its documentation links. Consuming projects can omit Docs or use it for their own documentation. More uses native details/summary with Escape focus return and outside-click dismissal.
 
 One explicit redirect manifest produces Astro fallback pages and Cloudflare HTTP 301 rules, including slashless legacy paths. Old article and design links have specific destinations; the published `/notebook/eight-inks.jpg` asset stays in place. The build verifier checks destination existence, redirect chains, and generated rules. The HTTPS deployment verifier also checks query preservation and the retained image.
 
@@ -144,7 +144,7 @@ Browser evidence at 1440×1000 and 390×844: homepage anchor, provider selection
 
 Built `/labs/homepage-studies/` for comparing Workbench (product promise beside a live figure), Fieldnotes (an editorial research note), and Build together (agent-led setup). The approved Ubuntu/Ubuntu Mono, #eee/#111 boards, handwritten notes, and fixed inks remain common to all three. The production homepage composition is unchanged. A new blog article explains the alternatives and the recommended combination: Workbench as the base, with the compact agent brief and editorial annotations.
 
-Site-owned ProofBench uses the current AlkChart, AlkModel, AlkMath, and AlkCode APIs. It presents real CSV/GLB data, keyboard tabs, component-source disclosures, and a small sine-frequency widget. The example site compositions are explicitly labelled as proposed presets. Selection controls support a preferred direction, a checklist, local notes, clipboard output, and a JSON download; they do not publish the choice. New source belongs to the demo site, with no shared-package API change.
+Site-owned ProofBench uses the current Chart, Model, Math, and Code APIs. It presents real CSV/GLB data, keyboard tabs, component-source disclosures, and a small sine-frequency widget. The example site compositions are explicitly labelled as proposed presets. Selection controls support a preferred direction, a checklist, local notes, clipboard output, and a JSON download; they do not publish the choice. New source belongs to the demo site, with no shared-package API change.
 
 Browser verification at 1440×1000, 390×844, and 320×844 covered all three takes and both board themes. The visible chart loaded 301 synthetic rows while hidden charts/models stayed idle. The model reported 9,216 triangles and responded to Top; keyboard tab navigation and the sine slider changed the displayed angular frequency and accessible plot label. Source copy, researcher/group/project previews, provider-dependent full agent briefs, and selection copying worked. Revisiting the bare route restored a selected direction and notes; test notes were cleared afterward. All three takes remained within the page width at 320px. No browser errors or warnings were observed.
 
@@ -246,7 +246,7 @@ The user authorized publishing this cleanup together with the three earlier loca
 
 Replaced the second navigation row on small screens with a hamburger disclosure containing the same primary and secondary links. Desktop retains Blog, Labs, Info, and More. A compact appearance icon opens labeled Whiteboard, Blackboard, and System choices with sun, moon, and monitor icons. Both controls have 44px targets, visible focus, Escape dismissal, and outside-click dismissal. Only one header panel opens at a time. Navigation remains usable without JavaScript; the appearance control is revealed when its controller is ready.
 
-The shared layout restores the saved palette before paint. The new typed `@alkemist/ui/theme` helper lets widgets read and set the preference without depending on header markup, while preserving the existing renderer theme-change event. Both sets of Labs studies now use that helper and preserve their board URLs and controls. The navigation reference and interface development article document the behavior.
+The shared layout restores the saved palette before paint. The typed theme helper lets widgets read and set the preference without depending on header markup, while preserving the existing renderer theme-change event. Both sets of Labs studies now use that helper and preserve their board URLs and controls. The navigation reference and interface development article document the behavior.
 
 `npm run verify` passed with 76 Astro files, zero diagnostics, 25 passing tests, and 51 validated HTML pages. The independent starter installation and changed-snapshot update gate passed. Static-browser validation passed 67 assertions with no page exceptions: 320px, 390px, 650px, 768px, and desktop layouts on both boards; keyboard menus and radios; saved and system preferences; chart refresh; Labs URL/radio synchronization; storage-disabled theme selection; and navigation without JavaScript. Actual desktop/mobile screenshots were inspected. Review caught a skip-link stacking issue, and browser checks caught arrow-key radio selection prematurely closing the appearance panel; both were fixed. A test's outside-click target was corrected to lie outside the open panel, and a final build regenerated a corrected article heading.
 
@@ -274,7 +274,7 @@ Cloudflare's live managed configuration matches `infra/cloudflare.json`. Publica
 
 ## 2026-09-08 — Docs in primary navigation
 
-The demo header now reads Blog, Labs, Docs, Info, and More. More contains only Test and uses the shared line icon as a downward chevron. The mobile menu preserves that order, with Test in its secondary group. Docs remains optional for consuming sites: the demo owns the extra primary link in SiteLayout, while AlkLayout's default links are unchanged. Updated the navigation reference and development articles to describe the current layout.
+The demo header now reads Blog, Labs, Docs, Info, and More. More contains only Test and uses the shared line icon as a downward chevron. The mobile menu preserves that order, with Test in its secondary group. Docs remains optional for consuming sites: the demo owns the extra primary link in SiteLayout, while Layout's default links are unchanged. Updated the navigation reference and development articles to describe the current layout.
 
 `npm run verify` passed with zero Astro diagnostics, 25 tests, and 51 checked HTML pages. The independent starter gate passed packed installation, changed-package updates, production and GitLab preview subpaths, lockfile reinstall, and provider scaffolds. Browser validation passed 63 assertions without page exceptions: both boards at 1440px, 768px, 651px, 650px, 390px, and 320px; single-row layout and unclipped identity; exact link order; direct Docs navigation and nested-section highlighting; keyboard and outside-click dismissal; mobile appearance/menu exclusion; and no-JavaScript navigation. Desktop, narrow desktop, and mobile-menu screenshots were inspected. Evidence is retained under ignored `.alkemist/docs-nav-*` files. Publication uses the native Git preview-then-main workflow.
 
@@ -323,6 +323,17 @@ The milestone was previewed at revision `5638fd5`, then merged to `main` as `030
 
 ## 2026-09-12 — Reusable post layouts
 
-`AlkPostList` now owns the reusable listing presentation in the component package. Sites supply typed content, sorting, URLs, and an optional featured selection; the component offers rows, a featured lead followed by rows, a grid, and a featured lead above a grid. One rendered collection supports an optional per-instance reader selector, with server-rendered content available before JavaScript. The demo and source starter default to featured plus grid, while keeping the choice site-owned. Reference documentation includes two live independent instances. npm publication remains deferred through a Changeset.
+`PostList` now owns the reusable listing presentation in the component package. Sites supply typed content, sorting, URLs, and an optional featured selection; the component offers rows, a featured lead followed by rows, a grid, and a featured lead above a grid. One rendered collection supports an optional per-instance reader selector, with server-rendered content available before JavaScript. The demo and source starter default to featured plus grid, while keeping the choice site-owned. Reference documentation includes two live independent instances. npm publication remains deferred through a Changeset.
 
 Site verification, independent starter install/upgrade preservation, and packed component consumers passed. The consumer checks exercise public prop imports, explicit lead order without duplicate rendering, empty lists, and use without the full theme. Browser checks exercised all four modes, a two-column desktop grid, a single-column mobile grid, coverless entries, and independent instances. They caught an oversized featured image and mobile grid entries inheriting row presentation; both were corrected. Final observed lists retained their item counts and had no horizontal overflow or browser errors.
+
+## 2026-09-12 — Plain source API documentation
+
+Rewrote the source and site documentation for plain component and type names,
+lowercase extensionless component entries, and type imports from the matching
+component entry. Onboarding and hosting guides now use the packed source
+generator; the published beta package line is documented as the earlier API.
+No package version was changed or published. Validation evidence is recorded
+with the corresponding implementation checks.
+
+The implementation removes the component root barrel and legacy exports, places each component and its public types behind one direct entry, and separates browser clients from pure helpers. The demo, starter, integration, theme types, and executable examples now use the same plain API. Full verification passed with 64 checked output pages; formatting and independent packed-component and starter install/upgrade checks passed. Browser checks exercised lazy chart rendering, model camera/wireframe controls, shader frequency adjustment, and mobile PostList view switching without horizontal overflow or reported browser errors. A major Changeset records the breaking contract; npm publication remains deferred.

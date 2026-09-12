@@ -88,7 +88,7 @@ const gltf = {
         metallicFactor: 0.18,
         roughnessFactor: 0.36,
       },
-      extras: { alkInk: 'cobalt' },
+      extras: { ink: 'cobalt' },
     },
   ],
   accessors: [

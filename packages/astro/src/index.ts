@@ -1,27 +1,27 @@
 import type { AstroIntegration } from 'astro';
-import mdx, { type MdxOptions } from '@astrojs/mdx';
+import mdx, { type MdxOptions as AstroMdxOptions } from '@astrojs/mdx';
 import { unified } from '@astrojs/markdown-remark';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import {
-  AlkCodeTheme,
-  createAlkCodeTransformer,
-  type AlkCodeOptions,
+  codeTheme,
+  createCodeTransformer,
+  type CodeOptions,
 } from '@alkemdotdev/alkemist-components/code-theme';
 import type { ShikiTransformer, ThemeRegistration } from 'shiki';
 
-export interface AlkMdxOptions {
+export interface MdxOptions {
   /** Disable the bundled MDX integration when an existing site already owns it. */
   enabled?: boolean;
-  options?: Partial<MdxOptions>;
+  options?: Partial<AstroMdxOptions>;
 }
 
-export interface AlkMathOptions {
+export interface MathOptions {
   /** Math is enabled by default. Secure KaTeX limits are intentionally fixed. */
   enabled?: boolean;
 }
 
-export interface AlkCodeIntegrationOptions extends AlkCodeOptions {
+export interface CodeIntegrationOptions extends CodeOptions {
   /** Syntax highlighting is enabled by default. */
   enabled?: boolean;
   theme?: ThemeRegistration;
@@ -30,10 +30,10 @@ export interface AlkCodeIntegrationOptions extends AlkCodeOptions {
   wrap?: boolean;
 }
 
-export interface AlkOptions {
-  mdx?: boolean | AlkMdxOptions;
-  math?: boolean | AlkMathOptions;
-  code?: boolean | AlkCodeIntegrationOptions;
+export interface IntegrationOptions {
+  mdx?: boolean | MdxOptions;
+  math?: boolean | MathOptions;
+  code?: boolean | CodeIntegrationOptions;
   /** Opt in only when a site needs Alkemist's asset-file behavior. */
   vite?: { assetsInlineLimit?: number };
 }
@@ -52,20 +52,22 @@ function failInvalidMath() {
 }
 
 /** Shared defaults stay in the package so site content survives upgrades. */
-export default function alkemist(options: AlkOptions = {}): AstroIntegration {
-  const mdxConfig: AlkMdxOptions =
+export default function alkemist(
+  options: IntegrationOptions = {},
+): AstroIntegration {
+  const mdxConfig: MdxOptions =
     options.mdx === false
       ? { enabled: false }
       : options.mdx === true
         ? {}
         : (options.mdx ?? {});
-  const math: AlkMathOptions =
+  const math: MathOptions =
     options.math === false
       ? { enabled: false }
       : options.math === true
         ? {}
         : (options.math ?? {});
-  const code: AlkCodeIntegrationOptions =
+  const code: CodeIntegrationOptions =
     options.code === false
       ? { enabled: false }
       : options.code === true
@@ -107,9 +109,9 @@ export default function alkemist(options: AlkOptions = {}): AstroIntegration {
                   excludeLangs: code?.excludeLangs ?? ['math'],
                 },
                 shikiConfig: {
-                  theme: code?.theme ?? AlkCodeTheme,
+                  theme: code?.theme ?? codeTheme,
                   transformers: [
-                    createAlkCodeTransformer(code),
+                    createCodeTransformer(code),
                     ...(code?.transformers ?? []),
                   ],
                   wrap: code?.wrap ?? false,

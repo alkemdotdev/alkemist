@@ -1,11 +1,11 @@
 ---
 import SiteLayout from '../layouts/SiteLayout.astro';
-import AlkMath from '@alkemdotdev/alkemist-components/AlkMath.astro';
-import AlkCode from '@alkemdotdev/alkemist-components/AlkCode.astro';
-import AlkChart from '@alkemdotdev/alkemist-components/AlkChart.astro';
-import AlkShader from '@alkemdotdev/alkemist-components/AlkShader.astro';
-import AlkModel from '@alkemdotdev/alkemist-components/AlkModel.astro';
-import { ALK_INKS } from '@alkemdotdev/alkemist-theme/palette';
+import Math from '@alkemdotdev/alkemist-components/math';
+import Code from '@alkemdotdev/alkemist-components/code';
+import Chart from '@alkemdotdev/alkemist-components/chart';
+import Shader from '@alkemdotdev/alkemist-components/shader';
+import Model from '@alkemdotdev/alkemist-components/model';
+import { INKS } from '@alkemdotdev/alkemist-theme/palette';
 import RichSpecimen from '../components/RichSpecimen.mdx';
 import ExampleSource from '../components/ExampleSource.astro';
 import { isPreview } from '../lib/deployment';
@@ -87,7 +87,7 @@ outColor = vec4(mix(board, ink, contour), 1.0);`,
     aria-label="Interactive three-dimensional model"
   >
     <h2 class="test-model-title">3D model</h2>
-    <AlkModel
+    <Model
       src="/test/torus-knot.glb"
       poster="/test/torus-knot.svg"
       title="Torus knot"
@@ -96,10 +96,10 @@ outColor = vec4(mix(board, ink, contour), 1.0);`,
     <ExampleSource
       label="Model"
       code={`---
-import AlkModel from '@alkemdotdev/alkemist-components/AlkModel.astro';
+import Model from '@alkemdotdev/alkemist-components/model';
 ---
 
-<AlkModel
+<Model
   src="/test/torus-knot.glb"
   poster="/test/torus-knot.svg"
   title="Torus knot"
@@ -135,7 +135,7 @@ import AlkModel from '@alkemdotdev/alkemist-components/AlkModel.astro';
                 : 'Blackboard / #111111'}
             </span>
             <div class="test-ink-swatches">
-              {ALK_INKS.map((ink) => (
+              {INKS.map((ink) => (
                 <div style={`--swatch:${ink.hex}`}>
                   <span class="test-stroke" aria-hidden="true" />
                   <strong>{ink.name}</strong>
@@ -171,11 +171,11 @@ import AlkModel from '@alkemdotdev/alkemist-components/AlkModel.astro';
       </p>
     </div>
     <div class="test-equation-hero">
-      <AlkMath tex={String.raw`e^{i\pi} + 1 = 0`} label="Euler’s identity" />
+      <Math tex={String.raw`e^{i\pi} + 1 = 0`} label="Euler’s identity" />
     </div>
     <div class="test-duo">
       <div class="test-math-cell">
-        <h3>Fourier transform</h3><AlkMath
+        <h3>Fourier transform</h3><Math
           tex={String.raw`\widehat{f}(\xi) = \int_{-\infty}^{\infty} f(x)\,e^{-2\pi i x\xi}\,dx`}
           label="The Fourier transform"
         /><p>
@@ -184,7 +184,7 @@ import AlkModel from '@alkemdotdev/alkemist-components/AlkModel.astro';
         </p>
       </div>
       <div class="test-math-cell">
-        <h3>Damped oscillator</h3><AlkMath
+        <h3>Damped oscillator</h3><Math
           tex={String.raw`\frac{d}{dt}\begin{bmatrix}x\\v\end{bmatrix}=\begin{bmatrix}0&1\\-\omega^2&-2\zeta\omega\end{bmatrix}\begin{bmatrix}x\\v\end{bmatrix}`}
           label="A damped harmonic oscillator"
         /><p>
@@ -198,13 +198,13 @@ import AlkModel from '@alkemdotdev/alkemist-components/AlkModel.astro';
         <span class="test-tag">Proposition</span><h3>
           Conservation of energy
         </h3><p>
-          For an undamped oscillator with unit mass, <AlkMath
+          For an undamped oscillator with unit mass, <Math
             tex={String.raw`\ddot{x}=-\omega^2x`}
             display={false}
           />, total energy is constant.
         </p>
       </div><div>
-        <AlkMath
+        <Math
           tex={String.raw`\begin{aligned}E &= \tfrac12\dot{x}^{\,2}+\tfrac12\omega^2 x^2\\[4pt]\frac{dE}{dt}&=\dot{x}(\ddot{x}+\omega^2x)=0.\end{aligned}`}
           label="Proof by differentiation"
         /><span class="test-qed" aria-label="End of proof">□</span>
@@ -212,7 +212,7 @@ import AlkModel from '@alkemdotdev/alkemist-components/AlkModel.astro';
     </div>
     <ExampleSource
       label="Equation"
-      code={'---\nimport AlkMath from \'@alkemdotdev/alkemist-components/AlkMath.astro\';\n---\n\n<AlkMath tex={String.raw`e^{i\\pi} + 1 = 0`} label="Euler’s identity" />'}
+      code={'---\nimport Math from \'@alkemdotdev/alkemist-components/math\';\n---\n\n<Math tex={String.raw`e^{i\\pi} + 1 = 0`} label="Euler’s identity" />'}
       reference="/docs/math-code/"
     />
   </section>
@@ -227,7 +227,7 @@ import AlkModel from '@alkemdotdev/alkemist-components/AlkModel.astro';
       </p>
     </div>
     <div class="test-example">
-      <AlkChart
+      <Chart
         src="/test/oscillation.csv"
         type="line"
         x="time"
@@ -242,10 +242,10 @@ import AlkModel from '@alkemdotdev/alkemist-components/AlkModel.astro';
       <ExampleSource
         label="Line chart"
         code={`---
-import AlkChart from '@alkemdotdev/alkemist-components/AlkChart.astro';
+import Chart from '@alkemdotdev/alkemist-components/chart';
 ---
 
-<AlkChart
+<Chart
   src="/test/oscillation.csv"
   type="line"
   x="time"
@@ -264,7 +264,7 @@ import AlkChart from '@alkemdotdev/alkemist-components/AlkChart.astro';
     <p class="alk-note test-chart-note">Shift + scroll to zoom. ↗</p>
     <div class="test-duo">
       <div class="test-example">
-        <AlkChart
+        <Chart
           src="/test/materials.csv"
           type="bar"
           x="material"
@@ -280,10 +280,10 @@ import AlkChart from '@alkemdotdev/alkemist-components/AlkChart.astro';
         <ExampleSource
           label="Bar chart"
           code={`---
-import AlkChart from '@alkemdotdev/alkemist-components/AlkChart.astro';
+import Chart from '@alkemdotdev/alkemist-components/chart';
 ---
 
-<AlkChart
+<Chart
   src="/test/materials.csv"
   type="bar"
   x="material"
@@ -301,7 +301,7 @@ import AlkChart from '@alkemdotdev/alkemist-components/AlkChart.astro';
         />
       </div>
       <div class="test-example">
-        <AlkChart
+        <Chart
           src="/test/materials.csv"
           type="donut"
           x="material"
@@ -316,10 +316,10 @@ import AlkChart from '@alkemdotdev/alkemist-components/AlkChart.astro';
         <ExampleSource
           label="Donut chart"
           code={`---
-import AlkChart from '@alkemdotdev/alkemist-components/AlkChart.astro';
+import Chart from '@alkemdotdev/alkemist-components/chart';
 ---
 
-<AlkChart
+<Chart
   src="/test/materials.csv"
   type="donut"
   x="material"
@@ -336,7 +336,7 @@ import AlkChart from '@alkemdotdev/alkemist-components/AlkChart.astro';
         />
       </div>
       <div class="test-example">
-        <AlkChart
+        <Chart
           src="/test/oscillation.csv"
           type="scatter"
           x="position"
@@ -352,10 +352,10 @@ import AlkChart from '@alkemdotdev/alkemist-components/AlkChart.astro';
         <ExampleSource
           label="Scatter chart"
           code={`---
-import AlkChart from '@alkemdotdev/alkemist-components/AlkChart.astro';
+import Chart from '@alkemdotdev/alkemist-components/chart';
 ---
 
-<AlkChart
+<Chart
   src="/test/oscillation.csv"
   type="scatter"
   x="position"
@@ -373,7 +373,7 @@ import AlkChart from '@alkemdotdev/alkemist-components/AlkChart.astro';
         />
       </div>
       <div class="test-example">
-        <AlkChart
+        <Chart
           src="/test/field.csv"
           type="heatmap"
           x="x"
@@ -390,10 +390,10 @@ import AlkChart from '@alkemdotdev/alkemist-components/AlkChart.astro';
         <ExampleSource
           label="Heatmap chart"
           code={`---
-import AlkChart from '@alkemdotdev/alkemist-components/AlkChart.astro';
+import Chart from '@alkemdotdev/alkemist-components/chart';
 ---
 
-<AlkChart
+<Chart
   src="/test/field.csv"
   type="heatmap"
   x="x"
@@ -414,7 +414,7 @@ import AlkChart from '@alkemdotdev/alkemist-components/AlkChart.astro';
     </div>
     <div class="test-duo">
       <div class="test-example">
-        <AlkChart
+        <Chart
           src="/test/materials.csv"
           type="pie"
           x="material"
@@ -430,10 +430,10 @@ import AlkChart from '@alkemdotdev/alkemist-components/AlkChart.astro';
         <ExampleSource
           label="Pie chart"
           code={`---
-import AlkChart from '@alkemdotdev/alkemist-components/AlkChart.astro';
+import Chart from '@alkemdotdev/alkemist-components/chart';
 ---
 
-<AlkChart
+<Chart
   src="/test/materials.csv"
   type="pie"
   x="material"
@@ -499,7 +499,7 @@ import AlkChart from '@alkemdotdev/alkemist-components/AlkChart.astro';
             hidden={i !== 0}
             tabindex="0"
           >
-            <AlkCode
+            <Code
               code={tab.code}
               lang={tab.id}
               title={tab.title}
@@ -516,12 +516,12 @@ import AlkChart from '@alkemdotdev/alkemist-components/AlkChart.astro';
     <ExampleSource
       label="Code component"
       code={`---
-import AlkCode from '@alkemdotdev/alkemist-components/AlkCode.astro';
+import Code from '@alkemdotdev/alkemist-components/code';
 
 const code = \`${tabs[0].code}\`;
 ---
 
-<AlkCode
+<Code
   code={code}
   lang="typescript"
   title="integrate.ts"
@@ -540,14 +540,14 @@ const code = \`${tabs[0].code}\`;
         a caption and downloadable source.
       </p>
     </div>
-    <AlkShader title="Two-source interference" frequency={9} angle={24} />
+    <Shader title="Two-source interference" frequency={9} angle={24} />
     <ExampleSource
       label="Shader"
       code={`---
-import AlkShader from '@alkemdotdev/alkemist-components/AlkShader.astro';
+import Shader from '@alkemdotdev/alkemist-components/shader';
 ---
 
-<AlkShader title="Two-source interference" frequency={9} angle={24} />`}
+<Shader title="Two-source interference" frequency={9} angle={24} />`}
       reference="/docs/models/#a-live-shader-study"
     />
     <figure

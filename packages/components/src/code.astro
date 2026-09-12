@@ -1,17 +1,17 @@
 ---
 import { codeToHtml } from 'shiki';
 import type { BundledLanguage } from 'shiki';
-import { AlkCodeTheme, createAlkCodeTransformer } from './code-theme';
+import { codeTheme, createCodeTransformer } from './code-theme';
 import '@alkemdotdev/alkemist-theme/math-code.css';
 
-export interface AlkCodeProps {
+export interface CodeProps {
   code: string;
   lang?: BundledLanguage | 'text' | 'plaintext';
   title?: string;
   highlightLines?: number[];
   lineNumbers?: boolean;
 }
-type Props = AlkCodeProps;
+type Props = CodeProps;
 const {
   code,
   lang = 'text',
@@ -21,10 +21,8 @@ const {
 } = Astro.props;
 const html = await codeToHtml(code, {
   lang,
-  theme: AlkCodeTheme,
-  transformers: [
-    createAlkCodeTransformer({ title, highlightLines, lineNumbers }),
-  ],
+  theme: codeTheme,
+  transformers: [createCodeTransformer({ title, highlightLines, lineNumbers })],
 });
 ---
 

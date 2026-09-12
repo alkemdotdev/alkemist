@@ -1,6 +1,6 @@
 ---
 import './flow.css';
-import { ALK_INKS } from '@alkemdotdev/alkemist-theme/palette';
+import { INKS } from '@alkemdotdev/alkemist-theme/palette';
 
 interface Props {
   id?: string;
@@ -19,7 +19,7 @@ const ribbons = Array.from({ length: 64 }, (_, line) => {
   });
   return {
     path: points.join(' '),
-    color: ALK_INKS[Math.floor(line / 8)].hex,
+    color: INKS[Math.floor(line / 8)].hex,
   };
 });
 ---

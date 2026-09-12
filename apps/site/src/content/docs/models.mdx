@@ -4,18 +4,18 @@ description: Publish a real glTF model with orbit controls, a static poster, and
 order: 4.2
 ---
 
-import AlkModel from '@alkemdotdev/alkemist-components/AlkModel.astro';
+import Model from '@alkemdotdev/alkemist-components/model';
 
-`AlkModel` displays an uncompressed **glTF 2.0 `.glb` or `.gltf`** file with Three.js. Alkemist provides the figure shell, lazy loading, camera controls, theming, fallback, and cleanup. The file itself stays downloadable.
+`Model` displays an uncompressed **glTF 2.0 `.glb` or `.gltf`** file with Three.js. Alkemist provides the figure shell, lazy loading, camera controls, theming, fallback, and cleanup. The file itself stays downloadable.
 
 ## Add a model
 
 Place the model and any associated textures in your site's `public` directory. A self-contained GLB is convenient for publishing; a `.gltf` document can reference separate binary and texture files, whose relative URLs must remain valid.
 
 ```mdx
-import AlkModel from '@alkemdotdev/alkemist-components/AlkModel.astro';
+import Model from '@alkemdotdev/alkemist-components/model';
 
-<AlkModel
+<Model
   src="/test/torus-knot.glb"
   poster="/test/torus-knot.svg"
   title="A (2, 3) torus knot"
@@ -23,7 +23,7 @@ import AlkModel from '@alkemdotdev/alkemist-components/AlkModel.astro';
 />
 ```
 
-<AlkModel
+<Model
   src="/test/torus-knot.glb"
   poster="/test/torus-knot.svg"
   title="A (2, 3) torus knot"
@@ -34,7 +34,7 @@ The component uses the project's pinned [Three.js GLTFLoader](https://github.com
 
 ## Props
 
-The public prop type is `AlkModelProps`.
+The public prop type is `ModelProps`.
 
 | Prop          | Required | Meaning                                                                           |
 | ------------- | -------- | --------------------------------------------------------------------------------- |
@@ -58,7 +58,7 @@ Orbit navigation uses [Three.js OrbitControls](https://github.com/mrdoob/three.j
 
 ## Theme and lifecycle
 
-The board color determines the scene background. Ordinary model materials retain their authored colors. Alkemist's own teaching fixture opts into the shared cobalt ink with material metadata `extras: { alkInk: "cobalt" }`, so that material uses the same `#1982f2` on whiteboard and blackboard.
+The board color determines the scene background. Ordinary model materials retain their authored colors. Alkemist's own teaching fixture opts into the shared cobalt ink with material metadata `extras: { Ink: "cobalt" }`, so that material uses the same `#1982f2` on whiteboard and blackboard.
 
 The engine imports when the viewer approaches the viewport. Idle and offscreen scenes do not run a continuous animation loop. Rendering caps device pixel ratio at 2; removed viewers release geometry, materials, textures, renderer resources, and decoded image bitmaps. These explicit disposals follow [Three.js resource cleanup guidance](https://threejs.org/manual/en/cleanup.html).
 
@@ -72,18 +72,18 @@ This version has no animation timeline, skeletal animation controls, measurement
 
 ## A live shader study
 
-`AlkShader` is a reusable, bounded two-source interference specimen. It evaluates a dimensionless field in GLSL, with frequency and source-angle controls. The eight categorical inks distinguish contour bands; a static SVG remains visible until the GPU renderer is ready.
+`Shader` is a reusable, bounded two-source interference specimen. It evaluates a dimensionless field in GLSL, with frequency and source-angle controls. The eight categorical inks distinguish contour bands; a static SVG remains visible until the GPU renderer is ready.
 
 ```mdx
-import AlkShader from '@alkemdotdev/alkemist-components/AlkShader.astro';
+import Shader from '@alkemdotdev/alkemist-components/shader';
 
-<AlkShader title="Interference field" frequency={9} angle={24} />
+<Shader title="Interference field" frequency={9} angle={24} />
 ```
 
-Its public prop type is `AlkShaderProps`. `title` defaults to “Interference field,” `frequency` defaults to 9 and is clamped to 3–18, and `angle` defaults to 24 degrees and is clamped to 0–180. `class` adds a custom class. Native range controls let readers change those values; Play waves explicitly starts motion.
+Its public prop type is `ShaderProps`. `title` defaults to “Interference field,” `frequency` defaults to 9 and is clamped to 3–18, and `angle` defaults to 24 degrees and is clamped to 0–180. `class` adds a custom class. Native range controls let readers change those values; Play waves explicitly starts motion.
 
 The implementation uses WebGL2 and GLSL ES 3.00. While paused, changing a control renders one frame. Playing advances phase at 0.8 radians per second and suspends offscreen or in a hidden tab; changing the reduced-motion preference pauses playback. Device pixel ratio is capped at 2. Missing WebGL2, shader compilation/link failures, and a lost graphics context produce distinct explanatory states. Removal releases the shader program, shader objects, vertex array, observers, and listeners.
 
-The SVG fallback is an illustration of overlapping wave sources, not a screenshot of the computed field. The exact fragment source is exported by the shader module as `ALK_INTERFERENCE_FRAGMENT` for the test page's source specimen.
+The SVG fallback is an illustration of overlapping wave sources, not a screenshot of the computed field. The exact fragment source is exported by the shader module as `INTERFERENCE_FRAGMENT` for the test page's source specimen.
 
 This component currently renders its own two-source field. It does not accept an arbitrary shader path, execute untrusted shader code, or provide a general shader editor. The working study is on the [test page](/test/).

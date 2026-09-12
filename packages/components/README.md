@@ -1,17 +1,20 @@
 # @alkemdotdev/alkemist-components
 
-Astro components for technical publishing: `AlkLayout`, `AlkMath`, `AlkCode`,
-`AlkChart`, `AlkModel`, `AlkShader`, and `AlkPostList`.
+Astro components for technical publishing: `Layout`, `Math`, `Code`,
+`Chart`, `Model`, `Shader`, and `PostList`.
+
+Each component has a lowercase, extensionless public entry. Import its types
+from the same entry; there is no root component barrel.
 
 Import a component directly, for example:
 
 ```astro
 ---
-import AlkChart from '@alkemdotdev/alkemist-components/AlkChart.astro';
+import Chart from '@alkemdotdev/alkemist-components/chart';
 ---
 ```
 
-`AlkLayout` imports the full `@alkemdotdev/alkemist-theme/theme.css` theme. The standalone
+`Layout` imports the full `@alkemdotdev/alkemist-theme/theme.css` theme. The standalone
 math, code, chart, model, and shader components include scoped fallback tokens,
 so they can be used in an existing site without the global reset.
 

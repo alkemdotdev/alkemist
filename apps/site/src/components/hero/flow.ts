@@ -1,4 +1,4 @@
-import { ALK_INKS } from '@alkemdotdev/alkemist-theme/palette';
+import { INKS } from '@alkemdotdev/alkemist-theme/palette';
 
 const VERTEX = `#version 300 es
 precision highp float;
@@ -7,7 +7,7 @@ void main() {
   gl_Position = vec4(p * 2.0 - 1.0, 0.0, 1.0);
 }`;
 
-// A site-owned art study, not the public AlkShader component's API.
+// A site-owned art study, not the public Shader component's API.
 const FRAGMENT = `#version 300 es
 precision highp float;
 uniform vec2 u_resolution;
@@ -174,7 +174,7 @@ function mountFlow(
     const inksUniform = uniform('u_inks[0]');
     gl.uniform3fv(
       inksUniform,
-      ALK_INKS.flatMap(({ hex }) =>
+      INKS.flatMap(({ hex }) =>
         [1, 3, 5].map(
           (offset) => parseInt(hex.slice(offset, offset + 2), 16) / 255,
         ),

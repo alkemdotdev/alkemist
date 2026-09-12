@@ -1,10 +1,10 @@
 import type { TopLevelSpec } from 'vega-lite';
 
-export type AlkChartType =
+export type ChartType =
   'line' | 'bar' | 'scatter' | 'pie' | 'donut' | 'heatmap';
-export type AlkChartFieldType =
+export type ChartFieldType =
   'quantitative' | 'temporal' | 'nominal' | 'ordinal';
-export type AlkChartInk =
+export type ChartInk =
   | 'cobalt'
   | 'cyan'
   | 'teal'
@@ -14,21 +14,21 @@ export type AlkChartInk =
   | 'rose'
   | 'violet';
 
-export interface AlkChartProps {
+export interface ChartProps {
   src: string;
-  type: AlkChartType;
+  type: ChartType;
   x: string;
   y: string;
   title: string;
   description: string;
   xLabel?: string;
   yLabel?: string;
-  xType?: AlkChartFieldType;
+  xType?: ChartFieldType;
   color?: string;
   colorLabel?: string;
   value?: string;
   valueLabel?: string;
-  ink?: AlkChartInk;
+  ink?: ChartInk;
   height?: number;
   grid?: boolean;
   zoom?: boolean;
@@ -38,15 +38,15 @@ export interface AlkChartProps {
   sample?: boolean;
 }
 
-export interface AlkChartTheme {
+export interface ChartTheme {
   text: string;
   rule: string;
-  inks: Record<AlkChartInk, string>;
+  inks: Record<ChartInk, string>;
 }
 
-export type AlkChartRow = Record<string, string | number | null>;
+export type ChartRow = Record<string, string | number | null>;
 
-export const alkChartInks: AlkChartInk[] = [
+export const chartInks: ChartInk[] = [
   'cobalt',
   'cyan',
   'teal',
@@ -65,7 +65,7 @@ function literalField(field: string): string {
     .replaceAll(']', '\\]');
 }
 
-export function alkChartXType(config: AlkChartProps): AlkChartFieldType {
+export function chartXType(config: ChartProps): ChartFieldType {
   return (
     config.xType ??
     (['bar', 'pie', 'donut'].includes(config.type)
@@ -76,19 +76,19 @@ export function alkChartXType(config: AlkChartProps): AlkChartFieldType {
   );
 }
 
-export function alkChartCanZoom(config: AlkChartProps): boolean {
+export function chartCanZoom(config: ChartProps): boolean {
   return (
     config.zoom !== false &&
     ['line', 'scatter'].includes(config.type) &&
-    ['quantitative', 'temporal'].includes(alkChartXType(config))
+    ['quantitative', 'temporal'].includes(chartXType(config))
   );
 }
 
 /** Parse only explicitly numeric columns; identifiers and category labels stay intact. */
-export function prepareAlkChartRows(
-  raw: AlkChartRow[],
-  config: AlkChartProps,
-): AlkChartRow[] {
+export function prepareChartRows(
+  raw: ChartRow[],
+  config: ChartProps,
+): ChartRow[] {
   if (!raw.length) throw new Error('The CSV contains no data rows.');
   const required = [
     config.x,
@@ -103,7 +103,7 @@ export function prepareAlkChartRows(
       throw new Error(`The CSV is missing the “${field}” column.`);
   }
   const numeric = new Set<string>();
-  if (alkChartXType(config) === 'quantitative') numeric.add(config.x);
+  if (chartXType(config) === 'quantitative') numeric.add(config.x);
   if (config.type !== 'heatmap') numeric.add(config.y);
   if (config.type === 'heatmap' && config.value) numeric.add(config.value);
   if (config.type === 'heatmap') {
@@ -142,7 +142,7 @@ export function prepareAlkChartRows(
         row[field] = number;
       }
     }
-    if (alkChartXType(config) === 'temporal') {
+    if (chartXType(config) === 'temporal') {
       const value = row[config.x];
       if (value === null || String(value).trim() === '') {
         row[config.x] = null;
@@ -159,7 +159,7 @@ export function prepareAlkChartRows(
       throw new Error(`The “${field}” column contains no numeric values.`);
   }
   if (
-    alkChartXType(config) === 'temporal' &&
+    chartXType(config) === 'temporal' &&
     rows.every((row) => row[config.x] === null)
   )
     throw new Error(`The “${config.x}” column contains no dates.`);
@@ -174,13 +174,13 @@ export function prepareAlkChartRows(
 }
 
 /** Presets remain small; the Vega-Lite engine owns scales, marks, and interactions. */
-export function createAlkChartSpec(
-  config: AlkChartProps,
-  rows: AlkChartRow[],
-  theme: AlkChartTheme,
+export function createChartSpec(
+  config: ChartProps,
+  rows: ChartRow[],
+  theme: ChartTheme,
   width: number,
 ): TopLevelSpec {
-  const palette = alkChartInks.map((ink) => theme.inks[ink]);
+  const palette = chartInks.map((ink) => theme.inks[ink]);
   const categorical =
     config.color ??
     (['bar', 'pie', 'donut'].includes(config.type) ? config.x : undefined);
@@ -247,16 +247,16 @@ export function createAlkChartSpec(
   };
   const x = {
     field: literalField(config.x),
-    type: alkChartXType(config),
+    type: chartXType(config),
     title: config.xLabel ?? config.x,
     axis:
       config.type === 'bar' &&
       !config.horizontal &&
       width < 420 &&
-      ['nominal', 'ordinal'].includes(alkChartXType(config))
+      ['nominal', 'ordinal'].includes(chartXType(config))
         ? { labelAngle: -55, labelLimit: 70, labelOverlap: 'greedy' as const }
         : { labelAngle: 0 },
-    ...(alkChartXType(config) === 'quantitative'
+    ...(chartXType(config) === 'quantitative'
       ? { scale: { zero: false } }
       : {}),
   };
@@ -268,7 +268,7 @@ export function createAlkChartSpec(
   const tooltip = [
     {
       field: literalField(config.x),
-      type: alkChartXType(config),
+      type: chartXType(config),
       title: config.xLabel ?? config.x,
     },
     {
@@ -369,7 +369,7 @@ export function createAlkChartSpec(
   }
   return {
     ...base,
-    ...(alkChartCanZoom(config)
+    ...(chartCanZoom(config)
       ? {
           params: [
             {

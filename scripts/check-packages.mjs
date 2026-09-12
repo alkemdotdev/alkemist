@@ -63,35 +63,35 @@ try {
   await write(
     'src/pages/index.astro',
     `---
-import AlkMath from '@alkemdotdev/alkemist-components/AlkMath.astro';
-import AlkCode from '@alkemdotdev/alkemist-components/AlkCode.astro';
-import type { AlkMathProps } from '@alkemdotdev/alkemist-components/AlkMath.astro';
-const math: AlkMathProps = {tex:'E=mc^2',label:'Mass and energy'};
+import Math from '@alkemdotdev/alkemist-components/math';
+import Code from '@alkemdotdev/alkemist-components/code';
+import type { MathProps } from '@alkemdotdev/alkemist-components/math';
+const math: MathProps = {tex:'E=mc^2',label:'Mass and energy'};
 ---
-<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Existing site</title></head><body><h1>My existing website</h1><AlkMath {...math}/><AlkCode code="const answer = 42;" lang="javascript"/><style is:global>body {margin:31px;font-family:Georgia,serif;background:#fff8ed;color:#172b4d} h1{font-size:29px}</style></body></html>`,
+<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Existing site</title></head><body><h1>My existing website</h1><Math {...math}/><Code code="const answer = 42;" lang="javascript"/><style is:global>body {margin:31px;font-family:Georgia,serif;background:#fff8ed;color:#172b4d} h1{font-size:29px}</style></body></html>`,
   );
   await write(
     'src/pages/figures.astro',
     `---
-import AlkChart from '@alkemdotdev/alkemist-components/AlkChart.astro';
-import AlkModel from '@alkemdotdev/alkemist-components/AlkModel.astro';
+import Chart from '@alkemdotdev/alkemist-components/chart';
+import Model from '@alkemdotdev/alkemist-components/model';
 ---
-<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Standalone figures</title></head><body><h1>Figures in my existing site</h1><AlkChart src="/sample.csv" type="line" x="x" y="y" title="Measurements" description="Three sample readings."/><AlkModel src="/sample.gltf" title="Sample mesh" description="A model figure."/></body></html>`,
+<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Standalone figures</title></head><body><h1>Figures in my existing site</h1><Chart src="/sample.csv" type="line" x="x" y="y" title="Measurements" description="Three sample readings."/><Model src="/sample.gltf" title="Sample mesh" description="A model figure."/></body></html>`,
   );
-  if (!registryMode) {
+  {
     await write(
       'src/pages/posts.astro',
       `---
-import AlkPostList from '@alkemdotdev/alkemist-components/AlkPostList.astro';
-import type { AlkPostListProps, AlkPostListItem, AlkPostListLayout } from '@alkemdotdev/alkemist-components';
-const items: AlkPostListItem[] = [
+import PostList from '@alkemdotdev/alkemist-components/post-list';
+import type { PostListProps, PostListItem, PostListLayout } from '@alkemdotdev/alkemist-components/post-list';
+const items: PostListItem[] = [
   {href:'/new/',title:'Newest note',description:'A post without an image.',date:'2026-09-12'},
   {href:'/lead/',title:'Chosen lead',description:'Explicit editorial selection.',cover:{src:'/cover.svg',alt:'Sample diagram',fit:'contain'}},
 ];
-const layout: AlkPostListLayout = 'featured-grid';
-const props: AlkPostListProps = {items,layout,selectable:true,featuredHref:'/lead/'};
+const layout: PostListLayout = 'featured-grid';
+const props: PostListProps = {items,layout,selectable:true,featuredHref:'/lead/'};
 ---
-<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Reusable post lists</title></head><body><h1>Posts on an existing website</h1><AlkPostList {...props}/><AlkPostList items={items} layout="rows" label="Independent list"/><AlkPostList items={[]} label="Empty list"/></body></html>`,
+<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Reusable post lists</title></head><body><h1>Posts on an existing website</h1><PostList {...props}/><PostList items={items} layout="rows" label="Independent list"/><PostList items={[]} label="Empty list"/></body></html>`,
     );
   }
   await mkdir(join(temporary, 'public'));
@@ -124,7 +124,7 @@ const props: AlkPostListProps = {items,layout,selectable:true,featuredHref:'/lea
       html.includes('const') &&
       html.includes('My existing website'),
   );
-  if (!registryMode) {
+  {
     const posts = await readFile(
       join(temporary, 'dist/posts/index.html'),
       'utf8',

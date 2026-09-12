@@ -1,6 +1,6 @@
 ---
 import { getCollection, render } from 'astro:content';
-import AlkPostList from '@alkemdotdev/alkemist-components/AlkPostList.astro';
+import PostList from '@alkemdotdev/alkemist-components/post-list';
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import {
   blogDisplay,
@@ -145,7 +145,7 @@ const orderedEntries = [...entries].sort((a, b) => {
       <>
         <h1>{label}</h1>
         <p>{descriptions.blog}</p>
-        <AlkPostList
+        <PostList
           {...blogDisplay}
           items={orderedEntries.map((entry) => ({
             href: withBase(`blog/${entry.id}/`),

@@ -13,7 +13,7 @@ const posters = {
   knot: knotPoster,
 };
 import { fieldStudies } from '../../components/forms/catalog';
-import { ALK_INKS } from '@alkemdotdev/alkemist-theme/palette';
+import { INKS } from '@alkemdotdev/alkemist-theme/palette';
 import { isPreview } from '../../lib/deployment';
 import '../../styles/sculpture-studies.css';
 ---
@@ -149,7 +149,7 @@ import '../../styles/sculpture-studies.css';
               >
                 {study.inks.map((id) => (
                   <i
-                    style={`--swatch:${ALK_INKS.find((ink) => ink.id === id)?.hex}`}
+                    style={`--swatch:${INKS.find((ink) => ink.id === id)?.hex}`}
                   />
                 ))}
               </span>

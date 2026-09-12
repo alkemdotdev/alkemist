@@ -3,7 +3,7 @@ import FormPoster from './FormPoster.astro';
 import './art.css';
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
-import AlkMath from '@alkemdotdev/alkemist-components/AlkMath.astro';
+import Math from '@alkemdotdev/alkemist-components/math';
 import { allFormStudies } from './catalog';
 import type { FormId } from './types';
 interface Props {
@@ -85,7 +85,7 @@ const scene = study.make();
     presentation === 'study' && (
       <div class="form-equation">
         <>
-          <AlkMath tex={study.equation} display={false} />
+          <Math tex={study.equation} display={false} />
           <span>{study.note}</span>
         </>
       </div>
