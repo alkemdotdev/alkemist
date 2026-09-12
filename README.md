@@ -36,6 +36,12 @@ npm run dev
 
 Choose `cloudflare`, `gitlab`, or `custom`. `create-alkemist` writes an empty-destination project once. It does not initialize Git, install dependencies, provision hosting, deploy, or modify the site's files after creation.
 
+### Choose your publishing sections
+
+The source starter offers optional Blog (developed writing), Logs (quick notes), Labs (interactive apps), Docs (project reference), and Book (an ordered guide), with Info for project background. Enable only what your project needs and choose your own labels. These conventions live in your generated site, not in the component package.
+
+The published `create-alkemist@1.0.0-beta.1` predates this scaffold. Use the source generator below for the new sections until the next deliberate npm release; existing generated sites keep their own files.
+
 ### Use the source generator
 
 Clone the repository, use Node 24.20.0, and create a separate site:

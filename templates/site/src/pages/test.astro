@@ -2,7 +2,7 @@
 import SiteLayout from '../layouts/SiteLayout.astro';
 import AlkCode from '@alkemdotdev/alkemist-components/AlkCode.astro';
 import AlkMath from '@alkemdotdev/alkemist-components/AlkMath.astro';
-import { withBase } from '../lib/site';
+import { isSectionEnabled, withBase } from '../lib/site';
 ---
 
 <SiteLayout
@@ -16,7 +16,13 @@ import { withBase } from '../lib/site';
     <h2>Type and ink</h2><p>
       Ordinary text, <strong>strong text</strong>, <em>emphasis</em>, <code
         >inline code</code
-      >, and <a href={withBase('labs/oscillator/')}>a useful link</a>.
+      >, and {
+        isSectionEnabled('labs') ? (
+          <a href={withBase('labs/oscillator/')}>a useful link</a>
+        ) : (
+          'a useful link'
+        )
+      }.
     </p><p class="lab-note">
       Keep a little room for handwritten thinking.
     </p><blockquote>
@@ -43,8 +49,12 @@ import { withBase } from '../lib/site';
       <label
         ><input type="checkbox" /> Include uncertainty in the next experiment</label
       >
-    </p><a href={withBase('labs/oscillator/')}
-      >Test the interactive chart and model →</a
-    >
+    </p>{
+      isSectionEnabled('labs') && (
+        <a href={withBase('labs/oscillator/')}>
+          Test the interactive chart and model →
+        </a>
+      )
+    }
   </section>
 </SiteLayout>

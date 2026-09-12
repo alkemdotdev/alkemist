@@ -1,0 +1,64 @@
+---
+title: Add a chart, verify, and publish
+description: Use a documented component with public data, then distinguish local checks from a live deployment.
+order: 3
+---
+
+Once a first slice works, capture the next action a reader needs. A tutorial can lead from setup to a component example. A lab can lead to the method that explains it. A log can become a developed article when the question has accumulated enough evidence.
+
+## Put the data where the browser can request it
+
+Create `public/data/measurements.csv` with a header row and values you are prepared to publish:
+
+```csv
+time,value
+0,2.1
+1,2.8
+2,3.4
+```
+
+Create `src/pages/chart.astro`:
+
+```astro
+---
+import AlkChart from '@alkemdotdev/alkemist-components/AlkChart.astro';
+import SiteLayout from '../layouts/SiteLayout.astro';
+import { withBase } from '../lib/site';
+---
+
+<SiteLayout
+  title="Measurements"
+  description="A small chart from the site's public data."
+>
+  <article class="alk-prose">
+    <h1>Measurements</h1>
+    <AlkChart
+      src={withBase('data/measurements.csv')}
+      type="line"
+      x="time"
+      y="value"
+    />
+  </article>
+</SiteLayout>
+```
+
+This creates `/chart/`. It is a small complete slice: the CSV is a public asset, the props name the two columns, and the surrounding prose can say what the line does and does not establish.
+
+## Verify the route you wrote
+
+Run the project check, then open the page at desktop and mobile widths:
+
+```sh
+npm run verify
+npm run dev
+```
+
+The check establishes the local build and project checks under your current environment. Browser interaction establishes that the route rendered and the chart responded in the viewports you exercised. Keep those observations separate from a live deployment claim.
+
+The important part is to publish the path you actually support. Mark proposals as proposals, keep unfinished experiments in Labs, and avoid describing an upstream possibility as a present capability. A smaller accurate guide is more useful than a broad promise.
+
+## Maintain the boundary
+
+When the local result is ready, follow Alkemist's [Cloudflare Pages guide](https://alkemist.alkem.dev/docs/hosting/cloudflare/), [GitLab Pages guide](https://alkemist.alkem.dev/docs/hosting/gitlab-pages/), or [custom hosting guide](https://alkemist.alkem.dev/docs/hosting/custom/). Each tells you what to configure and what to check after deployment.
+
+As the toolkit changes, site content remains local and readable. Update the package layer for reusable behavior; update the site for its own claims, examples, and visual choices. That separation gives a project room to improve without losing its working record.

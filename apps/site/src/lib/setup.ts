@@ -45,7 +45,7 @@ Read https://alkemist.alkem.dev/docs/agent-setup.md and https://alkemist.alkem.d
 
 Inspect my current workspace and its instructions. Establish the site name, destination directory/repository, hosting account, and intended URL from available context; ask together for the missing details. Alkemist's npm beta is published at 1.0.0-beta.1; use the documented source generator only when a tarball-backed update workflow is specifically wanted.
 
-Use \`npm create alkemist@beta -- my-lab --provider ${provider.id}\` in an empty destination. The registry generator creates files once and never takes ownership of user files afterward. To use the source workflow, clone Alkemist and run \`npm run create:site -- ../my-lab --provider ${provider.id}\`; it creates tarball-backed packages and its explicit \`--update\` is the supported snapshot refresh path. Preserve existing work and make the site identity, content, and Git remote mine. Include Blog, Labs, and Info; add my own Docs only if needed. Keep a small Test page for styling and interactions.
+Use \`npm create alkemist@beta -- my-lab --provider ${provider.id}\` in an empty destination. The registry generator creates files once and never takes ownership of user files afterward. To use the source workflow, clone Alkemist and run \`npm run create:site -- ../my-lab --provider ${provider.id}\`; it creates tarball-backed packages and its explicit \`--update\` is the supported snapshot refresh path. Preserve existing work and make the site identity, content, and Git remote mine. Choose only the sections my project needs: Blog for developed writing, Logs for quick notes, Labs for interactive one-off apps, Docs for project reference, and Book for a curated learning path. Keep Info for project background. These are optional conventions, not required content categories. Keep a small Test page for styling and interactions.
 
 Install dependencies, commit the generated lockfile, and commit \`vendor/\` only when using the source workflow. Verify the build and exercise the site on desktop and mobile. Set up the chosen provider's Git deployment and domain using my account and the documented recipe. Follow my existing authorization for external changes; identify any missing account access or consequential decision clearly.
 
@@ -56,7 +56,7 @@ export function agentSetupGuide() {
   return `# Set up an Alkemist website
 
 This is the agent-readable companion to https://alkemist.alkem.dev/docs/getting-started/.
-Contract version: 3. The public package interface is published as 1.0.0-beta.1 on npm. Report the installed versions and preserve the beta tag or fixed version used.
+Contract version: 4. The public package interface is published as 1.0.0-beta.1 on npm. Report the installed versions and preserve the beta tag or fixed version used.
 
 ## Inputs and workspace
 
@@ -68,7 +68,7 @@ Read the destination's instructions and inspect Git status/remotes before edits.
 
 For a new site, use \`npm create alkemist@beta -- <directory> --provider cloudflare|gitlab|custom\`. The registry generator writes an empty-destination project once; it does not initialize Git, install dependencies, create a deployment, or own user files after creation. For the source workflow, use Node 24.20.0, clone the public source, run npm ci there, and run its create:site generator. That generated site uses local npm tarballs under vendor/; retain them and commit the generated package-lock.json. Its explicit \`--update\` refreshes snapshots while preserving user-owned files.
 
-Set the site's name, description, navigation, content, favicon, and canonical URL in its own configuration. Keep user-owned content and custom styles out of the shared packages. The main sections are Blog, Labs, and Info. Docs is optional project documentation; Test is one styling/interaction page. Link to installed component docs, and use current explicit component props and public asset URLs. File-relative figure APIs and metadata sidecars are still proposals.
+Set the site's name, description, navigation, content, favicon, and canonical URL in its own configuration. Keep user-owned content and custom styles out of the shared packages. The source starter offers optional Blog, Logs, Labs, Docs, and Book sections; Info holds project background. Blog is developed writing, Logs short notes, Labs interactive apps, Docs project reference, and Book an ordered learning path. Enable only useful sections and choose project-specific labels. Test is one styling/interaction page. The published 1.0.0-beta.1 scaffold predates these optional-section helpers; use the source starter for them until the next package release. Link to installed component docs, and use current explicit component props and public asset URLs. File-relative figure APIs and metadata sidecars are still proposals.
 
 ## Hosting recipes
 

@@ -1,0 +1,275 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import { isPreview } from '../../lib/deployment';
+import { siteSections } from '../../lib/sections';
+
+const chapters = (await getCollection('book'))
+  .filter((entry) => !entry.data.draft)
+  .sort((a, b) => a.data.order - b.data.order || a.id.localeCompare(b.id));
+
+export async function getStaticPaths() {
+  if (!siteSections.book.enabled) return [];
+  const entries = (await getCollection('book'))
+    .filter((entry) => !entry.data.draft)
+    .sort((a, b) => a.data.order - b.data.order || a.id.localeCompare(b.id));
+  return [
+    { params: { id: undefined }, props: { entries } },
+    ...entries.map((entry) => ({ params: { id: entry.id }, props: { entry } })),
+  ];
+}
+
+const { entry, entries = chapters } = Astro.props as {
+  entry?: CollectionEntry<'book'>;
+  entries?: CollectionEntry<'book'>[];
+};
+const chapterIndex = entry
+  ? entries.findIndex(({ id }) => id === entry.id)
+  : -1;
+const previous = chapterIndex > 0 ? entries[chapterIndex - 1] : undefined;
+const next = chapterIndex >= 0 ? entries[chapterIndex + 1] : undefined;
+const rendered = entry ? await render(entry) : undefined;
+const Content = rendered?.Content;
+const contents =
+  rendered?.headings.filter((heading) => heading.depth === 2) ?? [];
+---
+
+<SiteLayout
+  title={entry?.data.title ?? 'Book'}
+  description={entry?.data.description ??
+    'A curated guide to publishing technical work.'}
+  preview={isPreview}
+>
+  {
+    entry && Content ? (
+      <div class="book-shell">
+        <aside class="book-toc" aria-label="Book chapters">
+          <a class="book-title" href="/book/">
+            Book contents
+          </a>
+          <ol>
+            {entries.map((chapter) => (
+              <li>
+                <a
+                  href={`/book/${chapter.id}/`}
+                  aria-current={chapter.id === entry.id ? 'page' : undefined}
+                >
+                  {chapter.data.title}
+                </a>
+              </li>
+            ))}
+          </ol>
+        </aside>
+        <article class="alk-prose book-chapter">
+          <p class="book-kicker">Chapter {entry.data.order}</p>
+          <h1>{entry.data.title}</h1>
+          <p class="alk-lead">{entry.data.description}</p>
+          {contents.length > 0 && (
+            <nav class="chapter-contents" aria-label="On this page">
+              <span>On this page</span>
+              <ul>
+                {contents.map((heading) => (
+                  <li>
+                    <a href={`#${heading.slug}`}>{heading.text}</a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          )}
+          <Content />
+          <nav class="chapter-nav" aria-label="Chapter navigation">
+            {previous ? (
+              <a href={`/book/${previous.id}/`}>
+                <span>Previous</span>
+                {previous.data.title}
+              </a>
+            ) : (
+              <span />
+            )}
+            {next ? (
+              <a href={`/book/${next.id}/`}>
+                <span>Next</span>
+                {next.data.title}
+              </a>
+            ) : (
+              <a href="/book/">
+                <span>Contents</span>Back to the guide
+              </a>
+            )}
+          </nav>
+        </article>
+      </div>
+    ) : (
+      <section class="book-index">
+        <h1>Publish work people can inspect</h1>
+        <p class="alk-lead">
+          A short, sequential guide to shaping technical work into a maintained
+          public record.
+        </p>
+        <ol>
+          {entries.map((chapter) => (
+            <li>
+              <a href={`/book/${chapter.id}/`}>
+                <span>Chapter {chapter.data.order}</span>
+                <h2>{chapter.data.title}</h2>
+                <p>{chapter.data.description}</p>
+              </a>
+            </li>
+          ))}
+        </ol>
+      </section>
+    )
+  }
+</SiteLayout>
+
+<style>
+  .book-shell {
+    display: grid;
+    grid-template-columns: 13rem minmax(0, 1fr);
+    gap: clamp(2rem, 7vw, 7rem);
+    max-width: 1120px;
+  }
+  .book-toc {
+    border-right: 1px solid var(--alk-rule);
+    font-size: 0.82rem;
+    padding-right: 1.4rem;
+  }
+  .book-title,
+  .book-kicker {
+    color: var(--alk-muted);
+    font: 0.75rem/1.7 var(--alk-mono);
+    letter-spacing: 0.03em;
+  }
+  .book-title {
+    display: block;
+    color: inherit;
+    font-weight: 500;
+    text-decoration: none;
+  }
+  .book-toc ol,
+  .book-index ol {
+    list-style: none;
+    padding: 0;
+  }
+  .book-toc ol {
+    margin: 1rem 0;
+  }
+  .book-toc li {
+    margin: 0.65rem 0;
+  }
+  .book-toc a {
+    color: var(--alk-muted);
+    text-decoration: none;
+  }
+  .book-toc a:hover,
+  .book-toc a[aria-current='page'] {
+    color: var(--alk-ink);
+    text-decoration: underline;
+  }
+  .book-chapter {
+    max-width: 44rem;
+  }
+  .book-chapter h1 {
+    margin-top: 0.5rem;
+  }
+  .chapter-contents {
+    border-left: 2px solid var(--alk-rule);
+    font-size: 0.86rem;
+    margin: 2rem 0;
+    padding-left: 1rem;
+  }
+  .chapter-contents span {
+    color: var(--alk-muted);
+    font: 0.7rem var(--alk-mono);
+    text-transform: uppercase;
+  }
+  .chapter-contents ul {
+    list-style: none;
+    margin: 0.55rem 0 0;
+    padding: 0;
+  }
+  .chapter-contents li {
+    margin: 0.3rem 0;
+  }
+  .chapter-nav {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    border-top: 1px solid var(--alk-rule);
+    margin-top: 3rem;
+    padding-top: 1.1rem;
+  }
+  .chapter-nav a:last-child {
+    text-align: right;
+  }
+  .chapter-nav a {
+    color: inherit;
+    font-size: 0.9rem;
+    text-decoration: none;
+  }
+  .chapter-nav a:hover {
+    text-decoration: underline;
+  }
+  .chapter-nav span,
+  .book-index li span {
+    display: block;
+    color: var(--alk-muted);
+    font: 0.7rem/1.6 var(--alk-mono);
+    text-transform: uppercase;
+  }
+  .book-index {
+    max-width: 760px;
+  }
+  .book-index h1 {
+    margin: 0.5rem 0 0.8rem;
+  }
+  .book-index > p {
+    margin-top: 0;
+  }
+  .book-index ol {
+    border-bottom: 1px solid var(--alk-rule);
+    margin: 2.5rem 0 0;
+  }
+  .book-index li {
+    border-top: 1px solid var(--alk-rule);
+    margin: 0;
+  }
+  .book-index a {
+    color: inherit;
+    display: block;
+    padding: 1.2rem 0;
+    text-decoration: none;
+  }
+  .book-index a:hover h2 {
+    text-decoration: underline;
+  }
+  .book-index h2 {
+    font-size: 1.18rem;
+    margin: 0.25rem 0;
+  }
+  .book-index li p {
+    color: var(--alk-muted);
+    font-size: 0.92rem;
+    margin: 0;
+    max-width: 58ch;
+  }
+  @media (max-width: 780px) {
+    .book-shell {
+      display: block;
+    }
+    .book-toc {
+      border: 0;
+      border-bottom: 1px solid var(--alk-rule);
+      margin-bottom: 2rem;
+      padding: 0 0 1rem;
+    }
+    .book-toc ol {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem 1rem;
+    }
+    .book-toc li {
+      margin: 0;
+    }
+  }
+</style>

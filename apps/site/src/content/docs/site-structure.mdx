@@ -1,10 +1,12 @@
 ---
 title: Site structure and navigation
-description: Blog, Labs, Info, optional Docs, and one Test page. Keep the top bar simple and let your site own its content.
+description: Optional Blog, Logs, Labs, Docs, and Book sections, with Info for project background. Choose the formats your project needs.
 order: 15
 ---
 
-The Alkemist demo uses **Blog · Labs · Docs · Info · More**. Docs leads directly to the component and setup references; More contains Test. The reusable layout defaults to Blog, Labs, and Info so sites without documentation need no extra configuration. On small screens, one hamburger menu contains both groups and keeps the header on a single row. These menus support keyboard activation, Escape to close and return focus, and dismissal by clicking outside. Navigation remains usable without JavaScript.
+Alkemist offers five publishing conventions: **Blog · Logs · Labs · Docs · Book**. **Info** remains the place for project background. Use only the sections that help your readers; these names and divisions are starting points, not a required taxonomy.
+
+The demo shows all five so you can try each format. Adopting projects own their navigation and content. On small screens, the header puts navigation in one keyboard-accessible menu; More holds the Test page.
 
 The appearance icon opens **Whiteboard**, **Blackboard**, and **System** choices. Sun, moon, and monitor icons show the selected preference. The preference is restored before paint and follows operating-system changes when System is selected. Arrow keys move through the choices; selecting with a pointer closes the panel.
 
@@ -24,15 +26,18 @@ These helpers run in the browser. `AlkLayout` initializes them; `setTheme` persi
 
 ## What belongs where
 
-| Section  | Purpose                                                            | Example                                               |
-| -------- | ------------------------------------------------------------------ | ----------------------------------------------------- |
-| `/blog/` | Blog posts, news, development articles, research notes             | [How the theme was built](/blog/ink-and-instruments/) |
-| `/labs/` | Interactive experiments, small tools, and usable applications      | [Interference lab](/labs/interference/)               |
-| `/info/` | About the project, people, team, company, or organization          | [About Alkemist](/info/)                              |
-| `/docs/` | Component usage, configuration, architecture, and site conventions | [Component catalog](/docs/components/)                |
-| `/test/` | One comprehensive styling and interaction test application         | [Math specimens](/test/#math)                         |
+| Section  | Purpose                                                | Reading pattern                           |
+| -------- | ------------------------------------------------------ | ----------------------------------------- |
+| `/blog/` | Developed articles, explanations, and essays           | Browse titles, then read a complete piece |
+| `/logs/` | Quick notes, observations, and small progress updates  | Scan newest first, with permanent links   |
+| `/labs/` | Interactive one-off apps, experiments, and small tools | Open and use something                    |
+| `/docs/` | Reference documentation for this project               | Find the answer to a specific question    |
+| `/book/` | A carefully curated guide, tutorial, or starting point | Follow chapters in a deliberate order     |
+| `/info/` | About the project and its people                       | Understand who and what is behind it      |
 
-A lab is something to use. Its component reference lives in Docs. An article about how it was built belongs in Blog. Team biographies can use nested paths such as `/info/team/person-name/`; create those pages when you have real content for them.
+Docs and Book serve different reading needs. Docs explains a component's properties or a configuration option. Book leads a reader through a complete task and links to those references when needed. A project may need either, both, or neither.
+
+A short log can eventually inspire an article. A lab can have a related article and a reference page. Link those pieces; there is no requirement to duplicate content or assign everything a universal type. Existing blog addresses remain unchanged.
 
 Use lowercase kebab-case paths and trailing slashes for pages. Files retain extensions, and section anchors let one test page cover many specimens. Keep dates out of blog URLs and keep preview paths identical to production paths.
 
@@ -71,26 +76,34 @@ import AlkLayout from '@alkemdotdev/alkemist-components/AlkLayout.astro';
 
 The demo's `src/layouts/SiteLayout.astro` supplies its main, More, and footer links. A site without documentation can use `AlkLayout` directly. Supplying `navigation` replaces the default main links, so unused sections need not appear either.
 
-## Current files
+## Configure an adopting project
 
-```text
-src/
-  content/
-    blog/*.mdx
-    docs/*.mdx
-  layouts/SiteLayout.astro
-  pages/
-    blog/           # collection index and article route
-    labs/           # actual Astro applications
-    info/           # site-owned information pages
-    docs/           # collection routes and component catalog
-    test.astro      # one comprehensive test page
-public/             # public downloads and other unprocessed assets
+In the source starter, edit `src/lib/site.ts`:
+
+```ts
+export const sections = {
+  blog: { enabled: true, label: 'Articles' },
+  logs: { enabled: true, label: 'Notes' },
+  labs: { enabled: true, label: 'Labs' },
+  docs: { enabled: false, label: 'Docs' },
+  book: { enabled: false, label: 'Book' },
+  info: { enabled: true, label: 'Info' },
+} as const;
 ```
 
-The blog and docs currently require `title` and `description`; `order` defaults to 100 and `date` is optional. Blog entries sort by date descending, then order and ID. They remain MDX collections with file-derived IDs.
+The object order determines navigation order. Changing a label changes its display name, while `/blog/` and `/logs/` remain stable. Set `enabled: false` to omit a section's navigation and routes. Keep your content sources, then enable the section when it is ready. Site links include the deployment base, including GitLab project paths.
 
-Explicit stable IDs, separate route slugs, `.md` support, portable article folders, source-relative asset resolution, `*.alk.yaml` sidecars, and `*.figure.yaml` definitions are proposed next steps. Those file contracts are not implemented by this route change. Current charts and models still take explicit public asset URLs and their documented component props.
+The starting examples demonstrate all five formats. They are editable content in your application, not content injected by the integration. Add custom Astro routes and navigation when your project needs a different shape.
+
+## Authoring the formats
+
+Blog and Logs are chronological collections. Give an entry a title, description, and date; keep a log small enough to scan in its feed. Draft entries stay out of public feeds and detail routes. The Book collection uses explicit chapter order rather than publication dates, with a contents page and previous/next links. Docs remains reference material organized around the project. Labs contains Astro pages with the actual interactive applications.
+
+The source starter supplies examples and owns the route generation. Disabling a starter section omits its index and detail pages from the build and removes its navigation links; content files remain available for later use. Its verification script checks the generated links. Adding arbitrary new sections or changing route names is a normal site-owned Astro change, not a promise that labels rewrite URLs.
+
+The demo's `src/lib/sections.ts` configures navigation labels and visibility. Its established Blog, Docs, and Labs routes remain published to preserve existing links; hiding those navigation entries does not delete their routes. The starter's optional route generation is intended for new adopting projects.
+
+These scaffold additions are available in the source starter. The already published `create-alkemist@1.0.0-beta.1` keeps its original files until the next deliberate package release. Generated sites are user-owned: neither updating dependencies nor running the generator again silently changes their content structure.
 
 ## Existing links
 

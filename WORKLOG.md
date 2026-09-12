@@ -1,33 +1,27 @@
-# Component package release
+# Optional publishing sections
 
 ## Objective
 
-Publish Alkemist as individually imported components, optional theme and Astro integration, and an independently installable starter. Use coordinated versions, Changesets release notes, npm trusted publishing, and existing Cloudflare Git deployment.
+Implement and push optional Blog (developed writing), Logs (quick notes), Labs (interactive one-off apps), Docs (project reference), and Book (curated ordered guide), preserving Info. These are project-owned conventions rather than a required taxonomy.
 
-## Current work
+## Ownership and scope
 
-- Branch: `feat/component-packages`, started from a clean `main` checkout.
-- Target initial release: `1.0.0-beta.1`; approved public names use @alkemdotdev/alkemist-*.
-- Components worker owns `packages/components`, `packages/theme`, `packages/astro`, and palette generation.
-- Starter worker owns `packages/create-alkemist`, `templates/site`, and starter scripts/tests.
-- Adoption worker owns demo imports, public docs, README, and publishing guide.
-- Parent owns release automation, package-consumer verification, integration, and external publishing/deployment.
+- Parent: public adoption docs, agent setup guide, homepage links, deployment checks, integration, browser verification, Git/Cloudflare delivery.
+- sections_demo: demo section configuration, navigation, new Logs and Book collections/routes/content.
+- sections_starter: source template, optional route generation, starter configuration tests.
+- All existing published article URLs remain valid. No npm version bump or publication is part of this milestone; a pending Changeset records the starter addition for a deliberate future release.
 
-## Account state
+## Required checks
 
-- GitHub repository access works.
-- npm browser session is authenticated as `alkemdotdev`, with no organizations listed.
-- npm CLI is authenticated as alkemdotdev; user enabled 2FA for authorization/publishing. No credentials belong in this repository.
-- GitHub organization and repository permit release PR creation with read-only default tokens. npm environment permits main only.
+- Full `npm run verify`, format, and independent `npm run check:starter`.
+- Starter disabled-section and custom-base checks; drafts excluded; book order/navigation.
+- Desktop/mobile browser review of Logs, Book, and expanded navigation.
+- Commit and push, verify Cloudflare branch preview, then promote checked source to main and verify production identity.
 
-## Required evidence
+## Prior release state
 
-- Format, `npm run verify`, independently installed starter and component consumers.
-- Actual packed file contents, exports/types, coordinated versions and license/readme checks.
-- Browser review at desktop/mobile widths with standalone component and docs usage.
-- Branch preview and deployed revision checks before main promotion.
-- npm publication and fresh registry installation, or exact account-dependent blocker.
+The four `1.0.0-beta.1` npm packages exist, and fresh registry consumers plus the published generator passed. Trusted publisher bindings were created and read back. npm initially attached `latest` to beta; tag cleanup is unresolved after authentication and DELETE errors. The user explicitly moved focus away from repeated publishing. Keep that issue recorded without blocking this website milestone or silently publishing another package version.
 
-## Next action
+## Validation completed
 
-All four npm publish commands succeeded for 1.0.0-beta.1; trusted publisher bindings are saved and listed for all four packages (release.yml, alkemdotdev/alkemist, npm environment). npm website confirms public components. Registry initially returned 404 for components/astro; fresh registry consumer validation must pass before main promotion. npm attached latest to the initial beta versions; removing latest is pending a separate security-key authentication in Chrome. The tag-removal command is interactive and may need Enter after browser authentication. Do not republish or change immutable beta artifacts. Branch preview d72333c passed live deployment checks; the checker-only follow-up f9d3d64 passed CI and Cloudflare. Published-state documentation passes full verify. Next: finish beta tag cleanup, registry integrity/consumer checks, push and check docs preview, merge PR #1, and verify main release workflow and Cloudflare deployment.
+Full verify, format, independent starter (including optional sections/drafts/base paths), and packed consumers pass. Browser chapter flow, log permalinks, and responsive navigation pass. Evidence: `.alkemist/verify-sections.log`, `.alkemist/starter-sections.log`, `.alkemist/packages-sections.log`. Starter fixture `/var/folders/vw/dfz65vvd78n17m0mty_gr1ww0000gn/T/alkemist-consumer-4SL2sm/my-lab` was reviewed under `/sections/`. Remaining delivery: branch preview and main production identity checks.

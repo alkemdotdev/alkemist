@@ -2,20 +2,64 @@
 import AlkLayout, {
   type AlkLayoutProps,
 } from '@alkemdotdev/alkemist-components/AlkLayout.astro';
+import { navigationSections, siteSections } from '../lib/sections';
 type Props = AlkLayoutProps;
 ---
 
 <AlkLayout
   tagline=""
-  navigation={[
-    { label: 'Blog', href: '/blog/' },
-    { label: 'Labs', href: '/labs/' },
-    { label: 'Docs', href: '/docs/' },
-    { label: 'Info', href: '/info/' },
-  ]}
+  navigation={navigationSections}
   moreNavigation={[{ label: 'Test', href: '/test/' }]}
-  footerNavigation={[{ label: 'Project status', href: '/docs/status/' }]}
+  footerNavigation={siteSections.docs.enabled
+    ? [{ label: 'Project status', href: '/docs/status/' }]
+    : []}
   {...Astro.props}
 >
   <slot />
 </AlkLayout>
+
+<style is:global>
+  /* Six section links need the compact header before the package default. */
+  @media (max-width: 1000px) {
+    .alk-header {
+      padding: 0.75rem 1.25rem;
+      gap: 0.5rem;
+    }
+    .alk-desktop-nav {
+      display: none;
+    }
+    .alk-header-actions {
+      margin-left: auto;
+    }
+    .alk-header .alk-mobile-menu {
+      display: block;
+      position: static;
+    }
+    .alk-mobile-links {
+      top: calc(100% + 0.5rem);
+      left: 1.25rem;
+      right: 1.25rem;
+      padding: 0.5rem;
+    }
+    .alk-mobile-links a {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 48px;
+      padding: 0.65rem 0.85rem;
+      border-radius: 5px;
+      color: var(--alk-ink);
+      font-size: 1rem;
+      text-decoration: none;
+    }
+    .alk-mobile-links a svg {
+      width: 15px;
+      height: 15px;
+      color: var(--alk-muted);
+    }
+    .alk-mobile-links a:hover,
+    .alk-mobile-links a[aria-current] {
+      background: var(--alk-field);
+    }
+  }
+</style>

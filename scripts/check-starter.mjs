@@ -5,6 +5,7 @@ import {
   readFile,
   readdir,
   rm,
+  writeFile,
 } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
@@ -66,6 +67,20 @@ async function snapshot(directory) {
   await walk(directory);
   return result;
 }
+async function configureSections(configuration) {
+  const source = await readFile(join(site, 'src/lib/site.ts'), 'utf8');
+  const replacement = `export const sections = ${JSON.stringify(configuration, null, 2)} as const;`;
+  const configured = source.replace(
+    /export const sections = \{[\s\S]*?\} as const;/,
+    replacement,
+  );
+  assert.notEqual(
+    configured,
+    source,
+    'Starter section configuration was not found.',
+  );
+  await writeFile(join(site, 'src/lib/site.ts'), configured);
+}
 try {
   const initial = await createSite({ destination: site, provider: 'custom' });
   await assert.rejects(createSite({ destination: site }), /not empty/);
@@ -76,7 +91,56 @@ try {
   );
   console.log('Installing actual npm pack tarballs outside the workspace…');
   run(['install', '--no-audit', '--no-fund']);
+  await writeFile(
+    join(site, 'src/content/logs/draft.md'),
+    `---
+title: Unpublished log
+description: This note must not become a public feed entry.
+published: '2026-09-12'
+draft: true
+---
+
+This draft stays out of the feed and its detail route.\n`,
+  );
+  await writeFile(
+    join(site, 'src/content/book/draft.md'),
+    `---
+title: Unpublished chapter
+description: This chapter must not become a public guide entry.
+order: 99
+draft: true
+---
+
+This draft stays out of the guide and its detail route.\n`,
+  );
+  await writeFile(
+    join(site, 'src/content/logs/later-reading.md'),
+    `---
+title: Later reading
+description: A newer note proves the feed order.
+published: '2026-09-13'
+---
+
+This entry appears before the first reading.\n`,
+  );
   run(['run', 'verify']);
+  const defaultLogs = await readFile(
+    join(site, 'dist/logs/index.html'),
+    'utf8',
+  );
+  const defaultBook = await readFile(
+    join(site, 'dist/book/index.html'),
+    'utf8',
+  );
+  assert(!defaultLogs.includes('Unpublished log'));
+  assert(!defaultBook.includes('Unpublished chapter'));
+  assert(defaultLogs.includes('Later reading'));
+  assert(defaultLogs.includes('First reading'));
+  assert(
+    defaultLogs.indexOf('Later reading') < defaultLogs.indexOf('First reading'),
+  );
+  await assert.rejects(readFile(join(site, 'dist/logs/draft/index.html')));
+  await assert.rejects(readFile(join(site, 'dist/book/draft/index.html')));
   for (const snapshot of initial.packages) {
     assert(
       !(
@@ -169,6 +233,40 @@ try {
   // for optional browser inspection at the printed --keep location.
   run(['ci', '--no-audit', '--no-fund']);
   run(['run', 'verify']);
+  const sectionEnv = { ...baseEnv, BASE_PATH: '/sections/' };
+  await configureSections({
+    blog: { enabled: false, label: 'Blog' },
+    logs: { enabled: false, label: 'Logs' },
+    labs: { enabled: false, label: 'Labs' },
+    docs: { enabled: false, label: 'Docs' },
+    book: { enabled: false, label: 'Book' },
+    info: { enabled: false, label: 'Info' },
+  });
+  run(['run', 'verify'], sectionEnv);
+  for (const section of ['blog', 'logs', 'labs', 'docs', 'book', 'info'])
+    assert.equal(
+      (await readdir(join(site, 'dist'))).includes(section),
+      false,
+      `Disabled ${section} route was emitted.`,
+    );
+  const disabledHome = await readFile(join(site, 'dist/index.html'), 'utf8');
+  for (const section of ['blog', 'logs', 'labs', 'docs', 'book', 'info'])
+    assert(!disabledHome.includes(`/sections/${section}/`));
+  await configureSections({
+    docs: { enabled: true, label: 'Reference' },
+    book: { enabled: true, label: 'Guide' },
+    blog: { enabled: true, label: 'Writing' },
+    logs: { enabled: true, label: 'Field notes' },
+    labs: { enabled: true, label: 'Apps' },
+    info: { enabled: true, label: 'Project' },
+  });
+  run(['run', 'verify'], sectionEnv);
+  const configuredHome = await readFile(join(site, 'dist/index.html'), 'utf8');
+  assert(configuredHome.includes('Reference'));
+  assert(configuredHome.includes('Field notes'));
+  assert(
+    configuredHome.indexOf('Reference') < configuredHome.indexOf('Writing'),
+  );
   for (const provider of ['gitlab', 'cloudflare']) {
     const destination = join(temporary, provider);
     await createSite({ destination, provider });

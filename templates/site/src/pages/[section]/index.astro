@@ -1,0 +1,144 @@
+---
+import { getCollection, render } from 'astro:content';
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import {
+  enabledSections,
+  sections,
+  siteName,
+  type SectionId,
+  withBase,
+} from '../../lib/site';
+
+type DisplayEntry = {
+  id: string;
+  data: {
+    title: string;
+    description: string;
+    published?: string;
+    order?: number;
+  };
+};
+const descriptions: Record<SectionId, string> = {
+  blog: 'Developed writing about the work and what it means.',
+  logs: 'Quick notes from the workbench.',
+  labs: 'Interactive, quick one-off apps you can use.',
+  docs: 'Project reference for using and understanding the work.',
+  book: 'A curated, ordered guide for getting started.',
+  info: 'The people, purpose, and questions behind this project.',
+};
+
+export async function getStaticPaths() {
+  return enabledSections.map((section) => ({ params: { section } }));
+}
+
+const section = Astro.params.section as SectionId;
+const label = sections[section].label;
+let entries: DisplayEntry[] = [];
+if (section === 'blog')
+  entries = await getCollection('blog', ({ data }) => !data.draft);
+if (section === 'logs')
+  entries = await getCollection('logs', ({ data }) => !data.draft);
+if (section === 'docs')
+  entries = await getCollection('docs', ({ data }) => !data.draft);
+if (section === 'book')
+  entries = await getCollection('book', ({ data }) => !data.draft);
+const logs =
+  section === 'logs'
+    ? await Promise.all(
+        (await getCollection('logs', ({ data }) => !data.draft))
+          .sort(
+            (a, b) =>
+              b.data.published.localeCompare(a.data.published) ||
+              a.id.localeCompare(b.id),
+          )
+          .map(async (entry) => ({
+            entry,
+            Content: (await render(entry)).Content,
+          })),
+      )
+    : [];
+const orderedEntries = [...entries].sort((a, b) => {
+  if (section === 'book')
+    return (
+      (a.data.order ?? 0) - (b.data.order ?? 0) || a.id.localeCompare(b.id)
+    );
+  return (
+    (b.data.published ?? '').localeCompare(a.data.published ?? '') ||
+    a.id.localeCompare(b.id)
+  );
+});
+---
+
+<SiteLayout title={label} description={descriptions[section]}>
+  {
+    section === 'info' ? (
+      <div class="lab-reading">
+        <h1>About {siteName}</h1>
+        <p>
+          This is a place for the questions we are asking and the things we are
+          building.
+        </p>
+        <h2>People and purpose</h2>
+        <p>
+          Introduce your team, your research interests, and how others can
+          participate.
+        </p>
+      </div>
+    ) : section === 'labs' ? (
+      <>
+        <>
+          <h1>{label}</h1>
+          <p>{descriptions.labs}</p>
+        </>
+        <article class="lab-card lab-section">
+          <h2>
+            <a href={withBase('labs/oscillator/')}>The oscillator bench</a>
+          </h2>
+          <p>Inspect synthetic motion data and orbit a small 3D model.</p>
+        </article>
+      </>
+    ) : section === 'logs' ? (
+      <>
+        <>
+          <h1>{label}</h1>
+          <p>{descriptions.logs}</p>
+        </>
+        {logs.map(({ entry, Content }) => (
+          <article class="lab-card lab-section">
+            <time class="alk-eyebrow" datetime={entry.data.published}>
+              {entry.data.published}
+            </time>
+            <h2>
+              <a href={withBase(`logs/${entry.id}/`)}>{entry.data.title}</a>
+            </h2>
+            <p>{entry.data.description}</p>
+            <Content />
+          </article>
+        ))}
+      </>
+    ) : (
+      <>
+        <>
+          <h1>{label}</h1>
+          <p>{descriptions[section]}</p>
+        </>
+        {orderedEntries.map((entry) => (
+          <article class="lab-card lab-section">
+            {entry.data.published && (
+              <p class="alk-eyebrow">{entry.data.published}</p>
+            )}
+            {section === 'book' && (
+              <p class="alk-eyebrow">Chapter {entry.data.order}</p>
+            )}
+            <h2>
+              <a href={withBase(`${section}/${entry.id}/`)}>
+                {entry.data.title}
+              </a>
+            </h2>
+            <p>{entry.data.description}</p>
+          </article>
+        ))}
+      </>
+    )
+  }
+</SiteLayout>

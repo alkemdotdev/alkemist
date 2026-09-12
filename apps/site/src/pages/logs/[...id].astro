@@ -1,0 +1,173 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import { isPreview } from '../../lib/deployment';
+import { siteSections } from '../../lib/sections';
+
+const logs = (await getCollection('logs'))
+  .filter((entry) => !entry.data.draft)
+  .sort(
+    (a, b) =>
+      (b.data.date ?? '').localeCompare(a.data.date ?? '') ||
+      a.id.localeCompare(b.id),
+  );
+const logEntries = await Promise.all(
+  logs.map(async (entry) => ({
+    entry,
+    Content: (await render(entry)).Content,
+  })),
+);
+const dateLabel = (value: string) =>
+  new Intl.DateTimeFormat('en', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    timeZone: 'UTC',
+  }).format(new Date(`${value}T12:00:00Z`));
+
+export async function getStaticPaths() {
+  if (!siteSections.logs.enabled) return [];
+  const entries = (await getCollection('logs'))
+    .filter((entry) => !entry.data.draft)
+    .sort(
+      (a, b) =>
+        (b.data.date ?? '').localeCompare(a.data.date ?? '') ||
+        a.id.localeCompare(b.id),
+    );
+  return [
+    { params: { id: undefined }, props: {} },
+    ...entries.map((entry) => ({ params: { id: entry.id }, props: { entry } })),
+  ];
+}
+
+const { entry } = Astro.props as {
+  entry?: CollectionEntry<'logs'>;
+};
+const rendered = entry ? await render(entry) : undefined;
+const Content = rendered?.Content;
+---
+
+<SiteLayout
+  title={entry?.data.title ?? 'Logs'}
+  description={entry?.data.description ?? 'Short working notes from Alkemist.'}
+  preview={isPreview}
+>
+  {
+    entry && Content ? (
+      <article class="alk-prose log-entry">
+        <p class="log-kicker">
+          <a href="/logs/">← Logs</a>{' '}
+          <time datetime={entry.data.date}>
+            {entry.data.date ? dateLabel(entry.data.date) : 'Working note'}
+          </time>
+        </p>
+        <h1>{entry.data.title}</h1>
+        <p class="alk-lead">{entry.data.description}</p>
+        <Content />
+      </article>
+    ) : (
+      <section class="logs-index">
+        <header>
+          <h1>Logs</h1>
+          <p class="alk-lead">
+            Short working notes: observations, decisions, and questions still in
+            motion.
+          </p>
+        </header>
+        <ol>
+          {logEntries.map(({ entry: note, Content }) => (
+            <li>
+              <time datetime={note.data.date}>
+                {note.data.date ? dateLabel(note.data.date) : 'Undated'}
+              </time>
+              <article class="alk-prose log-summary">
+                <h2>
+                  <a href={`/logs/${note.id}/`}>{note.data.title}</a>
+                </h2>
+                <p class="log-description">{note.data.description}</p>
+                <Content />
+              </article>
+            </li>
+          ))}
+        </ol>
+      </section>
+    )
+  }
+</SiteLayout>
+
+<style>
+  .logs-index {
+    max-width: 970px;
+  }
+  .logs-index header {
+    margin-bottom: 2.5rem;
+  }
+  .logs-index h1 {
+    margin-bottom: 0.65rem;
+  }
+  .logs-index header p {
+    margin: 0;
+  }
+  ol {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border-bottom: 1px solid var(--alk-rule);
+  }
+  li {
+    display: grid;
+    grid-template-columns: 7rem minmax(0, 1fr);
+    gap: 1.7rem;
+    margin: 0;
+    border-top: 1px solid var(--alk-rule);
+    padding: 1.25rem 0;
+  }
+  time,
+  .log-kicker {
+    color: var(--alk-muted);
+    font: 0.75rem/1.7 var(--alk-mono);
+  }
+  h2 {
+    font-size: 1.15rem;
+    line-height: 1.4;
+    margin: 0;
+  }
+  h2 a {
+    color: inherit;
+    text-decoration: none;
+  }
+  h2 a:hover {
+    text-decoration: underline;
+  }
+  .log-description {
+    color: var(--alk-muted);
+    font-size: 0.92rem;
+    margin: 0.36rem 0 1rem;
+    max-width: 62ch;
+  }
+  .log-summary :global(p) {
+    font-size: 0.94rem;
+  }
+  .log-summary :global(p:last-of-type) {
+    margin-bottom: 0.8rem;
+  }
+  .log-kicker {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.4rem;
+  }
+  .log-kicker a {
+    color: inherit;
+    text-decoration: none;
+  }
+  .log-kicker a:hover {
+    text-decoration: underline;
+  }
+  @media (max-width: 650px) {
+    li {
+      grid-template-columns: 1fr;
+      gap: 0.4rem;
+      padding: 1.1rem 0;
+    }
+  }
+</style>

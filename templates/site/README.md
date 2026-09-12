@@ -8,7 +8,7 @@ npm run verify
 npm run dev
 ```
 
-Edit `src/lib/site.ts` to change the name and tagline. Edit `src/styles/site.css` for theme overrides, `src/content/blog/` for posts, and `src/pages/labs/` for interactive apps. This starter contains Blog, Labs, Info, and a small Test page; documentation is optional.
+Edit `src/lib/site.ts` to change the name, tagline, and `sections` configuration. Each section (`blog`, `logs`, `labs`, `docs`, `book`, and `info`) has an `enabled` flag and label; disabled sections produce no index or detail routes and are omitted from navigation. Edit `src/styles/site.css` for theme overrides, the matching `src/content/` directory for writing, and `src/pages/labs/[id].astro` for interactive apps.
 
 The oscillator data is synthetic. The tetrahedron is an original, small glTF fixture. Replace them with your own evidence and record units, provenance, and license terms. Math and fenced code in MDX work through the installed integration. Charts and models load their rendering engines when visible.
 

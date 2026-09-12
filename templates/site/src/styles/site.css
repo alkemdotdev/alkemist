@@ -32,3 +32,75 @@
 .lab-reading h2 {
   margin-top: 2.5rem;
 }
+
+/* Leave room for project-defined labels without squeezing the site identity. */
+@media (max-width: 1000px) {
+  .alk-brand-detail {
+    display: none;
+  }
+}
+@media (max-width: 1000px) {
+  .alk-header {
+    padding: 0.75rem 1.25rem;
+    gap: 0.5rem;
+  }
+  .alk-desktop-nav {
+    display: none;
+  }
+  .alk-header-actions {
+    margin-left: auto;
+  }
+  .alk-header .alk-mobile-menu {
+    display: block;
+    position: static;
+  }
+  .alk-mobile-links {
+    top: calc(100% + 0.5rem);
+    left: 1.25rem;
+    right: 1.25rem;
+    padding: 0.5rem;
+  }
+  .alk-mobile-links a {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 48px;
+    padding: 0.65rem 0.85rem;
+    border-radius: 5px;
+    text-decoration: none;
+    color: var(--alk-ink);
+    font-size: 1rem;
+  }
+  .alk-mobile-links a svg {
+    width: 15px;
+    height: 15px;
+    color: var(--alk-muted);
+  }
+  .alk-mobile-links a:hover,
+  .alk-mobile-links a[aria-current] {
+    background: var(--alk-field);
+  }
+  .alk-mobile-links a[aria-current] span {
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
+  }
+  .alk-mobile-secondary {
+    border-top: 1px solid var(--alk-rule);
+    margin-top: 0.4rem;
+    padding-top: 0.4rem;
+  }
+  .alk-mobile-secondary a {
+    color: var(--alk-muted);
+    font-size: 0.9rem;
+  }
+  .alk-menu-line {
+    transform-origin: center;
+    transition: transform 140ms ease;
+  }
+  [open] .alk-menu-line-top {
+    transform: rotate(45deg) translateY(4px);
+  }
+  [open] .alk-menu-line-bottom {
+    transform: rotate(-45deg) translateY(-4px);
+  }
+}

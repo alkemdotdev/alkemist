@@ -1,15 +1,19 @@
 ---
-import SiteLayout from '../../layouts/SiteLayout.astro';
 import AlkChart from '@alkemdotdev/alkemist-components/AlkChart.astro';
-import AlkModel from '@alkemdotdev/alkemist-components/AlkModel.astro';
 import AlkMath from '@alkemdotdev/alkemist-components/AlkMath.astro';
-import { withBase } from '../../lib/site';
+import AlkModel from '@alkemdotdev/alkemist-components/AlkModel.astro';
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import { isSectionEnabled, sections, withBase } from '../../lib/site';
+
+export async function getStaticPaths() {
+  return isSectionEnabled('labs') ? [{ params: { id: 'oscillator' } }] : [];
+}
 ---
 
 <SiteLayout
   title="The oscillator bench"
   description="Explore a synthetic signal and an original tetrahedron mesh."
-  section="Labs"
+  section={sections.labs.label}
 >
   <h1>The oscillator bench</h1><p class="lab-intro">
     An equation, a data file, and a shape. This is a small working starting
