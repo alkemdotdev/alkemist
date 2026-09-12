@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import { redirects } from '../apps/site/redirects.mjs';
 const root = resolve('apps/site/dist');
 const required = [
+  'pagefind/pagefind.js',
   'index.html',
   'docs/index.html',
   'docs/charts/index.html',

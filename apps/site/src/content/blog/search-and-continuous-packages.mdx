@@ -1,0 +1,14 @@
+---
+title: Find a page, try a revision
+description: Site search and automatic canary packages shorten the path from an idea to a working example.
+date: '2026-09-12'
+order: 0
+---
+
+The header now includes site search. Search a phrase from a guide, a post, or a lab and follow the result directly. Command K or Control K focuses search; on a phone, the compact search control opens a dialog.
+
+The index is built from rendered pages with Pagefind and deployed alongside the site. Queries run in the browser. The shared header, footer, generated math, and form controls are excluded from the text used for results. A standalone `Search` component and an opt-in Astro integration let another site reuse the same behavior. The [search guide](/docs/search/) explains how to enable it and test a production build.
+
+Package delivery now has two cadences. A successful main release workflow publishes a coordinated `canary` version tied to the source commit. Changesets continues to collect beta and stable releases through a separate release pull request. Canary users get the current API without waiting for that release, while their installed version stays pinned until they choose to update.
+
+Both paths test actual package tarballs before publication. GitHub Actions authenticates to npm with its workflow identity, and a separate job installs the published packages and generated starter from the registry. The [publishing guide](https://github.com/alkemdotdev/alkemist/blob/main/docs/publishing.md) describes the channels and checks.

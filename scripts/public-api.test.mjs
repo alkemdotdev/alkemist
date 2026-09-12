@@ -16,6 +16,7 @@ test('component package exposes only explicit extensionless entry points', async
     './math',
     './model',
     './post-list',
+    './search',
     './shader',
   ]);
   await Promise.all(

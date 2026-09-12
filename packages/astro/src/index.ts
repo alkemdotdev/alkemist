@@ -9,6 +9,7 @@ import {
   type CodeOptions,
 } from '@alkemdotdev/alkemist-components/code-theme';
 import type { ShikiTransformer, ThemeRegistration } from 'shiki';
+import { buildSearchIndex } from './search';
 
 export interface MdxOptions {
   /** Disable the bundled MDX integration when an existing site already owns it. */
@@ -31,6 +32,8 @@ export interface CodeIntegrationOptions extends CodeOptions {
 }
 
 export interface IntegrationOptions {
+  /** Generate a static Pagefind index from rendered pages. Opt in per site. */
+  search?: boolean;
   mdx?: boolean | MdxOptions;
   math?: boolean | MathOptions;
   code?: boolean | CodeIntegrationOptions;
@@ -80,6 +83,12 @@ export default function alkemist(
   return {
     name: '@alkemdotdev/alkemist-astro',
     hooks: {
+      'astro:build:done': async ({ dir, logger }) => {
+        if (options.search) {
+          const pages = await buildSearchIndex(dir);
+          logger.info(`Indexed ${pages} pages for search.`);
+        }
+      },
       'astro:config:setup': ({ updateConfig }) => {
         const markdown = {
           ...(mathEnabled

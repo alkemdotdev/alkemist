@@ -52,6 +52,9 @@
   align-items: center;
   gap: 0.25rem;
 }
+.alk-header-actions > .alk-search {
+  flex-shrink: 1;
+}
 .alk-header [data-header-panel] {
   position: relative;
   border: 0;
@@ -195,6 +198,9 @@ input:checked ~ .alk-choice-check {
   }
   .alk-header-actions {
     margin-left: auto;
+  }
+  .alk-header-actions > .alk-search {
+    flex-shrink: 0;
   }
   .alk-header .alk-mobile-menu {
     display: block;

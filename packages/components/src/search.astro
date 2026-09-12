@@ -1,0 +1,567 @@
+---
+const base = import.meta.env.BASE_URL;
+
+export interface SearchProps {
+  /** URL of Pagefind's generated runtime module. */
+  indexUrl?: string;
+  /** Placeholder shown in the search field. */
+  placeholder?: string;
+  /** Accessible label for the search field. */
+  label?: string;
+  /** Use the compact header presentation supplied by Layout. */
+  variant?: 'header' | 'standalone';
+}
+
+type Props = SearchProps;
+
+const {
+  indexUrl = `${base}pagefind/pagefind.js`,
+  placeholder = 'Search',
+  label = 'Search this site',
+  variant = 'standalone',
+} = Astro.props;
+---
+
+<alk-search
+  class="alk-search"
+  data-pagefind-ignore
+  data-index-url={indexUrl}
+  data-development={import.meta.env.DEV ? 'true' : undefined}
+  data-variant={variant}
+>
+  <form class="alk-search-desktop" role="search" data-search-form>
+    <label>
+      <span class="alk-sr-only">{label}</span>
+      <input
+        type="search"
+        placeholder={placeholder}
+        autocomplete="off"
+        spellcheck="false"
+        data-search-input
+      />
+    </label>
+    <kbd aria-hidden="true">⌘K</kbd>
+  </form>
+  <button
+    class="alk-search-mobile alk-icon-button"
+    type="button"
+    aria-label={label}
+    title={label}
+    data-search-open
+  >
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.5"
+      aria-hidden="true"
+      ><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m16 16 4 4"
+      ></path></svg
+    >
+  </button>
+  <section
+    class="alk-search-results"
+    aria-live="polite"
+    data-search-results
+    hidden
+  >
+  </section>
+  <dialog class="alk-search-dialog" aria-label={label} data-search-dialog>
+    <div class="alk-search-dialog-bar">
+      <form role="search" data-search-form>
+        <label>
+          <span>{label}</span>
+          <input
+            type="search"
+            placeholder={placeholder}
+            autocomplete="off"
+            spellcheck="false"
+            data-search-input
+          />
+        </label>
+      </form>
+      <button
+        type="button"
+        class="alk-icon-button"
+        data-search-close
+        aria-label="Close search"
+        title="Close search">×</button
+      >
+    </div>
+    <section
+      class="alk-search-results"
+      aria-live="polite"
+      data-search-results
+      hidden
+    >
+    </section>
+  </dialog>
+</alk-search>
+
+<script>
+  type PagefindResultData = {
+    url: string;
+    meta: { title?: string };
+    excerpt?: string;
+  };
+  type PagefindResult = { data: () => Promise<PagefindResultData> };
+  type Pagefind = {
+    search: (query: string) => Promise<{ results: PagefindResult[] }>;
+  };
+
+  const debounce = (callback: () => void, delay = 180) => {
+    let timer: number | undefined;
+    return () => {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(callback, delay);
+    };
+  };
+
+  const excerptFragment = (excerpt: string | undefined) => {
+    const fragment = document.createDocumentFragment();
+    if (!excerpt) return fragment;
+    const parsed = new DOMParser().parseFromString(excerpt, 'text/html');
+    const append = (node: Node, parent: DocumentFragment | HTMLElement) => {
+      if (node.nodeType === Node.TEXT_NODE) {
+        parent.append(node.textContent ?? '');
+      } else if (node.nodeType === Node.ELEMENT_NODE) {
+        const element = node as HTMLElement;
+        if (element.tagName === 'MARK') {
+          const mark = document.createElement('mark');
+          element.childNodes.forEach((child) => append(child, mark));
+          parent.append(mark);
+        } else {
+          element.childNodes.forEach((child) => append(child, parent));
+        }
+      }
+    };
+    parsed.body.childNodes.forEach((node) => append(node, fragment));
+    return fragment;
+  };
+
+  const safeHref = (value: string) => {
+    try {
+      const url = new URL(value, window.location.origin);
+      return url.origin === window.location.origin
+        ? `${url.pathname}${url.search}${url.hash}`
+        : undefined;
+    } catch {
+      return undefined;
+    }
+  };
+
+  document.querySelectorAll<HTMLElement>('alk-search').forEach((root) => {
+    const indexUrl =
+      root.dataset.indexUrl ??
+      `${import.meta.env.BASE_URL}pagefind/pagefind.js`;
+    const isDevelopment = root.dataset.development === 'true';
+    const inputs = [
+      ...root.querySelectorAll<HTMLInputElement>('[data-search-input]'),
+    ];
+    const results = [
+      ...root.querySelectorAll<HTMLElement>('[data-search-results]'),
+    ];
+    const dialog = root.querySelector<HTMLDialogElement>(
+      '[data-search-dialog]',
+    );
+    const openButton =
+      root.querySelector<HTMLButtonElement>('[data-search-open]');
+    const closeButton = root.querySelector<HTMLButtonElement>(
+      '[data-search-close]',
+    );
+    let pagefind: Promise<Pagefind> | undefined;
+    let request = 0;
+
+    const show = (message?: string) => {
+      results.forEach((container) => {
+        container.replaceChildren();
+        container.hidden = !message;
+        if (message) container.append(message);
+      });
+    };
+    const load = () => {
+      if (!pagefind) {
+        pagefind = (
+          import(/* @vite-ignore */ indexUrl) as Promise<Pagefind>
+        ).catch((error) => {
+          pagefind = undefined;
+          throw error;
+        });
+      }
+      return pagefind;
+    };
+    const render = (
+      items: PagefindResultData[],
+      total: number,
+      loadMore?: () => void,
+    ) => {
+      results.forEach((container) => {
+        container.replaceChildren();
+        container.hidden = items.length === 0;
+        const list = document.createElement('ul');
+        list.className = 'alk-search-result-list';
+        items.forEach((item) => {
+          const href = safeHref(item.url);
+          if (!href) return;
+          const link = document.createElement('a');
+          link.href = href;
+          link.className = 'alk-search-result';
+          const title = document.createElement('strong');
+          title.textContent = item.meta.title || href;
+          link.append(title);
+          if (item.excerpt) {
+            const excerpt = document.createElement('span');
+            excerpt.append(excerptFragment(item.excerpt));
+            link.append(excerpt);
+          }
+          const row = document.createElement('li');
+          row.append(link);
+          list.append(row);
+        });
+        if (list.childElementCount) container.append(list);
+        else {
+          container.hidden = false;
+          container.append('No safe local results found.');
+        }
+        if (loadMore) {
+          const more = document.createElement('button');
+          more.type = 'button';
+          more.className = 'alk-search-more';
+          more.textContent = `Showing first ${items.length} of ${total} results. Show more results`;
+          more.addEventListener('click', loadMore);
+          container.append(more);
+        }
+      });
+    };
+    const search = async () => {
+      const query = inputs[0]?.value.trim() ?? '';
+      inputs.forEach((input) => {
+        if (input.value !== query) input.value = query;
+      });
+      const searchRequest = ++request;
+      if (!query) return show();
+      if (isDevelopment)
+        return show(
+          'Search is available after building the site. Run npm run build, then npm run preview.',
+        );
+      show('Searching…');
+      try {
+        const response = await (await load()).search(query);
+        const resultRecords = response.results;
+        const items: PagefindResultData[] = [];
+        let loadingNext = false;
+        const loadNext = async () => {
+          if (loadingNext) return;
+          loadingNext = true;
+          const start = items.length;
+          try {
+            const next = await Promise.all(
+              resultRecords
+                .slice(start, start + 20)
+                .map((result) => result.data()),
+            );
+            if (searchRequest !== request) return;
+            items.push(...next);
+            render(
+              items,
+              resultRecords.length,
+              items.length < resultRecords.length ? loadMore : undefined,
+            );
+          } finally {
+            loadingNext = false;
+          }
+        };
+        const loadMore = () => {
+          void loadNext().catch((error) => {
+            if (searchRequest !== request) return;
+            console.warn('Alkemist search could not load more results.', error);
+            show('Search is temporarily unavailable. Please try again later.');
+          });
+        };
+        await loadNext();
+        if (!items.length && searchRequest === request)
+          show('No results found. Try another term.');
+      } catch (error) {
+        if (searchRequest !== request) return;
+        console.warn(
+          'Alkemist search could not load the Pagefind index.',
+          error,
+        );
+        show(
+          isDevelopment
+            ? 'Search index is unavailable in this development build. Run a production build to generate Pagefind files.'
+            : 'Search is temporarily unavailable. Please try again later.',
+        );
+      }
+    };
+    const debouncedSearch = debounce(() => void search());
+
+    root
+      .querySelectorAll<HTMLFormElement>('[data-search-form]')
+      .forEach((form) =>
+        form.addEventListener('submit', (event) => {
+          event.preventDefault();
+          void search();
+        }),
+      );
+    inputs.forEach((input) =>
+      input.addEventListener('input', () => {
+        request += 1;
+        inputs.forEach((other) => {
+          if (other !== input) other.value = input.value;
+        });
+        debouncedSearch();
+      }),
+    );
+    const open = () => {
+      if (!dialog?.open) dialog?.showModal();
+      window.setTimeout(() =>
+        dialog?.querySelector<HTMLInputElement>('input')?.focus(),
+      );
+    };
+    const close = () => {
+      if (dialog?.open) dialog.close();
+      openButton?.focus();
+    };
+    openButton?.addEventListener('click', open);
+    closeButton?.addEventListener('click', close);
+    dialog?.addEventListener('close', () => openButton?.focus());
+    root.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        if (dialog?.open) close();
+        else {
+          request += 1;
+          show();
+        }
+      }
+      if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+        const resultContainer = dialog?.open
+          ? dialog.querySelector<HTMLElement>('[data-search-results]')
+          : root.querySelector<HTMLElement>(':scope > [data-search-results]');
+        const links = [
+          ...(resultContainer?.querySelectorAll<HTMLAnchorElement>(
+            '.alk-search-result',
+          ) ?? []),
+        ];
+        if (!links.length) return;
+        const current = links.indexOf(
+          document.activeElement as HTMLAnchorElement,
+        );
+        if (current === -1 && event.target instanceof HTMLInputElement) {
+          event.preventDefault();
+          links[event.key === 'ArrowDown' ? 0 : links.length - 1]?.focus();
+        } else if (current >= 0) {
+          event.preventDefault();
+          links[
+            (current + (event.key === 'ArrowDown' ? 1 : links.length - 1)) %
+              links.length
+          ]?.focus();
+        }
+      }
+    });
+    document.addEventListener('keydown', (event) => {
+      if (!(event.metaKey || event.ctrlKey) || event.key.toLowerCase() !== 'k')
+        return;
+      event.preventDefault();
+      if (matchMedia('(max-width: 650px)').matches) {
+        open();
+      } else inputs[0]?.focus();
+    });
+  });
+</script>
+
+<style is:global>
+  alk-search {
+    --alk-search-paper: var(--alk-paper, #fff);
+    --alk-search-ink: var(--alk-ink, #222);
+    --alk-search-muted: var(--alk-muted, #666);
+    --alk-search-rule: var(--alk-rule, #ddd);
+    --alk-search-field: var(--alk-field, #f5f5f5);
+    --alk-search-sans: var(--alk-sans, system-ui, sans-serif);
+    --alk-search-mono: var(--alk-mono, ui-monospace, monospace);
+    --alk-search-highlight: var(--alk-ink-violet, #7650bd);
+    position: relative;
+    display: block;
+    min-width: 0;
+  }
+  alk-search .alk-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+  alk-search .alk-icon-button {
+    display: grid;
+    width: 44px;
+    height: 44px;
+    place-items: center;
+    border-radius: 7px;
+    color: var(--alk-search-muted);
+  }
+  alk-search .alk-icon-button:hover {
+    background: var(--alk-search-field);
+    color: var(--alk-search-ink);
+  }
+  .alk-search-desktop {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    border: 1px solid var(--alk-search-rule);
+    background: var(--alk-search-field);
+    padding: 0 0.45rem;
+  }
+  .alk-search-desktop label {
+    min-width: 0;
+  }
+  .alk-search-desktop input {
+    width: 12rem;
+    min-width: 0;
+    border: 0;
+    outline: 0;
+    padding: 0.43rem 0;
+    color: var(--alk-search-ink);
+    background: transparent;
+    font: 0.78rem var(--alk-search-mono);
+  }
+  .alk-search-desktop kbd {
+    border: 1px solid var(--alk-search-rule);
+    color: var(--alk-search-muted);
+    font: 0.62rem var(--alk-search-mono);
+    line-height: 1;
+    padding: 0.2rem;
+  }
+  .alk-search-mobile {
+    display: none;
+    border: 0;
+    background: transparent;
+  }
+  .alk-search-mobile svg {
+    width: 20px;
+    height: 20px;
+  }
+  .alk-search-results {
+    position: absolute;
+    z-index: 40;
+    top: calc(100% + 0.5rem);
+    right: 0;
+    width: min(31rem, calc(100vw - 2.5rem));
+    max-height: min(60vh, 34rem);
+    overflow: auto;
+    padding: 0.65rem;
+    border: 1px solid var(--alk-search-rule);
+    background: var(--alk-search-paper);
+    box-shadow: 0 0.7rem 1.5rem #0002;
+    color: var(--alk-search-muted);
+    font: 0.78rem/1.45 var(--alk-search-mono);
+  }
+  alk-search:has(.alk-search-dialog[open]) > .alk-search-results {
+    display: none;
+  }
+  .alk-search-result-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .alk-search-result {
+    display: grid;
+    gap: 0.3rem;
+    padding: 0.7rem;
+    color: var(--alk-search-ink);
+    text-decoration: none;
+  }
+  .alk-search-result:hover {
+    background: var(--alk-search-field);
+  }
+  .alk-search-result strong {
+    font: 500 0.92rem var(--alk-search-sans);
+  }
+  .alk-search-result span {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    color: var(--alk-search-muted);
+  }
+  .alk-search-more {
+    width: 100%;
+    margin-top: 0.45rem;
+    border: 1px solid var(--alk-search-rule);
+    padding: 0.5rem;
+    background: var(--alk-search-field);
+    color: var(--alk-search-ink);
+    font: 0.72rem/1.35 var(--alk-search-mono);
+    text-align: left;
+  }
+  .alk-search-result mark {
+    color: inherit;
+    background: color-mix(
+      in srgb,
+      var(--alk-search-highlight) 30%,
+      transparent
+    );
+  }
+  .alk-search-dialog {
+    width: min(42rem, calc(100vw - 2rem));
+    max-height: min(42rem, calc(100vh - 2rem));
+    padding: 0;
+    border: 1px solid var(--alk-search-rule);
+    background: var(--alk-search-paper);
+    color: var(--alk-search-ink);
+    box-shadow: 0 1rem 3rem #0005;
+  }
+  .alk-search-dialog::backdrop {
+    background: #0008;
+  }
+  .alk-search-dialog-bar {
+    display: flex;
+    align-items: end;
+    gap: 0.5rem;
+    padding: 1rem;
+    border-bottom: 1px solid var(--alk-search-rule);
+  }
+  .alk-search-dialog form {
+    flex: 1;
+    min-width: 0;
+  }
+  .alk-search-dialog label {
+    display: grid;
+    gap: 0.3rem;
+    color: var(--alk-search-muted);
+    font: 0.72rem var(--alk-search-mono);
+  }
+  .alk-search-dialog input {
+    width: 100%;
+    border: 1px solid var(--alk-search-rule);
+    padding: 0.6rem;
+    background: var(--alk-search-field);
+    color: var(--alk-search-ink);
+  }
+  .alk-search-dialog .alk-icon-button {
+    border: 0;
+    background: transparent;
+    font-size: 1.5rem;
+  }
+  .alk-search-dialog .alk-search-results {
+    position: static;
+    width: auto;
+    max-height: none;
+    border: 0;
+    box-shadow: none;
+  }
+  @media (max-width: 650px) {
+    .alk-search-desktop {
+      display: none;
+    }
+    .alk-search-mobile {
+      display: grid;
+    }
+    alk-search > .alk-search-results {
+      display: none;
+    }
+  }
+</style>

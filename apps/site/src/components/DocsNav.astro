@@ -5,7 +5,7 @@ const isCurrent = (href: string) => currentPath === href;
 const inReference = docsReference.some((link) => isCurrent(link.href));
 ---
 
-<aside class="docs-sidebar">
+<aside class="docs-sidebar" data-pagefind-ignore>
   <details class="docs-menu" open>
     <summary>Browse documentation</summary>
     <nav aria-label="Documentation">

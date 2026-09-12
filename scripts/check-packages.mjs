@@ -65,10 +65,12 @@ try {
     `---
 import Math from '@alkemdotdev/alkemist-components/math';
 import Code from '@alkemdotdev/alkemist-components/code';
+import Search, {type SearchProps} from '@alkemdotdev/alkemist-components/search';
 import type { MathProps } from '@alkemdotdev/alkemist-components/math';
 const math: MathProps = {tex:'E=mc^2',label:'Mass and energy'};
+const search: SearchProps = {label:'Search this existing site'};
 ---
-<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Existing site</title></head><body><h1>My existing website</h1><Math {...math}/><Code code="const answer = 42;" lang="javascript"/><style is:global>body {margin:31px;font-family:Georgia,serif;background:#fff8ed;color:#172b4d} h1{font-size:29px}</style></body></html>`,
+<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Existing site</title></head><body><h1>My existing website</h1><Search {...search}/><Math {...math}/><Code code="const answer = 42;" lang="javascript"/><style is:global>body {margin:31px;font-family:Georgia,serif;background:#fff8ed;color:#172b4d} h1{font-size:29px}</style></body></html>`,
   );
   await write(
     'src/pages/figures.astro',
@@ -195,25 +197,50 @@ export default defineConfig({integrations:[mdx(),alkemist({mdx:{enabled:false},m
   await write('src/pages/article.mdx', '# Math in existing MDX\n\n$E=mc^2$\n');
   run(['run', 'build']);
   run(['ci', '--no-audit', '--no-fund']);
-  if (registryMode) {
-    const generated = join(temporary, 'generated');
-    run([
-      'exec',
-      '--yes',
-      '--package',
-      'create-alkemist@' + manifest.version,
-      '--',
-      'create-alkemist',
-      generated,
-      '--provider',
-      'custom',
-    ]);
-    runNpm(['install', '--no-audit', '--no-fund'], generated);
-    runNpm(['run', 'verify'], generated);
-    console.log(
-      'Published create-alkemist generated and verified a fresh registry-backed site.',
+  const generator = manifest.artifacts.find(
+    (artifact) => artifact.name === 'create-alkemist',
+  );
+  assert(generator, 'Release must include create-alkemist');
+  const generated = join(temporary, 'generated');
+  run([
+    'exec',
+    '--yes',
+    '--package',
+    registryMode
+      ? 'create-alkemist@' + manifest.version
+      : `file:${join(output, generator.filename)}`,
+    '--',
+    'create-alkemist',
+    generated,
+    '--provider',
+    'custom',
+  ]);
+  const generatedManifest = JSON.parse(
+    await readFile(join(generated, 'package.json'), 'utf8'),
+  );
+  const generatedPackages = manifest.artifacts.filter(
+    (artifact) => artifact.name !== 'create-alkemist',
+  );
+  for (const artifact of generatedPackages) {
+    assert.equal(
+      generatedManifest.dependencies?.[artifact.name],
+      manifest.version,
+      `Generated starter must request ${artifact.name}@${manifest.version}`,
     );
+    if (!registryMode)
+      generatedManifest.dependencies[artifact.name] =
+        `file:${join(output, artifact.filename)}`;
   }
+  if (!registryMode)
+    await write(
+      'generated/package.json',
+      JSON.stringify(generatedManifest, null, 2) + '\n',
+    );
+  runNpm(['install', '--no-audit', '--no-fund'], generated);
+  runNpm(['run', 'verify'], generated);
+  console.log(
+    `${registryMode ? 'Published' : 'Packed'} create-alkemist generated and verified a fresh ${registryMode ? 'registry-backed' : 'tarball-backed'} site.`,
+  );
   console.log(
     'Package consumers passed: standalone components, public prop types, theme isolation, host MDX/processor, strict math, registry-compatible dependency graph and lockfile reinstall.',
   );

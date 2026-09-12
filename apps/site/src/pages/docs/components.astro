@@ -102,8 +102,25 @@ const catalog = [
     <p>
       Compact rows, a featured lead, an image grid, or a featured lead above a
       grid. Set a site default or offer readers a layout selector. Available in
-      the source checkout and source starter; pending the next npm release.
+      the source checkout, generated starter, and npm canary channel.
     </p>
+  </section>
+
+  <section class="docs-example" id="search">
+    <div class="docs-example-heading">
+      <h2>Search</h2><a href="/docs/search/">Site search reference ↗</a>
+    </div>
+    <p>
+      A compact search field, keyboard access, and mobile dialog. Use it in
+      Layout or import it independently; the optional Astro integration builds
+      the static search index.
+    </p>
+    <Code
+      code={"import Search from '@alkemdotdev/alkemist-components/search';\n\n<Search />"}
+      lang="astro"
+      title="Standalone search"
+      lineNumbers={false}
+    />
   </section>
 
   <section class="docs-example" id="charts">

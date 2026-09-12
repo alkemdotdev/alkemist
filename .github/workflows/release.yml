@@ -41,6 +41,30 @@ jobs:
           path: .alkemist/release/
           retention-days: 30
           if-no-files-found: error
+  canary-prepare:
+    needs: prepare
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
+      - run: npm ci
+      - name: Derive the commit-addressed canary versions
+        run: node scripts/release-canary.mjs
+      - run: npm run release:pack
+      - run: npm run check:packages
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: npm-canary-${{ github.sha }}
+          path: .alkemist/release/
+          retention-days: 30
+          if-no-files-found: error
   version:
     needs: prepare
     if: needs.prepare.outputs.pending == 'true'
@@ -97,6 +121,30 @@ jobs:
             if [ "$RELEASE_CHANNEL" = beta ]; then release_args+=(--prerelease); fi
             gh release create "$release_tag" --target "$GITHUB_SHA" --title "Alkemist $RELEASE_VERSION" --generate-notes "${release_args[@]}" .alkemist/release/*.tgz .alkemist/release/manifest.json
           fi
+  canary-publish:
+    needs: canary-prepare
+    runs-on: ubuntu-latest
+    environment: npm
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
+      - run: npm ci
+      - name: Recreate the constrained canary source state
+        run: node scripts/release-canary.mjs
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: npm-canary-${{ github.sha }}
+          path: .alkemist/release/
+      - name: Publish the verified canary tarballs through npm OIDC
+        run: node scripts/release.mjs publish
   registry-consumer:
     needs: publish
     runs-on: ubuntu-latest
@@ -113,5 +161,23 @@ jobs:
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: npm-release
+          path: .alkemist/release/
+      - run: node scripts/check-packages.mjs --registry
+  canary-registry-consumer:
+    needs: canary-publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: npm-canary-${{ github.sha }}
           path: .alkemist/release/
       - run: node scripts/check-packages.mjs --registry
