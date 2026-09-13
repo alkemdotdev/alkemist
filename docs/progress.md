@@ -1,5 +1,11 @@
 # Alkemist progress
 
+## 2026-09-13 — Code-number spacing
+
+Increased the line-number/source gap to 1.5ch and aligned ordinary and diff-marked
+lines in a shared gutter. Desktop and 390px browser review confirmed the spacing;
+copy still works. `npm run verify` passed (92 tests, 99 pages).
+
 ## 2026-09-13 — Compact component embeds
 
 Reviewed all fourteen public components; the evidence matrix lives in

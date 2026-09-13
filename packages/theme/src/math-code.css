@@ -127,8 +127,8 @@
 }
 .alk-code .alk-code-numbered .line::before {
   display: inline-block;
-  width: 2.5ch;
-  margin-right: 0.5ch;
+  width: 3.5ch;
+  margin-right: 1.5ch;
   content: attr(data-line);
   color: #888;
   text-align: right;
@@ -136,8 +136,6 @@
 }
 .alk-code .alk-code-numbered .line.alk-code-added::before,
 .alk-code .alk-code-numbered .line.alk-code-removed::before {
-  width: 3.5ch;
-  margin-right: 0;
   content: attr(data-diff) ' ' attr(data-line);
 }
 .alk-code .line.alk-code-highlight {
@@ -238,9 +236,6 @@
   }
   .alk-code .line {
     padding-inline: 0.35rem;
-  }
-  .alk-code .alk-code-numbered .line::before {
-    margin-right: 1ch;
   }
 }
 @media print {
