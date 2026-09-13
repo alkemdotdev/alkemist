@@ -158,7 +158,7 @@ export function renderMidi(props: MidiProps = {}): string {
           <button type="button" class="alk-midi-icon-button" data-midi-active-mute aria-label="Mute track" title="Mute track" aria-pressed="false" disabled><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6h2.5L9 3v10l-3.5-3H3V6Z"/><path d="m11 6 3 4m0-4-3 4"/></svg><span class="alk-midi-visually-hidden">Mute track</span></button>
         </div>
         <details class="alk-midi-more">
-          <summary>More</summary>
+          <summary aria-label="More" title="More controls">⋯</summary>
           <div class="alk-midi-more-panel">
             <label>Preset <select data-midi-preset disabled><option value="" disabled>Custom sequence</option><option value="nocturne">Nocturne</option><option value="pulse">Pulse</option><option value="bassline">Bassline</option><option value="ensemble">Ensemble</option></select></label>
             <label>Volume <input data-midi-volume type="range" min="0" max="1" step="0.01" value="${config.volume}" disabled></label>

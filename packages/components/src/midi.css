@@ -562,3 +562,13 @@
     text-align: left;
   }
 }
+
+.alk-midi .alk-midi-more > summary {
+  width: 1.85rem;
+  padding-inline: 0.2rem;
+  text-align: center;
+  font-weight: 700;
+}
+.alk-midi .alk-midi-more > summary::after {
+  content: none;
+}
