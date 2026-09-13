@@ -60,6 +60,64 @@ test('registry verification waits for propagation but rejects changed bytes', as
     /registry integrity differs/,
   );
 });
+test('registry verification permits only the original bootstrap beta on latest', async () => {
+  const artifact = {
+    name: 'sample',
+    version: '1.0.0-beta.1',
+    integrity: 'sha512-expected',
+  };
+  const manifest = { tag: 'beta', artifacts: [artifact] };
+  const metadata = {
+    versions: {
+      '1.0.0-beta.1': { dist: { integrity: artifact.integrity } },
+    },
+    'dist-tags': { beta: artifact.version, latest: artifact.version },
+  };
+  await waitForRegistry(manifest, {
+    read: async () => metadata,
+    sleep: async () => assert.fail('Bootstrap tag is already visible'),
+  });
+
+  for (const [version, tag] of [
+    ['1.0.0-beta.2', 'beta'],
+    ['1.0.0-beta.1-canary.0123456789abcdef0123456789abcdef01234567', 'canary'],
+  ]) {
+    const prerelease = {
+      name: 'sample',
+      version,
+      integrity: 'sha512-expected',
+    };
+    await assert.rejects(
+      waitForRegistry(
+        { tag, artifacts: [prerelease] },
+        {
+          read: async () => ({
+            versions: {
+              [version]: { dist: { integrity: prerelease.integrity } },
+            },
+            'dist-tags': { [tag]: version, latest: version },
+          }),
+          sleep: async () => assert.fail('Must reject an invalid latest tag'),
+        },
+      ),
+      /prerelease accidentally tagged latest/,
+    );
+  }
+
+  await assert.rejects(
+    waitForRegistry(manifest, {
+      read: async () => ({
+        ...metadata,
+        versions: {
+          ...metadata.versions,
+          '1.0.0': { dist: { integrity: 'sha512-stable' } },
+        },
+      }),
+      sleep: async () => assert.fail('Must reject bootstrap after stable'),
+    }),
+    /bootstrap prerelease remains latest after a stable version exists/,
+  );
+});
 const packages = () =>
   [
     '@alkemdotdev/alkemist-components',
@@ -82,7 +140,7 @@ function git(root, args) {
 async function writeJson(file, value) {
   await writeFile(file, JSON.stringify(value, null, 2) + '\n');
 }
-test('release tags never promote a beta to latest', () => {
+test('release tags keep beta and canary publication off latest', () => {
   assert.equal(releaseTag('1.0.0-beta.1'), 'beta');
   assert.equal(releaseTag('1.0.0'), 'latest');
   assert.equal(

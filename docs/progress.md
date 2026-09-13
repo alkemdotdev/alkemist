@@ -345,3 +345,15 @@ Added the reusable Search entry and optional Layout control, with lazy Pagefind 
 The main release workflow now derives coordinated commit-addressed canaries, checks their exact tarballs, publishes through the existing npm OIDC environment, and tests fresh registry installations. Beta/stable Changesets releases remain separate. Canary source validation permits only the five exact derived package-version edits; an isolated Git fixture checks rejection of unexpected and tampered edits. Live OIDC publication evidence follows completion of the deployed workflow.
 
 The first live canary publication verified GitHub OIDC and npm provenance for all four packages at source revision `a8f56dc`. Live execution exposed a circular import in the CLI and npm registry propagation after accepted uploads; the CLI contract split and bounded registry polling address these independently. Tests invoke the actual publish entrypoint and verify that missing registry data retries while different artifact bytes fail immediately.
+
+## 2026-09-12 — npm bootstrap latest-tag contract
+
+All four packages currently have `1.0.0-beta.1` on both `beta` and `latest`,
+with no stable version published. npm accepted security-key authentication but
+returned `E400` when asked to remove `latest`; the tag remains in place.
+The release verifier now accepts that exact bootstrap tag only while the
+package registry reports no stable version, and prints a visible notice. It
+continues to reject every other prerelease or canary on `latest`, and rejects
+the bootstrap exception once a stable version exists. Beta and stable
+publication tags are unchanged. Documentation records this exception until
+the first stable release instead of instructing an unconditional tag removal.
