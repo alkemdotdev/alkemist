@@ -9,10 +9,18 @@ import {
 export interface PlaygroundProps {
   definition: PlaygroundDefinition;
   previewUrl: string;
+  /** Give interactive demos the full width; reveal source and parameters on demand. */
+  focusPreview?: boolean;
   /** Optional accurate initial source for native or custom renderers. */ initialSource?: string;
 }
 type Props = PlaygroundProps;
-const { definition, previewUrl, initialSource: suppliedSource } = Astro.props;
+const {
+  definition,
+  previewUrl,
+  initialSource: suppliedSource,
+  focusPreview = false,
+} = Astro.props;
+const Panel = focusPreview ? 'details' : 'section';
 const values = resetPlaygroundValues(definition);
 const initialSource = suppliedSource ?? playgroundSource(definition, values);
 const instanceId = `alk-playground-${crypto.randomUUID()}`;
@@ -21,7 +29,7 @@ const sourceFilename = `${definition.id}.${definition.importPath ? 'astro' : 'ht
 ---
 
 <section
-  class="alk-playground"
+  class:list={['alk-playground', { 'alk-playground--focus': focusPreview }]}
   data-alk-playground
   data-pagefind-ignore
   data-playground-instance={instanceId}
@@ -45,7 +53,8 @@ const sourceFilename = `${definition.id}.${definition.importPath ? 'astro' : 'ht
         loading="lazy"
         sandbox="allow-scripts allow-same-origin"></iframe>
     </section>
-    <section class="alk-playground__parameters" aria-label="Parameters">
+    <Panel class="alk-playground__parameters" aria-label="Parameters">
+      {focusPreview && <summary>Component parameters</summary>}
       <div class="alk-playground__parameters-head">
         <h3>Parameters</h3><button type="button" data-playground-reset
           >Reset</button
@@ -155,19 +164,18 @@ const sourceFilename = `${definition.id}.${definition.importPath ? 'astro' : 'ht
           })
         }
       </div>
-    </section>
-    <section
-      class="alk-playground__source"
-      aria-label="Generated source"
-      data-playground-source-host
-    >
-      <Code
-        code={initialSource}
-        lang={sourceLanguage}
-        title={sourceFilename}
-        lineNumbers={false}
-      />
-    </section>
+    </Panel>
+    <Panel class="alk-playground__source" aria-label="Generated source">
+      {focusPreview && <summary>Source code</summary>}
+      <div data-playground-source-host>
+        <Code
+          code={initialSource}
+          lang={sourceLanguage}
+          title={sourceFilename}
+          lineNumbers={false}
+        />
+      </div>
+    </Panel>
   </div>
   <noscript
     ><p class="alk-playground__nojs">

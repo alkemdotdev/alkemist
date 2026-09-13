@@ -8,7 +8,7 @@ import Midi from '@alkemdotdev/alkemist-components/midi';
 
 ## A musical sketch
 
-Press Play, choose a track, and change its voice. Click a note to edit its pitch, start, length, and velocity. The piano roll is the same reusable `Midi` component that you can embed in an article, tutorial, or music lab.
+Press Play and start sketching. Draw a note in the grid, drag it to move it, or pull its right edge to change its length. Choose a track tab and an instrument from the top bar. The piano roll is the same reusable `Midi` component that you can embed in an article, tutorial, or music lab.
 
 <Midi
   preset="ensemble"
@@ -44,9 +44,13 @@ The component includes scoped styles and browser behavior. It works in Astro and
 
 ## Edit the notes
 
-The horizontal axis uses quarter-note beats; the vertical axis uses MIDI pitches. Select a track to work on its notes. Add notes in the grid, drag to move them, and use the selected-note fields for precise edits. Snap controls the rhythmic grid. Duplicate, Delete, Undo, Redo, and Reset provide a short editing loop.
+The top toolbar keeps playback and editing together. **Draw** adds notes: click for the last used length, or drag right to draw a longer note. Drag an existing note to change its time and pitch, or pull its right edge to resize it. **Select** moves existing notes without adding new ones. **Erase** removes notes on click; right-click also deletes a note. Each gesture is one Undo step. Snap controls the rhythmic grid.
 
-Arrow keys move a selected note in pitch or time. Delete removes it, and Control/Command-Z undoes an edit. The numeric fields provide an alternative to dragging. The grid scrolls inside its container on narrow screens.
+Track tabs choose the part you are editing. The Instrument selector and Mute button apply to that track. Other tracks appear as faint reference notes. Click the bar ruler to move the playhead. **More** contains examples, volume, loop, MIDI import/export, and Reset. You can also drop a `.mid` file onto the editor.
+
+Select a note and open **Note details** for exact pitch, start, length, and velocity, or to duplicate/delete it.
+
+Space plays or pauses when the editor is focused. D/S/E choose Draw, Select, or Erase. Arrow keys move a selected note in pitch or time. Delete removes it, and Control/Command-Z undoes an edit. The numeric fields provide an alternative to dragging. The grid scrolls inside its container on narrow screens.
 
 Play and Pause retain your position; Stop returns to the beginning. Loop repeats through the end of the final measure, including its trailing rest. Tempo changes its speed without changing pitch. Volume controls the output, while note velocity controls each note's attack strength. Each track has its own voice and mute setting.
 
@@ -113,7 +117,7 @@ The editor works with note tracks at a single tempo. It reports unsupported temp
 
 | Prop       | Default    | Purpose                                                                      |
 | ---------- | ---------- | ---------------------------------------------------------------------------- |
-| `title`    | Empty      | Visible and accessible player name.                                          |
+| `title`    | Empty      | Accessible player and toolbar name.                                          |
 | `caption`  | Empty      | Supporting text beneath the editor.                                          |
 | `preset`   | `nocturne` | One of the four built-in studies.                                            |
 | `sequence` | `null`     | Structured notes; takes precedence over `preset`.                            |

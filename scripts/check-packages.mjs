@@ -119,7 +119,7 @@ import Playground from '@alkemdotdev/alkemist-components/playground';
 import type {PlaygroundDefinition} from '@alkemdotdev/alkemist-components/playground';
 const definition: PlaygroundDefinition = {id:'equation',name:'Math',importPath:'@alkemdotdev/alkemist-components/math',defaults:{tex:'E=mc^2'},controls:[{name:'tex',type:'textarea'}]};
 ---
-<html lang="en"><head><meta charset="utf-8"/><title>Reusable playground</title></head><body><Playground definition={definition} previewUrl="/equation/" /></body></html>`,
+<html lang="en"><head><meta charset="utf-8"/><title>Reusable playground</title></head><body><Playground definition={definition} previewUrl="/equation/" focusPreview /></body></html>`,
   );
   await write(
     'src/pages/equation.astro',
@@ -192,6 +192,13 @@ const props: PostListProps = {items,layout,selectable:true,featuredHref:'/lead/'
     assert.doesNotMatch(html, /class="alk-layout/);
   }
 
+  const playground = await readFile(
+    join(temporary, 'dist/playground/index.html'),
+    'utf8',
+  );
+  assert.match(playground, /alk-playground--focus/);
+  assert.match(playground, /<summary>Source code<\/summary>/);
+  assert.match(playground, /<summary>Component parameters<\/summary>/);
   let html = await readFile(join(temporary, 'dist/index.html'), 'utf8');
   assert(
     html.includes('katex') &&

@@ -201,6 +201,9 @@ async function render(values: Record<string, JSONValue>, version: number) {
     enhanceCode(host);
   }
   reply('alk:playground:rendered', native ? { source: html } : {});
+  reply('alk:playground:resize', {
+    height: host.getBoundingClientRect().height + 40,
+  });
 }
 
 window.addEventListener('message', async (event: MessageEvent) => {
@@ -331,3 +334,10 @@ for (const [eventName, prop] of [
     { capture: true },
   );
 }
+
+// Measure the content rather than the viewport so a growing iframe cannot feed back into its own height.
+new ResizeObserver(() => {
+  reply('alk:playground:resize', {
+    height: host.getBoundingClientRect().height + 40,
+  });
+}).observe(host);

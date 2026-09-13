@@ -11,7 +11,7 @@ test('MIDI retains a visible score before JavaScript is available', () => {
   assert.doesNotMatch(html, /<audio[^>]*autoplay/);
   const remote = renderMidi({ src: '/score.mid' });
   assert.match(remote, /Download MIDI source/);
-  assert.doesNotMatch(remote, /<rect /);
+  assert.doesNotMatch(remote, /aria-label="Static piano roll/);
 });
 
 test('MIDI author data remains text in markup and serialized configuration', () => {

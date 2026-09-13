@@ -209,6 +209,7 @@ document
         source?: string;
         revision?: number;
         values?: Record<string, unknown>;
+        height?: number;
       };
       if (message?.id !== definition.id) return;
       if (message.type === 'alk:playground:ready') {
@@ -218,6 +219,15 @@ document
         return;
       }
       if (message.revision !== revision) return;
+      if (
+        message.type === 'alk:playground:resize' &&
+        root.classList.contains('alk-playground--focus') &&
+        typeof message.height === 'number' &&
+        Number.isFinite(message.height)
+      ) {
+        iframe.style.height = `${Math.min(1600, Math.max(240, Math.ceil(message.height)))}px`;
+        return;
+      }
       if (
         message.type === 'alk:playground:values' &&
         message.values &&

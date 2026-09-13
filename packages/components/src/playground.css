@@ -223,3 +223,29 @@
     min-height: 4.5rem;
   }
 }
+
+/* Embedded editors already have their own controls; keep the authoring inspector optional. */
+.alk-playground--focus .alk-playground__grid {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: 'preview' 'source' 'parameters';
+}
+.alk-playground--focus .alk-playground__parameters {
+  border-left: 0;
+  border-top: 1px solid var(--play-rule);
+}
+.alk-playground--focus .alk-playground__grid > details > summary {
+  cursor: pointer;
+  padding: 0.55rem 0.7rem;
+  font: 0.75rem/1.4 var(--alk-sans, system-ui, sans-serif);
+  color: var(--play-muted);
+}
+.alk-playground--focus .alk-playground__grid > details > summary:focus-visible {
+  outline: 2px solid var(--alk-ink-cobalt, #1982f2);
+  outline-offset: -2px;
+}
+
+.alk-playground--focus .alk-playground__grid > details {
+  margin: 0;
+  padding: 0;
+  border-radius: 0;
+}
