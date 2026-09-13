@@ -10,7 +10,56 @@ import {
   assertReleasePackages,
   canaryVersion,
   releaseTag,
+  waitForRegistry,
 } from './release.mjs';
+test('registry verification waits for propagation but rejects changed bytes', async () => {
+  const manifest = {
+    tag: 'canary',
+    artifacts: [
+      {
+        name: 'sample',
+        version: '1.0.0-canary.abc',
+        integrity: 'sha512-expected',
+      },
+    ],
+  };
+  const visible = {
+    versions: {
+      '1.0.0-canary.abc': { dist: { integrity: 'sha512-expected' } },
+    },
+    'dist-tags': { canary: '1.0.0-canary.abc' },
+  };
+  let reads = 0;
+  let waits = 0;
+  await waitForRegistry(manifest, {
+    read: async () => (++reads === 1 ? null : visible),
+    sleep: async () => {
+      waits++;
+    },
+    attempts: 2,
+  });
+  assert.equal(waits, 1);
+  await assert.rejects(
+    waitForRegistry(manifest, {
+      read: async () => null,
+      sleep: async () => {},
+      attempts: 2,
+    }),
+    /propagation did not complete/,
+  );
+  await assert.rejects(
+    waitForRegistry(manifest, {
+      read: async () => ({
+        ...visible,
+        versions: {
+          '1.0.0-canary.abc': { dist: { integrity: 'sha512-tampered' } },
+        },
+      }),
+      sleep: async () => assert.fail('Must not retry different bytes'),
+    }),
+    /registry integrity differs/,
+  );
+});
 const packages = () =>
   [
     '@alkemdotdev/alkemist-components',
