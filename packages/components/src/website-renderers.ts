@@ -40,16 +40,21 @@ export function renderTableOfContents({
   headings,
   label = 'On this page',
   showLabel = true,
+  landmark = true,
 }: {
   headings: TableOfContentsHeading[];
   label?: string;
   showLabel?: boolean;
+  /** Use false when the contents are already inside another navigation landmark. */
+  landmark?: boolean;
 }): string {
   const visible = headings.filter(
     (heading) =>
       heading.depth >= 2 && heading.depth <= 4 && heading.slug.trim(),
   );
-  return `<alk-table-of-contents class="alk-table-of-contents"><nav aria-label="${escapeHtml(label)}">${showLabel ? `<p class="alk-table-of-contents-label">${escapeHtml(label)}</p>` : ''}${visible.length ? `<ol class="alk-table-of-contents-list">${visible.map((heading) => `<li data-depth="${heading.depth}"><a href="#${encodeURIComponent(heading.slug)}" data-toc-link="${escapeHtml(heading.slug)}">${escapeHtml(heading.text)}</a></li>`).join('')}</ol>` : ''}</nav></alk-table-of-contents>`;
+  if (!visible.length) return '';
+  const contents = `${showLabel ? `<p class="alk-table-of-contents-label">${escapeHtml(label)}</p>` : ''}<ol class="alk-table-of-contents-list">${visible.map((heading) => `<li data-depth="${heading.depth}"><a href="#${encodeURIComponent(heading.slug)}" data-toc-link="${escapeHtml(heading.slug)}">${escapeHtml(heading.text)}</a></li>`).join('')}</ol>`;
+  return `<alk-table-of-contents class="alk-table-of-contents">${landmark ? `<nav aria-label="${escapeHtml(label)}">${contents}</nav>` : contents}</alk-table-of-contents>`;
 }
 
 function renderNavigationTree(
@@ -69,7 +74,7 @@ function renderNavigationTree(
         : `<span${current ? ' aria-current="page"' : ''}>${escapeHtml(item.label)}</span>`;
       const sections =
         current && headings.length
-          ? `<div class="alk-navigation-sections">${renderTableOfContents({ headings, showLabel: false })}</div>`
+          ? `<div class="alk-navigation-sections">${renderTableOfContents({ headings, showLabel: false, landmark: false })}</div>`
           : '';
       return `<li class="alk-navigation-item">${
         children
@@ -99,8 +104,21 @@ export function renderSearch({
   const url = safeLocalUrl(indexUrl) ?? '/pagefind/pagefind.js';
   const text = escapeHtml(label);
   const field = `<label><span class="alk-sr-only">${text}</span><input type="search" placeholder="${escapeHtml(placeholder)}" autocomplete="off" spellcheck="false" data-search-input></label>`;
-  return `<alk-search class="alk-search" data-pagefind-ignore data-index-url="${escapeHtml(url)}" data-variant="${escapeHtml(variant)}"><form class="alk-search-desktop" role="search" data-search-form>${field}<kbd aria-hidden="true">⌘K</kbd></form><button class="alk-search-mobile alk-icon-button" type="button" aria-label="${text}" title="${text}" data-search-open><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m16 16 4 4"></path></svg></button><section class="alk-search-results" aria-live="polite" data-search-results hidden></section><dialog class="alk-search-dialog" aria-label="${text}" data-search-dialog><div class="alk-search-dialog-bar"><form role="search" data-search-form><label><span>${text}</span><input type="search" placeholder="${escapeHtml(placeholder)}" autocomplete="off" spellcheck="false" data-search-input></label></form><button type="button" class="alk-icon-button" data-search-close aria-label="Close search" title="Close search">×</button></div><section class="alk-search-results" aria-live="polite" data-search-results hidden></section></dialog></alk-search>`;
+  return `<alk-search class="alk-search" data-pagefind-ignore data-index-url="${escapeHtml(url)}" data-variant="${escapeHtml(variant)}"><form class="alk-search-desktop" role="search" data-search-form>${field}<kbd aria-hidden="true">⌘K</kbd></form><button class="alk-search-mobile alk-icon-button" type="button" aria-label="${text}" title="${text}" aria-haspopup="dialog" aria-expanded="false" data-search-open><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m16 16 4 4"></path></svg></button><section class="alk-search-results" aria-live="polite" data-search-results hidden></section><dialog class="alk-search-dialog" aria-label="${text}" data-search-dialog><div class="alk-search-dialog-bar"><form role="search" data-search-form><label><span>${text}</span><input type="search" placeholder="${escapeHtml(placeholder)}" autocomplete="off" spellcheck="false" data-search-input></label></form><button type="button" class="alk-icon-button" data-search-close aria-label="Close search" title="Close search">×</button></div><section class="alk-search-results" aria-live="polite" data-search-results hidden></section></dialog></alk-search>`;
 }
+
+const imageHref = (value: string) => {
+  const local = safeLocalUrl(value);
+  if (local) return local;
+  try {
+    const url = new URL(value);
+    return url.protocol === 'http:' || url.protocol === 'https:'
+      ? url.href
+      : undefined;
+  } catch {
+    return undefined;
+  }
+};
 
 export function renderPostList(
   props: PostListProps,
@@ -125,9 +143,13 @@ export function renderPostList(
   return `<alk-post-list class="alk-post-list" data-layout="${escapeHtml(layout)}">${control}<section class="alk-post-list-collection" aria-label="${escapeHtml(label)}"><div class="alk-post-list-items" role="list">${items
     .map((item, index) => {
       const cover = item.cover;
+      const fallbackSrc =
+        cover && typeof cover.src === 'string'
+          ? imageHref(cover.src)
+          : undefined;
       const fallback =
-        cover && typeof cover.src === 'string' && navigationHref(cover.src)
-          ? `<img src="${escapeHtml(cover.src)}" alt="${escapeHtml(cover.alt)}" width="1200" height="800" loading="${index === 0 ? 'eager' : 'lazy'}" fetchpriority="${index === 0 ? 'high' : 'auto'}">`
+        cover && fallbackSrc
+          ? `<img src="${escapeHtml(fallbackSrc)}" alt="${escapeHtml(cover.alt)}" width="1200" height="800" loading="${index === 0 ? 'eager' : 'lazy'}" fetchpriority="${index === 0 ? 'high' : 'auto'}">`
           : '';
       const image = resolvedImages[index] ?? fallback;
       const thumbnail =
@@ -137,7 +159,7 @@ export function renderPostList(
       const date = item.date
         ? `<time datetime="${escapeHtml(item.date)}">${escapeHtml(item.date)}</time>`
         : '';
-      return `<article class="alk-post-list-item" role="listitem"${index === 0 ? ' data-lead' : ''}${cover ? ' data-has-cover' : ''}><a class="alk-post-list-link" href="${escapeHtml(navigationHref(item.href) ?? '#')}">${thumbnail}<div class="alk-post-list-copy"><h2>${escapeHtml(item.title)}</h2><p>${escapeHtml(item.description)}</p>${date}</div></a></article>`;
+      return `<article class="alk-post-list-item" role="listitem"${index === 0 ? ' data-lead' : ''}${thumbnail ? ' data-has-cover' : ''}><a class="alk-post-list-link" href="${escapeHtml(navigationHref(item.href) ?? '#')}">${thumbnail}<div class="alk-post-list-copy"><h2>${escapeHtml(item.title)}</h2><p>${escapeHtml(item.description)}</p>${date}</div></a></article>`;
     })
     .join('')}</div></section></alk-post-list>`;
 }

@@ -16,8 +16,24 @@ test('audio and video retain native playback in server-rendered output', () => {
     assert.match(html, /media-time-range/);
     assert.match(html, /media-play-button/);
     assert.match(html, /media-volume-range/);
+    assert.match(html, /<details class="alk-media-settings">/);
+    assert.match(html, /<summary>Settings<\/summary>/);
+    const settings = html.match(
+      /<details class="alk-media-settings">([\s\S]*?)<\/details>/,
+    )?.[1];
+    assert.ok(settings);
+    const primary = html.split('<details class="alk-media-settings">')[0];
+    assert.doesNotMatch(primary, /media-seek-(backward|forward)-button/);
+    assert.match(settings, /media-seek-backward-button/);
+    assert.match(settings, /media-seek-forward-button/);
+    assert.match(settings, /media-volume-range/);
+    assert.match(settings, /media-playback-rate-menu-button/);
+    assert.match(settings, /media-loop-button/);
     if (kind === 'video') assert.match(html, /playsinline/);
-    else assert.doesNotMatch(html, /media-fullscreen-button/);
+    if (kind === 'video') {
+      assert.match(settings, /media-pip-button/);
+      assert.match(settings, /media-airplay-button/);
+    } else assert.doesNotMatch(html, /media-fullscreen-button/);
   }
 });
 
@@ -102,4 +118,10 @@ test('tracks, transcript and original download retain their authored data', () =
   assert.match(html, /crossorigin="anonymous"/);
   assert.match(html, /href="\/clip.mp4" download/);
   assert.match(html, /First line\nSecond line/);
+  const settings = html.match(
+    /<details class="alk-media-settings">([\s\S]*?)<\/details>/,
+  )?.[1];
+  assert.ok(settings);
+  assert.match(settings, /media-captions-menu-button/);
+  assert.match(settings, /data-media-chapters/);
 });

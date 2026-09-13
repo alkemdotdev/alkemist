@@ -83,8 +83,17 @@ async function createModel(
   const controls = new OrbitControls(camera, canvas);
   controls.enableDamping = false;
   controls.enablePan = false;
+  // Ordinary scrolling belongs to the containing article; zoom is deliberate.
+  canvas.style.touchAction = 'pan-y';
   controls.autoRotateSpeed = 1;
   const events = new AbortController();
+  canvas.addEventListener(
+    'wheel',
+    (event) => {
+      if (!event.shiftKey) event.stopImmediatePropagation();
+    },
+    { capture: true, passive: true, signal: events.signal },
+  );
   const roots: Object3D[] = [scene];
   let frame = 0;
   let previousTime = 0;
@@ -239,7 +248,7 @@ async function createModel(
             0) / 3;
     });
     const status = host.querySelector<HTMLElement>('.alk-model-status')!;
-    status.textContent = `${Math.round(triangles).toLocaleString()} triangles · real glTF geometry`;
+    status.textContent = `${Math.round(triangles).toLocaleString()} triangles`;
     for (const control of host.querySelectorAll<
       HTMLButtonElement | HTMLInputElement
     >('button, input'))

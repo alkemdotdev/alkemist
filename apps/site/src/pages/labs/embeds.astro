@@ -1,0 +1,157 @@
+---
+import PlaygroundSpecimen from '../../components/PlaygroundSpecimen.astro';
+const examples = [
+  'math',
+  'code',
+  'chart',
+  'model',
+  'shader',
+  'audio',
+  'video',
+  'midi',
+  'post-list',
+  'search',
+  'navigation',
+  'table-of-contents',
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>Component embeds · Alkemist</title>
+    <link rel="canonical" href={new URL('/labs/embeds/', Astro.site)} />
+  </head>
+  <body>
+    <header class="embed-header">
+      <a href="/docs/components/">← Component docs</a>
+      <h1>Component embeds</h1>
+      <p>
+        Real components in a plain host page, without the Alkemist layout or
+        global theme.
+      </p>
+      <label
+        >Embed width <select id="embed-width"
+          ><option value="320px" selected>320 px</option><option value="480px"
+            >480 px</option
+          ><option value="640px">640 px</option><option value="100%"
+            >Fill</option
+          ></select
+        ></label
+      >
+      <nav aria-label="Components">
+        {examples.map((id) => <a href={`#${id}`}>{id}</a>)}
+      </nav>
+    </header>
+    <main>
+      {
+        examples.map((id) => (
+          <section id={id} class="embed-case">
+            <>
+              <h2>{id}</h2>
+              <div class="embed-surface">
+                <PlaygroundSpecimen
+                  id={id}
+                  headingSamples={id !== 'navigation'}
+                />
+              </div>
+            </>
+          </section>
+        ))
+      }
+    </main>
+    <footer class="embed-footer">
+      <p>
+        Layout is a full-page shell: <a href="/playground/layout/"
+          >inspect the layout separately</a
+        >. For preview/source/parameter controls, use the <a
+          href="/docs/components/">Playground examples</a
+        >.
+      </p>
+    </footer>
+  </body>
+</html>
+<script>
+  document
+    .querySelector<HTMLSelectElement>('#embed-width')
+    ?.addEventListener('change', (event) => {
+      document.documentElement.style.setProperty(
+        '--embed-width',
+        (event.target as HTMLSelectElement).value,
+      );
+    });
+</script>
+<style>
+  :global(html) {
+    --embed-width: 320px;
+    color-scheme: light;
+    background: #f6f7f8;
+    color: #17212b;
+    font:
+      16px/1.5 system-ui,
+      sans-serif;
+  }
+  :global(body) {
+    margin: 0;
+    padding: 1rem;
+  }
+  .embed-header,
+  .embed-footer {
+    max-width: 70rem;
+    margin: auto;
+  }
+  .embed-header h1 {
+    font-size: 1.4rem;
+    margin: 0.5rem 0;
+  }
+  .embed-header p {
+    margin: 0.5rem 0 1rem;
+  }
+  .embed-header label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .embed-header select {
+    font: inherit;
+    padding: 0.3rem 0.5rem;
+  }
+  .embed-header nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem 1rem;
+    margin-block: 1rem;
+  }
+  main {
+    max-width: 70rem;
+    margin: auto;
+  }
+  .embed-case {
+    margin-block: 2rem;
+    scroll-margin-top: 1rem;
+  }
+  .embed-case > h2 {
+    font:
+      600 0.85rem/1.4 system-ui,
+      sans-serif;
+    margin: 0 0 0.4rem;
+  }
+  .embed-surface {
+    width: min(100%, var(--embed-width));
+    min-width: 0;
+    background: white;
+    border: 1px dashed #a5afba;
+  }
+  .embed-surface > :global(:first-child) {
+    margin-top: 0;
+  }
+  .embed-surface > :global(:last-child) {
+    margin-bottom: 0;
+  }
+  a {
+    color: #165bac;
+  }
+</style>

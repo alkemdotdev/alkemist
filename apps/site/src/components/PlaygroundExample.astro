@@ -14,7 +14,12 @@ if (!definition) throw new Error(`Unknown playground: ${id}`);
 ---
 
 <Playground
-  focusPreview={id === 'midi'}
+  focusPreview
+  previewHeight={id === 'layout'
+    ? 600
+    : ['navigation', 'table-of-contents'].includes(id)
+      ? 440
+      : undefined}
   definition={definition}
   previewUrl={`/playground/${id}/`}
   initialSource={!definition.importPath

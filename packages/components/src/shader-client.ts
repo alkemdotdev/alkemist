@@ -127,7 +127,7 @@ function mountShader(
     const updatePlay = () => {
       button.textContent = playing ? 'Pause waves' : 'Play waves';
       button.setAttribute('aria-pressed', String(playing));
-      status.textContent = `${playing ? 'Playing' : 'Paused'} · GLSL fragment shader${compilerNotes ? ' · compiler notes in console' : ''}`;
+      status.textContent = `${playing ? 'Playing' : 'Paused'}${compilerNotes ? ' · compiler notes in console' : ''}`;
       previousTime = 0;
       if (!playing) pauseFrame();
       requestRender();

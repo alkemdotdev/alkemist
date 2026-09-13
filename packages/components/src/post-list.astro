@@ -65,7 +65,7 @@ const resolvedImages = await Promise.all(
     align-items: center;
     justify-content: flex-end;
     gap: 0.55rem;
-    margin-bottom: 0.8rem;
+    margin-bottom: 0.5rem;
     color: var(--alk-post-muted);
     font: 0.72rem/1.4 var(--alk-post-mono);
   }
@@ -100,9 +100,9 @@ const resolvedImages = await Promise.all(
   .alk-post-list-link {
     display: grid;
     grid-template-columns: minmax(0, 1fr) 6.5rem;
-    gap: 0.9rem;
+    gap: 0.65rem;
     color: inherit;
-    padding: 1rem 0;
+    padding: 0.75rem 0;
     text-decoration: none;
   }
 
@@ -144,18 +144,18 @@ const resolvedImages = await Promise.all(
 
   .alk-post-list-copy h2 {
     margin: 0;
-    font: 500 clamp(1.15rem, 2cqi, 1.4rem) / 1.35 var(--alk-post-sans);
+    font: 500 clamp(1.05rem, 2cqi, 1.3rem) / 1.35 var(--alk-post-sans);
   }
 
   .alk-post-list-copy p {
-    margin: 0.45rem 0 0;
+    margin: 0.3rem 0 0;
     color: var(--alk-post-muted);
-    font: 0.94rem/1.55 var(--alk-post-sans);
+    font: 0.88rem/1.5 var(--alk-post-sans);
   }
 
   .alk-post-list-copy time {
     display: block;
-    margin-top: 0.7rem;
+    margin-top: 0.4rem;
     color: var(--alk-post-muted);
     font: 0.7rem/1.4 var(--alk-post-mono);
   }
@@ -177,7 +177,7 @@ const resolvedImages = await Promise.all(
   alk-post-list[data-layout='featured']
     .alk-post-list-item[data-lead]
     .alk-post-thumbnail {
-    margin-bottom: 0.9rem;
+    margin-bottom: 0.65rem;
   }
 
   alk-post-list[data-layout='featured']
@@ -192,8 +192,8 @@ const resolvedImages = await Promise.all(
   @container (min-width: 42rem) {
     .alk-post-list-link {
       grid-template-columns: minmax(0, 1fr) 11rem;
-      gap: clamp(1.25rem, 4cqi, 3rem);
-      padding: clamp(1.1rem, 3cqi, 1.8rem) 0;
+      gap: clamp(1rem, 3cqi, 2rem);
+      padding: clamp(0.75rem, 2cqi, 1.2rem) 0;
     }
 
     alk-post-list[data-layout='grid'] .alk-post-list-items,
@@ -213,7 +213,7 @@ const resolvedImages = await Promise.all(
     alk-post-list[data-layout='featured-grid']
       .alk-post-list-item:not([data-lead])
       .alk-post-thumbnail {
-      margin-bottom: 0.9rem;
+      margin-bottom: 0.65rem;
     }
 
     alk-post-list[data-layout='grid'] .alk-post-list-item:nth-last-child(2),
@@ -247,7 +247,7 @@ const resolvedImages = await Promise.all(
       .alk-post-list-item[data-lead]
       .alk-post-thumbnail {
       aspect-ratio: 16 / 7;
-      margin-bottom: clamp(1rem, 3cqi, 1.8rem);
+      margin-bottom: clamp(0.65rem, 2cqi, 1rem);
     }
 
     alk-post-list[data-layout='featured']
@@ -258,7 +258,7 @@ const resolvedImages = await Promise.all(
       .alk-post-list-item[data-lead]
       .alk-post-list-copy
       h2 {
-      font-size: clamp(1.55rem, 4cqi, 2.5rem);
+      font-size: clamp(1.35rem, 3cqi, 2rem);
     }
   }
 </style>

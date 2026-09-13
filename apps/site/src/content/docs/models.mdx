@@ -43,11 +43,14 @@ Include a meaningful poster and description for published research. A poster is 
 
 ## Interaction
 
-- Drag to orbit and scroll to zoom.
-- Use Front, Top, and Reset view to return to known camera positions.
+- Drag to orbit. Hold Shift while scrolling to zoom, so ordinary scrolling can
+  continue through the containing article.
+- Reset view stays visible; View options groups Front, Top, Wireframe, and
+  Spin without taking a permanent toolbar row.
 - Focus the canvas and use the arrow keys to orbit, `+` / `−` to zoom, and Home to reset.
-- Toggle Wireframe to inspect mesh structure.
-- Enable Spin explicitly for continuous rotation; it starts off, pauses offscreen, and stops when the reduced-motion preference changes to reduce.
+
+Spin starts off, pauses offscreen, and stops when the reduced-motion preference
+changes to reduce.
 
 Orbit navigation uses [Three.js OrbitControls](https://github.com/mrdoob/three.js/blob/r185/examples/jsm/controls/OrbitControls.js). The canvas and controls expose keyboard labels, but a 3D canvas is not a complete nonvisual representation of complex geometry. The title, description, poster, and original file are part of the figure's accessible content.
 

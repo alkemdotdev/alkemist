@@ -30,8 +30,9 @@ import {
 import { definitions } from '../lib/playground/definitions';
 interface Props {
   id: string;
+  headingSamples?: boolean;
 }
-const { id } = Astro.props;
+const { id, headingSamples = true } = Astro.props;
 const values = definitions[id].defaults;
 ---
 
@@ -66,7 +67,7 @@ const values = definitions[id].defaults;
   )
 }
 {
-  ['navigation', 'table-of-contents'].includes(id) && (
+  headingSamples && ['navigation', 'table-of-contents'].includes(id) && (
     <div class="playground-heading-samples">
       <>
         <h2 id="introduction">Introduction</h2>

@@ -112,6 +112,23 @@ for (const [path, title] of [
     previewRobots: result.headers['x-robots-tag'] ?? null,
   });
 }
+const embeds = await get('/labs/embeds/');
+assert.equal(embeds.status, 200);
+assert.ok(embeds.text.includes('<title>Component embeds'));
+assert.ok(embeds.text.includes('name="robots" content="noindex,nofollow"'));
+for (const component of [
+  'alk-chart',
+  'alk-model',
+  'alk-media',
+  'alk-post-list',
+  'alk-search',
+]) {
+  assert.ok(
+    embeds.text.includes(`<${component}`),
+    `Missing embed: ${component}`,
+  );
+}
+checks.push({ path: '/labs/embeds/', status: embeds.status });
 const redirectChecks = [];
 const machineGuides = [];
 for (const [path, type, required] of [

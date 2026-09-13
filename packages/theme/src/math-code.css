@@ -11,8 +11,8 @@
 
 .alk-math {
   min-width: 0;
-  margin: 1.8rem 0;
-  padding: 1.3rem 1.4rem 1rem;
+  margin: 1rem 0;
+  padding: 0.5rem 0.65rem;
   border-block: 1px solid var(--alk-rule, #ccc);
 }
 .alk-math-scroll,
@@ -23,13 +23,13 @@
   padding-block: 0.4rem;
 }
 .alk-math .katex-display {
-  margin: 0.7rem 0;
+  margin: 0.25rem 0;
 }
 .alk-math .katex-display > .katex {
   white-space: nowrap;
 }
 .alk-math figcaption {
-  margin-top: 0.9rem;
+  margin-top: 0.4rem;
   color: var(--alk-muted, #5e5e5e);
   font: 0.75rem/1.5 var(--alk-mono, 'Ubuntu Mono', monospace);
   text-align: center;
@@ -47,7 +47,7 @@
 .alk-code {
   min-width: 0;
   max-width: 100%;
-  margin: 1.6rem 0;
+  margin: 1rem 0;
   background: #111;
   color: #eee;
   border: 1px solid #555;

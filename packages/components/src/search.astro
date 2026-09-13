@@ -14,7 +14,6 @@ export interface SearchProps {
 }
 
 type Props = SearchProps;
-
 const {
   indexUrl = `${base}pagefind/pagefind.js`,
   placeholder = 'Search',
@@ -29,78 +28,6 @@ const {
     `<alk-search${import.meta.env.DEV ? ' data-development="true"' : ''} `,
   )}
 />
-{
-  /*
-  <form class="alk-search-desktop" role="search" data-search-form>
-    <label>
-      <span class="alk-sr-only">{label}</span>
-      <input
-        type="search"
-        placeholder={placeholder}
-        autocomplete="off"
-        spellcheck="false"
-        data-search-input
-      />
-    </label>
-    <kbd aria-hidden="true">⌘K</kbd>
-  </form>
-  <button
-    class="alk-search-mobile alk-icon-button"
-    type="button"
-    aria-label={label}
-    title={label}
-    data-search-open
-  >
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="1.5"
-      aria-hidden="true"
-      ><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m16 16 4 4"
-      ></path></svg
-    >
-  </button>
-  <section
-    class="alk-search-results"
-    aria-live="polite"
-    data-search-results
-    hidden
-  >
-  </section>
-  <dialog class="alk-search-dialog" aria-label={label} data-search-dialog>
-    <div class="alk-search-dialog-bar">
-      <form role="search" data-search-form>
-        <label>
-          <span>{label}</span>
-          <input
-            type="search"
-            placeholder={placeholder}
-            autocomplete="off"
-            spellcheck="false"
-            data-search-input
-          />
-        </label>
-      </form>
-      <button
-        type="button"
-        class="alk-icon-button"
-        data-search-close
-        aria-label="Close search"
-        title="Close search">×</button
-      >
-    </div>
-    <section
-      class="alk-search-results"
-      aria-live="polite"
-      data-search-results
-      hidden
-    >
-    </section>
-  </dialog>
-</alk-search>
-*/
-}
 
 <script>
   import './search-client';
@@ -119,6 +46,26 @@ const {
     position: relative;
     display: block;
     min-width: 0;
+  }
+  alk-search,
+  alk-search *,
+  alk-search *::before,
+  alk-search *::after {
+    box-sizing: border-box;
+  }
+  alk-search[data-variant='standalone'] .alk-search-desktop label {
+    flex: 1;
+  }
+  alk-search[data-variant='standalone'] .alk-search-desktop input {
+    width: 100%;
+  }
+  alk-search[data-variant='standalone'] > .alk-search-results {
+    position: relative;
+    top: auto;
+    right: auto;
+    width: 100%;
+    margin-top: 0.4rem;
+    box-shadow: none;
   }
   alk-search .alk-sr-only {
     position: absolute;
@@ -143,7 +90,7 @@ const {
     background: var(--alk-search-field);
     color: var(--alk-search-ink);
   }
-  .alk-search-desktop {
+  alk-search .alk-search-desktop {
     display: flex;
     align-items: center;
     gap: 0.35rem;
@@ -151,10 +98,10 @@ const {
     background: var(--alk-search-field);
     padding: 0 0.45rem;
   }
-  .alk-search-desktop label {
+  alk-search .alk-search-desktop label {
     min-width: 0;
   }
-  .alk-search-desktop input {
+  alk-search .alk-search-desktop input {
     width: 12rem;
     min-width: 0;
     border: 0;
@@ -164,7 +111,7 @@ const {
     background: transparent;
     font: 0.78rem var(--alk-search-mono);
   }
-  .alk-search-desktop kbd {
+  alk-search .alk-search-desktop kbd {
     border: 1px solid var(--alk-search-rule);
     color: var(--alk-search-muted);
     font: 0.62rem var(--alk-search-mono);
@@ -176,11 +123,11 @@ const {
     border: 0;
     background: transparent;
   }
-  .alk-search-mobile svg {
+  alk-search .alk-search-mobile svg {
     width: 20px;
     height: 20px;
   }
-  .alk-search-results {
+  alk-search .alk-search-results {
     position: absolute;
     z-index: 40;
     top: calc(100% + 0.5rem);
@@ -188,7 +135,7 @@ const {
     width: min(31rem, calc(100vw - 2.5rem));
     max-height: min(60vh, 34rem);
     overflow: auto;
-    padding: 0.65rem;
+    padding: 0.35rem;
     border: 1px solid var(--alk-search-rule);
     background: var(--alk-search-paper);
     box-shadow: 0 0.7rem 1.5rem #0002;
@@ -198,32 +145,32 @@ const {
   alk-search:has(.alk-search-dialog[open]) > .alk-search-results {
     display: none;
   }
-  .alk-search-result-list {
+  alk-search .alk-search-result-list {
     list-style: none;
     padding: 0;
     margin: 0;
   }
-  .alk-search-result {
+  alk-search .alk-search-result {
     display: grid;
     gap: 0.3rem;
-    padding: 0.7rem;
+    padding: 0.55rem;
     color: var(--alk-search-ink);
     text-decoration: none;
   }
-  .alk-search-result:hover {
+  alk-search .alk-search-result:hover {
     background: var(--alk-search-field);
   }
-  .alk-search-result strong {
+  alk-search .alk-search-result strong {
     font: 500 0.92rem var(--alk-search-sans);
   }
-  .alk-search-result span {
+  alk-search .alk-search-result span {
     display: -webkit-box;
     overflow: hidden;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 3;
     color: var(--alk-search-muted);
   }
-  .alk-search-more {
+  alk-search .alk-search-more {
     width: 100%;
     margin-top: 0.45rem;
     border: 1px solid var(--alk-search-rule);
@@ -233,7 +180,7 @@ const {
     font: 0.72rem/1.35 var(--alk-search-mono);
     text-align: left;
   }
-  .alk-search-result mark {
+  alk-search .alk-search-result mark {
     color: inherit;
     background: color-mix(
       in srgb,
@@ -241,7 +188,7 @@ const {
       transparent
     );
   }
-  .alk-search-dialog {
+  alk-search .alk-search-dialog {
     width: min(42rem, calc(100vw - 2rem));
     max-height: min(42rem, calc(100vh - 2rem));
     padding: 0;
@@ -250,39 +197,39 @@ const {
     color: var(--alk-search-ink);
     box-shadow: 0 1rem 3rem #0005;
   }
-  .alk-search-dialog::backdrop {
+  alk-search .alk-search-dialog::backdrop {
     background: #0008;
   }
-  .alk-search-dialog-bar {
+  alk-search .alk-search-dialog-bar {
     display: flex;
     align-items: end;
     gap: 0.5rem;
     padding: 1rem;
     border-bottom: 1px solid var(--alk-search-rule);
   }
-  .alk-search-dialog form {
+  alk-search .alk-search-dialog form {
     flex: 1;
     min-width: 0;
   }
-  .alk-search-dialog label {
+  alk-search .alk-search-dialog label {
     display: grid;
     gap: 0.3rem;
     color: var(--alk-search-muted);
     font: 0.72rem var(--alk-search-mono);
   }
-  .alk-search-dialog input {
+  alk-search .alk-search-dialog input {
     width: 100%;
     border: 1px solid var(--alk-search-rule);
     padding: 0.6rem;
     background: var(--alk-search-field);
     color: var(--alk-search-ink);
   }
-  .alk-search-dialog .alk-icon-button {
+  alk-search .alk-search-dialog .alk-icon-button {
     border: 0;
     background: transparent;
     font-size: 1.5rem;
   }
-  .alk-search-dialog .alk-search-results {
+  alk-search .alk-search-dialog .alk-search-results {
     position: static;
     width: auto;
     max-height: none;
@@ -290,13 +237,13 @@ const {
     box-shadow: none;
   }
   @media (max-width: 650px) {
-    .alk-search-desktop {
+    alk-search[data-variant='header'] .alk-search-desktop {
       display: none;
     }
-    alk-search .alk-search-mobile {
+    alk-search[data-variant='header'] .alk-search-mobile {
       display: grid;
     }
-    alk-search > .alk-search-results {
+    alk-search[data-variant='header'] > .alk-search-results {
       display: none;
     }
   }

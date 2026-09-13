@@ -203,17 +203,26 @@ export function initializeSearch(root: HTMLElement): () => void {
   );
   const open = () => {
     if (!dialog?.open) dialog?.showModal();
+    openButton?.setAttribute('aria-expanded', 'true');
     window.setTimeout(() =>
       dialog?.querySelector<HTMLInputElement>('input')?.focus(),
     );
   };
   const close = () => {
     if (dialog?.open) dialog.close();
+    openButton?.setAttribute('aria-expanded', 'false');
     openButton?.focus();
   };
   openButton?.addEventListener('click', open, { signal });
   closeButton?.addEventListener('click', close, { signal });
-  dialog?.addEventListener('close', () => openButton?.focus(), { signal });
+  dialog?.addEventListener(
+    'close',
+    () => {
+      openButton?.setAttribute('aria-expanded', 'false');
+      openButton?.focus();
+    },
+    { signal },
+  );
   root.addEventListener(
     'keydown',
     (event) => {
@@ -253,6 +262,7 @@ export function initializeSearch(root: HTMLElement): () => void {
   document.addEventListener(
     'keydown',
     (event) => {
+      if (event.defaultPrevented) return;
       if (!(event.metaKey || event.ctrlKey) || event.key.toLowerCase() !== 'k')
         return;
       event.preventDefault();

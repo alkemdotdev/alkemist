@@ -1,0 +1,31 @@
+---
+title: Components with less surrounding furniture
+description: The shared figures and playgrounds now give an embedded host more room to do its own work.
+date: '2026-09-13'
+order: 0
+---
+
+The components package is meant to sit inside an existing Astro page as well as
+inside the Alkemist site. This pass removes space that did not help a reader:
+ready-state diagnostics no longer reserve a figure footer, while loading,
+errors, and downloads remain available.
+
+Models and shader studies size themselves from their containers. Model camera
+controls now place Front, Top, Wireframe, and Spin under View options; Shift +
+scroll is the deliberate zoom gesture, leaving ordinary article scrolling
+available. The shader remains the documented two-source interference study,
+not a general GLSL editor.
+
+The Playground can put a live preview first, with parameters and generated
+source in disclosures. Page-like previews can request a bounded fixed height.
+The [embed lab](/labs/embeds/) places the same components in a plain host page;
+the [component catalog](/docs/components/) retains the parameter and source
+examples. Empty contents lists disappear, search stays scoped to its host, and
+post lists do not reserve a cover gutter when no usable image is available.
+
+The narrow-host browser review caught a search results panel that extended past
+its host; standalone results now stay in the document flow. Audio and Video put
+skip, volume, speed, captions, and loop under Settings while keeping the primary
+playback row visible. Search still
+requires a built Pagefind index, and a dense chart still needs an author to
+choose a workable width and data presentation.

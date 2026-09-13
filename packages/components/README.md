@@ -1,8 +1,8 @@
 # @alkemdotdev/alkemist-components
 
 Astro components for technical publishing: `Layout`, `Math`, `Code`,
-`Chart`, `Model`, `Shader`, `PostList`, `Search`, `Navigation`, and
-`TableOfContents`.
+`Audio`, `Video`, `Chart`, `Midi`, `Model`, `Shader`, `PostList`, `Search`,
+`Navigation`, `TableOfContents`, and `Playground`.
 
 Each component has a lowercase, extensionless public entry. Import its types
 from the same entry; there is no root component barrel.
@@ -48,3 +48,17 @@ For braces, tags, or multiline source, use a string child such as
 ``<Code>{String.raw`const object = { value: 42 };`}</Code>``. Slots decode text
 once and remove surrounding blank lines and common indentation. Use
 `code={source}` for imported or generated source with exact whitespace.
+
+### Embedding in an existing page
+
+Import only the components you need; `Layout` is optional. Figures size themselves
+from the containing column. Model zoom uses Shift + scroll so ordinary scrolling
+continues through the article. Audio and Video keep playback and seeking visible;
+Settings contains skip, volume, speed, captions, loop, and available platform tools.
+Standalone Search keeps results inside its host; use `variant="header"` for the
+compact header/dialog presentation.
+
+For docs, `<Playground focusPreview>` gives the specimen full width and reveals
+parameters/source on demand. Set `previewHeight={440}` for a deliberately scrolling
+frame (finite 80–1600 pixels); omit it to accept the frame's content-size messages.
+See the [plain-host embed lab](https://alkemist.alkem.dev/labs/embeds/).

@@ -2,7 +2,8 @@
   display: block;
   min-width: 0;
   width: 100%;
-  margin: 1.5rem 0;
+  margin: 1rem 0;
+  container-type: inline-size;
 }
 .alk-chart-canvas {
   width: 100%;
@@ -26,9 +27,6 @@
 .alk-chart[data-state='error'] .alk-chart-hint {
   display: none;
 }
-.alk-chart-tools:not(:has(button:not([hidden]))) {
-  display: none;
-}
 .alk-chart-hint {
   color: var(--alk-muted, #5e5e5e);
   font: 0.7rem/1.5 var(--alk-mono, ui-monospace, monospace);
@@ -40,7 +38,7 @@
 }
 .alk-chart-table summary {
   cursor: pointer;
-  padding: 0.7rem 0;
+  padding: 0.4rem 0;
 }
 .alk-chart-table-scroll {
   max-height: 23rem;
@@ -64,7 +62,7 @@
 .alk-chart-table-scroll td,
 .alk-chart-table-scroll th {
   white-space: nowrap;
-  padding: 0.55rem 0.7rem;
+  padding: 0.35rem 0.5rem;
 }
 #vg-tooltip-element {
   font-family: var(--alk-sans, system-ui, sans-serif);
@@ -77,8 +75,13 @@
 #vg-tooltip-element td.key {
   color: var(--alk-muted, #5e5e5e);
 }
-@media (max-width: 600px) {
+@container (max-width: 380px) {
   .alk-chart-hint {
     width: 100%;
   }
+}
+
+.alk-chart .alk-chart-table {
+  padding: 0;
+  border-radius: 0;
 }

@@ -249,3 +249,23 @@
   padding: 0;
   border-radius: 0;
 }
+
+.alk-playground--focus iframe {
+  min-height: 0;
+}
+@container (min-width: 540px) {
+  .alk-playground--focus .alk-playground__controls {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem 1rem;
+  }
+  .alk-playground--focus .alk-playground__control--multiline {
+    grid-column: 1/-1;
+  }
+}
+
+.alk-playground--focus .alk-playground__presets {
+  margin: 0;
+}
+.alk-playground--focus [data-playground-reset] {
+  margin-left: auto;
+}

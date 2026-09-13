@@ -6,7 +6,7 @@
 }
 /* Shared figure presentation; each medium keeps its own rendering lifecycle. */
 .alk-figure {
-  --alk-figure-gutter: clamp(0.85rem, 2vw, 1.15rem);
+  --alk-figure-gutter: 0.65rem;
   margin: 0;
   min-width: 0;
   border: 1px solid var(--alk-rule, #ccc);
@@ -18,28 +18,28 @@
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 1rem;
+  gap: 0.5rem;
   padding: var(--alk-figure-gutter);
 }
 .alk-figure-heading > div {
   min-width: 0;
 }
 .alk-figure .alk-figure-label {
-  margin: 0 0 0.35rem;
+  margin: 0 0 0.2rem;
   color: var(--alk-muted, #5e5e5e);
   font: 0.7rem/1.5 var(--alk-mono, ui-monospace, monospace);
 }
 .alk-figure .alk-figure-title {
   margin: 0;
-  font: 500 1.08rem/1.35 var(--alk-sans, system-ui, sans-serif);
+  font: 500 0.95rem/1.35 var(--alk-sans, system-ui, sans-serif);
   letter-spacing: -0.02em;
   overflow-wrap: anywhere;
 }
 .alk-figure .alk-figure-description {
-  margin: 0.45rem 0 0;
+  margin: 0.25rem 0 0;
   max-width: 68ch;
   color: var(--alk-muted, #5e5e5e);
-  font: 0.84rem/1.55 var(--alk-sans, system-ui, sans-serif);
+  font: 0.8rem/1.45 var(--alk-sans, system-ui, sans-serif);
   overflow-wrap: anywhere;
 }
 .alk-figure-format {
@@ -51,14 +51,14 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.65rem 1rem;
+  gap: 0.35rem 0.5rem;
   border-top: 1px solid var(--alk-rule, #ccc);
-  padding: 0.7rem var(--alk-figure-gutter);
+  padding: 0.4rem var(--alk-figure-gutter);
   font: 0.76rem/1.4 var(--alk-mono, ui-monospace, monospace);
 }
 .alk-figure-controls button {
-  min-height: 40px;
-  padding: 0.45rem 0.7rem;
+  min-height: 32px;
+  padding: 0.3rem 0.5rem;
   border: 1px solid var(--alk-rule, #ccc);
   border-radius: 4px;
   background: transparent;
@@ -90,7 +90,7 @@
   justify-content: space-between;
   align-items: baseline;
   gap: 0.35rem 1rem;
-  padding: 0.5rem var(--alk-figure-gutter) 0.9rem;
+  padding: 0.4rem var(--alk-figure-gutter);
   color: var(--alk-muted, #5e5e5e);
   font: 0.72rem/1.5 var(--alk-mono, ui-monospace, monospace);
 }
@@ -111,7 +111,7 @@
 }
 .alk-figure .alk-figure-caption {
   margin: 0;
-  padding: 0 var(--alk-figure-gutter) 1rem;
+  padding: 0.45rem var(--alk-figure-gutter);
   color: var(--alk-muted, #5e5e5e);
   font: 0.78rem/1.6 var(--alk-sans, system-ui, sans-serif);
   overflow-wrap: anywhere;
@@ -123,5 +123,52 @@
   .alk-figure-controls,
   .alk-figure-status {
     display: none;
+  }
+}
+
+/* Ready-state diagnostics stay available to assistive technology without reserving a footer row. */
+:is(alk-chart, alk-model, alk-shader)[data-state='ready'] .alk-figure-footer {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  padding: 0;
+  margin: 0;
+}
+.alk-figure-controls a {
+  margin-left: auto;
+  color: inherit;
+  font: inherit;
+  padding-block: 0.35rem;
+}
+.alk-figure .alk-figure-options {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.alk-figure-options > summary {
+  cursor: pointer;
+  padding: 0.35rem 0.4rem;
+}
+.alk-figure-options-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.4rem 0;
+}
+.alk-figure-options:not([open]) .alk-figure-options-panel {
+  display: none;
+}
+.alk-figure-options > summary:focus-visible {
+  outline: 2px solid var(--alk-ink-cobalt, #1982f2);
+  outline-offset: 2px;
+}
+@media (pointer: coarse) {
+  .alk-figure-controls button,
+  .alk-figure-controls summary,
+  .alk-figure-controls label {
+    min-height: 40px;
   }
 }

@@ -50,3 +50,12 @@ See the repository's `apps/site/src/lib/playground/definitions.ts`, `frame.ts`, 
 Parameters use a compact property inspector, with contextual help and editable JSON for structured values. Source uses the same highlighted Code component as authored listings. Source is generated and copyable; it is not an arbitrary executable source editor. Unknown combinations show errors rather than quietly changing the example.
 
 The preview initially renders without JavaScript. Live controls require JavaScript. Browser policies still govern media autoplay, clipboard access, and WebGL support. Use the native player or model poster where appropriate.
+
+## Preview sizing
+
+Use `focusPreview` to show the component at full width and reveal source and
+parameters on demand. The documentation examples use this presentation.
+The frame can send the resize message described above to fit its content.
+For a full-page or scrolling navigation specimen, set `previewHeight={440}`;
+this fixes the frame height and ignores content-resize messages. Values must
+be finite and between 80 and 1600 pixels.

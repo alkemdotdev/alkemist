@@ -1,13 +1,14 @@
 alk-model.alk-model {
   display: block;
   min-width: 0;
-  margin: 1.5rem 0;
+  margin: 1rem 0;
+  container-type: inline-size;
 }
 .alk-model-viewport {
   position: relative;
   isolation: isolate;
   width: 100%;
-  height: clamp(300px, 48vw, 570px);
+  height: clamp(210px, 62cqw, 420px);
   overflow: hidden;
   background: var(--alk-paper, #fff);
 }
@@ -37,7 +38,7 @@ alk-model.alk-model {
   right: var(--alk-figure-gutter);
   bottom: 1rem;
   display: flex;
-  gap: 0.6rem;
+  gap: 0.4rem;
   font: 0.7rem/1 var(--alk-mono, ui-monospace, monospace);
   pointer-events: none;
 }
@@ -64,19 +65,19 @@ alk-model.alk-model {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.4rem;
 }
 .alk-model-toolbar {
   justify-content: space-between;
 }
 .alk-model-switches {
-  gap: 1rem;
+  gap: 0.6rem;
 }
 .alk-model-switches label {
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  min-height: 40px;
+  min-height: 32px;
 }
 .alk-model-switches input {
   accent-color: var(--alk-ink-cobalt, #1982f2);
@@ -87,7 +88,7 @@ alk-model.alk-model {
 .alk-model:not([data-state='ready']) .alk-model-axis {
   display: none;
 }
-@media (max-width: 480px) {
+@container (max-width: 360px) {
   .alk-model-hint {
     font-size: 0.6rem;
   }

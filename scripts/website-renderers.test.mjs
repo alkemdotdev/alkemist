@@ -33,6 +33,12 @@ test('website renderer text, headings, and links stay in their intended HTML con
   assert.match(toc, /href="#x%20y"/);
   assert.match(toc, /&lt;script&gt;/);
   assert.doesNotMatch(toc, /ignored|<script>/);
+  assert.equal(
+    renderTableOfContents({
+      headings: [{ depth: 1, slug: 'ignored', text: 'Ignored' }],
+    }),
+    '',
+  );
 
   const navigation = renderNavigation({
     currentPath: '/guide/#intro',
@@ -45,6 +51,12 @@ test('website renderer text, headings, and links stay in their intended HTML con
   assert.match(navigation, /href="\/guide\/" aria-current="page"/);
   assert.doesNotMatch(navigation, /javascript:/);
   assert.match(navigation, /<span>Unsafe<\/span>/);
+  const navigationWithSections = renderNavigation({
+    currentPath: '/guide/',
+    items: [{ label: 'Guide', href: '/guide/' }],
+    headings: [{ depth: 2, slug: 'intro', text: 'Introduction' }],
+  });
+  assert.equal((navigationWithSections.match(/<nav/g) ?? []).length, 1);
 });
 
 test('search accepts only a local Pagefind module URL and escapes supplied text', () => {
@@ -55,6 +67,7 @@ test('search accepts only a local Pagefind module URL and escapes supplied text'
   });
   assert.match(search, /data-index-url="\/pagefind\/pagefind\.js"/);
   assert.match(search, /aria-label="&lt;label&gt;"/);
+  assert.match(search, /aria-haspopup="dialog" aria-expanded="false"/);
   assert.match(search, /placeholder="&quot; autofocus onfocus=&quot;run\(\)"/);
   assert.doesNotMatch(search, /attacker\.example|onfocus="run/);
 });
@@ -89,6 +102,12 @@ test('post list keeps a single featured lead, validates URLs, and keeps safe lay
         },
       },
       { href: 'data:text/html,boom', title: 'Unsafe', description: 'blocked' },
+      {
+        href: '/mail-cover/',
+        title: 'Bad cover',
+        description: 'does not reserve thumbnail space',
+        cover: { src: 'mailto:editor@example.com', alt: 'Bad cover' },
+      },
     ],
   });
   assert.match(posts, /data-layout="featured-grid"/);
@@ -98,17 +117,24 @@ test('post list keeps a single featured lead, validates URLs, and keeps safe lay
   assert.ok(posts.indexOf('<h2>Lead</h2>') < posts.indexOf('&lt;Other&gt;'));
   assert.match(posts, /href="#"/);
   assert.doesNotMatch(posts, /javascript:|<script>|onerror=/);
+  assert.doesNotMatch(posts, /mailto:editor@example\.com/);
+  assert.equal((posts.match(/data-has-cover/g) ?? []).length, 1);
   assert.match(posts, /--alk-post-focal-x: 50%; --alk-post-focal-y: 50%/);
 });
 
-test('extracted global component styles do not contain generic element selectors', async () => {
+test('extracted global component styles stay scoped to their component hosts', async () => {
   const root = new URL('../packages/components/src/', import.meta.url);
   const sources = await Promise.all(
-    ['navigation.astro', 'table-of-contents.astro', 'post-list.astro'].map(
-      (file) => readFile(new URL(file, root), 'utf8'),
-    ),
+    [
+      'navigation.astro',
+      'table-of-contents.astro',
+      'table-of-contents.css',
+      'post-list.astro',
+      'search.astro',
+    ].map((file) => readFile(new URL(file, root), 'utf8')),
   );
   for (const source of sources) {
     assert.doesNotMatch(source, /\n\s*(?:body|html|\*)\s*(?:[,{])/);
   }
+  assert.doesNotMatch(sources.at(-1) ?? '', /\n\s*\.alk-search-/);
 });

@@ -189,17 +189,23 @@ export function renderMedia(
         ${kind === 'audio' && hasCaptions ? '<p class="alk-media-cues" hidden></p>' : ''}
         <media-control-bar class="alk-media-controls" aria-label="${escapeHtml(label)} controls">
           <media-play-button></media-play-button>
-          <media-seek-backward-button seekoffset="${offset}"></media-seek-backward-button>
-          <media-seek-forward-button seekoffset="${offset}"></media-seek-forward-button>
           <media-time-range class="alk-media-timeline"></media-time-range>
           <media-time-display showduration></media-time-display>
           <media-mute-button></media-mute-button>
-          <media-volume-range></media-volume-range>
-          <media-playback-rate-menu-button></media-playback-rate-menu-button>
-          ${hasCaptions ? '<media-captions-menu-button></media-captions-menu-button>' : ''}
-          <media-loop-button></media-loop-button>
-          ${kind === 'video' ? '<media-pip-button></media-pip-button><media-airplay-button></media-airplay-button><media-fullscreen-button></media-fullscreen-button>' : ''}
-        ${mediaTracks.some((track) => track.kind === 'chapters') ? '<label class="alk-media-chapters" hidden><select data-media-chapters aria-label="Choose chapter"></select></label>' : ''}
+          ${kind === 'video' ? '<media-fullscreen-button></media-fullscreen-button>' : ''}
+          <details class="alk-media-settings">
+            <summary>Settings</summary>
+            <div class="alk-media-settings-panel">
+              <media-seek-backward-button seekoffset="${offset}"></media-seek-backward-button>
+              <media-seek-forward-button seekoffset="${offset}"></media-seek-forward-button>
+              <media-volume-range></media-volume-range>
+              <media-playback-rate-menu-button></media-playback-rate-menu-button>
+              ${hasCaptions ? '<media-captions-menu-button></media-captions-menu-button>' : ''}
+              <media-loop-button></media-loop-button>
+              ${kind === 'video' ? '<media-pip-button></media-pip-button><media-airplay-button></media-airplay-button>' : ''}
+              ${mediaTracks.some((track) => track.kind === 'chapters') ? '<label class="alk-media-chapters" hidden><select data-media-chapters aria-label="Choose chapter"></select></label>' : ''}
+            </div>
+          </details>
         </media-control-bar>
         <media-playback-rate-menu aria-label="Playback speed" rates="${rates}" hidden></media-playback-rate-menu>
         ${hasCaptions ? '<media-captions-menu aria-label="Caption language" hidden></media-captions-menu>' : ''}

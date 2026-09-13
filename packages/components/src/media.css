@@ -1,8 +1,9 @@
 .alk-media.alk-media {
   display: block;
-  margin: 1.5rem 0;
+  margin: 1rem 0;
   color: var(--alk-ink, #111);
   font-family: var(--alk-sans, system-ui, sans-serif);
+  container-type: inline-size;
 }
 .alk-media *,
 .alk-media *::before,
@@ -17,7 +18,7 @@
   background: var(--alk-paper, #fff);
 }
 .alk-media .alk-media-heading {
-  padding: 0.65rem clamp(0.85rem, 2vw, 1.15rem);
+  padding: 0.65rem 0.85rem;
   border-bottom: 1px solid var(--alk-rule, #ccc);
 }
 .alk-media .alk-media-title {
@@ -60,6 +61,7 @@
 }
 .alk-media-controls {
   display: flex;
+  align-items: center;
   flex-wrap: wrap;
   gap: 0.2rem;
   width: 100%;
@@ -133,7 +135,9 @@
   --media-slot-display: contents;
 }
 .alk-media-controls > [role='button'],
-.alk-media-controls > [role='switch'] {
+.alk-media-controls > [role='switch'],
+.alk-media-settings-panel > [role='button'],
+.alk-media-settings-panel > [role='switch'] {
   border-radius: 3px;
   --media-secondary-color: transparent;
 }
@@ -149,6 +153,67 @@
 }
 .alk-media-controls media-time-range {
   --media-secondary-color: transparent;
+  min-width: 0;
+}
+.alk-media-settings {
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+.alk-media-controls > .alk-media-settings {
+  margin-left: auto;
+}
+.alk-media-settings summary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 0 0.6rem;
+  border: 1px solid var(--alk-rule, #ccc);
+  border-radius: 3px;
+  cursor: pointer;
+  color: var(--alk-ink, #111);
+  font: 0.75rem/1 var(--alk-mono, ui-monospace, monospace);
+  list-style: none;
+}
+.alk-media-settings summary::-webkit-details-marker {
+  display: none;
+}
+.alk-media-settings summary::after {
+  content: '⌄';
+  margin-left: 0.35rem;
+}
+.alk-media-settings[open] {
+  flex-basis: 100%;
+}
+.alk-media-settings[open] summary::after {
+  content: '⌃';
+}
+.alk-media-settings-panel {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.2rem;
+  padding-top: 0.35rem;
+}
+.alk-media-settings-panel media-volume-range {
+  --media-secondary-color: transparent;
+  flex: 0 1 7rem;
+  min-width: 4rem;
+}
+.alk-media-settings-panel media-loop-button {
+  flex: 0 0 auto;
+  width: auto !important;
+  min-width: 0;
+}
+.alk-media-settings .alk-media-chapters {
+  flex: 1 0 100%;
+  margin-left: 0;
+}
+.alk-media-settings .alk-media-chapters select {
+  flex: 1 1 auto;
+  max-width: 100%;
 }
 .alk-media-controls media-fullscreen-button[mediafullscreenunavailable],
 .alk-media-controls media-pip-button[mediapipunavailable],
@@ -158,7 +223,7 @@
 .alk-media-status,
 .alk-media-caption {
   margin: 0;
-  padding: 0.55rem clamp(0.85rem, 2vw, 1.15rem);
+  padding: 0.55rem 0.85rem;
   color: var(--alk-muted, #5e5e5e);
   font: 0.75rem/1.5 var(--alk-mono, ui-monospace, monospace);
 }
@@ -183,7 +248,7 @@
 }
 .alk-media-download {
   display: inline-block;
-  margin: 0 clamp(0.85rem, 2vw, 1.15rem) 0.8rem;
+  margin: 0 0.85rem 0.8rem;
   color: var(--alk-accent, #111);
   font: 0.75rem/1.5 var(--alk-mono, ui-monospace, monospace);
 }
@@ -193,7 +258,7 @@
 }
 .alk-media-transcript {
   border-top: 1px solid var(--alk-rule, #ccc);
-  padding: 0.65rem clamp(0.85rem, 2vw, 1.15rem);
+  padding: 0.65rem 0.85rem;
   color: var(--alk-ink, #111);
 }
 .alk-media-transcript summary {
@@ -230,11 +295,15 @@
   outline: 2px solid var(--alk-ink-cobalt, #1982f2);
   outline-offset: 3px;
 }
-@media (max-width: 480px) {
+/* Size the controls by the embed, which may be narrow inside a wide page. */
+@container (max-width: 30rem) {
   .alk-media-controls {
     gap: 0.1rem;
   }
   .alk-media-controls media-volume-range {
+    flex-basis: 5rem;
+  }
+  .alk-media-settings-panel media-volume-range {
     flex-basis: 5rem;
   }
 }
@@ -243,6 +312,9 @@
     --media-control-padding: 12px;
   }
   .alk-media-chapters select {
+    min-height: 44px;
+  }
+  .alk-media-settings summary {
     min-height: 44px;
   }
 }

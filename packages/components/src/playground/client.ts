@@ -222,10 +222,11 @@ document
       if (
         message.type === 'alk:playground:resize' &&
         root.classList.contains('alk-playground--focus') &&
+        iframe.dataset.autoResize !== 'false' &&
         typeof message.height === 'number' &&
         Number.isFinite(message.height)
       ) {
-        iframe.style.height = `${Math.min(1600, Math.max(240, Math.ceil(message.height)))}px`;
+        iframe.style.height = `${Math.min(1600, Math.max(80, Math.ceil(message.height)))}px`;
         return;
       }
       if (

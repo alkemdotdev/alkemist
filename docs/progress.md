@@ -1,5 +1,29 @@
 # Alkemist progress
 
+## 2026-09-13 — Compact component embeds
+
+Reviewed all fourteen public components; the evidence matrix lives in
+`docs/component-embed-review.md`. Figures shed redundant badges and visible
+ready-state diagnostics while retaining loading/errors, provenance, and source
+downloads. Model/Shader canvases size to their containers. Model View options
+and media Settings group secondary controls; ordinary model scrolling passes
+through to the article. PostList spacing is tighter, empty TOCs disappear,
+and Search styles no longer leak into the host. Browser review caught a search
+results panel extending off the left edge of a narrow host; standalone results
+now remain in the host's document flow.
+
+Documentation previews use the full width with source and parameters disclosed
+on demand. Optional `previewHeight` keeps page/TOC specimens deliberately
+scrollable. The plain-host `/labs/embeds/` lab makes narrow-host review repeatable.
+
+Observed validation: zero Astro diagnostics, 92 tests, 99 built pages, and packed
+package consumers passed. Desktop and 390px browser review found no outer
+overflow in the twelve 320px embeds. Copy, chart data/preset/source updates,
+model view controls and page scrolling, shader playback, video chapters/speed/
+captions/loop, post layouts, search results/dialog, and active TOC links worked.
+The review distinguishes these observations from unchanged platform-specific
+media limits and full-page Layout behavior.
+
 ## 2026-09-11 — Public source preview
 
 Alkemist is now public at [github.com/alkemdotdev/alkemist](https://github.com/alkemdotdev/alkemist). The repository has an Apache-2.0 license, a public description and homepage, and explicit source-preview boundaries: `@alkemdotdev/alkemist-components`, `@alkemdotdev/alkemist-theme`, and `@alkemdotdev/alkemist-astro` carry complete future npm metadata but remain `private` until a deliberate beta release. `.npmrc` is ignored so local registry credentials cannot be added accidentally.

@@ -71,3 +71,21 @@ test('optional visualization classes are omitted instead of serialized as text',
     /class="alk-model wide&quot; onclick=&quot;run\(\)"/,
   );
 });
+
+test('embedded figures keep downloads outside ready-state diagnostics', () => {
+  for (const type of ['line', 'bar', 'pie']) {
+    const markup = renderChart({ ...chart, type });
+    assert.match(
+      markup,
+      /alk-chart-tools[\s\S]*Download CSV<\/a>[\s\S]*alk-figure-footer/,
+    );
+    assert.doesNotMatch(markup, /Data visualization|alk-figure-format/);
+  }
+  const model = renderModel({ src: '/asset.glb', title: 'Model' });
+  assert.match(
+    model,
+    /<details class="alk-figure-options">[\s\S]*<summary>View options<\/summary>[\s\S]*Wireframe[\s\S]*Spin[\s\S]*<\/details>/,
+  );
+  assert.match(model, /Shift \+ scroll to zoom/);
+  assert.match(model, /Download model<\/a>[\s\S]*alk-figure-footer/);
+});

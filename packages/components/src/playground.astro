@@ -11,6 +11,8 @@ export interface PlaygroundProps {
   previewUrl: string;
   /** Give interactive demos the full width; reveal source and parameters on demand. */
   focusPreview?: boolean;
+  /** Fixed iframe height for page-shell or scrolling navigation examples. */
+  previewHeight?: number;
   /** Optional accurate initial source for native or custom renderers. */ initialSource?: string;
 }
 type Props = PlaygroundProps;
@@ -19,7 +21,15 @@ const {
   previewUrl,
   initialSource: suppliedSource,
   focusPreview = false,
+  previewHeight,
 } = Astro.props;
+if (
+  previewHeight !== undefined &&
+  (!Number.isFinite(previewHeight) ||
+    previewHeight < 80 ||
+    previewHeight > 1600)
+)
+  throw new TypeError('previewHeight must be between 80 and 1600 pixels.');
 const Panel = focusPreview ? 'details' : 'section';
 const values = resetPlaygroundValues(definition);
 const initialSource = suppliedSource ?? playgroundSource(definition, values);
@@ -49,25 +59,39 @@ const sourceFilename = `${definition.id}.${definition.importPath ? 'astro' : 'ht
     <section class="alk-playground__preview" aria-label="Preview">
       <iframe
         title={`${definition.name} preview`}
+        data-auto-resize={previewHeight === undefined ? undefined : 'false'}
+        style={previewHeight ? `height:${previewHeight}px` : undefined}
         src={previewUrl}
         loading="lazy"
         sandbox="allow-scripts allow-same-origin"></iframe>
     </section>
     <Panel class="alk-playground__parameters" aria-label="Parameters">
       {focusPreview && <summary>Component parameters</summary>}
-      <div class="alk-playground__parameters-head">
-        <h3>Parameters</h3><button type="button" data-playground-reset
-          >Reset</button
-        >
-      </div>
       {
-        definition.presets && definition.presets.length > 0 && (
+        !focusPreview && (
+          <div class="alk-playground__parameters-head">
+            <>
+              <h3>Parameters</h3>
+              <button type="button" data-playground-reset>
+                Reset
+              </button>
+            </>
+          </div>
+        )
+      }
+      {
+        (focusPreview || (definition.presets?.length ?? 0) > 0) && (
           <div class="alk-playground__presets" aria-label="Presets">
-            {definition.presets.map((preset, index) => (
+            {definition.presets?.map((preset, index) => (
               <button type="button" data-playground-preset={index}>
                 {preset.label}
               </button>
             ))}
+            {focusPreview && (
+              <button type="button" data-playground-reset>
+                Reset
+              </button>
+            )}
           </div>
         )
       }
