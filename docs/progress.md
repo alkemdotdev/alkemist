@@ -357,3 +357,73 @@ continues to reject every other prerelease or canary on `latest`, and rejects
 the bootstrap exception once a stable version exists. Beta and stable
 publication tags are unchanged. Documentation records this exception until
 the first stable release instead of instructing an unconditional tag removal.
+
+## 2026-09-12 — Inspectable component examples
+
+The local component catalog now leads with npm canary installation, includes all eight component jump links, and renders selectable PostList and standalone Search examples alongside copyable Astro source. Reference pages add live chart presets, a shader study, Search props, and matching Code source/output. PostList release availability now reflects the canary channel.
+
+`npm run verify` passed. The built local preview at port 4330 returned search results; the PostList selector changed layouts; chart data loaded with an inspectable table; shader frequency changed from 9.0 to 9.1. Desktop and 390px mobile browser inspection found no console errors, and the mobile search dialog returned results. The preview is left running for user inspection.
+
+## 2026-09-13 — Documentation navigation and reading layout
+
+Reworked the docs shell into a persistent navigation rail, reading column, and wide-screen section index. Current-page navigation uses a cobalt marker and tinted background; the section index follows scroll position. At narrow widths, documentation navigation collapses above the article and the page index becomes an inline disclosure. Existing examples and the shared site header remain in use. Corrected the docs overview's obsolete npm availability statement.
+
+`npm run verify` passed. Browser inspection at 1440px and 390px confirmed the desktop reading layout, mobile menu expansion, and Model section link with its active location indicator. No browser console errors were observed. Changes remain local for design inspection at port 4330.
+
+## 2026-09-13 — Reusable navigation and focused documentation
+
+Reduced the main docs tree to Overview, Getting started, Components, Customize, and Publish. Detail pages are nested below their parent; maintainer references remain separate. Replaced the overview directory with two concrete adoption paths and a short customization/publishing sequence. Added concise Customize and Publish guides.
+
+Navigation and TableOfContents now belong to the public component package, with explicit imports, typed data, scoped fallback styling, keyboard-operable native disclosures, and per-instance TOC cleanup. TOCs preserve depth 2–4 indentation. The docs shell consumes both components, including a TOC on the overview, and the navigation reference includes live examples.
+
+Full verify and packed-package consumer checks passed. Browser checks confirmed branch expansion by keyboard, exact active page, indented subsection navigation, matching active location across TOC instances, and no mobile horizontal overflow or console errors. The new components remain local pending publication.
+
+## 2026-09-13 — One start page and progressive navigation
+
+Merged the docs overview and setup path at `/docs/`, labeled Getting started. The page contains complete npm setup commands and retains source/agent instructions in a disclosure. The previous getting-started route redirects to the unified page, and internal links use the canonical destination.
+
+Navigation now defaults to `expandedDepth={1}` so first-level children are visible. Deeper branches expand along the current page path; callers can configure the initial depth. Expansion tests and full verification passed. Browser checks confirmed all root branches initially open and the old start URL redirecting to `/docs/`.
+
+## 2026-09-13 — Dense sidebar with contextual page sections
+
+Moved the page TOC into Navigation through its optional `headings` prop: only the current page renders section links directly beneath its page link. The docs shell now has one left navigation rail rather than a separate right or inline TOC. Nested heading indentation and active-section tracking remain intact.
+
+Grouped component references into Pages and navigation, Charts, Math and code, and Models and shaders. Removed inherited list-item margins, reduced navigation row spacing, and kept larger coarse-pointer targets. Full verify passed; final style/documentation rebuild passed. Browser checks confirmed Charts → Props and defaults updates the hash and active sidebar section, and mobile navigation exposes the TOC without horizontal overflow or console errors. Changes remain local for inspection.
+
+# Sidebar visual refinement — 2026-09-13
+
+Reusable navigation now uses indentation instead of nested guide bars, stronger current-page text instead of selection blocks, and a small dot for the active section. Expandable branches retain chevrons.
+
+Validation: npm run verify passed, including 69 pages and internal links/assets. Browser checks at 1280px and 390px confirmed mobile disclosure, section tracking, and no horizontal overflow or console errors. Available in the local preview.
+
+## Content, Visualization, Graphics, Website — 2026-09-13
+
+Reorganized the component catalog into four documentation groups within the existing components package. The overview now introduces those groups; category pages contain the examples, and detailed references use the same playground definitions.
+
+Added the reusable Playground component and optional renderer entry. Each specimen has a real preview frame, generated Astro/HTML source, typed controls for every public component prop, presets/reset, copy, isolated theme, and width controls. There are 14 definitions: native HTML, image, audio, video, and the ten existing public content/website components. Structured props use JSON fields. Tests compare the controls against the public TypeScript interfaces to detect drift.
+
+Shared markup renderers power both Astro output and live previews. Search now initializes and cleans up per instance; Code copying can reconnect after rendering. Navigation, Shader, and PostList interactions inside the frame synchronize back to controls/source. Native media fixtures are generated locally with scripts/generate-media-fixtures.mjs. Explicitly excluded preview documents stay out of site search.
+
+Observed validation: full check/test/build and internal-link/asset checks; packed independent Astro consumer builds, including Playground and its renderers. Browser exercises covered all six chart presets, editable text/numbers, TeX success/error/reset, real Shiki output, native table/video output, glTF loading (9,216 triangles), Shader updates in both directions, Navigation JSON and current-page updates, TOC anchor tracking, PostList layout synchronization, Pagefind search after rerender, Layout menu/identity/search updates, and theme isolation. At 390px the playground had no horizontal page overflow. Changes remain available in the local preview for inspection.
+
+## Dense playgrounds and richer source listings — 2026-09-13
+
+Replaced preview width/theme controls with a compact property inspector. Short parameters and JSON use side-by-side rows; help appears on hover/focus. Source panes reuse Code with a filename and Copy, and preview frames have smaller padding. Reduced navigation hierarchy offsets by half. Native HTML/image/audio/video examples now live in a separate theme reference at `/docs/native-content/`; the Content component category contains Math and Code.
+
+Code now supports focused lines, addition/removal markers, exact text highlights across syntax tokens, keyboard-accessible notes, collapsible ranges, and optional wrapping. Markdown fences share highlights, focus/ins/del/collapse ranges and wrap metadata. Folded source retains original line numbers, and copying preserves the full original input without notes or presentation markers. Invalid ranges fail explicitly. Math now shares its complete figure/caption markup with live previews, preserving labels after updates.
+
+Validation: `npm run verify` passed (90 output pages with internal links/assets checked); package tarball consumer checks passed for standalone components, exported types, theme isolation, MDX, and a generated starter. Browser checks at 1440px and 390px exercised Explain/Changes presets, annotations, keyboard folding, copy acknowledgement, invalid JSON/reset, native-content separation, and mobile overflow. Annotation notes remain readable inside the narrow preview. Final build/test log: `.alkemist/dense-code-final-verify.log`; package-consumer log: `.alkemist/dense-code-consumers.log`. Updated docs and examples remain local for inspection at port 4330.
+
+## Markdown-first authoring and Code text children — 2026-09-13
+
+The Astro integration now injects scoped math/code CSS and the shared Copy enhancement when the corresponding rendering defaults are enabled. Plain Markdown and MDX fences use the shared Code transformer without depending on Layout; native headings/lists/tables remain semantic HTML, with global typography left to the host theme. Disabling code and math omits these injected assets.
+
+Code accepts either an exact source prop or text children. Text children decode entities once and remove common author indentation/boundary blank lines. Plain paragraph wrappers generated by MDX are accepted; nested formatting and competing source inputs fail explicitly. Complex snippets use a string child because Astro/MDX parse template syntax before rendering slots. The entity decoder is a declared direct dependency; the integration now declares its theme dependency explicitly.
+
+Validation: full `npm run verify` passed (90 pages); new integration opt-out and source-resolution tests passed. Packed consumer builds tested `.md` and `.mdx` fences without component imports, bare multiline MDX children, and Astro/MDX string children preserving literal tags/entities. Browser inspection confirmed automatic Code styling and successful Copy on a plain Markdown page using no Alkemist Layout; main docs show rendered bare and string-child examples. Logs: `.alkemist/markdown-slots-verify.log` and `.alkemist/markdown-slots-packages.log`. Changes remain local.
+
+## Integrated authoring milestone — 2026-09-13
+
+The Code playground now generates readable multiline text-child source using a reusable `textSlotProp` definition field. Escaping protects literal backslashes, backticks, template interpolation, and tags. Empty or whitespace-sensitive values retain an exact source prop. Generated examples are compiled in the packed consumer fixture, with source preservation checked against the original input. Removed a redundant inherited code option declaration and updated reference coverage.
+
+The accumulated docs, navigation, category/playground, and Markdown authoring changes are prepared for branch-preview validation followed by production promotion. Local check/test/build/link verification passed; CI uses the same gates plus independent starter and packed-consumer builds. Browser automation artifacts stay local and are ignored by Git and formatting checks.

@@ -9,14 +9,14 @@ order: 9
 - Astro 7.3.2 with separate integration, component, and optional theme packages.
 - `Layout`, Ubuntu and Ubuntu Mono, handwritten annotations, #eee/#111 boards, and eight fixed inks.
 - `Math` and math in Markdown/MDX: KaTeX HTML and MathML, with invalid expressions rejected during the build.
-- `Code` and enhanced code fences: Shiki highlighting, captions, line numbers, highlighted lines, and copy controls.
+- `Code` and Markdown fences: shared Shiki rendering, filenames, line/text highlights, focus, change markers, folding, annotations, wrapping, and Copy. Components accept text children or exact source props; the integration supplies scoped styles and Copy without requiring Layout.
 - `Chart`: CSV-backed line, bar, scatter, pie, donut, and heatmap, with data tables and line/scatter zoom.
 - `Model`: uncompressed GLB/glTF viewing, camera controls, wireframe, and poster fallback.
 - `Search`: site-wide static indexing, header search, keyboard access, and mobile results.
 - `Shader`: one real WebGL2 interference study with adjustable frequency and angle.
 - MDX docs, a development notebook, and the [interactive specimen board](/test/) using the same packages.
 - Cloudflare native Git production and branch previews, build checks, and source-revision verification.
-- An independent [site generator](/docs/getting-started/) with packaged dependencies, content-preserving snapshot updates, and an external consumer validation gate.
+- An independent [site generator](/docs/) with packaged dependencies, content-preserving snapshot updates, and an external consumer validation gate.
 - Copyable agent setup prompts, a [plain Markdown setup contract](/docs/agent-setup.md), and guides for Cloudflare, GitLab Pages, and custom hosting.
 
 The source repository is public. Automated npm canaries track verified main revisions; beta/stable versions are coordinated separately. The older `1.0.0-beta.1` release uses the earlier component API. The registry generator creates a new project without owning it afterward. The source generator remains available for tarball-backed sites and its explicit update path. The demo fixtures are synthetic and labeled as such. Cloudflare hosts this demo; GitLab and custom-provider guides are setup recipes, not claims of a completed deployment on your account.

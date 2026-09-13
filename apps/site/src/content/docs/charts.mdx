@@ -4,7 +4,7 @@ description: Turn CSV files into interactive charts with stable inks, visible gr
 order: 4
 ---
 
-import Chart from '@alkemdotdev/alkemist-components/chart';
+import PlaygroundExample from '../../components/PlaygroundExample.astro';
 
 `Chart` renders a CSV file as a **line, bar, scatter, pie, donut, or heatmap**. The chart engine loads when the figure approaches the viewport. Vega-Lite supplies the chart specification and Vega supplies the runtime; Alkemist adds the reusable figure, theme, loading state, table, and source download. [Vega-Lite data model](https://vega.github.io/vega-lite/docs/data.html).
 
@@ -28,18 +28,7 @@ import Chart from '@alkemdotdev/alkemist-components/chart';
 />
 ```
 
-<Chart
-  src="/test/oscillation.csv"
-  type="line"
-  x="time"
-  y="position"
-  xLabel="Time (s)"
-  yLabel="Position (m)"
-  title="A damped oscillator"
-  description="A synthetic, analytic trajectory: initial displacement 1 m, initial velocity 0 m/s, natural angular frequency 2 rad/s, damping ratio 0.12."
-  height={280}
-  sample
-/>
+<PlaygroundExample id="chart" />
 
 **Shift + scroll zooms; dragging pans.** Line charts zoom along x; scatter plots zoom both axes. The Reset view button restores the initial extent. The modifier keeps ordinary page scrolling available. Scale-bound selections are provided by [Vega-Lite](https://vega.github.io/vega-lite/docs/selection.html).
 
@@ -94,6 +83,10 @@ For the circular presets, `x` and `y` name the category and amount columns; they
   sample
 />
 ```
+
+### Try the presets
+
+Use the Bar, Donut, and Heatmap presets in the playground above. Open the data table to inspect the rows in each chart. Download the [materials CSV](/test/materials.csv) and [field CSV](/test/field.csv) into `public/test/` to run the snippets in your site.
 
 See all presets together on the [test page](/test/).
 

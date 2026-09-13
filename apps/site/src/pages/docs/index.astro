@@ -1,45 +1,114 @@
 ---
 import DocsLayout from '../../layouts/DocsLayout.astro';
-import { docsGroups, docsReference } from '../../lib/docs-navigation';
+import Code from '@alkemdotdev/alkemist-components/code';
+const headings = [
+  { depth: 2, slug: 'start', text: 'Start with your project' },
+  { depth: 3, slug: 'new-site', text: 'Create a new site' },
+  { depth: 3, slug: 'add-one-component', text: 'Add to an existing site' },
+  { depth: 2, slug: 'make-it-yours', text: 'Make it yours' },
+  { depth: 2, slug: 'publish', text: 'Publish your work' },
+];
 ---
 
 <DocsLayout
-  title="Documentation"
-  description="Build, customize, and publish your Alkemist site."
+  title="Getting started"
+  description="A publishing toolkit for technical work: readable articles, interactive figures, and a site you own."
+  headings={headings}
 >
-  <div class="docs-directory">
-    {
-      docsGroups.map((group) => (
-        <section>
-          <h2>{group.label}</h2>
-          <ul>
-            {group.links.map((link) => (
-              <li>
-                <a href={link.href}>
-                  {link.label}
-                  <span aria-hidden="true">↗</span>
-                </a>
-              </li>
-            ))}
-          </ul>
-        </section>
-      ))
-    }
-  </div>
-  <div class="docs-reference-links">
-    <h2>Project reference</h2>
-    <ul>
-      {
-        docsReference.map((link) => (
-          <li>
-            <a href={link.href}>{link.label}</a>
-          </li>
-        ))
-      }
-    </ul>
-  </div>
-  <p class="docs-footnote">
-    Alkemist is available from a source checkout. The packages are not yet
-    published to npm.
-  </p>
+  <section aria-labelledby="start">
+    <h2 id="start">Start with your project</h2>
+    <p>
+      Use the starter for a complete Astro site, or bring individual components
+      into one you already maintain. Both use the same packages.
+    </p>
+    <div class="docs-start-options">
+      <section aria-labelledby="new-site">
+        <h3 id="new-site">Create a new site</h3>
+        <p>
+          Start with working navigation, content sections, search, and
+          publishing defaults. Your content and configuration stay in your
+          project.
+        </p>
+        <Code
+          code={'npm create alkemist@canary -- my-lab --provider cloudflare\ncd my-lab\nnpm install\nnpm run verify\nnpm run dev'}
+          lang="sh"
+          title="Create a site"
+          lineNumbers={false}
+        />
+        <p>
+          Use <code>--provider gitlab</code> or <code>--provider custom</code> for
+          another host. Open the local address printed by Astro.
+        </p>
+      </section>
+      <section aria-labelledby="existing-site">
+        <h3 id="add-one-component">Add to an existing site</h3>
+        <p>
+          Use a chart, a model viewer, or a navigation tree without replacing
+          your site's layout. Each component has its own import.
+        </p>
+        <Code
+          code="npm install --save-exact @alkemdotdev/alkemist-components@canary"
+          lang="sh"
+          title="Install components"
+          lineNumbers={false}
+        />
+        <a href="/docs/components/">Try the component examples →</a>
+      </section>
+    </div>
+    <details class="docs-source">
+      <summary>Working with a coding agent or source checkout</summary>
+      <p>
+        Give your agent a site name, destination directory, and preferred host.
+        The <a href="/docs/agent-setup.md">complete agent setup instructions</a> cover
+        generation, customization, and deployment.
+      </p>
+      <p>
+        To use a reviewed source checkout instead of npm, generate into an empty
+        directory:
+      </p>
+      <Code
+        code={'git clone https://github.com/alkemdotdev/alkemist.git alkemist-source\ncd alkemist-source\nnpm ci\nnpm run create:site -- ../my-lab --provider cloudflare\ncd ../my-lab\nnpm install\nnpm run verify\nnpm run dev'}
+        lang="sh"
+        title="Source generator"
+        lineNumbers={false}
+      />
+      <p>
+        Use <code>--provider gitlab</code> or <code>--provider custom</code> for another
+        host. The source generator keeps package snapshots in <code
+          >vendor/</code
+        >; commit those files with your lockfile.
+      </p>
+      <p>
+        To refresh those snapshots from a reviewed newer checkout, run <code
+          >npm run create:site -- ../my-lab --update</code
+        >, then install and verify in your site. This preserves site-owned
+        content and configuration. npm-created sites instead use ordinary
+        dependency upgrades; the npm generator has no update mode.
+      </p>
+    </details>
+    <p class="docs-footnote">
+      The canary channel tracks tested revisions of main. Keep the exact
+      installed version in your lockfile and review upgrades before deploying.
+    </p>
+  </section>
+  <section aria-labelledby="make-it-yours">
+    <h2 id="make-it-yours">Make it yours</h2>
+    <p>
+      Start with only the sections your readers need. A blog and an info page
+      may be enough; add reference docs, a curated book, or interactive labs
+      when you have content for them. Set your navigation, then adjust colors,
+      typography, and image presentation.
+    </p>
+    <a href="/docs/customize/">Configure your site →</a>
+  </section>
+  <section aria-labelledby="publish">
+    <h2 id="publish">Publish your work</h2>
+    <p>
+      Build and inspect the site locally, including interactive figures and
+      search. Then deploy the generated files using your host's Git integration
+      or CI. Alkemist supports Cloudflare Pages, GitLab Pages, and other static
+      hosts.
+    </p>
+    <a href="/docs/publish/">Build, verify, and deploy →</a>
+  </section>
 </DocsLayout>

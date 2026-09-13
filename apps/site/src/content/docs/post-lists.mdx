@@ -4,9 +4,11 @@ description: Reuse a post collection with rows, a featured lead, a grid, or a co
 order: 17
 ---
 
+import PlaygroundExample from '../../components/PlaygroundExample.astro';
+
 `PostList` presents links and optional images from any source. Your site owns the collection, filtering, sorting, URLs, and editorial selection. The component owns the reading layout.
 
-This API is available in the source checkout and packed source starter. It is pending the next npm release; it is not included in `1.0.0-beta.1`.
+This API is available in the source checkout, generated starter, and npm `canary` channel. Install `@alkemdotdev/alkemist-components@canary` for the current API; the original `1.0.0-beta.1` predates it.
 
 ## Choose a layout
 
@@ -65,49 +67,6 @@ The Alkemist demo keeps the same setting in `apps/site/src/lib/sections.ts`, inc
 
 ## Try the layouts
 
-import PostList from '@alkemdotdev/alkemist-components/post-list';
-import exampleCover from '../../assets/fields/flux.png';
+Change the layout, featured item, and collection in this example. Turn selectable off to make the list fixed. Each playground keeps its own state.
 
-The first example lets you change layouts. The second is a separate fixed list; changing the first does not affect it.
-
-<PostList
-  label="Layout example"
-  layout="featured-grid"
-  selectable
-  items={[
-    {
-      href: '/blog/fields-with-substance/',
-      title: 'Fields with substance',
-      description: 'A visual study with an optional cover.',
-      cover: {
-        src: exampleCover,
-        alt: 'Blue and violet ribbons around a warm center.',
-        fit: 'contain',
-      },
-    },
-    {
-      href: '/blog/choosing-publishing-sections/',
-      title: 'Different ways to publish an idea',
-      description: 'A text entry without a cover.',
-    },
-  ]}
-/>
-
-### A fixed compact list
-
-<PostList
-  label="Compact example"
-  layout="rows"
-  items={[
-    {
-      href: '/blog/fields-with-substance/',
-      title: 'Fields with substance',
-      description: 'The same content can be used in a smaller space.',
-      cover: {
-        src: exampleCover,
-        alt: 'Blue and violet ribbons around a warm center.',
-        fit: 'contain',
-      },
-    },
-  ]}
-/>
+<PlaygroundExample id="post-list" />

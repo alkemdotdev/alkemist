@@ -7,7 +7,7 @@ export function GET() {
 ## Setup
 - [The Alkemist book](https://alkemist.alkem.dev/book/): a curated path from choosing sections to publishing a working site.
 - [Agent setup instructions](https://alkemist.alkem.dev/docs/agent-setup.md): workspace inspection, standalone generation, customization, hosting, and completion evidence.
-- [Getting started](https://alkemist.alkem.dev/docs/getting-started/): the human setup guide and copyable provider prompts.
+- [Getting started](https://alkemist.alkem.dev/docs/): the human setup guide and copyable provider prompts.
 - [Cloudflare Pages](https://alkemist.alkem.dev/docs/hosting/cloudflare/): native Git deployment and branch previews.
 - [GitLab Pages](https://alkemist.alkem.dev/docs/hosting/gitlab-pages/): Pages CI and optional parallel previews.
 - [Custom static hosting](https://alkemist.alkem.dev/docs/hosting/custom/): build artifact and provider requirements.

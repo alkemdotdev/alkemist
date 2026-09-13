@@ -1,284 +1,59 @@
 ---
 import DocsLayout from '../../layouts/DocsLayout.astro';
-import Chart from '@alkemdotdev/alkemist-components/chart';
-import Model from '@alkemdotdev/alkemist-components/model';
-import Math from '@alkemdotdev/alkemist-components/math';
-import Code from '@alkemdotdev/alkemist-components/code';
-import Shader from '@alkemdotdev/alkemist-components/shader';
-
-const chartCode = `import Chart from '@alkemdotdev/alkemist-components/chart';
-
-<Chart
-  src="/test/oscillation.csv"
-  type="line" x="time" y="position"
-  title="Damped oscillator"
-  description="A synthetic trajectory with damping ratio 0.12."
-  xLabel="Time (s)" yLabel="Position (m)"
-  height={220} sample
-/>`;
-const modelCode = `import Model from '@alkemdotdev/alkemist-components/model';
-
-<Model
-  src="/test/torus-knot.glb"
-  poster="/test/torus-knot.svg"
-  title="A torus knot"
-  description="A generated teaching mesh. Drag to inspect it."
-/>`;
-const mathCode =
-  'import Math from \'@alkemdotdev/alkemist-components/math\';\n\n<Math\n  tex={String.raw`\\int_{\\partial\\Omega} \\omega = \\int_\\Omega d\\omega`}\n  label="Stokes’ theorem"\n/>';
-const source =
-  'function advance(position: number, velocity: number, dt: number) {\n  return position + velocity * dt;\n}';
-const codeCode = `import Code from '@alkemdotdev/alkemist-components/code';
-import source from './integrator.ts?raw';
-
-<Code
-  code={source} lang="typescript"
-  title="integrator.ts" highlightLines={[2]}
-/>`;
-const shaderCode = `import Shader from '@alkemdotdev/alkemist-components/shader';
-
-<Shader title="Two wave sources" frequency={9} angle={24} />`;
-const layoutCode = `---
-import Layout from '@alkemdotdev/alkemist-components/layout';
----
-
-<Layout title="Research notes" siteName="My lab">
-  <h1>Research notes</h1>
-  <p>What we are working on.</p>
-</Layout>`;
-const catalog = [
-  ['charts', 'Charts'],
-  ['models', '3D models'],
-  ['math', 'Math'],
-  ['code', 'Code'],
-  ['shaders', 'Shaders'],
-  ['layout', 'Layout'],
-  ['post-lists', 'Post lists'],
-];
+import { groups } from '../../lib/playground/definitions';
 ---
 
 <DocsLayout
   title="Components"
-  description="Try a component, copy an example, and add your own content."
-  catalog
+  description="From a paragraph to a complete website. Four groups, one component package."
 >
-  <nav class="docs-jump" aria-label="Components on this page">
-    {catalog.map(([id, label]) => <a href={`#${id}`}>{label}</a>)}
-  </nav>
-  <p class="docs-footnote">
-    Examples use the current <code>@alkemdotdev/alkemist-components</code> source
-    package. Put data and models in your site's <code>public/</code> directory; use
-    the corresponding URL in <code>src</code>.
+  <p>
+    Start with the content you want to publish. Each group has working examples
+    with editable parameters, a live preview, and copyable source.
   </p>
-
-  <section class="docs-example" aria-labelledby="install-components">
-    <div class="docs-example-heading">
-      <h2 id="install-components">Install in an existing Astro site</h2><a
-        href="/docs/getting-started/#add-one-component"
-        >Installation guide <span aria-hidden="true">↗</span></a
-      >
-    </div>
-    <p>
-      Install only the component package for a chart, model, math, code, or
-      layout. Add <code>@alkemdotdev/alkemist-theme</code> only when you want the
-      board tokens and theme preference helpers; add <code
-        >@alkemdotdev/alkemist-astro</code
-      > only for its integration defaults.
-    </p>
-    <Code
-      code={'# In your Alkemist source checkout\nnpm ci\nnpm run release:pack\n\n# In your existing Astro project; adjust the source path\nnpm install ../alkemist/.alkemist/release/alkemdotdev-alkemist-theme-*.tgz ../alkemist/.alkemist/release/alkemdotdev-alkemist-components-*.tgz'}
-      lang="sh"
-      title="An existing Astro project"
-      lineNumbers={false}
-    />
-  </section>
-
-  <section class="docs-example" id="post-lists">
-    <div class="docs-example-heading">
-      <h2>PostList</h2><a href="/docs/post-lists/"
-        >Post list reference and examples <span aria-hidden="true">↗</span></a
-      >
-    </div>
-    <p>
-      Compact rows, a featured lead, an image grid, or a featured lead above a
-      grid. Set a site default or offer readers a layout selector. Available in
-      the source checkout, generated starter, and npm canary channel.
-    </p>
-  </section>
-
-  <section class="docs-example" id="search">
-    <div class="docs-example-heading">
-      <h2>Search</h2><a href="/docs/search/">Site search reference ↗</a>
-    </div>
-    <p>
-      A compact search field, keyboard access, and mobile dialog. Use it in
-      Layout or import it independently; the optional Astro integration builds
-      the static search index.
-    </p>
-    <Code
-      code={"import Search from '@alkemdotdev/alkemist-components/search';\n\n<Search />"}
-      lang="astro"
-      title="Standalone search"
-      lineNumbers={false}
-    />
-  </section>
-
-  <section class="docs-example" id="charts">
-    <div class="docs-example-heading">
-      <h2>Chart</h2><a href="/docs/charts/"
-        >Chart reference <span aria-hidden="true">↗</span></a
-      >
-    </div>
-    <p>
-      CSV to line, bar, scatter, pie, donut, or heatmap. Inspect the data table
-      or zoom a line or scatter plot.
-    </p>
-    <Chart
-      src="/test/oscillation.csv"
-      type="line"
-      x="time"
-      y="position"
-      title="Damped oscillator"
-      description="A synthetic trajectory with damping ratio 0.12."
-      xLabel="Time (s)"
-      yLabel="Position (m)"
-      height={220}
-      sample
-    />
-    <details class="docs-source">
-      <summary>Code</summary><Code
-        code={chartCode}
-        lang="mdx"
-        title="oscillator.mdx"
-        lineNumbers={false}
-      />
-    </details>
-  </section>
-
-  <section class="docs-example" id="models">
-    <div class="docs-example-heading">
-      <h2>Model</h2><a href="/docs/models/"
-        >Model reference <span aria-hidden="true">↗</span></a
-      >
-    </div>
-    <p>
-      Uncompressed GLB or glTF with orbit controls, wireframe, and a static
-      poster.
-    </p>
-    <Model
-      src="/test/torus-knot.glb"
-      poster="/test/torus-knot.svg"
-      title="A torus knot"
-      description="A generated teaching mesh. Drag to inspect it."
-    />
-    <details class="docs-source">
-      <summary>Code</summary><Code
-        code={modelCode}
-        lang="mdx"
-        title="model.mdx"
-        lineNumbers={false}
-      />
-    </details>
-  </section>
-
-  <section class="docs-example" id="math">
-    <div class="docs-example-heading">
-      <h2>Math</h2><a href="/docs/math-code/#the-component-form"
-        >Math reference <span aria-hidden="true">↗</span></a
-      >
-    </div>
-    <p>
-      TeX equations with accessible MathML. Inline and display math also work
-      directly in Markdown.
-    </p>
-    <Math
-      tex={String.raw`\int_{\partial\Omega} \omega = \int_\Omega d\omega`}
-      label="Stokes’ theorem"
-    />
-    <details class="docs-source">
-      <summary>Code</summary><Code
-        code={mathCode}
-        lang="mdx"
-        title="equation.mdx"
-        lineNumbers={false}
-      />
-    </details>
-  </section>
-
-  <section class="docs-example" id="code">
-    <div class="docs-example-heading">
-      <h2>Code</h2><a href="/docs/math-code/#the-code-component"
-        >Code reference <span aria-hidden="true">↗</span></a
-      >
-    </div>
-    <p>
-      Highlighted source with a file title, line numbers, and a copy button.
-      Markdown code fences use the same styling.
-    </p>
-    <Code
-      code={source}
-      lang="typescript"
-      title="integrator.ts"
-      highlightLines={[2]}
-    />
-    <details class="docs-source">
-      <summary>Usage</summary><Code
-        code={codeCode}
-        lang="mdx"
-        title="code.mdx"
-        lineNumbers={false}
-      />
-    </details>
-  </section>
-
-  <section class="docs-example" id="shaders">
-    <div class="docs-example-heading">
-      <h2>Shader</h2><a href="/docs/models/#a-live-shader-study"
-        >Shader reference <span aria-hidden="true">↗</span></a
-      >
-    </div>
-    <p>
-      A two-source interference study with frequency and angle controls. This
-      component currently renders this fixed study.
-    </p>
-    <Shader title="Two wave sources" frequency={9} angle={24} />
-    <details class="docs-source">
-      <summary>Code</summary><Code
-        code={shaderCode}
-        lang="mdx"
-        title="field.mdx"
-        lineNumbers={false}
-      />
-    </details>
-  </section>
-
-  <section class="docs-example" id="layout">
-    <div class="docs-example-heading">
-      <h2>Layout</h2><a
-        href="/docs/site-structure/#your-site-owns-its-documentation"
-        >Layout reference <span aria-hidden="true">↗</span></a
-      >
-    </div>
-    <p>
-      The shell used by this page: Ubuntu, board themes, responsive navigation,
-      and print styles. Set your site name and navigation; keep your content
-      inside.
-    </p>
-    <Code
-      code={layoutCode}
-      lang="astro"
-      title="index.astro"
-      lineNumbers={false}
-    />
-  </section>
-
-  <div class="docs-catalog-end">
-    <a href="/test/"
-      >See all specimens together <span aria-hidden="true">→</span></a
-    ><p>
-      Point clouds, splats, robotics, and custom shader authoring are <a
-        href="/docs/status/#further-work">planned</a
-      >.
-    </p>
+  <div class="docs-directory">
+    {
+      groups.map((group) => (
+        <section>
+          <>
+            <h2>
+              <a href={`/docs/${group.id}/`}>{group.title} →</a>
+            </h2>
+            <p>{group.description}</p>
+            <p class="docs-footnote">
+              {group.id === 'content'
+                ? 'Math · code'
+                : group.id === 'visualization'
+                  ? 'Line · bar · scatter · pie · donut · heatmap'
+                  : group.id === 'graphics'
+                    ? '3D models · shaders'
+                    : 'Layout · navigation · contents · post lists · search'}
+            </p>
+          </>
+        </section>
+      ))
+    }
   </div>
+  <h2>Use one component</h2>
+  <p>
+    All components live in <code>@alkemdotdev/alkemist-components</code>, with
+    direct imports such as <code>/chart</code> and <code>/navigation</code>.
+    These categories organize the documentation; they do not change package
+    boundaries.
+  </p>
+  <p>
+    <a href="/docs/#add-one-component">Install in an existing Astro site →</a>
+  </p>
+  <h2>Explore an example</h2>
+  <p>
+    Change parameters to regenerate the preview and source together. Presets
+    provide useful combinations; Reset restores the example.
+  </p>
+  <p>
+    The separate <a href="/docs/native-content/"
+      >native HTML and media reference</a
+    > covers browser elements styled by the theme. The <a
+      href="/docs/playground/">Playground component</a
+    > supplies the same preview, source, and controls across the docs.
+  </p>
 </DocsLayout>

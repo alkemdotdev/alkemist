@@ -1,57 +1,66 @@
-export interface DocsLink {
-  label: string;
-  href: string;
-}
+import type { NavigationItem } from '@alkemdotdev/alkemist-components/navigation';
 
-export interface DocsGroup {
-  label: string;
-  links: DocsLink[];
-}
-
-export const docsGroups: DocsGroup[] = [
-  {
-    label: 'Getting started',
-    links: [
-      { label: 'Create your site', href: '/docs/getting-started/' },
-      { label: 'Agent instructions', href: '/docs/agent-setup.md' },
-      {
-        label: 'Package publishing',
-        href: 'https://github.com/alkemdotdev/alkemist/blob/main/docs/publishing.md',
-      },
-      { label: 'Site structure', href: '/docs/site-structure/' },
-    ],
-  },
+export const docsNavigation: NavigationItem[] = [
+  { label: 'Getting started', href: '/docs/' },
   {
     label: 'Components',
-    links: [
-      { label: 'Component catalog', href: '/docs/components/' },
-      { label: 'Post lists and layouts', href: '/docs/post-lists/' },
-      { label: 'Site search', href: '/docs/search/' },
-      { label: 'Charts and data', href: '/docs/charts/' },
-      { label: 'Math and code', href: '/docs/math-code/' },
-      { label: 'Models and shaders', href: '/docs/models/' },
+    href: '/docs/components/',
+    children: [
+      {
+        label: 'Content',
+        href: '/docs/content/',
+        children: [
+          { label: 'Math and code reference', href: '/docs/math-code/' },
+          { label: 'Native HTML & media', href: '/docs/native-content/' },
+        ],
+      },
+      {
+        label: 'Visualization',
+        href: '/docs/visualization/',
+        children: [{ label: 'Chart reference', href: '/docs/charts/' }],
+      },
+      {
+        label: 'Graphics',
+        href: '/docs/graphics/',
+        children: [
+          { label: 'Model and shader reference', href: '/docs/models/' },
+        ],
+      },
+      {
+        label: 'Website',
+        href: '/docs/website/',
+        children: [
+          { label: 'Navigation reference', href: '/docs/navigation/' },
+          { label: 'Post list reference', href: '/docs/post-lists/' },
+          { label: 'Search reference', href: '/docs/search/' },
+          { label: 'Build a playground', href: '/docs/playground/' },
+        ],
+      },
     ],
   },
   {
-    label: 'Customization',
-    links: [
-      { label: 'Boards, fonts, and inks', href: '/docs/palette/' },
-      { label: 'Your homepage', href: '/docs/homepage/' },
+    label: 'Customize',
+    href: '/docs/customize/',
+    children: [
+      { label: 'Site structure', href: '/docs/site-structure/' },
+      { label: 'Colors and typography', href: '/docs/palette/' },
+      { label: 'Homepage', href: '/docs/homepage/' },
+      { label: 'Post images', href: '/docs/post-images/' },
     ],
   },
   {
-    label: 'Hosting',
-    links: [
+    label: 'Publish',
+    href: '/docs/publish/',
+    children: [
       { label: 'Cloudflare Pages', href: '/docs/hosting/cloudflare/' },
       { label: 'GitLab Pages', href: '/docs/hosting/gitlab-pages/' },
-      { label: 'Another provider', href: '/docs/hosting/custom/' },
+      { label: 'Other providers', href: '/docs/hosting/custom/' },
     ],
   },
 ];
-
-export const docsReference: DocsLink[] = [
+export const docsReference: NavigationItem[] = [
   { label: 'Architecture and upgrades', href: '/docs/architecture/' },
-  { label: 'Names and public types', href: '/docs/naming/' },
+  { label: 'API naming', href: '/docs/naming/' },
   { label: 'Project status', href: '/docs/status/' },
   { label: 'Demo hosting', href: '/docs/deployment/' },
 ];

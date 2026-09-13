@@ -1,0 +1,186 @@
+---
+import './playground.css';
+import Code from './code.astro';
+import {
+  playgroundSource,
+  resetPlaygroundValues,
+  type PlaygroundDefinition,
+} from './playground/helpers';
+export interface PlaygroundProps {
+  definition: PlaygroundDefinition;
+  previewUrl: string;
+  /** Optional accurate initial source for native or custom renderers. */ initialSource?: string;
+}
+type Props = PlaygroundProps;
+const { definition, previewUrl, initialSource: suppliedSource } = Astro.props;
+const values = resetPlaygroundValues(definition);
+const initialSource = suppliedSource ?? playgroundSource(definition, values);
+const instanceId = `alk-playground-${crypto.randomUUID()}`;
+const sourceLanguage = definition.importPath ? 'astro' : 'html';
+const sourceFilename = `${definition.id}.${definition.importPath ? 'astro' : 'html'}`;
+---
+
+<section
+  class="alk-playground"
+  data-alk-playground
+  data-pagefind-ignore
+  data-playground-instance={instanceId}
+  data-definition={JSON.stringify(definition)}
+  aria-label={`${definition.name} playground`}
+>
+  <header class="alk-playground__header"><h2>{definition.name}</h2></header>
+  <p
+    class="alk-playground__status"
+    data-playground-status
+    role="status"
+    aria-live="polite"
+  >
+    Preview loads when it becomes visible.
+  </p>
+  <div class="alk-playground__grid">
+    <section class="alk-playground__preview" aria-label="Preview">
+      <iframe
+        title={`${definition.name} preview`}
+        src={previewUrl}
+        loading="lazy"
+        sandbox="allow-scripts allow-same-origin"></iframe>
+    </section>
+    <section class="alk-playground__parameters" aria-label="Parameters">
+      <div class="alk-playground__parameters-head">
+        <h3>Parameters</h3><button type="button" data-playground-reset
+          >Reset</button
+        >
+      </div>
+      {
+        definition.presets && definition.presets.length > 0 && (
+          <div class="alk-playground__presets" aria-label="Presets">
+            {definition.presets.map((preset, index) => (
+              <button type="button" data-playground-preset={index}>
+                {preset.label}
+              </button>
+            ))}
+          </div>
+        )
+      }
+      <div class="alk-playground__controls">
+        {
+          definition.controls.map((control) => {
+            const value = values[control.name];
+            const inputId = `${instanceId}-${control.name}`;
+            const errorId = `${inputId}-error`;
+            const helpId = `${inputId}-help`;
+            const isMultiline = control.type === 'textarea';
+            const describedBy = control.help ? `${helpId} ${errorId}` : errorId;
+            return (
+              <label
+                class:list={[
+                  'alk-playground__control',
+                  { 'alk-playground__control--multiline': isMultiline },
+                ]}
+                for={inputId}
+              >
+                <span class="alk-playground__control-label">
+                  {control.label ?? control.name}
+                </span>
+                {isMultiline || control.type === 'json' ? (
+                  <textarea
+                    id={inputId}
+                    name={control.name}
+                    rows={isMultiline ? 2 : 1}
+                    data-control
+                    data-control-type={control.type}
+                    aria-describedby={describedBy}
+                  >
+                    {typeof value === 'string' ? value : JSON.stringify(value)}
+                  </textarea>
+                ) : control.type === 'select' ? (
+                  <select
+                    id={inputId}
+                    name={control.name}
+                    data-control
+                    data-control-type={control.type}
+                    aria-describedby={describedBy}
+                  >
+                    {control.options?.map((option) => (
+                      <option value={option} selected={value === option}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
+                ) : control.type === 'boolean' ? (
+                  <input
+                    id={inputId}
+                    name={control.name}
+                    type="checkbox"
+                    checked={value === true}
+                    data-control
+                    data-control-type={control.type}
+                    aria-describedby={describedBy}
+                  />
+                ) : (
+                  <input
+                    id={inputId}
+                    name={control.name}
+                    type={control.type === 'number' ? 'number' : 'text'}
+                    value={
+                      typeof value === 'string' || typeof value === 'number'
+                        ? value
+                        : ''
+                    }
+                    min={control.min}
+                    max={control.max}
+                    step={control.step}
+                    data-control
+                    data-control-type={control.type}
+                    aria-describedby={describedBy}
+                  />
+                )}
+                {control.help && (
+                  <small id={helpId} class="alk-playground__control-help">
+                    {control.help}
+                  </small>
+                )}
+                <small
+                  id={errorId}
+                  data-control-error={control.name}
+                  role="alert"
+                  hidden
+                />
+              </label>
+            );
+          })
+        }
+      </div>
+    </section>
+    <section
+      class="alk-playground__source"
+      aria-label="Generated source"
+      data-playground-source-host
+    >
+      <Code
+        code={initialSource}
+        lang={sourceLanguage}
+        title={sourceFilename}
+        lineNumbers={false}
+      />
+    </section>
+  </div>
+  <noscript
+    ><p class="alk-playground__nojs">
+      Live controls require JavaScript. The initial preview and source remain
+      available.
+    </p><style is:inline>
+      .alk-playground__parameters {
+        display: none;
+      }
+      .alk-playground__grid {
+        grid-template-columns: 1fr;
+        grid-template-areas: 'preview' 'source';
+      }
+    </style></noscript
+  >
+</section>
+
+<script>
+  import './playground/client';
+</script>

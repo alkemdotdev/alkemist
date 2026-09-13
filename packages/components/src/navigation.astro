@@ -1,0 +1,164 @@
+---
+import './table-of-contents.css';
+import type { TableOfContentsHeading } from './table-of-contents.astro';
+import type { NavigationItem } from './navigation/helpers';
+import { renderNavigation } from './website-renderers';
+
+export type { NavigationItem } from './navigation/helpers';
+
+export interface NavigationProps {
+  /** The nested pages to render. Labels are escaped as text. */
+  items: NavigationItem[];
+  /** Current location used for exact page matching. Fragments are ignored. */
+  currentPath: string;
+  /** Accessible name for the navigation landmark. */
+  label?: string;
+  /** Child levels expanded initially; active branches open beyond this depth. */
+  expandedDepth?: number;
+  /** Sections shown directly beneath the current page link. */
+  headings?: TableOfContentsHeading[];
+}
+
+type Props = NavigationProps;
+
+const {
+  items,
+  currentPath,
+  label = 'Documentation',
+  expandedDepth = 1,
+  headings = [],
+}: Props = Astro.props;
+---
+
+<Fragment
+  set:html={renderNavigation({
+    items,
+    currentPath,
+    label,
+    expandedDepth,
+    headings,
+  })}
+/>
+
+<style is:global>
+  .alk-navigation {
+    --alk-navigation-ink: var(--alk-ink, #171717);
+    --alk-navigation-muted: var(--alk-muted, #606060);
+    --alk-navigation-focus: var(--alk-ink-cobalt, #1769aa);
+    --alk-navigation-sans: var(--alk-sans, system-ui, sans-serif);
+    color: var(--alk-navigation-ink);
+    font: 0.84rem/1.35 var(--alk-navigation-sans);
+  }
+
+  .alk-navigation .alk-navigation-list {
+    display: grid;
+    gap: 0.1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .alk-navigation .alk-navigation-list[data-depth]:not([data-depth='0']) {
+    margin: 0.2rem 0 0.3rem 0.55rem;
+  }
+
+  .alk-navigation .alk-navigation-item {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+  }
+
+  .alk-navigation a,
+  .alk-navigation span {
+    color: inherit;
+  }
+
+  .alk-navigation a {
+    display: block;
+    min-height: 2rem;
+    box-sizing: border-box;
+    padding: 0.35rem 0.5rem;
+    text-decoration: none;
+    text-underline-offset: 0.2em;
+  }
+
+  .alk-navigation a[aria-current='page'] {
+    font-weight: 650;
+  }
+
+  .alk-navigation a:hover,
+  .alk-navigation a:focus-visible,
+  .alk-navigation summary:focus-visible {
+    outline: 2px solid var(--alk-navigation-focus);
+    outline-offset: 3px;
+  }
+
+  .alk-navigation details > summary {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    color: var(--alk-navigation-ink);
+    cursor: pointer;
+  }
+  .alk-navigation details > summary::-webkit-details-marker {
+    display: none;
+  }
+  .alk-navigation details > summary::after {
+    content: '›';
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    min-height: 2rem;
+    flex-shrink: 0;
+    color: var(--alk-navigation-muted);
+    font-size: 1.25rem;
+  }
+  .alk-navigation details[open] > summary::after {
+    transform: rotate(90deg);
+  }
+  .alk-navigation details > summary > a,
+  .alk-navigation details > summary > span {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .alk-navigation
+    .alk-navigation-list[data-depth]:not([data-depth='0'])
+    a:not([aria-current]):not(:hover) {
+    color: var(--alk-navigation-muted);
+  }
+</style>
+
+<style is:global>
+  .alk-navigation .alk-navigation-sections {
+    margin: 0.15rem 0 0.7rem 0.4rem;
+    padding-left: 0.175rem;
+  }
+  .alk-navigation .alk-navigation-sections a {
+    min-height: 0;
+    padding: 0.18rem 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    color: var(--alk-navigation-muted);
+    font-size: 0.75rem;
+    line-height: 1.35;
+  }
+  .alk-navigation .alk-navigation-sections a[aria-current='location'],
+  .alk-navigation .alk-navigation-sections a:hover {
+    color: var(--alk-navigation-ink);
+  }
+  @media (pointer: coarse) {
+    .alk-navigation a,
+    .alk-navigation details > summary::after {
+      min-height: 44px;
+    }
+    .alk-navigation .alk-navigation-sections a {
+      min-height: 36px;
+    }
+  }
+</style>
+
+<script>
+  import './table-of-contents-client';
+</script>

@@ -1,88 +1,13 @@
 ---
 import './chart.css';
 import './figure.css';
-import { chartCanZoom, type ChartProps } from './charts';
+import { renderChart } from './visualization-renderers';
 export type { ChartProps } from './charts';
+import type { ChartProps } from './charts';
 type Props = ChartProps;
-const props = Astro.props;
-const canZoom = chartCanZoom(props);
 ---
 
-<alk-chart class="alk-chart" data-config={JSON.stringify(props)}>
-  <figure class="alk-figure" aria-label={props.title}>
-    <figcaption class="alk-chart-caption alk-figure-heading">
-      <div>
-        <p class="alk-chart-kicker alk-figure-label">
-          {props.sample ? 'Synthetic dataset' : 'Data visualization'} · {
-            props.type
-          }
-        </p>
-        <h3 class="alk-figure-title">{props.title}</h3>
-        <p class="alk-figure-description">{props.description}</p>
-      </div>
-      <span class="alk-chart-file alk-figure-format">CSV</span>
-    </figcaption>
-    <div
-      class="alk-chart-canvas"
-      style={`min-height: ${props.height ?? 300}px`}
-      aria-busy="true"
-    >
-    </div>
-    <div
-      class="alk-chart-tools alk-figure-controls"
-      aria-label={`${props.title} controls`}
-    >
-      {
-        canZoom && (
-          <button type="button" data-chart-reset disabled>
-            Reset view
-          </button>
-        )
-      }
-      <button type="button" data-chart-retry hidden>Retry</button>
-      {
-        canZoom && (
-          <span class="alk-chart-hint">
-            Shift + scroll to zoom · drag to pan
-          </span>
-        )
-      }
-    </div>
-    <div class="alk-figure-footer">
-      <p
-        class="alk-chart-status alk-figure-status"
-        role="status"
-        aria-live="polite"
-      >
-        Chart loads when visible.
-      </p>
-      <a href={props.src} download
-        >Download CSV <span aria-hidden="true">↓</span></a
-      >
-    </div>
-    <details class="alk-chart-table">
-      <summary>Data table <span data-chart-count></span></summary>
-      <div
-        class="alk-chart-table-scroll"
-        tabindex="0"
-        aria-label={`${props.title} data table`}
-      >
-        <p data-chart-table-placeholder>The table loads alongside the chart.</p>
-      </div>
-    </details>
-    {
-      props.caption && (
-        <p class="alk-chart-source alk-figure-caption">{props.caption}</p>
-      )
-    }
-    <noscript
-      ><p class="alk-figure-caption">
-        JavaScript is required for this interactive view. Download the CSV to
-        inspect the source data.
-      </p></noscript
-    >
-  </figure>
-</alk-chart>
+<Fragment set:html={renderChart(Astro.props)} />
 
 <script>
   import './chart-client';

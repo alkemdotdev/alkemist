@@ -126,3 +126,68 @@ test('malformed line ranges fail explicitly while component options remain autho
     ['2'],
   );
 });
+
+test('rich code features preserve source while rendering semantic folds and safe annotations', async () => {
+  const source =
+    'const alphabet = 1;\nconst beta = alphabet + 1;\nreturn beta;\n';
+  const html = await codeToHtml(
+    source,
+    options('title="proof.ts" focus={2} ins={2} del={3} collapse={2-3}', {
+      annotations: [{ line: 1, text: '<note>' }],
+      highlightText: ['const alphabet'],
+      wrap: true,
+    }),
+  );
+  assert.match(html, /data-alk-source="const%20alphabet%20%3D%201%3B%0A/);
+  assert.equal(
+    decodeURIComponent(html.match(/data-alk-source="([^"]+)"/)?.[1] ?? ''),
+    source,
+  );
+  assert.match(html, /<details class="alk-code-fold">/);
+  assert.match(html, /<summary>2 lines collapsed<\/summary>/);
+  assert.match(html, /alk-code-added/);
+  assert.match(html, /alk-code-removed/);
+  assert.match(html, /alk-code-dim/);
+  assert.match(html, /alk-code-text-highlight/);
+  assert.match(
+    html,
+    /class="alk-code-annotation-marker" aria-label="Note: <note>"/,
+  );
+  assert.match(html, /role="tooltip">&#x3C;note>/);
+  assert.match(html, /data-diff="\+"/);
+  assert.match(html, /data-diff="−"/);
+  assert.doesNotMatch(html, /alk-code-language/);
+  assert.match(html, /alk-code-wrap/);
+});
+
+test('overlapping and out-of-bounds folds fail explicitly', async () => {
+  await assert.rejects(
+    codeToHtml(
+      'a\nb\nc',
+      options('', {
+        collapsedRanges: [
+          { start: 1, end: 2 },
+          { start: 2, end: 3 },
+        ],
+      }),
+    ),
+    /collapse ranges cannot overlap/,
+  );
+  await assert.rejects(
+    codeToHtml('a\nb', options('collapse={2-3}')),
+    /exceeds the 2-line source/,
+  );
+});
+
+test('fence wrap and malformed array options have explicit configuration errors', async () => {
+  const wrapped = await codeToHtml('a', options('wrap'));
+  assert.match(wrapped, /alk-code-wrap/);
+  await assert.rejects(
+    codeToHtml('a', options('', { collapsedRanges: null })),
+    /collapsedRanges must be an array/,
+  );
+  await assert.rejects(
+    codeToHtml('a', options('', { focusLines: '1' })),
+    /focusLines must be an array/,
+  );
+});

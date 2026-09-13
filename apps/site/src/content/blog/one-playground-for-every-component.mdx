@@ -1,0 +1,21 @@
+---
+title: One playground for every component
+description: Four documentation groups and one shared way to inspect the output, source, and parameters.
+published: '2026-09-13'
+---
+
+The component catalog now starts with **Content**, followed by **Visualization**, **Graphics**, and **Website**. These are documentation categories inside the same components package. Content covers Math and Code. A separate native HTML and media reference documents the theme’s browser elements without presenting them as package exports.
+
+Each example uses a shared playground. Its preview, source, and parameter controls read from one definition. Change a chart preset or edit an equation, and the preview and copyable source update together. Nested inputs such as post collections and navigation trees can be edited as JSON. Reset restores the original example.
+
+Astro normally renders component markup during the build. The live examples therefore share the actual rendering functions with their Astro wrappers, rather than maintaining a second approximation of each component. Their browser behavior reconnects after a parameter update. A complete Layout runs in its own frame. Compact property rows keep controls close to the preview, and generated source uses the same Code component as authored listings.
+
+The controls cover the public props, with a test that compares the definitions against the TypeScript interfaces. Invalid combinations report errors. Chart and graphics engines still load only when their specimens need them. The generated source is editable through parameters; this is not an arbitrary Astro source compiler.
+
+[Explore the components](/docs/components/) or read how to [reuse the playground](/docs/playground/).
+
+Code listings now support focused lines, additions and removals, exact text highlights, accessible annotations, and collapsible ranges. Filenames and Copy form a small header; Copy keeps the entire original source even when parts of it are folded. Try the Explain, Focus, and Changes presets in the [Code playground](/docs/content/#code).
+
+Authoring follows the same rule: ordinary Markdown fences use the shared Code renderer. The Astro integration supplies scoped styles and Copy even in an existing site's own layout. Small snippets can be written as `<Code>const answer = 42;</Code>`; a string child handles braces, literal tags, and multiline code. Source props remain available for imported files. See the [Markdown and slot examples](/docs/math-code/#the-code-component).
+
+The Code playground emits a readable text-child example as its source, with template syntax escaped for copying. Whitespace-sensitive inputs retain the exact source prop. This makes the example itself demonstrate the authoring form used in the reference.

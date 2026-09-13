@@ -40,7 +40,7 @@ const {
   moreNavigation = [],
   footerNavigation = [],
   search = false,
-} = Astro.props;
+}: Props = Astro.props;
 const searchProps = search === true ? {} : search || undefined;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 function current(href: string) {

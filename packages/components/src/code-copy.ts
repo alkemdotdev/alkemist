@@ -1,29 +1,41 @@
-function enhanceCode() {
-  document
+export function enhanceCode(root: ParentNode = document) {
+  root
     .querySelectorAll<HTMLButtonElement>('[data-alk-copy]')
     .forEach((button) => {
       button.hidden = false;
       if (button.dataset.alkReady) return;
       button.dataset.alkReady = 'true';
       button.addEventListener('click', async () => {
-        const figure = button.closest('.alk-code');
-        const code = figure?.querySelector('pre code');
-        const status = figure?.querySelector<HTMLElement>(
+        document
+          .querySelectorAll<HTMLTextAreaElement>(
+            'textarea[data-alk-code-selection]',
+          )
+          .forEach((selection) => selection.remove());
+        const figure = button.closest<HTMLElement>('.alk-code');
+        if (!figure) return;
+        const encodedSource = figure.dataset.alkSource;
+        const status = figure.querySelector<HTMLElement>(
           '[data-alk-copy-status]',
         );
-        if (!code || !status) return;
+        if (encodedSource === undefined || !status) return;
+        const source = decodeURIComponent(encodedSource);
         try {
-          await navigator.clipboard.writeText(code.textContent ?? '');
+          await navigator.clipboard.writeText(source);
           status.textContent = 'Code copied to clipboard.';
           button.textContent = 'Copied';
         } catch {
-          // Selection remains useful when a browser or its permissions block the clipboard.
-          const selection = window.getSelection();
-          const range = document.createRange();
-          range.selectNodeContents(code);
-          selection?.removeAllRanges();
-          selection?.addRange(range);
-          (figure?.querySelector('pre') as HTMLElement | null)?.focus();
+          const selection = document.createElement('textarea');
+          selection.value = source;
+          selection.dataset.alkCodeSelection = 'true';
+          selection.setAttribute('aria-label', 'Code source');
+          selection.style.cssText =
+            'position:fixed;inset:auto auto 0 0;width:1px;height:1px;opacity:0;';
+          document.body.append(selection);
+          selection.addEventListener('blur', () => selection.remove(), {
+            once: true,
+          });
+          selection.focus();
+          selection.select();
           status.textContent =
             'Clipboard unavailable. Code selected; use your browser’s Copy command.';
           button.textContent = 'Selected';
@@ -36,4 +48,4 @@ function enhanceCode() {
 }
 
 enhanceCode();
-document.addEventListener('astro:page-load', enhanceCode);
+document.addEventListener('astro:page-load', () => enhanceCode());

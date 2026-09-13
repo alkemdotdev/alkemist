@@ -1,0 +1,52 @@
+---
+title: Reusable component playgrounds
+description: One definition connects a live preview, editable parameters, and copyable source.
+---
+
+import PlaygroundExample from '../../components/PlaygroundExample.astro';
+
+A `Playground` belongs to the components package. The site supplies its example definition and preview frame. The same definition can appear in a catalog, a detailed reference, or a Lab.
+
+## Define an example
+
+```astro
+---
+import Playground from '@alkemdotdev/alkemist-components/playground';
+import type { PlaygroundDefinition } from '@alkemdotdev/alkemist-components/playground';
+const definition: PlaygroundDefinition = {
+  id: 'equation',
+  name: 'Math',
+  importPath: '@alkemdotdev/alkemist-components/math',
+  defaults: { tex: 'E = mc^2', display: true },
+  controls: [
+    { name: 'tex', type: 'textarea' },
+    { name: 'display', type: 'boolean' },
+  ],
+  presets: [{ label: 'Inline', values: { display: false } }],
+};
+---
+
+<Playground definition={definition} previewUrl="/examples/equation/" />
+```
+
+Controls support text, multiline text, numbers, booleans, enumerated options, and JSON. Number controls accept bounds and steps. JSON handles structured props such as post collections and navigation trees. Presets merge into the original defaults; Reset returns to those defaults. Source is generated from that same state, with an Astro import and explicit prop values. Set `textSlotProp: 'code'` when a component accepts its source as a text child; the Code examples use this to display readable multiline snippets. Template syntax is escaped. Whitespace-sensitive or empty values retain the exact source prop. Use `slot` for authored markup such as Layout page content; the two slot modes are mutually exclusive.
+
+<PlaygroundExample id="math" />
+
+## Connect a preview frame
+
+The frame must live on the same origin. It renders the real component initially and listens for `alk:playground:update` messages containing `id`, `revision`, `values`, and `theme`. Validate the sender's origin and require `event.source === window.parent` before handling a message.
+
+Send `alk:playground:ready` when the listener is installed, then `alk:playground:rendered` after applying each revision. Echo `id` and `revision`. Errors use `alk:playground:error` with a `message`. A native HTML example without an import path can return its generated HTML as `source` in the rendered reply. The shell rejects messages from another frame or an obsolete revision.
+
+The Alkemist examples share markup renderers with the Astro components, then reconnect their existing browser behavior. Math and Code use their actual build renderers in the frame; chart and graphics engines load when their specimens need them. A Layout preview updates the real document shell. This runs on static hosting and needs no rendering server.
+
+The optional `/playground/renderers` entry exports the shared render functions for adopting sites. These return escaped component markup; keep the initial Astro component in the frame to include its styles and browser behavior.
+
+See the repository's `apps/site/src/lib/playground/definitions.ts`, `frame.ts`, and `apps/site/src/pages/playground/[id].astro` for the complete connection. The package provides the shell and message contract; an adopting site supplies its own trusted frame and renderer.
+
+## Preview behavior
+
+Parameters use a compact property inspector, with contextual help and editable JSON for structured values. Source uses the same highlighted Code component as authored listings. Source is generated and copyable; it is not an arbitrary executable source editor. Unknown combinations show errors rather than quietly changing the example.
+
+The preview initially renders without JavaScript. Live controls require JavaScript. Browser policies still govern media autoplay, clipboard access, and WebGL support. Use the native player or model poster where appropriate.

@@ -1,5 +1,6 @@
 ---
 const base = import.meta.env.BASE_URL;
+import { renderSearch } from './website-renderers';
 
 export interface SearchProps {
   /** URL of Pagefind's generated runtime module. */
@@ -22,13 +23,14 @@ const {
 } = Astro.props;
 ---
 
-<alk-search
-  class="alk-search"
-  data-pagefind-ignore
-  data-index-url={indexUrl}
-  data-development={import.meta.env.DEV ? 'true' : undefined}
-  data-variant={variant}
->
+<Fragment
+  set:html={renderSearch({ indexUrl, placeholder, label, variant }).replace(
+    '<alk-search ',
+    `<alk-search${import.meta.env.DEV ? ' data-development="true"' : ''} `,
+  )}
+/>
+{
+  /*
   <form class="alk-search-desktop" role="search" data-search-form>
     <label>
       <span class="alk-sr-only">{label}</span>
@@ -97,277 +99,11 @@ const {
     </section>
   </dialog>
 </alk-search>
+*/
+}
 
 <script>
-  type PagefindResultData = {
-    url: string;
-    meta: { title?: string };
-    excerpt?: string;
-  };
-  type PagefindResult = { data: () => Promise<PagefindResultData> };
-  type Pagefind = {
-    search: (query: string) => Promise<{ results: PagefindResult[] }>;
-  };
-
-  const debounce = (callback: () => void, delay = 180) => {
-    let timer: number | undefined;
-    return () => {
-      window.clearTimeout(timer);
-      timer = window.setTimeout(callback, delay);
-    };
-  };
-
-  const excerptFragment = (excerpt: string | undefined) => {
-    const fragment = document.createDocumentFragment();
-    if (!excerpt) return fragment;
-    const parsed = new DOMParser().parseFromString(excerpt, 'text/html');
-    const append = (node: Node, parent: DocumentFragment | HTMLElement) => {
-      if (node.nodeType === Node.TEXT_NODE) {
-        parent.append(node.textContent ?? '');
-      } else if (node.nodeType === Node.ELEMENT_NODE) {
-        const element = node as HTMLElement;
-        if (element.tagName === 'MARK') {
-          const mark = document.createElement('mark');
-          element.childNodes.forEach((child) => append(child, mark));
-          parent.append(mark);
-        } else {
-          element.childNodes.forEach((child) => append(child, parent));
-        }
-      }
-    };
-    parsed.body.childNodes.forEach((node) => append(node, fragment));
-    return fragment;
-  };
-
-  const safeHref = (value: string) => {
-    try {
-      const url = new URL(value, window.location.origin);
-      return url.origin === window.location.origin
-        ? `${url.pathname}${url.search}${url.hash}`
-        : undefined;
-    } catch {
-      return undefined;
-    }
-  };
-
-  document.querySelectorAll<HTMLElement>('alk-search').forEach((root) => {
-    const indexUrl =
-      root.dataset.indexUrl ??
-      `${import.meta.env.BASE_URL}pagefind/pagefind.js`;
-    const isDevelopment = root.dataset.development === 'true';
-    const inputs = [
-      ...root.querySelectorAll<HTMLInputElement>('[data-search-input]'),
-    ];
-    const results = [
-      ...root.querySelectorAll<HTMLElement>('[data-search-results]'),
-    ];
-    const dialog = root.querySelector<HTMLDialogElement>(
-      '[data-search-dialog]',
-    );
-    const openButton =
-      root.querySelector<HTMLButtonElement>('[data-search-open]');
-    const closeButton = root.querySelector<HTMLButtonElement>(
-      '[data-search-close]',
-    );
-    let pagefind: Promise<Pagefind> | undefined;
-    let request = 0;
-
-    const show = (message?: string) => {
-      results.forEach((container) => {
-        container.replaceChildren();
-        container.hidden = !message;
-        if (message) container.append(message);
-      });
-    };
-    const load = () => {
-      if (!pagefind) {
-        pagefind = (
-          import(/* @vite-ignore */ indexUrl) as Promise<Pagefind>
-        ).catch((error) => {
-          pagefind = undefined;
-          throw error;
-        });
-      }
-      return pagefind;
-    };
-    const render = (
-      items: PagefindResultData[],
-      total: number,
-      loadMore?: () => void,
-    ) => {
-      results.forEach((container) => {
-        container.replaceChildren();
-        container.hidden = items.length === 0;
-        const list = document.createElement('ul');
-        list.className = 'alk-search-result-list';
-        items.forEach((item) => {
-          const href = safeHref(item.url);
-          if (!href) return;
-          const link = document.createElement('a');
-          link.href = href;
-          link.className = 'alk-search-result';
-          const title = document.createElement('strong');
-          title.textContent = item.meta.title || href;
-          link.append(title);
-          if (item.excerpt) {
-            const excerpt = document.createElement('span');
-            excerpt.append(excerptFragment(item.excerpt));
-            link.append(excerpt);
-          }
-          const row = document.createElement('li');
-          row.append(link);
-          list.append(row);
-        });
-        if (list.childElementCount) container.append(list);
-        else {
-          container.hidden = false;
-          container.append('No safe local results found.');
-        }
-        if (loadMore) {
-          const more = document.createElement('button');
-          more.type = 'button';
-          more.className = 'alk-search-more';
-          more.textContent = `Showing first ${items.length} of ${total} results. Show more results`;
-          more.addEventListener('click', loadMore);
-          container.append(more);
-        }
-      });
-    };
-    const search = async () => {
-      const query = inputs[0]?.value.trim() ?? '';
-      inputs.forEach((input) => {
-        if (input.value !== query) input.value = query;
-      });
-      const searchRequest = ++request;
-      if (!query) return show();
-      if (isDevelopment)
-        return show(
-          'Search is available after building the site. Run npm run build, then npm run preview.',
-        );
-      show('Searching…');
-      try {
-        const response = await (await load()).search(query);
-        const resultRecords = response.results;
-        const items: PagefindResultData[] = [];
-        let loadingNext = false;
-        const loadNext = async () => {
-          if (loadingNext) return;
-          loadingNext = true;
-          const start = items.length;
-          try {
-            const next = await Promise.all(
-              resultRecords
-                .slice(start, start + 20)
-                .map((result) => result.data()),
-            );
-            if (searchRequest !== request) return;
-            items.push(...next);
-            render(
-              items,
-              resultRecords.length,
-              items.length < resultRecords.length ? loadMore : undefined,
-            );
-          } finally {
-            loadingNext = false;
-          }
-        };
-        const loadMore = () => {
-          void loadNext().catch((error) => {
-            if (searchRequest !== request) return;
-            console.warn('Alkemist search could not load more results.', error);
-            show('Search is temporarily unavailable. Please try again later.');
-          });
-        };
-        await loadNext();
-        if (!items.length && searchRequest === request)
-          show('No results found. Try another term.');
-      } catch (error) {
-        if (searchRequest !== request) return;
-        console.warn(
-          'Alkemist search could not load the Pagefind index.',
-          error,
-        );
-        show(
-          isDevelopment
-            ? 'Search index is unavailable in this development build. Run a production build to generate Pagefind files.'
-            : 'Search is temporarily unavailable. Please try again later.',
-        );
-      }
-    };
-    const debouncedSearch = debounce(() => void search());
-
-    root
-      .querySelectorAll<HTMLFormElement>('[data-search-form]')
-      .forEach((form) =>
-        form.addEventListener('submit', (event) => {
-          event.preventDefault();
-          void search();
-        }),
-      );
-    inputs.forEach((input) =>
-      input.addEventListener('input', () => {
-        request += 1;
-        inputs.forEach((other) => {
-          if (other !== input) other.value = input.value;
-        });
-        debouncedSearch();
-      }),
-    );
-    const open = () => {
-      if (!dialog?.open) dialog?.showModal();
-      window.setTimeout(() =>
-        dialog?.querySelector<HTMLInputElement>('input')?.focus(),
-      );
-    };
-    const close = () => {
-      if (dialog?.open) dialog.close();
-      openButton?.focus();
-    };
-    openButton?.addEventListener('click', open);
-    closeButton?.addEventListener('click', close);
-    dialog?.addEventListener('close', () => openButton?.focus());
-    root.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape') {
-        if (dialog?.open) close();
-        else {
-          request += 1;
-          show();
-        }
-      }
-      if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
-        const resultContainer = dialog?.open
-          ? dialog.querySelector<HTMLElement>('[data-search-results]')
-          : root.querySelector<HTMLElement>(':scope > [data-search-results]');
-        const links = [
-          ...(resultContainer?.querySelectorAll<HTMLAnchorElement>(
-            '.alk-search-result',
-          ) ?? []),
-        ];
-        if (!links.length) return;
-        const current = links.indexOf(
-          document.activeElement as HTMLAnchorElement,
-        );
-        if (current === -1 && event.target instanceof HTMLInputElement) {
-          event.preventDefault();
-          links[event.key === 'ArrowDown' ? 0 : links.length - 1]?.focus();
-        } else if (current >= 0) {
-          event.preventDefault();
-          links[
-            (current + (event.key === 'ArrowDown' ? 1 : links.length - 1)) %
-              links.length
-          ]?.focus();
-        }
-      }
-    });
-    document.addEventListener('keydown', (event) => {
-      if (!(event.metaKey || event.ctrlKey) || event.key.toLowerCase() !== 'k')
-        return;
-      event.preventDefault();
-      if (matchMedia('(max-width: 650px)').matches) {
-        open();
-      } else inputs[0]?.focus();
-    });
-  });
+  import './search-client';
 </script>
 
 <style is:global>

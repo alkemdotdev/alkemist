@@ -57,7 +57,7 @@ Finish by checking the real production URL, deployed source revision, links, ass
 export function agentSetupGuide() {
   return `# Set up an Alkemist website
 
-This is the agent-readable companion to https://alkemist.alkem.dev/docs/getting-started/.
+This is the agent-readable companion to https://alkemist.alkem.dev/docs/.
 Contract version: 6. Use the current source checkout for the documented API. Components use plain names and direct extensionless imports such as @alkemdotdev/alkemist-components/chart; types come from the same entry. The npm canary channel also carries the current API; deliberate beta/stable releases remain separate. Record the source revision and installed package versions.
 
 ## Inputs and workspace

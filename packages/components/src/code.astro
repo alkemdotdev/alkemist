@@ -1,15 +1,23 @@
 ---
-import { codeToHtml } from 'shiki';
 import type { BundledLanguage } from 'shiki';
-import { codeTheme, createCodeTransformer } from './code-theme';
+import { renderCode } from './content-renderers';
+import type { CodeAnnotation, CollapsedCodeRange } from './code-theme';
+import { resolveCodeSource } from './code-source';
 import '@alkemdotdev/alkemist-theme/math-code.css';
 
 export interface CodeProps {
-  code: string;
+  code?: string;
   lang?: BundledLanguage | 'text' | 'plaintext';
   title?: string;
   highlightLines?: number[];
   lineNumbers?: boolean;
+  focusLines?: number[];
+  addedLines?: number[];
+  removedLines?: number[];
+  collapsedRanges?: CollapsedCodeRange[];
+  annotations?: CodeAnnotation[];
+  highlightText?: string[];
+  wrap?: boolean;
 }
 type Props = CodeProps;
 const {
@@ -18,11 +26,31 @@ const {
   title,
   highlightLines,
   lineNumbers = true,
+  focusLines,
+  addedLines,
+  removedLines,
+  collapsedRanges,
+  annotations,
+  highlightText,
+  wrap,
 } = Astro.props;
-const html = await codeToHtml(code, {
+const slotHtml = Astro.slots.has('default')
+  ? await Astro.slots.render('default')
+  : undefined;
+const source = resolveCodeSource({ code, slotHtml });
+const html = await renderCode({
+  code: source,
   lang,
-  theme: codeTheme,
-  transformers: [createCodeTransformer({ title, highlightLines, lineNumbers })],
+  title,
+  highlightLines,
+  lineNumbers,
+  focusLines,
+  addedLines,
+  removedLines,
+  collapsedRanges,
+  annotations,
+  highlightText,
+  wrap,
 });
 ---
 

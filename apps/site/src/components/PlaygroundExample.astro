@@ -1,0 +1,22 @@
+---
+import Playground from '@alkemdotdev/alkemist-components/playground';
+import {
+  renderNativeContent,
+  type NativeContentKind,
+} from '../../../../packages/components/src/native-content-renderer';
+import { definitions } from '../lib/playground/definitions';
+interface Props {
+  id: string;
+}
+const { id } = Astro.props;
+const definition = definitions[id];
+if (!definition) throw new Error(`Unknown playground: ${id}`);
+---
+
+<Playground
+  definition={definition}
+  previewUrl={`/playground/${id}/`}
+  initialSource={!definition.importPath
+    ? renderNativeContent(id as NativeContentKind, definition.defaults)
+    : undefined}
+/>

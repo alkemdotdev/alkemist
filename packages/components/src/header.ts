@@ -48,9 +48,10 @@ if (header) {
           if (other !== panel) close(other);
         });
     });
-    panel
-      .querySelectorAll('a')
-      .forEach((link) => link.addEventListener('click', () => close(panel)));
+    panel.addEventListener('click', (event) => {
+      if (event.target instanceof Element && event.target.closest('a'))
+        close(panel);
+    });
   });
   document.addEventListener('keydown', (event) => {
     if (event.key !== 'Escape') return;

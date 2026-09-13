@@ -41,6 +41,7 @@
     "pagefind": "1.5.2",
     "rehype-katex": "7.0.1",
     "remark-math": "6.0.0",
-    "shiki": "4.4.3"
+    "shiki": "4.4.3",
+    "@alkemdotdev/alkemist-theme": "1.0.0-beta.1"
   }
 }

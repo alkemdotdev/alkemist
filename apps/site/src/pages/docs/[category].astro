@@ -1,0 +1,110 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import PlaygroundExample from '../../components/PlaygroundExample.astro';
+import { groups, nativeContent } from '../../lib/playground/definitions';
+export function getStaticPaths() {
+  return [...groups, nativeContent].map((group) => ({
+    params: { category: group.id },
+    props: { group },
+  }));
+}
+const { group } = Astro.props;
+const names: Record<string, string> = {
+  html: 'Standard HTML',
+  image: 'Images',
+  audio: 'Audio',
+  video: 'Video',
+  math: 'Math',
+  code: 'Code',
+  chart: 'Chart',
+  model: 'Model',
+  shader: 'Shader',
+  layout: 'Layout',
+  navigation: 'Navigation',
+  'table-of-contents': 'TableOfContents',
+  'post-list': 'PostList',
+  search: 'Search',
+};
+const descriptions: Record<string, string> = {
+  html: 'Native text, lists, tables, disclosures, buttons, and inputs. Choose an element to see its relevant content. Lists and tables accept JSON data.',
+  image:
+    'Give an image meaningful alternative text. Compare containing the whole image with cropping it to fill its box.',
+  audio:
+    'A locally generated two-second tone. Native playback controls remain available; browsers decide whether autoplay is allowed.',
+  video:
+    'A locally generated three-second wave study. Use native controls to play it; the poster appears before loading.',
+  math: 'Type TeX and switch between inline and display math. Invalid or unsupported expressions show an error. The preview uses the same KaTeX renderer as the built component.',
+  code: 'Edit source, highlights, focus, changes, folds, and annotations. Choose a preset to try a complete example; preview and copied source update together.',
+  chart:
+    'Choose a preset to start with a matching CSV and field names. Every public prop is editable; options such as stacking and orientation apply only to the chart types that support them.',
+  model:
+    'Change the GLB or glTF source, poster, and description. Orbit, wireframe, and spin are viewer controls inside the preview; they are not component props.',
+  shader:
+    'Change the frequency and source angle of the interference study. Play the waves inside the preview. This is a fixed study, not an arbitrary shader compiler.',
+  layout:
+    'The real page shell in its own frame. Change the site identity, menus, metadata, and search configuration. The example content belongs to the page slot.',
+  navigation:
+    'Edit a nested page tree, its current path, and expansion depth. Heading data can appear below the active page.',
+  'table-of-contents':
+    'Edit heading records, then scroll inside the frame. The preview supplies matching content so the links and active section can be exercised.',
+  'post-list':
+    'Edit the collection, featured item, and layout. Covers accept src, alt, fit, focalX, and focalY. Use public image URLs in JSON; Astro image imports work in authored pages.',
+  search:
+    'Try the built site index. Change the placeholder, accessible label, or presentation, then search again. Pagefind needs a production build; plain development mode has no index.',
+};
+const references: Record<string, string> = {
+  math: '/docs/math-code/#the-component-form',
+  code: '/docs/math-code/#the-code-component',
+  chart: '/docs/charts/',
+  model: '/docs/models/',
+  shader: '/docs/models/#a-live-shader-study',
+  layout: '/docs/site-structure/',
+  navigation: '/docs/navigation/',
+  'table-of-contents': '/docs/navigation/#navigate-within-a-page',
+  'post-list': '/docs/post-lists/',
+  search: '/docs/search/',
+};
+---
+
+<DocsLayout
+  title={group.title}
+  description={group.description}
+  catalog
+  headings={group.examples.map((id) => ({
+    depth: 2,
+    slug: id,
+    text: names[id],
+  }))}
+>
+  {
+    group.id === 'content' && (
+      <p>
+        For text, images, audio, and video, see the separate{' '}
+        <a href="/docs/native-content/">native HTML and media reference</a>.
+        Those examples use browser elements and theme styles.
+      </p>
+    )
+  }
+  {
+    group.examples.map((id) => (
+      <section id={id} class="component-specimen">
+        <p>{descriptions[id]}</p>
+        <PlaygroundExample id={id} />
+        {references[id] && (
+          <p class="component-reference">
+            <a href={references[id]}>Read the {names[id]} reference →</a>
+          </p>
+        )}
+      </section>
+    ))
+  }
+</DocsLayout>
+<style>
+  .component-specimen {
+    margin: 0 0 2rem;
+    scroll-margin-top: 1rem;
+  }
+  .component-reference {
+    font-size: 0.85rem;
+  }
+</style>

@@ -1,10 +1,7 @@
 ---
-import { Image } from 'astro:assets';
-import {
-  preparePostListItems,
-  type PostListLayout,
-  type PostListProps,
-} from './post-list-helpers';
+import { getImage } from 'astro:assets';
+import { preparePostListItems, type PostListProps } from './post-list-helpers';
+import { escapeHtml, renderPostList } from './website-renderers';
 
 export type {
   PostListCover,
@@ -23,101 +20,33 @@ const {
   label = 'Posts',
 } = Astro.props;
 const orderedItems = preparePostListItems(items, featuredHref);
-const layoutOptions: { value: PostListLayout; label: string }[] = [
-  { value: 'rows', label: 'Rows' },
-  { value: 'featured', label: 'Featured + rows' },
-  { value: 'grid', label: 'Grid' },
-  { value: 'featured-grid', label: 'Featured + grid' },
-];
+const resolvedImages = await Promise.all(
+  orderedItems.map(async (item, index) => {
+    const cover = item.cover;
+    if (!cover || typeof cover.src === 'string') return undefined;
+    const image = await getImage({
+      src: cover.src,
+      widths: [480, 800, 1200],
+      sizes: '(max-width: 42rem) 100vw, 50vw',
+    });
+    const attributes = image.attributes;
+    return `<img src="${escapeHtml(image.src)}"${image.srcSet.attribute ? ` srcset="${escapeHtml(image.srcSet.attribute)}"` : ''}${attributes.sizes ? ` sizes="${escapeHtml(attributes.sizes)}"` : ''} alt="${escapeHtml(cover.alt)}" width="${attributes.width}" height="${attributes.height}" loading="${index === 0 ? 'eager' : 'lazy'}" fetchpriority="${index === 0 ? 'high' : 'auto'}">`;
+  }),
+);
 ---
 
-<alk-post-list class="alk-post-list" data-layout={layout}>
-  {
-    selectable && (
-      <label class="alk-post-list-layout-control">
-        <span>Layout</span>
-        <select
-          data-post-list-layout
-          value={layout}
-          aria-label={`${label} layout`}
-        >
-          {layoutOptions.map((option) => (
-            <option value={option.value} selected={option.value === layout}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-      </label>
-    )
-  }
-  <section class="alk-post-list-collection" aria-label={label}>
-    <div class="alk-post-list-items" role="list">
-      {
-        orderedItems.map((item, index) => {
-          const cover = item.cover;
-          const localImage =
-            cover && typeof cover.src !== 'string' ? cover.src : undefined;
-          const remoteImage =
-            cover && typeof cover.src === 'string' ? cover.src : undefined;
-          const fit = cover?.fit ?? 'cover';
-          const focalStyle = cover
-            ? `--alk-post-focal-x: ${cover.focalX ?? 50}%; --alk-post-focal-y: ${cover.focalY ?? 50}%;`
-            : undefined;
-
-          return (
-            <article
-              class="alk-post-list-item"
-              role="listitem"
-              data-lead={index === 0 || undefined}
-              data-has-cover={Boolean(cover) || undefined}
-            >
-              <a class="alk-post-list-link" href={item.href}>
-                {cover && (
-                  <div
-                    class="alk-post-thumbnail"
-                    data-fit={fit}
-                    style={focalStyle}
-                  >
-                    {localImage ? (
-                      <Image
-                        src={localImage}
-                        alt={cover.alt}
-                        widths={[480, 800, 1200]}
-                        sizes="(max-width: 42rem) 100vw, 50vw"
-                        loading={index === 0 ? 'eager' : 'lazy'}
-                        fetchpriority={index === 0 ? 'high' : 'auto'}
-                      />
-                    ) : (
-                      <img
-                        src={remoteImage}
-                        alt={cover.alt}
-                        width="1200"
-                        height="800"
-                        loading={index === 0 ? 'eager' : 'lazy'}
-                        fetchpriority={index === 0 ? 'high' : 'auto'}
-                      />
-                    )}
-                  </div>
-                )}
-                <div class="alk-post-list-copy">
-                  <h2>{item.title}</h2>
-                  <p>{item.description}</p>
-                  {item.date && <time datetime={item.date}>{item.date}</time>}
-                </div>
-              </a>
-            </article>
-          );
-        })
-      }
-    </div>
-  </section>
-</alk-post-list>
+<Fragment
+  set:html={renderPostList(
+    { items, layout, selectable, featuredHref, label },
+    resolvedImages,
+  )}
+/>
 
 <script>
   import './post-list-client';
 </script>
 
-<style>
+<style is:global>
   alk-post-list {
     --alk-post-rule: var(--alk-rule, #ccc);
     --alk-post-paper: var(--alk-paper, #fff);
@@ -191,18 +120,18 @@ const layoutOptions: { value: PostListLayout; label: string }[] = [
     overflow: hidden;
   }
 
-  .alk-post-thumbnail :global(img) {
+  .alk-post-thumbnail img {
     display: block;
     width: 100%;
     height: 100%;
     object-position: var(--alk-post-focal-x) var(--alk-post-focal-y);
   }
 
-  .alk-post-thumbnail[data-fit='cover'] :global(img) {
+  .alk-post-thumbnail[data-fit='cover'] img {
     object-fit: cover;
   }
 
-  .alk-post-thumbnail[data-fit='contain'] :global(img) {
+  .alk-post-thumbnail[data-fit='contain'] img {
     object-fit: contain;
   }
 

@@ -27,7 +27,8 @@ export async function buildSearchIndex(directory: URL): Promise<number> {
       const content = await readFile(file, 'utf8');
       if (
         !/<main\b/i.test(content) ||
-        /http-equiv=["']refresh["']/i.test(content)
+        /http-equiv=["']refresh["']/i.test(content) ||
+        /<[a-z][^>]*\sdata-alk-search-exclude(?:\s|=|>)/i.test(content)
       )
         continue;
       const result = await index.addHTMLFile({ sourcePath, content });

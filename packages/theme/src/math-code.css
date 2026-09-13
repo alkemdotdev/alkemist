@@ -43,6 +43,7 @@
   outline: 2px solid var(--alk-ink-cobalt, #1982f2);
   outline-offset: 4px;
 }
+.alk-prose .alk-code,
 .alk-code {
   min-width: 0;
   max-width: 100%;
@@ -54,27 +55,27 @@
   overflow: hidden;
   color-scheme: dark;
 }
-.alk-code-caption {
+.alk-prose .alk-code .alk-code-caption,
+.alk-code .alk-code-caption {
   display: flex;
-  gap: 0.8rem;
+  gap: 0.45rem;
   align-items: center;
-  flex-wrap: wrap;
-  padding: 0.7rem 1rem;
+  padding: 0.4rem 0.5rem;
   border-bottom: 1px solid #444;
-  font: 0.8rem/1.5 var(--alk-mono, 'Ubuntu Mono', monospace);
+  font: 0.85rem/1.45 var(--alk-mono, 'Ubuntu Mono', monospace);
 }
-.alk-code-title {
+.alk-prose .alk-code .alk-code-title,
+.alk-code .alk-code-title {
   margin-right: auto;
   overflow-wrap: anywhere;
 }
-.alk-code-language {
-  color: #aaa;
-}
-.alk-code-copy {
+.alk-prose .alk-code .alk-code-copy,
+.alk-code .alk-code-copy {
   background: transparent;
-  border: 1px solid #777;
-  border-radius: 0.25rem;
-  padding: 0.2rem 0.65rem;
+  border: 0;
+  border-left: 1px solid #555;
+  border-radius: 0;
+  padding: 0.05rem 0 0.05rem 0.45rem;
   color: #eee;
   font: inherit;
   cursor: pointer;
@@ -83,21 +84,25 @@
   display: none;
 }
 .alk-code-copy:hover {
-  border-color: #eee;
-  background: #292929;
+  color: var(--alk-ink-cyan, #5eead4);
 }
 .alk-code-copy:focus-visible {
   outline: 2px solid #eee;
   outline-offset: 3px;
 }
+.alk-prose .alk-code .alk-code-pre,
 .alk-code .alk-code-pre {
   margin: 0;
-  padding: 1.1rem 0;
+  padding: 0.4rem 0;
   border: 0;
   border-radius: 0;
   overflow: auto;
-  font: 0.95rem/1.65 var(--alk-mono, 'Ubuntu Mono', monospace);
+  font: 0.875rem/1.45 var(--alk-mono, 'Ubuntu Mono', monospace);
   tab-size: 2;
+}
+.alk-prose .alk-code .alk-code-pre.alk-code-wrap,
+.alk-code .alk-code-pre.alk-code-wrap {
+  overflow: visible;
 }
 .alk-code pre code {
   display: block;
@@ -108,26 +113,116 @@
   overflow-wrap: normal;
   counter-reset: alk-code-line;
 }
+.alk-code .alk-code-wrap code {
+  width: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
 .alk-code .line {
   display: inline-block;
   width: 100%;
   min-height: 1lh;
-  padding-inline: 1.2rem;
+  padding-inline: 0.4rem;
   border-left: 2px solid transparent;
 }
 .alk-code .alk-code-numbered .line::before {
   display: inline-block;
-  width: 3ch;
-  margin-right: 2ch;
+  width: 2.5ch;
+  margin-right: 0.5ch;
   content: attr(data-line);
   color: #888;
   text-align: right;
   user-select: none;
 }
+.alk-code .alk-code-numbered .line.alk-code-added::before,
+.alk-code .alk-code-numbered .line.alk-code-removed::before {
+  width: 3.5ch;
+  margin-right: 0;
+  content: attr(data-diff) ' ' attr(data-line);
+}
 .alk-code .line.alk-code-highlight {
   /* Keep even the darkest fixed ink above 4.5:1 on highlighted lines. */
   background: #181818;
   border-left-color: var(--alk-ink-cobalt, #1982f2);
+}
+.alk-code .line.alk-code-added {
+  background: color-mix(in srgb, var(--alk-ink-fern, #7ec850) 16%, transparent);
+  border-left-color: var(--alk-ink-fern, #7ec850);
+}
+.alk-code .line.alk-code-removed {
+  background: color-mix(
+    in srgb,
+    var(--alk-ink-vermilion, #e5533d) 16%,
+    transparent
+  );
+  border-left-color: var(--alk-ink-vermilion, #e5533d);
+  text-decoration: line-through;
+}
+.alk-code .line.alk-code-dim {
+  opacity: 0.36;
+}
+.alk-code .alk-code-text-highlight {
+  padding: 0;
+  color: inherit;
+  background: color-mix(
+    in srgb,
+    var(--alk-ink-ochre, #d6a73a) 45%,
+    transparent
+  );
+  box-shadow: 0 0 0 1px
+    color-mix(in srgb, var(--alk-ink-ochre, #d6a73a) 55%, transparent);
+}
+.alk-code .alk-code-annotation-marker {
+  margin-right: 0.5ch;
+  padding: 0;
+  border: 0;
+  color: var(--alk-ink-ochre, #d6a73a);
+  background: transparent;
+  font: inherit;
+  font-weight: 700;
+  cursor: help;
+}
+.alk-code .alk-code-annotation-marker:focus-visible {
+  outline: 1px solid currentColor;
+  outline-offset: 2px;
+}
+.alk-code .alk-code-annotation-tooltip {
+  display: none;
+  max-width: min(32ch, 60vw);
+  margin-left: 0.45ch;
+  color: #ccc;
+  font: 0.78rem/1.35 var(--alk-mono, 'Ubuntu Mono', monospace);
+  white-space: normal;
+  overflow-wrap: anywhere;
+  vertical-align: middle;
+}
+.alk-code
+  .line:has(.alk-code-annotation-marker:hover)
+  .alk-code-annotation-tooltip,
+.alk-code
+  .line:has(.alk-code-annotation-marker:focus)
+  .alk-code-annotation-tooltip {
+  display: block;
+}
+.alk-code .alk-code-fold {
+  border-block: 1px solid #3e3e3e;
+  background: #161616;
+}
+.alk-code .alk-code-fold + .alk-code-pre {
+  border-top: 0;
+}
+.alk-code .alk-code-fold summary {
+  padding: 0.28rem 0.4rem;
+  color: #bbb;
+  font: 0.78rem/1.35 var(--alk-mono, 'Ubuntu Mono', monospace);
+  cursor: pointer;
+  user-select: none;
+}
+.alk-code .alk-code-fold summary:hover {
+  color: #eee;
+}
+.alk-code .alk-code-fold[open] summary {
+  border-bottom: 1px solid #3e3e3e;
 }
 .alk-prose :not(pre) > code:not([class*='language-']) {
   padding: 0.12em 0.3em;
@@ -142,7 +237,7 @@
     font-size: 0.85rem;
   }
   .alk-code .line {
-    padding-inline: 0.7rem;
+    padding-inline: 0.35rem;
   }
   .alk-code .alk-code-numbered .line::before {
     margin-right: 1ch;
@@ -160,4 +255,17 @@
   .alk-code .line {
     width: auto;
   }
+}
+
+/* Markdown-only consumers do not need the full theme's utility classes. */
+.alk-code [data-alk-copy-status] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }

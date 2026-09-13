@@ -1,5 +1,5 @@
 ---
-import katex from 'katex';
+import { renderMath } from './content-renderers';
 import '@alkemdotdev/alkemist-theme/math-code.css';
 
 export interface MathProps {
@@ -9,30 +9,7 @@ export interface MathProps {
 }
 type Props = MathProps;
 const { tex, display = true, label } = Astro.props;
-const html = katex.renderToString(tex, {
-  displayMode: display,
-  output: 'htmlAndMathml',
-  trust: false,
-  throwOnError: true,
-  strict: 'error',
-  maxExpand: 1000,
-  maxSize: 20,
-});
+const html = renderMath({ tex, display, label });
 ---
 
-{
-  display ? (
-    <figure class="alk-math">
-      <div
-        class="alk-math-scroll"
-        tabindex="0"
-        role="group"
-        aria-label={label ?? 'Mathematical equation'}
-        set:html={html}
-      />
-      {label && <figcaption>{label}</figcaption>}
-    </figure>
-  ) : (
-    <span class="alk-math-inline" set:html={html} />
-  )
-}
+<Fragment set:html={html} />

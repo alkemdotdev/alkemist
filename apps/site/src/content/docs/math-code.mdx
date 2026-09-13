@@ -4,10 +4,23 @@ description: Build-time mathematical typesetting and readable, copyable source l
 order: 6
 ---
 
-import Math from '@alkemdotdev/alkemist-components/math';
+import PlaygroundExample from '../../components/PlaygroundExample.astro';
 import Code from '@alkemdotdev/alkemist-components/code';
 
 **Available.** `Math`, `Code`, Markdown equations, and styled code fences work in the current site. Math and syntax highlighting render during the build. Readers receive the equation and source immediately; only copying needs a small browser script.
+
+## Start with Markdown
+
+Enable `alkemist()` in `astro.config.ts`. Ordinary fenced code in **both `.md` and `.mdx`** uses the same Alkemist renderer as `Code`, including filename, Copy, highlights, focus, changes, and folds. No component import or Alkemist Layout is required: the integration supplies the scoped styles and Copy behavior.
+
+| Authoring syntax                                             | Output                                                      |
+| ------------------------------------------------------------ | ----------------------------------------------------------- |
+| Fenced code with a language and metadata                     | Alkemist Code presentation and behavior                     |
+| `$...$` and `$$...$$`                                        | KaTeX typesetting, shared with Math                         |
+| Headings, paragraphs, emphasis, links, lists, tables, images | Semantic HTML styled by the site's theme                    |
+| Imported `Code`, `Math`, `Chart`, and other components       | Explicit props and slots for richer content in Astro or MDX |
+
+The integration owns Markdown rendering; the theme owns ordinary HTML styling. It does not replace every paragraph or heading with a JavaScript component or impose the full site theme on an existing website. Use the Alkemist Layout or theme when you want those typography defaults. See the [native HTML and media reference](/docs/native-content/).
 
 ## Write mathematics naturally
 
@@ -60,10 +73,7 @@ import Math from '@alkemdotdev/alkemist-components/math';
 />
 ```
 
-<Math
-  tex={String.raw`\int_{\partial\Omega}\omega = \int_\Omega d\omega`}
-  label="Stokes’ theorem, for a smooth oriented manifold and suitable differential form."
-/>
+<PlaygroundExample id="math" />
 
 | Property           | Default  | Behavior                                                             |
 | ------------------ | -------- | -------------------------------------------------------------------- |
@@ -83,7 +93,7 @@ KaTeX is a TeX mathematics renderer, not a complete LaTeX document compiler. Che
 
 ## Code fences with context
 
-Code listings share Ubuntu Mono, the same ink palette, and a `#111` panel in both board themes. Keeping the panel dark gives the fixed inks sufficient contrast for small source text. Captions identify the file and language; line numbers and highlighted lines help a reader follow an explanation.
+Code listings share Ubuntu Mono, the same ink palette, and a `#111` panel in both board themes. Keeping the panel dark gives the fixed inks sufficient contrast for small source text. The header contains just the filename and Copy. A narrow line-number gutter leaves room for the source. Highlights, focused lines, changes, folds, and notes help a reader follow an explanation.
 
 Add a language, optional title, and one-based highlight ranges to a Markdown fence:
 
@@ -109,43 +119,113 @@ const displacement = (t: number) =>
 
 Highlight individual lines with `{2,4}` or inclusive ranges with `{4-7}`. Add `no-line-numbers` to the fence metadata to hide the gutter. Titles currently use double quotes: `title="filename.ts"`. Metadata is rendered as text, not evaluated as HTML.
 
+### Direct attention without hiding context
+
+Use `focus={6-8}` to dim surrounding lines, `ins={2}` and `del={1}` to mark additions and removals, and `collapse={1-4}` to put setup behind a disclosure. Line numbers always refer to the original source. Multiple ranges use commas; collapsed ranges must not overlap.
+
+```typescript title="oscillator.ts" focus={6-8} collapse={1-4}
+const damping = 0.25;
+const frequency = 2;
+const duration = 10;
+const samples = 300;
+
+const omegaD = frequency * Math.sqrt(1 - damping ** 2);
+const displacement = (t: number) =>
+  Math.exp(-damping * frequency * t) * Math.cos(omegaD * t);
+```
+
+```typescript title="resolution.ts" del={1} ins={2}
+const samples = 100;
+const samples = 300;
+const duration = 10;
+```
+
+Add `wrap` for long prose-like lines. Code normally scrolls horizontally. Use the component form for custom fold labels, inline text highlights, and line annotations.
+
 ## The code component
 
-Use `Code` when the source already exists as a string, including source files imported with Vite's `?raw` suffix.
+Use a child slot for snippets authored directly in Astro or MDX:
+
+```astro title="note.astro"
+<Code lang="javascript" title="answer.js">const answer = 42;</Code>
+```
+
+<Code lang="javascript" title="answer.js">
+  const answer = 42;
+</Code>
+
+For source containing braces, tags, or significant line breaks, pass a string as the child. This prevents Astro/MDX from interpreting the snippet as template syntax:
+
+{/* prettier-ignore */}
+```astro title="example.astro"
+<Code lang="typescript" title="advance.ts">{String.raw`
+  function advance(position: number, velocity: number, dt: number) {
+    return position + velocity * dt;
+  }
+`}</Code>
+```
+
+<Code lang="typescript" title="advance.ts" highlightLines={[2]}>{String.raw`
+  function advance(position: number, velocity: number, dt: number) {
+    return position + velocity * dt;
+  }
+`}</Code>
+
+Slot input removes surrounding blank lines and shared author indentation. Use `code={source}` when source is imported with Vite's `?raw` suffix, generated programmatically, or must retain every byte of whitespace. Supply either `code` or a text child, not both. Default MDX paragraph wrappers are normalized to text. Other nested rendered HTML is rejected; use a string child to display literal markup. As in any JavaScript template string, escape literal backticks and `\${...}` interpolation when needed.
+
+Astro's [slot API](https://docs.astro.build/en/reference/astro-syntax/#astroslotsrender) returns rendered HTML, so the component decodes escaped text once before passing it to the shared highlighter. It does not evaluate the source text.
 
 ```astro title="algorithm.astro"
 ---
 import Code from '@alkemdotdev/alkemist-components/code';
-import source from './solver.ts?raw';
+
+const source =
+  'function advance(position: number, velocity: number, dt: number) {\n  return position + velocity * dt;\n}';
 ---
 
 <Code
   code={source}
   lang="typescript"
-  title="solver.ts"
-  highlightLines={[2, 3]}
+  title="integrator.ts"
+  highlightLines={[2]}
 />
 ```
 
+<PlaygroundExample id="code" />
+
+| Property                   | Default       | Behavior                                                                |
+| -------------------------- | ------------- | ----------------------------------------------------------------------- |
+| `code?: string`            | Or text child | The source text to display and copy.                                    |
+| `lang`                     | `text`        | A bundled Shiki language or plain text.                                 |
+| `title: string`            | `Source`      | File name or descriptive caption.                                       |
+| `highlightLines: number[]` | `[]`          | One-based positive integer line numbers.                                |
+| `lineNumbers: boolean`     | `true`        | Show the numbered gutter.                                               |
+| `focusLines: number[]`     | `[]`          | Keep these lines prominent and dim surrounding context.                 |
+| `addedLines: number[]`     | `[]`          | Mark additions with a plus and green background.                        |
+| `removedLines: number[]`   | `[]`          | Mark removals with a minus and red background.                          |
+| `collapsedRanges`          | `[]`          | `{ start, end, label? }` ranges behind keyboard-accessible disclosures. |
+| `annotations`              | `[]`          | `{ line, text }` notes attached to a source line. Text is escaped.      |
+| `highlightText: string[]`  | `[]`          | Highlight exact strings, including across syntax tokens.                |
+| `wrap: boolean`            | `false`       | Wrap long lines instead of horizontal scrolling.                        |
+
+Choose **Explain**, **Focus**, or **Changes** in the playground to inspect each feature, then combine their parameters. All line references are one-based. Invalid values and overlapping folds produce an error instead of silently altering the listing.
+
+```astro title="explained-code.astro"
 <Code
-  code={
-    'def advance(position, velocity, dt):\n    return position + velocity * dt\n'
-  }
-  lang="python"
-  title="integrator.py"
-  highlightLines={[2]}
+  code={source}
+  lang="typescript"
+  title="oscillator.ts"
+  collapsedRanges={[{ start: 1, end: 4, label: 'Oscillator settings' }]}
+  highlightLines={[6]}
+  highlightText={['omegaD']}
+  annotations={[
+    { line: 6, text: 'Damping reduces the natural angular frequency.' },
+  ]}
 />
+```
 
-| Property                   | Default  | Behavior                                 |
-| -------------------------- | -------- | ---------------------------------------- |
-| `code: string`             | Required | The source text to display and copy.     |
-| `lang`                     | `text`   | A bundled Shiki language or plain text.  |
-| `title: string`            | `Source` | File name or descriptive caption.        |
-| `highlightLines: number[]` | `[]`     | One-based positive integer line numbers. |
-| `lineNumbers: boolean`     | `true`   | Show the numbered gutter.                |
+Syntax highlighting uses [Shiki](https://shiki.style/guide/transformers) during the build. Authored listings need no browser highlighter; interactive playgrounds load it on demand to regenerate source. Components reject unknown languages. Astro's fenced-code pipeline warns and falls back to plain text for an unknown fence language, so check the build output when adding a new grammar.
 
-Syntax highlighting uses [Shiki](https://shiki.style/guide/transformers) during the build; its grammars are not shipped as a browser highlighter. Components reject unknown languages. Astro's fenced-code pipeline warns and falls back to plain text for an unknown fence language, so check the build output when adding a new grammar.
-
-Copy uses the browser clipboard when permitted. If copying is blocked, it selects the source and announces how to copy it manually. Line numbers are presentation only and are excluded from the copied source. Without JavaScript, the code remains readable and selectable and the inactive copy control stays hidden. Long lines scroll inside their panel.
+Copy uses the browser clipboard when permitted. If copying is blocked, it selects the source and announces how to copy it manually. Copy always includes the complete original source, even when sections are folded. Line numbers, annotations, change markers, and disclosure labels are excluded. Without JavaScript, the code remains readable and selectable and the inactive copy control stays hidden. Long lines scroll inside their panel.
 
 See [the test page](/test/#math) for equations alongside interactive figures, and [its code section](/test/#code) for listings in context. The shared integration uses Astro's [Unified Markdown processor](https://docs.astro.build/en/guides/markdown-content/) for Markdown and MDX.

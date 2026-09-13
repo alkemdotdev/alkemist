@@ -1,0 +1,32 @@
+---
+title: Publish your site
+description: Build once, inspect the output, and deploy it with your chosen host.
+order: 4
+---
+
+## Check the built site
+
+In your generated project, run:
+
+```sh
+npm run build
+npm run preview
+```
+
+Inspect the preview URL printed in the terminal. Follow navigation links, test figures, and search for a phrase from your content. Search needs the index created by the build; it does not produce results from the development server alone.
+
+## Choose a host
+
+Use the guide for the platform you already work with:
+
+- [Cloudflare Pages](/docs/hosting/cloudflare/) connects a Git repository and creates branch previews.
+- [GitLab Pages](/docs/hosting/gitlab-pages/) builds through your project's GitLab pipeline.
+- [Other static hosts](/docs/hosting/custom/) serve the generated output using your own deployment process.
+
+Configure the public site URL and any subpath before building. Deploy the whole output directory, including the `pagefind/` search index and generated assets. Use a preview deployment to inspect a change before making it production.
+
+## Keep updates deliberate
+
+Commit your content, configuration, and lockfile. Upgrade Alkemist packages together, rebuild, and check the pages that use them. The [architecture and upgrade reference](/docs/architecture/) explains the ownership boundary between your site and the toolkit.
+
+Publishing an Alkemist website does not require publishing anything to npm. Toolkit maintainers use a separate [package release workflow](https://github.com/alkemdotdev/alkemist/blob/main/docs/publishing.md).

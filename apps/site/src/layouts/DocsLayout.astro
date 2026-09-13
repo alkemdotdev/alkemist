@@ -11,12 +11,14 @@ interface Props {
   catalog?: boolean;
 }
 const { title, description, headings = [], catalog = false } = Astro.props;
-const sections = headings.filter((heading) => heading.depth === 2);
+const sections = headings.filter(
+  (heading) => heading.depth >= 2 && heading.depth <= 4,
+);
 ---
 
 <SiteLayout title={title} description={description} preview={isPreview}>
   <div class="docs-shell">
-    <DocsNav />
+    <DocsNav headings={sections} />
     <article
       class:list={['docs-article', 'alk-prose', { 'docs-catalog': catalog }]}
     >
@@ -24,20 +26,6 @@ const sections = headings.filter((heading) => heading.depth === 2);
         <h1>{title}</h1>
         <p class="docs-description">{description}</p>
       </header>
-      {
-        sections.length > 3 && (
-          <details class="docs-contents">
-            <summary>On this page</summary>
-            <ul>
-              {sections.map((heading) => (
-                <li>
-                  <a href={`#${heading.slug}`}>{heading.text}</a>
-                </li>
-              ))}
-            </ul>
-          </details>
-        )
-      }
       <slot />
     </article>
   </div>

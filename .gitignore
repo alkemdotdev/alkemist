@@ -8,3 +8,5 @@ dist/
 .DS_Store
 .alkemist/
 .wrangler/
+
+.playwright-cli/

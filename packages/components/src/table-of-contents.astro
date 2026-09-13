@@ -1,0 +1,29 @@
+---
+import './table-of-contents.css';
+import { renderTableOfContents } from './website-renderers';
+export interface TableOfContentsHeading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+export interface TableOfContentsProps {
+  headings: TableOfContentsHeading[];
+  label?: string;
+  showLabel?: boolean;
+}
+
+type Props = TableOfContentsProps;
+
+const {
+  headings,
+  label = 'On this page',
+  showLabel = true,
+}: Props = Astro.props;
+---
+
+<Fragment set:html={renderTableOfContents({ headings, label, showLabel })} />
+
+<script>
+  import './table-of-contents-client';
+</script>

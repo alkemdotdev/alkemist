@@ -14,6 +14,17 @@ test('search indexes rendered pages and excludes redirects, errors, and non-page
     await mkdir(join(root, 'docs'));
     await writeFile(join(root, 'docs/index.html'), document);
     await writeFile(join(root, '404.html'), document);
+    await writeFile(
+      join(root, 'preview.html'),
+      document.replace(
+        '<main data-pagefind-body>',
+        '<main data-pagefind-body data-alk-search-exclude>',
+      ),
+    );
+    await writeFile(
+      join(root, 'layout-preview.html'),
+      document.replace('<h1>', '<div data-alk-search-exclude></div><h1>'),
+    );
     await writeFile(join(root, '500.html'), document);
     await writeFile(
       join(root, 'redirect.html'),

@@ -1,0 +1,87 @@
+---
+import Layout, {
+  type LayoutProps,
+} from '@alkemdotdev/alkemist-components/layout';
+import '@alkemdotdev/alkemist-theme/theme.css';
+import PlaygroundSpecimen from '../../components/PlaygroundSpecimen.astro';
+import { definitions } from '../../lib/playground/definitions';
+export function getStaticPaths() {
+  return Object.keys(definitions).map((id) => ({ params: { id } }));
+}
+const id = Astro.params.id!;
+const definition = definitions[id];
+---
+
+{
+  id === 'layout' ? (
+    <Layout {...(definition.defaults as unknown as LayoutProps)}>
+      <div
+        id="playground-host"
+        data-example={id}
+        data-pagefind-ignore
+        data-alk-search-exclude
+      >
+        <>
+          <h1>Research notes</h1>
+          <p>A place for experiments and explanations.</p>
+        </>
+      </div>
+    </Layout>
+  ) : (
+    <html lang="en">
+      <>
+        <head>
+          <>
+            <meta charset="utf-8" />
+            <meta name="viewport" content="width=device-width" />
+            <meta name="robots" content="noindex,nofollow" />
+            <title>{definition.name} preview</title>
+            <link
+              rel="canonical"
+              href={new URL(Astro.url.pathname, Astro.site)}
+            />
+          </>
+        </head>
+        <body data-pagefind-ignore>
+          <main
+            id="playground-host"
+            class="alk-prose"
+            data-example={id}
+            data-alk-search-exclude
+          >
+            <PlaygroundSpecimen id={id} />
+          </main>
+        </body>
+      </>
+    </html>
+  )
+}
+<script>
+  import '../../lib/playground/frame';
+</script>
+<style is:global>
+  html {
+    scroll-behavior: smooth;
+  }
+  body:has(> #playground-host) {
+    margin: 0;
+    padding: 0.5rem;
+  }
+  #playground-host {
+    min-width: 0;
+  }
+  #playground-host > :first-child {
+    margin-top: 0;
+  }
+  #playground-host img,
+  #playground-host video {
+    max-width: 100%;
+  }
+  .playground-heading-samples > h2,
+  .playground-heading-samples > h3 {
+    scroll-margin-top: 1rem;
+  }
+  .playground-heading-samples > p {
+    min-height: 8rem;
+  }
+</style>

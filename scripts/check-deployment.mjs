@@ -42,13 +42,19 @@ assert.equal(
 const checks = [];
 for (const [path, title] of [
   ['/', 'Alkemist'],
-  ['/docs/', 'Documentation'],
-  ['/docs/getting-started/', 'Getting started'],
+  ['/docs/', 'Getting started'],
   ['/docs/hosting/cloudflare/', 'Host your site on Cloudflare'],
   ['/docs/hosting/gitlab-pages/', 'Host your site on GitLab Pages'],
   ['/docs/hosting/custom/', 'Host your site with another provider'],
   ['/docs/charts/', 'Charts and data'],
   ['/docs/components/', 'Components'],
+  ['/docs/content/', 'Content'],
+  ['/docs/visualization/', 'Visualization'],
+  ['/docs/graphics/', 'Graphics'],
+  ['/docs/website/', 'Website'],
+  ['/docs/native-content/', 'Native HTML'],
+  ['/docs/navigation/', 'Navigation'],
+  ['/docs/math-code/', 'Math and code'],
   ['/docs/site-structure/', 'Site structure and navigation'],
   ['/docs/post-images/', 'Blog thumbnails and covers'],
   ['/blog/three-homepage-directions/', 'Three ways to introduce the workbench'],
@@ -117,11 +123,7 @@ for (const [path, type, required] of [
       '--provider custom',
     ],
   ],
-  [
-    '/llms.txt',
-    /^text\/plain/,
-    ['/docs/agent-setup.md', '/docs/getting-started/'],
-  ],
+  ['/llms.txt', /^text\/plain/, ['/docs/agent-setup.md', '/docs/']],
 ]) {
   const response = await get(path);
   assert.equal(response.status, 200, path);

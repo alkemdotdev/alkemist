@@ -4,7 +4,7 @@ description: Publish a real glTF model with orbit controls, a static poster, and
 order: 4.2
 ---
 
-import Model from '@alkemdotdev/alkemist-components/model';
+import PlaygroundExample from '../../components/PlaygroundExample.astro';
 
 `Model` displays an uncompressed **glTF 2.0 `.glb` or `.gltf`** file with Three.js. Alkemist provides the figure shell, lazy loading, camera controls, theming, fallback, and cleanup. The file itself stays downloadable.
 
@@ -23,12 +23,7 @@ import Model from '@alkemdotdev/alkemist-components/model';
 />
 ```
 
-<Model
-  src="/test/torus-knot.glb"
-  poster="/test/torus-knot.svg"
-  title="A (2, 3) torus knot"
-  description="This owned teaching fixture contains 4,825 vertices and 9,216 triangles. Its geometry is generated reproducibly; it is not a scan or a manufactured part."
-/>
+<PlaygroundExample id="model" />
 
 The component uses the project's pinned [Three.js GLTFLoader](https://github.com/mrdoob/three.js/blob/r185/examples/jsm/loaders/GLTFLoader.js). It does not currently configure Draco, Meshopt, or KTX2 decoders, so models depending on those compression extensions need an uncompressed export.
 
@@ -79,6 +74,10 @@ import Shader from '@alkemdotdev/alkemist-components/shader';
 
 <Shader title="Interference field" frequency={9} angle={24} />
 ```
+
+<PlaygroundExample id="shader" />
+
+Change Frequency and Source angle to compare the field; enable Play waves to animate it.
 
 Its public prop type is `ShaderProps`. `title` defaults to “Interference field,” `frequency` defaults to 9 and is clamped to 3–18, and `angle` defaults to 24 degrees and is clamped to 0–180. `class` adds a custom class. Native range controls let readers change those values; Play waves explicitly starts motion.
 

@@ -9,7 +9,7 @@ import {
   type CodeOptions,
 } from '@alkemdotdev/alkemist-components/code-theme';
 import type { ShikiTransformer, ThemeRegistration } from 'shiki';
-import { buildSearchIndex } from './search';
+import { buildSearchIndex } from './search.ts';
 
 export interface MdxOptions {
   /** Disable the bundled MDX integration when an existing site already owns it. */
@@ -28,7 +28,6 @@ export interface CodeIntegrationOptions extends CodeOptions {
   theme?: ThemeRegistration;
   transformers?: ShikiTransformer[];
   excludeLangs?: string[];
-  wrap?: boolean;
 }
 
 export interface IntegrationOptions {
@@ -89,7 +88,18 @@ export default function alkemist(
           logger.info(`Indexed ${pages} pages for search.`);
         }
       },
-      'astro:config:setup': ({ updateConfig }) => {
+      'astro:config:setup': ({ updateConfig, injectScript }) => {
+        // Fences and equations must work in an adopting site's own layout.
+        if (codeEnabled || mathEnabled)
+          injectScript(
+            'page-ssr',
+            'import "@alkemdotdev/alkemist-theme/math-code.css";',
+          );
+        if (codeEnabled)
+          injectScript(
+            'page',
+            'import "@alkemdotdev/alkemist-components/code-copy";',
+          );
         const markdown = {
           ...(mathEnabled
             ? {

@@ -1,5 +1,6 @@
 // Explicit page aliases preserve published downloads under /notebook/.
 export const redirects = {
+  '/docs/getting-started/': '/docs/',
   '/notebook/': '/blog/',
   '/notebook/foundation/': '/blog/foundation/',
   '/notebook/boards/': '/blog/boards/',

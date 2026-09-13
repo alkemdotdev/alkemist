@@ -1,0 +1,74 @@
+---
+title: Navigation and page contents
+description: Give readers a clear route between pages and within a page.
+order: 5
+---
+
+import PlaygroundExample from '../../components/PlaygroundExample.astro';
+
+These two components are available in the current source checkout. Their npm release is pending publication of these local changes.
+
+## Navigate between pages
+
+`Navigation` renders a tree of links supplied by your site. The first child level is visible by default. Deeper branches open automatically when they contain the current page. Readers can still collapse or expand any branch. The documentation sidebar uses this same component. Page navigation, post lists, and search form the pages-and-navigation group; see the [post list](/docs/post-lists/) and [search](/docs/search/) references for those controls.
+
+```astro
+---
+import Navigation from '@alkemdotdev/alkemist-components/navigation';
+
+const items = [
+  { label: 'Overview', href: '/docs/' },
+  {
+    label: 'Components',
+    href: '/docs/components/',
+    children: [
+      { label: 'Navigation', href: '/docs/navigation/' },
+      { label: 'Search', href: '/docs/search/' },
+    ],
+  },
+];
+---
+
+<Navigation items={items} currentPath={Astro.url.pathname} />
+```
+
+### Try a nested branch
+
+Expand or collapse Components. Its link still opens the catalog, and Navigation is marked as the current page. Links and disclosures work without JavaScript.
+
+<PlaygroundExample id="navigation" />
+
+### Supply your own structure
+
+Import `NavigationItem` and `NavigationProps` from the `/navigation` entry for typed configuration. Each item has a `label`, an `href`, and optional `children`. Pass the current pathname as `currentPath`; use a distinct `label` when multiple navigation regions appear on one page.
+
+Set `expandedDepth={0}` for initially collapsed branches, or increase it to reveal more levels. Active branches open regardless of this setting.
+
+Keep top-level choices short. Put detailed guides under the page that introduces them, and use labels that describe the destination. The component does not create routes or determine your site's information structure.
+
+## Navigate within a page
+
+`TableOfContents` uses heading data from Astro's content renderer. It includes second- through fourth-level headings, with indentation showing the relationship between sections and subsections. Its active location follows the reader's scroll position.
+
+```astro
+---
+import { render } from 'astro:content';
+import TableOfContents from '@alkemdotdev/alkemist-components/table-of-contents';
+
+const { entry } = Astro.props;
+const { Content, headings } = await render(entry);
+---
+
+<aside><TableOfContents headings={headings} /></aside>
+<article><Content /></article>
+```
+
+### Match headings to the page
+
+For an Astro page without a content entry, supply `{ depth, slug, text }` records yourself. Each `slug` must match the `id` of a heading in the rendered page. The table of contents links to existing content; it does not generate heading IDs.
+
+<PlaygroundExample id="table-of-contents" />
+
+Pass the current page’s heading records to `Navigation` as its `headings` prop to show an indented TOC directly beneath the selected page, as this sidebar does. The standalone table of contents remains available when a layout needs different placement.
+
+Import `TableOfContentsProps` from `/table-of-contents` for typed props. Your layout owns placement. This documentation keeps page links and section links together in the left sidebar. The component supplies the links and active state, without imposing a page layout.

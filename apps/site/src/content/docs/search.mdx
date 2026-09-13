@@ -4,6 +4,8 @@ description: Search rendered pages with a reusable header control and a static i
 order: 8
 ---
 
+import PlaygroundExample from '../../components/PlaygroundExample.astro';
+
 Search covers the rendered text of Blog, Logs, Labs, Docs, Book, and other generated pages. It runs in the reader's browser, with an index generated during the site build. No search account or server is required.
 
 The demo and generated starter enable both pieces:
@@ -53,3 +55,33 @@ Search includes rendered text, not the contents of linked PDFs, datasets, or int
 Run `npm run build`, then `npm run preview` to test real search results locally. The development server does not generate the production index. Each deployment rebuilds the index with the site's current content, including sites hosted beneath a subpath. Deploy the entire build output, including its `pagefind/` directory.
 
 For a site without search, remove the `search` prop from `Layout` and set `search: false` in the integration.
+
+## Try a standalone search
+
+This control searches the same site as the header. Try **thumbnail** or **chart**, use the arrow keys to select a result, and press Escape to dismiss it. On a narrow screen, the search button opens a dialog.
+
+<PlaygroundExample id="search" />
+
+```astro
+---
+import Search from '@alkemdotdev/alkemist-components/search';
+---
+
+<Search
+  label="Documentation search example"
+  placeholder="Try thumbnail or chart"
+/>
+```
+
+## Props and defaults
+
+Import `SearchProps` from the same `/search` entry when typing a configuration.
+
+| Prop          | Default                      | Use                                                                                     |
+| ------------- | ---------------------------- | --------------------------------------------------------------------------------------- |
+| `label`       | `Search this site`           | Accessible name for the field and mobile dialog. Give separate examples distinct names. |
+| `placeholder` | `Search`                     | A short hint inside the empty field.                                                    |
+| `variant`     | `standalone`                 | Use `header` for compact header spacing; `Layout` sets this itself.                     |
+| `indexUrl`    | `<base>pagefind/pagefind.js` | URL of the generated Pagefind runtime on your site.                                     |
+
+Changing the label or placeholder does not filter the index. The example above still searches all indexed pages.

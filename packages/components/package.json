@@ -32,8 +32,12 @@
     "./model": "./src/model/index.ts",
     "./shader": "./src/shader/index.ts",
     "./post-list": "./src/post-list/index.ts",
+    "./navigation": "./src/navigation/index.ts",
+    "./table-of-contents": "./src/table-of-contents/index.ts",
     "./code-theme": "./src/code-theme.ts",
-    "./code-copy": "./src/code-copy.ts"
+    "./code-copy": "./src/code-copy.ts",
+    "./playground": "./src/playground/index.ts",
+    "./playground/renderers": "./src/playground/renderers.ts"
   },
   "files": [
     "src",
@@ -50,6 +54,7 @@
     "three": "0.185.1",
     "vega": "6.4.0",
     "vega-embed": "7.2.0",
-    "vega-lite": "6.4.3"
+    "vega-lite": "6.4.3",
+    "entities": "6.0.1"
   }
 }

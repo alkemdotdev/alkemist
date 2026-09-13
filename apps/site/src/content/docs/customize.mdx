@@ -1,0 +1,21 @@
+---
+title: Customize your site
+description: Choose what to publish, how readers find it, and how it looks.
+order: 3
+---
+
+## Start with the content
+
+Keep your first site small. Enable only sections you will use: `/blog` for articles, `/logs` for quick updates, `/labs` for interactive work, `/docs` for reference, or `/book` for a curated guide. These are defaults you can rename or disable; `/info` holds your about page.
+
+The generated starter keeps site configuration in `src/lib/site.ts`. Follow [site structure and navigation](/docs/site-structure/) to change paths, labels, ordering, and enabled sections together.
+
+## Give it your identity
+
+Choose a site name, a short explanation of the work, and a homepage that leads to something worth reading. The [homepage guide](/docs/homepage/) explains the page composition; [colors and typography](/docs/palette/) covers shared theme tokens.
+
+You can use individual components with your own styles. Import the full theme only when you want Alkemist's complete page styling.
+
+## Make article lists readable
+
+Use compact rows for short updates or a featured image and grid for visual articles. `PostList` keeps the content separate from its presentation, with optional reader controls. Start with the [live post list examples](/docs/post-lists/), then configure [cover images and thumbnail crops](/docs/post-images/).

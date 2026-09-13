@@ -1,0 +1,70 @@
+---
+import Chart, { type ChartProps } from '@alkemdotdev/alkemist-components/chart';
+import Model, { type ModelProps } from '@alkemdotdev/alkemist-components/model';
+import Shader, {
+  type ShaderProps,
+} from '@alkemdotdev/alkemist-components/shader';
+import Equation, {
+  type MathProps,
+} from '@alkemdotdev/alkemist-components/math';
+import Code, { type CodeProps } from '@alkemdotdev/alkemist-components/code';
+import Navigation, {
+  type NavigationProps,
+} from '@alkemdotdev/alkemist-components/navigation';
+import TableOfContents, {
+  type TableOfContentsProps,
+} from '@alkemdotdev/alkemist-components/table-of-contents';
+import PostList, {
+  type PostListProps,
+} from '@alkemdotdev/alkemist-components/post-list';
+import Search, {
+  type SearchProps,
+} from '@alkemdotdev/alkemist-components/search';
+import {
+  renderNativeContent,
+  type NativeContentKind,
+} from '../../../../packages/components/src/native-content-renderer';
+import { definitions } from '../lib/playground/definitions';
+interface Props {
+  id: string;
+}
+const { id } = Astro.props;
+const values = definitions[id].defaults;
+---
+
+{id === 'chart' && <Chart {...(values as unknown as ChartProps)} />}
+{id === 'model' && <Model {...(values as unknown as ModelProps)} />}
+{id === 'shader' && <Shader {...(values as unknown as ShaderProps)} />}
+{id === 'math' && <Equation {...(values as unknown as MathProps)} />}
+{id === 'code' && <Code {...(values as unknown as CodeProps)} />}
+{
+  id === 'navigation' && (
+    <Navigation {...(values as unknown as NavigationProps)} />
+  )
+}
+{
+  id === 'table-of-contents' && (
+    <TableOfContents {...(values as unknown as TableOfContentsProps)} />
+  )
+}
+{id === 'post-list' && <PostList {...(values as unknown as PostListProps)} />}
+{id === 'search' && <Search {...(values as unknown as SearchProps)} />}
+{
+  ['html', 'image', 'audio', 'video'].includes(id) && (
+    <Fragment set:html={renderNativeContent(id as NativeContentKind, values)} />
+  )
+}
+{
+  ['navigation', 'table-of-contents'].includes(id) && (
+    <div class="playground-heading-samples">
+      <>
+        <h2 id="introduction">Introduction</h2>
+        <p>This content gives the navigation a real destination.</p>
+        <h3 id="first-example">First example</h3>
+        <p>Heading depth determines indentation.</p>
+        <h2 id="reference">Reference</h2>
+        <p>Scroll this preview to see the active section change.</p>
+      </>
+    </div>
+  )
+}

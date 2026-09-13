@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { playgroundSource } from '../packages/components/src/playground/helpers.ts';
 import {
   mkdtemp,
   mkdir,
@@ -66,11 +67,15 @@ try {
 import Math from '@alkemdotdev/alkemist-components/math';
 import Code from '@alkemdotdev/alkemist-components/code';
 import Search, {type SearchProps} from '@alkemdotdev/alkemist-components/search';
+import Navigation, {type NavigationItem} from '@alkemdotdev/alkemist-components/navigation';
+import TableOfContents, {type TableOfContentsProps} from '@alkemdotdev/alkemist-components/table-of-contents';
 import type { MathProps } from '@alkemdotdev/alkemist-components/math';
+const items: NavigationItem[] = [{label:'Overview',href:'/'},{label:'Figures',href:'/figures/',children:[{label:'Posts',href:'/posts/'}]}];
+const contents: TableOfContentsProps = {headings:[{depth:2,slug:'example',text:'Example'}]};
 const math: MathProps = {tex:'E=mc^2',label:'Mass and energy'};
 const search: SearchProps = {label:'Search this existing site'};
 ---
-<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Existing site</title></head><body><h1>My existing website</h1><Search {...search}/><Math {...math}/><Code code="const answer = 42;" lang="javascript"/><style is:global>body {margin:31px;font-family:Georgia,serif;background:#fff8ed;color:#172b4d} h1{font-size:29px}</style></body></html>`,
+<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Existing site</title></head><body><h1>My existing website</h1><Navigation items={items} currentPath="/"/><TableOfContents {...contents}/><h2 id="example">Example</h2><Search {...search}/><Math {...math}/><Code code="const answer = 42;" lang="javascript"/><style is:global>body {margin:31px;font-family:Georgia,serif;background:#fff8ed;color:#172b4d} h1{font-size:29px}</style></body></html>`,
   );
   await write(
     'src/pages/figures.astro',
@@ -79,6 +84,26 @@ import Chart from '@alkemdotdev/alkemist-components/chart';
 import Model from '@alkemdotdev/alkemist-components/model';
 ---
 <html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Standalone figures</title></head><body><h1>Figures in my existing site</h1><Chart src="/sample.csv" type="line" x="x" y="y" title="Measurements" description="Three sample readings."/><Model src="/sample.gltf" title="Sample mesh" description="A model figure."/></body></html>`,
+  );
+  await write(
+    'src/pages/playground.astro',
+    `---
+import Playground from '@alkemdotdev/alkemist-components/playground';
+import type {PlaygroundDefinition} from '@alkemdotdev/alkemist-components/playground';
+const definition: PlaygroundDefinition = {id:'equation',name:'Math',importPath:'@alkemdotdev/alkemist-components/math',defaults:{tex:'E=mc^2'},controls:[{name:'tex',type:'textarea'}]};
+---
+<html lang="en"><head><meta charset="utf-8"/><title>Reusable playground</title></head><body><Playground definition={definition} previewUrl="/equation/" /></body></html>`,
+  );
+  await write(
+    'src/pages/equation.astro',
+    `---
+import Equation from '@alkemdotdev/alkemist-components/math';
+---
+<html lang="en"><head><meta charset="utf-8"/><title>Equation frame</title></head><body><div id="example"><Equation tex="E=mc^2"/></div><script>
+import {renderMath} from '@alkemdotdev/alkemist-components/playground/renderers';
+window.addEventListener('message', event => {if(event.origin!==location.origin || event.source!==parent || event.data?.type!=='alk:playground:update' || event.data.id!=='equation') return; const {values,revision}=event.data; try {document.querySelector('#example')!.innerHTML=renderMath(values);parent.postMessage({type:'alk:playground:rendered',id:'equation',revision},location.origin);} catch(error) {parent.postMessage({type:'alk:playground:error',id:'equation',revision,message:String(error)},location.origin);}});
+parent.postMessage({type:'alk:playground:ready',id:'equation'},location.origin);
+</script></body></html>`,
   );
   {
     await write(
@@ -169,6 +194,124 @@ export default defineConfig({integrations:[mdx(),alkemist({mdx:{enabled:false},m
       await readFile(join(temporary, 'dist/article/index.html'), 'utf8')
     ).includes('HOST_PROCESSOR_PRESERVED'),
   );
+  // Both supported authoring grammars feed text slots to the same Code renderer.
+  const slotExample =
+    '<Code lang="typescript" title="slot.ts">{String.raw`\n  const object = { value: "<tag>&amp;</tag>" };\n  const answer = 42;\n`}</Code>';
+  await write(
+    'src/pages/slot.astro',
+    '---\nimport Code from "@alkemdotdev/alkemist-components/code";\n---\n' +
+      slotExample,
+  );
+  await write(
+    'src/pages/slot-mdx.mdx',
+    'import Code from "@alkemdotdev/alkemist-components/code";\n\n' +
+      slotExample,
+  );
+  await write(
+    'src/pages/slot-bare.mdx',
+    'import Code from "@alkemdotdev/alkemist-components/code";\n\n<Code title="bare.js">\n  const answer = 42;\n</Code>\n',
+  );
+  const generatedSource =
+    'const object = { value: "<tag>&amp;</tag>" };\nconst answer = 42;';
+  await write(
+    'src/pages/slot-generated.astro',
+    playgroundSource(
+      {
+        id: 'code',
+        name: 'Code',
+        importPath: '@alkemdotdev/alkemist-components/code',
+        defaults: {},
+        controls: [],
+        textSlotProp: 'code',
+      },
+      { code: generatedSource, lang: 'typescript', title: 'generated.ts' },
+    ),
+  );
+  // Plain Markdown fences must work without a Layout or component import.
+  await write(
+    'astro.config.mjs',
+    `import {defineConfig} from 'astro/config';import alkemist from '@alkemdotdev/alkemist-astro';export default defineConfig({integrations:[alkemist()]});`,
+  );
+  const markdownSample =
+    '# Native authoring\n\nA paragraph with **emphasis**.\n\n- First\n- Second\n\n$E=mc^2$\n\n```ts title="native.ts" {2} collapse={1}\nconst setup = 1;\nconst answer = 42;\n```\n';
+  await write('src/pages/native.md', markdownSample);
+  await write('src/pages/native-mdx.mdx', markdownSample);
+  run(['run', 'build']);
+  for (const route of ['slot', 'slot-mdx', 'slot-generated']) {
+    const rendered = await readFile(
+      join(temporary, `dist/${route}/index.html`),
+      'utf8',
+    );
+    const encoded = rendered.match(/data-alk-source="([^"]*)"/)?.[1];
+    assert(encoded, `${route}: slot must render Code`);
+    assert.equal(
+      decodeURIComponent(encoded),
+      'const object = { value: "<tag>&amp;</tag>" };\nconst answer = 42;',
+    );
+    assert(
+      !rendered.includes('<tag>'),
+      `${route}: literal tags must remain escaped source`,
+    );
+  }
+  const bareSlot = await readFile(
+    join(temporary, 'dist/slot-bare/index.html'),
+    'utf8',
+  );
+  assert.equal(
+    decodeURIComponent(bareSlot.match(/data-alk-source="([^"]*)"/)?.[1] ?? ''),
+    'const answer = 42;',
+  );
+  for (const route of ['native', 'native-mdx']) {
+    const rendered = await readFile(
+      join(temporary, `dist/${route}/index.html`),
+      'utf8',
+    );
+    assert(
+      rendered.includes('alk-code-fold') &&
+        rendered.includes('alk-code-highlight'),
+    );
+    assert(
+      rendered.includes('native.ts') && rendered.includes('data-alk-copy'),
+    );
+    assert(
+      rendered.includes('katex') &&
+        rendered.includes('<strong>emphasis</strong>') &&
+        rendered.includes('<li>First</li>'),
+    );
+    const styleFiles = [...rendered.matchAll(/href="([^" ]+\.css)"/g)].map(
+      (match) => match[1],
+    );
+    const routeCSS =
+      rendered +
+      (
+        await Promise.all(
+          styleFiles.map((file) =>
+            readFile(join(temporary, 'dist', file), 'utf8'),
+          ),
+        )
+      ).join('');
+    assert(
+      routeCSS.includes('.alk-code-pre'),
+      `${route}: scoped Code styles must be attached to Markdown itself`,
+    );
+    const scriptFiles = [...rendered.matchAll(/src="([^" ]+\.js)"/g)].map(
+      (match) => match[1],
+    );
+    const routeJS = (
+      await Promise.all(
+        scriptFiles.map((file) =>
+          readFile(join(temporary, 'dist', file), 'utf8'),
+        ),
+      )
+    ).join('');
+    assert(
+      routeJS.includes('data-alk-copy') ||
+        routeJS.includes('code-copy') ||
+        routeJS.includes('code.astro'),
+      `${route}: copy enhancement must be loaded without a Layout`,
+    );
+  }
+
   // Host MDX integration + Alkemist math, without duplicate MDX setup.
   await write(
     'astro.config.mjs',
