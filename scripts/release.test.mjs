@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { cp, mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -75,9 +76,11 @@ test('canary source provenance permits only derived package edits', async () => 
   const fixture = await mkdtemp(join(tmpdir(), 'alkemist-release-canary-'));
   try {
     await mkdir(join(fixture, 'scripts'), { recursive: true });
+    await writeFile(join(fixture, '.gitignore'), '.alkemist/\n');
     await Promise.all(
-      ['release.mjs', 'release-canary.mjs'].map((file) =>
-        cp(join(scriptDirectory, file), join(fixture, 'scripts', file)),
+      ['release-contracts.mjs', 'release.mjs', 'release-canary.mjs'].map(
+        (file) =>
+          cp(join(scriptDirectory, file), join(fixture, 'scripts', file)),
       ),
     );
     for (const directory of ['theme', 'components', 'astro', 'create-alkemist'])
@@ -130,6 +133,49 @@ test('canary source provenance permits only derived package edits', async () => 
     await assert.rejects(
       canary.assertCanarySource(version, commit),
       /beyond the canary version/,
+    );
+    const releaseDirectory = join(fixture, '.alkemist/release');
+    await mkdir(releaseDirectory, { recursive: true });
+    const artifacts = await Promise.all(
+      [
+        ['theme', '@alkemdotdev/alkemist-theme'],
+        ['components', '@alkemdotdev/alkemist-components'],
+        ['astro', '@alkemdotdev/alkemist-astro'],
+        ['create-alkemist', 'create-alkemist'],
+      ].map(async ([directory, name]) => {
+        const filename = `${directory}.tgz`;
+        const bytes = Buffer.from(directory);
+        await writeFile(join(releaseDirectory, filename), bytes);
+        return {
+          name,
+          version,
+          directory,
+          filename,
+          integrity: `sha512-${createHash('sha512').update(bytes).digest('base64')}`,
+          sha256: createHash('sha256').update(bytes).digest('hex'),
+          files: ['LICENSE', 'README.md'],
+        };
+      }),
+    );
+    await writeJson(join(releaseDirectory, 'manifest.json'), {
+      schemaVersion: 1,
+      version,
+      tag: 'canary',
+      commit,
+      dirty: true,
+      artifacts,
+    });
+    assert.throws(
+      () =>
+        execFileSync(process.execPath, ['scripts/release.mjs', 'publish'], {
+          cwd: fixture,
+          encoding: 'utf8',
+          stdio: 'pipe',
+        }),
+      (error) =>
+        error.status === 1 &&
+        /contains changes beyond the canary version/.test(error.stderr) &&
+        !/unsettled top-level await/.test(error.stderr),
     );
   } finally {
     await rm(fixture, { recursive: true, force: true });

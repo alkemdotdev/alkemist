@@ -4,13 +4,27 @@ import { execFileSync } from 'node:child_process';
 import { mkdir, readFile, writeFile, readdir } from 'node:fs/promises';
 import { resolve, join, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { assertCanarySource } from './release-canary.mjs';
+import {
+  assertReleasePackages,
+  canaryVersion,
+  directories,
+  output,
+  readJson,
+  releaseTag,
+  root,
+} from './release-contracts.mjs';
 
-export const root = fileURLToPath(new URL('../', import.meta.url));
-export const output = join(root, '.alkemist/release');
-export const directories = ['theme', 'components', 'astro', 'create-alkemist'];
+export {
+  assertReleasePackages,
+  canaryVersion,
+  directories,
+  output,
+  readJson,
+  releaseTag,
+  root,
+};
 const registry = 'https://registry.npmjs.org';
-export const readJson = async (file) =>
-  JSON.parse(await readFile(file, 'utf8'));
 export function runNpm(args, cwd = root, inherit = false) {
   const cli = process.env.npm_execpath;
   return execFileSync(
@@ -23,64 +37,6 @@ export function runNpm(args, cwd = root, inherit = false) {
       stdio: inherit ? 'inherit' : ['inherit', 'pipe', 'pipe'],
     },
   );
-}
-export function releaseTag(version) {
-  assert.match(
-    version,
-    /^\d+\.\d+\.\d+(?:-beta\.\d+)?(?:-canary\.[a-f0-9]{40})?$/,
-    'Only stable, numbered beta, or commit-addressed canary releases are supported',
-  );
-  if (version.includes('-canary.')) return 'canary';
-  return version.includes('-') ? 'beta' : 'latest';
-}
-export function canaryVersion(version, commit) {
-  const tag = releaseTag(version);
-  assert.notEqual(
-    tag,
-    'canary',
-    'Canary source must start from a release version',
-  );
-  assert.match(commit, /^[a-f0-9]{40}$/, 'Canary commits must be full SHA-1s');
-  return `${version}-canary.${commit}`;
-}
-export function assertReleasePackages(packages) {
-  assert.equal(
-    new Set(packages.map((p) => p.version)).size,
-    1,
-    'Release versions must match',
-  );
-  assert.deepEqual(
-    packages.map((p) => p.name).sort(),
-    [
-      '@alkemdotdev/alkemist-astro',
-      '@alkemdotdev/alkemist-components',
-      '@alkemdotdev/alkemist-theme',
-      'create-alkemist',
-    ].sort(),
-  );
-  const version = packages[0].version;
-  releaseTag(version);
-  for (const pkg of packages) {
-    assert(!pkg.private, `${pkg.name} is private`);
-    assert.equal(pkg.license, 'Apache-2.0');
-    assert.equal(pkg.publishConfig?.access, 'public');
-    assert.equal(
-      pkg.repository?.url,
-      'git+https://github.com/alkemdotdev/alkemist.git',
-    );
-    for (const [name, spec] of Object.entries(pkg.dependencies ?? {})) {
-      assert(
-        !/^(file:|link:|workspace:)/.test(spec),
-        `${pkg.name}: non-registry dependency ${name}`,
-      );
-      if (packages.some((p) => p.name === name))
-        assert.equal(
-          spec,
-          version,
-          `${pkg.name}: mismatched internal dependency`,
-        );
-    }
-  }
 }
 export async function pack() {
   await mkdir(output, { recursive: true });
@@ -224,10 +180,8 @@ export async function publish() {
       'Canary publication requires its constrained version edits',
     );
   else assert.equal(worktree, '', 'Publish requires a clean worktree');
-  if (manifest.tag === 'canary') {
-    const { assertCanarySource } = await import('./release-canary.mjs');
+  if (manifest.tag === 'canary')
     await assertCanarySource(manifest.version, manifest.commit);
-  }
   const pending = (await readdir(join(root, '.changeset'))).filter(
     (f) => f.endsWith('.md') && f !== 'README.md',
   );

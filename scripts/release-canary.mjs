@@ -9,7 +9,7 @@ import {
   directories,
   readJson,
   root,
-} from './release.mjs';
+} from './release-contracts.mjs';
 
 const packageFiles = directories.map((directory) =>
   join('packages', directory, 'package.json'),
