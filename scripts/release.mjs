@@ -4,6 +4,7 @@ import { execFileSync } from 'node:child_process';
 import { mkdir, readFile, writeFile, readdir } from 'node:fs/promises';
 import { resolve, join, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { setTimeout as delay } from 'node:timers/promises';
 import { assertCanarySource } from './release-canary.mjs';
 import {
   assertReleasePackages,
@@ -240,29 +241,55 @@ export async function publish() {
   }
   console.log(JSON.stringify(result));
 }
-export async function verify() {
-  const manifest = await readManifest();
-  for (const artifact of manifest.artifacts) {
-    const metadata = await registryPackage(artifact.name);
-    assert.equal(
-      metadata?.versions?.[artifact.version]?.dist?.integrity,
-      artifact.integrity,
-      `${artifact.name}: registry integrity differs or missing`,
-    );
-    assert.equal(
-      metadata?.['dist-tags']?.[manifest.tag],
-      artifact.version,
-      `${artifact.name}: wrong release tag`,
-    );
-    if (manifest.tag === 'beta')
+export async function waitForRegistry(
+  manifest,
+  {
+    read = registryPackage,
+    sleep = delay,
+    attempts = 30,
+    interval = 10000,
+  } = {},
+) {
+  for (let attempt = 0; attempt < attempts; attempt++) {
+    const pending = [];
+    for (const artifact of manifest.artifacts) {
+      const metadata = await read(artifact.name);
+      const integrity = metadata?.versions?.[artifact.version]?.dist?.integrity;
+      // A missing upload or stale tag can be propagation; different bytes cannot.
+      if (integrity !== undefined)
+        assert.equal(
+          integrity,
+          artifact.integrity,
+          `${artifact.name}: registry integrity differs`,
+        );
       assert(
         !metadata?.['dist-tags']?.latest?.includes('-'),
         `${artifact.name}: prerelease accidentally tagged latest`,
       );
+      if (
+        !integrity ||
+        metadata?.['dist-tags']?.[manifest.tag] !== artifact.version
+      )
+        pending.push(artifact.name);
+    }
+    if (!pending.length) return;
+    if (attempt + 1 === attempts)
+      throw new Error(
+        `Registry propagation did not complete: ${pending.join(', ')}`,
+      );
+    console.log(
+      `Waiting for npm registry propagation (${attempt + 1}/${attempts}): ${pending.join(', ')}`,
+    );
+    await sleep(interval);
+  }
+}
+export async function verify() {
+  const manifest = await readManifest();
+  await waitForRegistry(manifest);
+  for (const artifact of manifest.artifacts)
     console.log(
       `Verified ${artifact.name}@${artifact.version}: registry integrity and ${manifest.tag}`,
     );
-  }
 }
 if (
   process.argv[1] &&
