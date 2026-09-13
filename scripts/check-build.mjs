@@ -1,6 +1,8 @@
 import { readFile, readdir, stat } from 'node:fs/promises';
 import { join, resolve, extname } from 'node:path';
 import assert from 'node:assert/strict';
+import { decodeHTML } from 'entities';
+import { definitions } from '../apps/site/src/lib/playground/definitions.ts';
 import { redirects } from '../apps/site/redirects.mjs';
 const root = resolve('apps/site/dist');
 const required = [
@@ -130,4 +132,23 @@ if (preview)
   );
 console.log(
   `Verified ${pages} pages, internal links, local assets, and ${build.environment} build identity.`,
+);
+
+// HTML consumes the first LF inside a textarea; author/template indentation must not leak in.
+const contentCatalog = await readFile(
+  join(root, 'docs/content/index.html'),
+  'utf8',
+);
+const initialCode = contentCatalog.match(
+  /<textarea\b[^>]*name="code"[^>]*>([\s\S]*?)<\/textarea>/,
+)?.[1];
+assert.notEqual(
+  initialCode,
+  undefined,
+  'Code playground must provide its initial source field',
+);
+assert.equal(
+  decodeHTML(initialCode).replace(/^\n/, ''),
+  definitions.code.defaults.code,
+  'Textarea source must exactly match its default before interaction',
 );

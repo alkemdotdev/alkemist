@@ -90,9 +90,13 @@ const sourceFilename = `${definition.id}.${definition.importPath ? 'astro' : 'ht
                     data-control
                     data-control-type={control.type}
                     aria-describedby={describedBy}
-                  >
-                    {typeof value === 'string' ? value : JSON.stringify(value)}
-                  </textarea>
+                    set:text={
+                      '\n' +
+                      (typeof value === 'string'
+                        ? value
+                        : JSON.stringify(value))
+                    }
+                  />
                 ) : control.type === 'select' ? (
                   <select
                     id={inputId}
