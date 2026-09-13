@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "include": [
+    "/test/media-study.wav",
+    "/test/media-study.mp4",
+    "/test/tone.wav",
+    "/test/waves.mp4"
+  ],
+  "exclude": []
+}

@@ -70,6 +70,7 @@ const required = [
   'build.json',
   'robots.txt',
   '_headers',
+  '_routes.json',
   '_redirects',
 ];
 for (const file of required)

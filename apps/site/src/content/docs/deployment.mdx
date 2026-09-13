@@ -42,3 +42,7 @@ node scripts/check-deployment.mjs https://alkemist.alkem.dev <full-commit> main
 The deployment settings are recorded in `infra/cloudflare.json`. `npm run cloudflare:status` reads the remote state. `npm run cloudflare:setup` reconciles the expected Pages project and domain using an operator-provided Cloudflare token; it checks repository identity and refuses to replace an unrelated DNS record.
 
 Cloudflare [documents GitHub integration](https://developers.cloudflare.com/pages/configuration/git-integration/github-integration/) and [preview deployment behavior](https://developers.cloudflare.com/pages/configuration/preview-deployments/).
+
+## Demo media delivery
+
+The root `functions/test/[[asset]].js` Pages Function supplies byte-range responses for four small teaching fixtures. `apps/site/public/_routes.json` limits invocation to those files; the rest of the site remains static. Native Git builds publish the function alongside the site. The deployment check verifies actual partial-response bytes for both audio and video, since Cloudflare Pages static files do not currently honor range requests. This fixture adapter is not a large-media storage service.

@@ -148,6 +148,12 @@ Downloads follow browser and server rules. A cross-origin file may open instead 
 
 The player follows the host's Alkemist paper, ink, rule, accent, and font tokens, with standalone fallbacks. Scoped media styles keep its controls independent of ordinary page buttons and inputs.
 
+## Deliver seekable files
+
+The media server must support HTTP byte ranges (`206 Partial Content`) for reliable seeking. Correct `Content-Type`, `Content-Length`, and CORS headers matter as much as the player controls. A server that ignores `Range` requests can play from the beginning while failing to jump to a chapter.
+
+Cloudflare Pages currently returns `200` for static-file range requests. This demo adds a narrowly scoped Pages Function for its four small generated media files; all other routes remain static. For a media library or large recordings, use storage or a media CDN that supports byte ranges. This server requirement applies equally to native browser controls. [Cloudflare Pages serving behavior](https://developers.cloudflare.com/pages/configuration/serving-pages/)
+
 ## Keyboard and browser behavior
 
 Tab reaches each control; Enter or Space activates buttons, and arrow keys adjust focused sliders. Media shortcuts apply while the player is focused, so they do not capture typing elsewhere. Controls remain visible and wrap on smaller screens.

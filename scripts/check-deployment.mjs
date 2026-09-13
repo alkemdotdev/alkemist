@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, writeFile, readFile } from 'node:fs/promises';
 import { redirects } from '../apps/site/redirects.mjs';
 
 const [base, expectedCommit, expectedBranch] = process.argv.slice(2);
@@ -187,12 +187,45 @@ assert.ok(
 );
 const missing = await get('/alkemist-verification-missing-page/');
 assert.equal(missing.status, 404);
+const mediaChecks = [];
+for (const name of ['media-study.wav', 'media-study.mp4']) {
+  const response = await fetch(new URL(`/test/${name}`, origin), {
+    headers: { Range: 'bytes=16-79' },
+    signal: AbortSignal.timeout(15000),
+  });
+  assert.equal(
+    response.status,
+    206,
+    `${name}: byte-range delivery is required for seeking`,
+  );
+  assert.match(
+    response.headers.get('content-range') ?? '',
+    /^bytes 16-79\/\d+$/,
+  );
+  assert.equal(response.headers.get('accept-ranges'), 'bytes');
+  const body = Buffer.from(await response.arrayBuffer());
+  const source = await readFile(
+    new URL(`../apps/site/public/test/${name}`, import.meta.url),
+  );
+  assert.deepEqual(
+    body,
+    source.subarray(16, 80),
+    `${name}: returned the wrong media bytes`,
+  );
+  mediaChecks.push({
+    name,
+    status: response.status,
+    range: response.headers.get('content-range'),
+    bytes: body.length,
+  });
+}
 const report = {
   origin: origin.origin,
   checkedAt: new Date().toISOString(),
   build,
   checks,
   machineGuides,
+  mediaChecks,
   redirectChecks,
   robots: robots.text,
   missingPageStatus: missing.status,
