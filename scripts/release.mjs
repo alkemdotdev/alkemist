@@ -26,6 +26,33 @@ export {
   root,
 };
 const registry = 'https://registry.npmjs.org';
+const bootstrapLatestVersion = '1.0.0-beta.1';
+
+function hasStableVersion(metadata) {
+  return Object.keys(metadata?.versions ?? {}).some((version) =>
+    /^\d+\.\d+\.\d+$/.test(version),
+  );
+}
+
+function assertLatestTagIsAllowed(artifact, metadata, bootstrapNotices) {
+  const latest = metadata?.['dist-tags']?.latest;
+  if (!latest || !latest.includes('-')) return;
+  if (latest === bootstrapLatestVersion) {
+    assert(
+      !hasStableVersion(metadata),
+      `${artifact.name}: bootstrap prerelease remains latest after a stable version exists`,
+    );
+    if (!bootstrapNotices.has(artifact.name)) {
+      bootstrapNotices.add(artifact.name);
+      console.warn(
+        `NOTICE: accepting npm bootstrap tag ${artifact.name}@${bootstrapLatestVersion} as latest until its first stable release`,
+      );
+    }
+    return;
+  }
+  assert.fail(`${artifact.name}: prerelease accidentally tagged latest`);
+}
+
 export function runNpm(args, cwd = root, inherit = false) {
   const cli = process.env.npm_execpath;
   return execFileSync(
@@ -250,6 +277,7 @@ export async function waitForRegistry(
     interval = 10000,
   } = {},
 ) {
+  const bootstrapNotices = new Set();
   for (let attempt = 0; attempt < attempts; attempt++) {
     const pending = [];
     for (const artifact of manifest.artifacts) {
@@ -262,10 +290,7 @@ export async function waitForRegistry(
           artifact.integrity,
           `${artifact.name}: registry integrity differs`,
         );
-      assert(
-        !metadata?.['dist-tags']?.latest?.includes('-'),
-        `${artifact.name}: prerelease accidentally tagged latest`,
-      );
+      assertLatestTagIsAllowed(artifact, metadata, bootstrapNotices);
       if (
         !integrity ||
         metadata?.['dist-tags']?.[manifest.tag] !== artifact.version

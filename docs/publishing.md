@@ -17,9 +17,10 @@ The initial release is published as `1.0.0-beta.1`. Beta prerelease mode is acti
   tokens, layout defaults, or supported Node/Astro versions.
 
 A version such as `1.0.0-beta.2` is published with the `beta` tag. Stable
-versions use `latest`. Never tag a prerelease as `latest`. To leave beta, run
-`npm exec changeset pre exit`, then the version command and the full release
-gate; this creates a new stable package version, not a retagged prerelease.
+versions use `latest`. Prereleases must not be tagged `latest`, except for the
+temporary npm bootstrap state described below. To leave beta, run `npm exec
+changeset pre exit`, then the version command and the full release gate; this
+creates a new stable package version, not a retagged prerelease.
 
 ## Normal release
 
@@ -111,10 +112,14 @@ for package_name in @alkemdotdev/alkemist-theme @alkemdotdev/alkemist-components
 done
 ```
 
-Inspect dist-tags after a package's first publication: npm may also attach
-`latest` even when publishing with `--tag beta`. If `latest` points to this
-prerelease, remove it with `npm dist-tag rm <package> latest`; retain `beta`.
-The release verification deliberately rejects a prerelease on `latest`.
+The original `1.0.0-beta.1` may remain on `latest` while that package has no
+stable version: npm attached this bootstrap tag during the first publication,
+and npm rejected its removal after security-key authentication. Do not retry
+that removal or move `latest` to another prerelease. Registry verification
+emits a notice and permits only this exact version in this pre-stable state;
+it rejects every other prerelease or canary on `latest` and rejects the
+bootstrap exception as soon as a stable version exists. The first stable
+release becomes the normal `latest` value.
 
 Use npm 12 for account setup. Account-level 2FA must be enabled. Review any
 existing trust entry before adding one; never silently revoke or replace a
