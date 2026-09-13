@@ -8,6 +8,7 @@ import {
   nativeContent,
 } from '../apps/site/src/lib/playground/definitions.ts';
 const contracts = {
+  midi: ['midi.ts', 'MidiProps'],
   audio: ['media.ts', 'AudioProps'],
   video: ['media.ts', 'VideoProps'],
   chart: ['charts.ts', 'ChartProps'],

@@ -1,0 +1,132 @@
+---
+title: Music and MIDI
+description: Play, visualize, and edit musical phrases with a reusable piano roll and three local voices.
+order: 34
+---
+
+import Midi from '@alkemdotdev/alkemist-components/midi';
+
+## A musical sketch
+
+Press Play, choose a track, and change its voice. Click a note to edit its pitch, start, length, and velocity. The piano roll is the same reusable `Midi` component that you can embed in an article, tutorial, or music lab.
+
+<Midi
+  preset="ensemble"
+  title="Three voices, one phrase"
+  caption="An original arrangement for synthesized piano, supersaw, and bass. Edits stay in this page until you export them."
+/>
+
+For the component's full property inspector and generated source, open the [Midi playground](/docs/visualization/#midi).
+
+## Four built-in examples
+
+These short, original studies ship with the components package. They are musical source material that you can change and export, rather than prerecorded audio.
+
+| Preset     | Study                                                                                              | MIDI file                                        |
+| ---------- | -------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| `nocturne` | A piano phrase with space between its notes.                                                       | [Download piano study](/test/music/nocturne.mid) |
+| `pulse`    | A repeating supersaw figure for comparing pitch, duration, and timbre.                             | [Download supersaw study](/test/music/pulse.mid) |
+| `bassline` | A low-register rhythm for experimenting with note lengths and velocity.                            | [Download bass study](/test/music/bassline.mid)  |
+| `ensemble` | Three tracks sharing a pulse. Mute a part or change its voice to hear the arrangement differently. | [Download ensemble](/test/music/ensemble.mid)    |
+
+Choose an example from the player, or supply its preset name:
+
+```astro title="music-note.astro"
+---
+import Midi from '@alkemdotdev/alkemist-components/midi';
+---
+
+<Midi preset="nocturne" title="Piano study" />
+<Midi preset="pulse" editable={false} title="Listen and inspect" />
+```
+
+The component includes scoped styles and browser behavior. It works in Astro and MDX without Alkemist's Layout or Astro integration. Sound starts only after a user interaction.
+
+## Edit the notes
+
+The horizontal axis uses quarter-note beats; the vertical axis uses MIDI pitches. Select a track to work on its notes. Add notes in the grid, drag to move them, and use the selected-note fields for precise edits. Snap controls the rhythmic grid. Duplicate, Delete, Undo, Redo, and Reset provide a short editing loop.
+
+Arrow keys move a selected note in pitch or time. Delete removes it, and Control/Command-Z undoes an edit. The numeric fields provide an alternative to dragging. The grid scrolls inside its container on narrow screens.
+
+Play and Pause retain your position; Stop returns to the beginning. Loop repeats through the end of the final measure, including its trailing rest. Tempo changes its speed without changing pitch. Volume controls the output, while note velocity controls each note's attack strength. Each track has its own voice and mute setting.
+
+Edits live in memory. Export a `.mid` file before navigating away if you want to keep your changes. Exporting MIDI preserves musical notes, not a recording of the synthesized sound.
+
+## Three local voices
+
+| Voice      | Character                                                                                                              |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `piano`    | A warm synthesized piano voice with a percussive attack and decaying body. It is not an acoustic piano sample library. |
+| `supersaw` | Detuned saw voices with a softened attack and controlled high frequencies.                                             |
+| `bass`     | A rounded low-register voice for short rhythmic notes and sustained foundations.                                       |
+
+Keep `voice="track"` to use the arrangement's individual voices, or set `voice="piano"`, `"supersaw"`, or `"bass"` to compare the same notes through a single sound. MIDI program numbers are exported for other players, but those players supply their own instruments and will sound different.
+
+## Author a sequence
+
+Notes use MIDI pitch numbers (`60` is middle C), quarter-note beats, and velocity from `0` to `1`. A sequence contains named tracks, each with a voice and notes. Use stable, unique IDs for tracks and notes.
+
+```astro title="my-phrase.astro"
+---
+import Midi, { type MidiSequence } from '@alkemdotdev/alkemist-components/midi';
+
+const phrase: MidiSequence = {
+  name: 'Three rising notes',
+  bpm: 96,
+  beatsPerBar: 4,
+  tracks: [
+    {
+      id: 'keys',
+      name: 'Piano',
+      voice: 'piano',
+      muted: false,
+      notes: [
+        { id: 'a', pitch: 60, start: 0, duration: 1, velocity: 0.65 },
+        { id: 'b', pitch: 64, start: 1, duration: 1, velocity: 0.72 },
+        { id: 'c', pitch: 67, start: 2, duration: 2, velocity: 0.6 },
+      ],
+    },
+  ],
+};
+---
+
+<Midi sequence={phrase} title="Three rising notes" />
+```
+
+`getMidiPreset()` returns an independent copy you can modify. The same entry exports `MidiProps`, `MidiSequence`, `MidiTrack`, `MidiNote`, `MusicVoice`, `importMidi()`, and `exportMidi()` for programmatic use.
+
+## Import and export
+
+Import a local `.mid` file in the player, or set `src` to an existing file. Local imports are parsed in the browser and are not uploaded. Cross-origin URLs must allow your site through CORS.
+
+```astro title="published-score.astro"
+---
+import Midi from '@alkemdotdev/alkemist-components/midi';
+---
+
+<Midi src="/music/my-study.mid" editable={false} title="Published score" />
+```
+
+The editor works with note tracks at a single tempo. It reports unsupported tempo changes, controller automation, pitch bends, and percussion rather than claiming a lossless DAW project import. Review import warnings before exporting. This is a note editor and synthesizer; microphone recording, audio-to-MIDI conversion, hardware MIDI access, notation engraving, and audio-file export are not included.
+
+## Component parameters
+
+| Prop       | Default    | Purpose                                                                      |
+| ---------- | ---------- | ---------------------------------------------------------------------------- |
+| `title`    | Empty      | Visible and accessible player name.                                          |
+| `caption`  | Empty      | Supporting text beneath the editor.                                          |
+| `preset`   | `nocturne` | One of the four built-in studies.                                            |
+| `sequence` | `null`     | Structured notes; takes precedence over `preset`.                            |
+| `src`      | Empty      | A MIDI file URL; takes precedence over `sequence`.                           |
+| `voice`    | `track`    | Retain each track's voice or override all tracks.                            |
+| `editable` | `true`     | Enable note editing and local import. Playback remains available when false. |
+| `loop`     | `true`     | Repeat the musical phrase.                                                   |
+| `volume`   | `0.65`     | Output level from 0 to 1.                                                    |
+| `tempo`    | `0`        | Use the sequence's tempo, or override with 30–240 BPM.                       |
+| `height`   | `300`      | Piano-roll viewport height in pixels.                                        |
+
+The player dispatches a bubbling `alk:midi:change` event with `{ sequence }` after musical edits. The playground uses that event to update its source pane. Hosts can subscribe to save their own document; the component does not choose a storage service.
+
+## Playback foundation
+
+[Tone.js](https://github.com/Tonejs/Tone.js) supplies synthesis and audio scheduling primitives; [@tonejs/midi](https://github.com/Tonejs/Midi) reads and writes MIDI files. Alkemist owns the sequence model, voice presets, editor, lifecycle, examples, and authoring API. Engines load only when needed, and removed players stop and release their audio resources.

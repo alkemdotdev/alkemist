@@ -1,0 +1,12 @@
+---
+import './midi.css';
+import { renderMidi, type MidiProps } from './midi';
+export type { MidiProps } from './midi';
+type Props = MidiProps;
+---
+
+<Fragment set:html={renderMidi(Astro.props)} />
+
+<script>
+  import './midi-client';
+</script>

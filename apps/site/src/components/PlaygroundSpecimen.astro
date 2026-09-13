@@ -1,5 +1,6 @@
 ---
 import Audio, { type AudioProps } from '@alkemdotdev/alkemist-components/audio';
+import Midi, { type MidiProps } from '@alkemdotdev/alkemist-components/midi';
 import Video, { type VideoProps } from '@alkemdotdev/alkemist-components/video';
 import Chart, { type ChartProps } from '@alkemdotdev/alkemist-components/chart';
 import Model, { type ModelProps } from '@alkemdotdev/alkemist-components/model';
@@ -35,6 +36,7 @@ const values = definitions[id].defaults;
 ---
 
 {id === 'audio' && <Audio {...(values as unknown as AudioProps)} />}
+{id === 'midi' && <Midi {...(values as unknown as MidiProps)} />}
 {id === 'video' && <Video {...(values as unknown as VideoProps)} />}
 {id === 'chart' && <Chart {...(values as unknown as ChartProps)} />}
 {id === 'model' && <Model {...(values as unknown as ModelProps)} />}

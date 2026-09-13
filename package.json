@@ -24,6 +24,7 @@
     "check:starter": "node scripts/check-starter.mjs",
     "generate:palette": "node scripts/generate-palette.mjs",
     "generate:fixtures": "node scripts/generate-test-data.mjs && node scripts/generate-test-model.mjs",
+    "generate:music": "node scripts/generate-music-fixtures.mjs",
     "changeset": "changeset",
     "version:packages": "changeset version && npm install --package-lock-only --ignore-scripts",
     "release:pack": "node scripts/release.mjs pack",

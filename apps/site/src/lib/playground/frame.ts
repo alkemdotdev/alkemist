@@ -109,6 +109,11 @@ async function render(values: Record<string, JSONValue>, version: number) {
       values,
     );
     native = true;
+  } else if (id === 'midi') {
+    const m = await import('../../../../../packages/components/src/midi');
+    html = m.renderMidi(
+      values as unknown as Parameters<typeof m.renderMidi>[0],
+    );
   } else if (id === 'audio' || id === 'video') {
     const m =
       await import('../../../../../packages/components/src/media-renderer');
@@ -177,6 +182,12 @@ async function render(values: Record<string, JSONValue>, version: number) {
   fragment.innerHTML = html;
   headingSamples(fragment, values);
   host.replaceChildren(...fragment.childNodes);
+  if (id === 'midi') {
+    const { initMidiPlayers } =
+      await import('../../../../../packages/components/src/midi-client');
+    if (version !== revision) return;
+    initMidiPlayers(host);
+  }
   if (id === 'audio' || id === 'video') {
     const { initMediaPlayers } =
       await import('../../../../../packages/components/src/media-client');
@@ -266,6 +277,20 @@ function shareValues(values: Record<string, JSONValue>) {
   currentValues = { ...currentValues, ...values };
   reply('alk:playground:values', { values });
 }
+host.addEventListener('alk:midi:change', (event) => {
+  if (id !== 'midi') return;
+  const sequence = (event as CustomEvent).detail?.sequence;
+  if (sequence) shareValues({ sequence, src: '', voice: 'track', tempo: 0 });
+});
+host.addEventListener('alk:midi:error', (event) => {
+  if (id === 'midi')
+    error(
+      (event as CustomEvent).detail?.message ?? 'The MIDI file could not load.',
+    );
+});
+host.addEventListener('alk:midi:settings', (event) => {
+  if (id === 'midi') shareValues((event as CustomEvent).detail);
+});
 host.addEventListener('input', (event) => {
   const input = event.target;
   if (id !== 'shader' || !(input instanceof HTMLInputElement)) return;

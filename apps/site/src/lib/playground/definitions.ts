@@ -84,6 +84,84 @@ const posts = [
   },
 ];
 export const definitions: Record<string, PlaygroundDefinition> = {
+  midi: component(
+    'midi',
+    'Midi',
+    {
+      title: 'Music sketch',
+      caption: 'Edit a phrase, compare the voices, and export the result.',
+      preset: 'nocturne',
+      sequence: null,
+      src: '',
+      voice: 'track',
+      editable: true,
+      loop: true,
+      volume: 0.65,
+      tempo: 0,
+      height: 300,
+    },
+    [
+      text('title'),
+      area('caption'),
+      select('preset', ['nocturne', 'pulse', 'bassline', 'ensemble']),
+      json(
+        'sequence',
+        'null uses the preset. Notes use quarter-note beats; pitches are MIDI numbers.',
+      ),
+      text(
+        'src',
+        'Optional .mid URL takes precedence over sequence and preset.',
+      ),
+      select('voice', ['track', 'piano', 'supersaw', 'bass']),
+      bool('editable'),
+      bool('loop'),
+      number('volume', 0, 1, 0.05),
+      number('tempo', 0, 240, 1),
+      number('height', 160, 600, 20),
+    ],
+    [
+      {
+        label: 'Piano nocturne',
+        values: {
+          preset: 'nocturne',
+          sequence: null,
+          src: '',
+          voice: 'track',
+          tempo: 0,
+        },
+      },
+      {
+        label: 'Supersaw pulse',
+        values: {
+          preset: 'pulse',
+          sequence: null,
+          src: '',
+          voice: 'track',
+          tempo: 0,
+        },
+      },
+      {
+        label: 'Bassline',
+        values: {
+          preset: 'bassline',
+          sequence: null,
+          src: '',
+          voice: 'track',
+          tempo: 0,
+        },
+      },
+      {
+        label: 'Three-voice ensemble',
+        values: {
+          preset: 'ensemble',
+          sequence: null,
+          src: '',
+          voice: 'track',
+          tempo: 0,
+        },
+      },
+    ],
+  ),
   html: {
     id: 'html',
     name: 'HTML',
@@ -666,8 +744,8 @@ export const groups = [
     id: 'visualization',
     title: 'Visualization',
     description:
-      'Make datasets inspectable, with charts, labels, tables, and source files.',
-    examples: ['chart'],
+      'Make datasets and musical phrases inspectable with charts and editable piano rolls.',
+    examples: ['chart', 'midi'],
   },
   {
     id: 'graphics',

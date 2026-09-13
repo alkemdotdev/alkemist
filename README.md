@@ -8,7 +8,7 @@ An Astro publishing toolkit for inventors and researchers. The demo website, doc
 
 Adopt individual packages or generate a complete site:
 
-- `@alkemdotdev/alkemist-components` supplies layouts, math, code, audio, video, charts, models, and the bounded shader study.
+- `@alkemdotdev/alkemist-components` supplies layouts, math, code, audio, video, charts, MIDI piano rolls, models, and the bounded shader study.
 - `@alkemdotdev/alkemist-theme` supplies optional tokens, global CSS, palette data, and theme helpers.
 - `@alkemdotdev/alkemist-astro` supplies optional Astro integration and MDX defaults.
 - `create-alkemist` generates a complete site.
@@ -72,7 +72,7 @@ Use Node 24.20.0 (`.nvmrc`). Astro is pinned to 7.3.2; TypeScript 6.0.3 matches 
 ## Structure
 
 - `packages/astro`: shared Astro integration and MDX defaults.
-- `packages/components`: reusable layouts, math, code, audio/video players, charts, model/shader viewers.
+- `packages/components`: reusable layouts, math, code, audio/video players, charts, MIDI editors and synthesized voices, model/shader viewers.
 - `packages/theme`: optional theme tokens, fonts, palette data, and browser helpers.
 - `packages/create-alkemist`: the registry generator and its installed template.
 - `apps/site`: blog, labs, info, optional docs, one test page, and site-owned content.

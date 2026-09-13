@@ -50,6 +50,8 @@ for (const [path, title] of [
   ['/docs/components/', 'Components'],
   ['/docs/content/', 'Content'],
   ['/docs/visualization/', 'Visualization'],
+  ['/docs/music/', 'Music and MIDI'],
+  ['/blog/notes-you-can-change/', 'Notes you can change'],
   ['/docs/graphics/', 'Graphics'],
   ['/docs/website/', 'Website'],
   ['/docs/native-content/', 'Native HTML'],

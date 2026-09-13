@@ -18,7 +18,10 @@ export const docsNavigation: NavigationItem[] = [
       {
         label: 'Visualization',
         href: '/docs/visualization/',
-        children: [{ label: 'Chart reference', href: '/docs/charts/' }],
+        children: [
+          { label: 'Chart reference', href: '/docs/charts/' },
+          { label: 'Music and MIDI', href: '/docs/music/' },
+        ],
       },
       {
         label: 'Graphics',

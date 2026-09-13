@@ -15,3 +15,4 @@ export {
 } from '../website-renderers';
 
 export { renderMedia } from '../media-renderer';
+export { renderMidi } from '../midi';

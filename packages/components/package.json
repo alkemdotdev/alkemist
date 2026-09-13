@@ -39,7 +39,8 @@
     "./playground": "./src/playground/index.ts",
     "./playground/renderers": "./src/playground/renderers.ts",
     "./audio": "./src/audio/index.ts",
-    "./video": "./src/video/index.ts"
+    "./video": "./src/video/index.ts",
+    "./midi": "./src/midi/index.ts"
   },
   "files": [
     "src",
@@ -50,12 +51,14 @@
   },
   "dependencies": {
     "@alkemdotdev/alkemist-theme": "1.0.0-beta.1",
+    "@tonejs/midi": "2.0.28",
     "@types/three": "0.185.4",
     "entities": "6.0.1",
     "katex": "0.18.7",
     "media-chrome": "4.19.2",
     "shiki": "4.4.3",
     "three": "0.185.1",
+    "tone": "15.1.22",
     "vega": "6.4.0",
     "vega-embed": "7.2.0",
     "vega-lite": "6.4.3"

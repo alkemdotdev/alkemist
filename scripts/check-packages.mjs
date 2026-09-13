@@ -92,6 +92,19 @@ const video: VideoProps = {src:'/sample.mp4',poster:'',title:'Moving example',tr
     'import Audio from "@alkemdotdev/alkemist-components/audio";\nimport Video from "@alkemdotdev/alkemist-components/video";\n\n# MDX media\n\n<Audio src="/sample.wav" />\n\n<Video src="/sample.mp4" />\n',
   );
   await write(
+    'src/pages/music.astro',
+    `---
+import Midi, {getMidiPreset, type MidiProps, type MidiSequence} from '@alkemdotdev/alkemist-components/midi';
+const sequence: MidiSequence = getMidiPreset('ensemble');
+const props: MidiProps = {sequence,title:'Music in my own site',editable:false};
+---
+<html lang="en"><head><title>Standalone music</title></head><body><Midi {...props}/></body></html>`,
+  );
+  await write(
+    'src/pages/music-mdx.mdx',
+    'import Midi from "@alkemdotdev/alkemist-components/midi";\n\n# Musical notes\n\n<Midi preset="pulse" editable={false} />\n',
+  );
+  await write(
     'src/pages/figures.astro',
     `---
 import Chart from '@alkemdotdev/alkemist-components/chart';
@@ -167,6 +180,15 @@ const props: PostListProps = {items,layout,selectable:true,featuredHref:'/lead/'
     assert.match(html, /<audio[^>]*controls[^>]*src="\/sample.wav"/);
     assert.match(html, /<video[^>]*controls[^>]*src="\/sample.mp4"/);
     assert.match(html, /media-time-range/);
+    assert.doesNotMatch(html, /class="alk-layout/);
+  }
+  for (const page of ['music', 'music-mdx']) {
+    const html = await readFile(
+      join(temporary, 'dist', page, 'index.html'),
+      'utf8',
+    );
+    assert.match(html, /<alk-midi/);
+    assert.match(html, /<svg/);
     assert.doesNotMatch(html, /class="alk-layout/);
   }
 

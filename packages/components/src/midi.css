@@ -1,0 +1,373 @@
+.alk-midi.alk-midi {
+  display: block;
+  min-width: 0;
+  margin: 1.5rem 0;
+  color: var(--alk-ink, #111);
+  font: 400 0.8rem/1.4 var(--alk-sans, system-ui, sans-serif);
+  --midi-color: #1982f2;
+}
+.alk-midi *,
+.alk-midi *::before,
+.alk-midi *::after {
+  box-sizing: border-box;
+}
+.alk-midi .alk-midi-frame {
+  overflow: hidden;
+  border: 1px solid var(--alk-rule, #ccc);
+  border-radius: 6px;
+  background: var(--alk-paper, #fff);
+}
+.alk-midi .alk-midi-heading {
+  display: flex;
+  gap: 0.75rem;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 0.65rem 0.85rem;
+  border-bottom: 1px solid var(--alk-rule, #ccc);
+}
+.alk-midi .alk-midi-heading h3 {
+  margin: 0;
+  font: 500 1rem/1.3 var(--alk-sans, system-ui, sans-serif);
+  letter-spacing: -0.02em;
+}
+.alk-midi .alk-midi-status {
+  margin: 0;
+  max-width: 55%;
+  text-align: right;
+  color: var(--alk-muted, #666);
+  font: 0.7rem/1.4 var(--alk-mono, ui-monospace, monospace);
+}
+.alk-midi[data-state='error'] .alk-midi-status {
+  color: #d34b39;
+}
+.alk-midi .alk-midi-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem 0.65rem;
+  padding: 0.5rem 0.65rem;
+  border-bottom: 1px solid var(--alk-rule, #ccc);
+}
+.alk-midi button,
+.alk-midi input,
+.alk-midi select {
+  margin: 0;
+  color: inherit;
+  font: 400 0.74rem/1.2 var(--alk-mono, ui-monospace, monospace);
+  accent-color: #1982f2;
+}
+.alk-midi button,
+.alk-midi select,
+.alk-midi input[type='number'] {
+  min-height: 28px;
+  border: 1px solid var(--alk-rule, #ccc);
+  border-radius: 3px;
+  background: var(--alk-field, #f5f5f5);
+  padding: 0.3rem 0.4rem;
+}
+.alk-midi button {
+  cursor: pointer;
+}
+.alk-midi button:hover:not(:disabled) {
+  border-color: var(--alk-muted, #666);
+  background: color-mix(
+    in srgb,
+    var(--alk-rule, #ccc) 45%,
+    var(--alk-paper, #fff)
+  );
+}
+.alk-midi [data-midi-play] {
+  min-width: 4rem;
+  background: var(--alk-ink, #111);
+  color: var(--alk-paper, #fff);
+  border-color: transparent;
+}
+.alk-midi [data-midi-play]:hover:not(:disabled) {
+  background: var(--alk-muted, #666);
+  color: var(--alk-paper, #fff);
+}
+.alk-midi .alk-midi-timeline {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.35rem 0.65rem;
+  border-bottom: 1px solid var(--alk-rule, #ccc);
+  font: 0.65rem/1.3 var(--alk-mono, ui-monospace, monospace);
+  color: var(--alk-muted, #666);
+}
+.alk-midi .alk-midi-timeline label {
+  display: flex;
+  flex: 1;
+  gap: 0.5rem;
+  align-items: center;
+  min-width: 0;
+}
+.alk-midi .alk-midi-timeline input {
+  flex: 1;
+  width: 0;
+  min-width: 0;
+}
+.alk-midi .alk-midi-timeline output {
+  min-width: 8.5rem;
+  text-align: right;
+}
+.alk-midi button:disabled,
+.alk-midi input:disabled,
+.alk-midi select:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.alk-midi :is(button, input, select):focus-visible {
+  outline: 2px solid #1982f2;
+  outline-offset: 2px;
+}
+.alk-midi .alk-midi-toolbar label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.7rem;
+  color: var(--alk-muted, #666);
+}
+.alk-midi .alk-midi-toolbar input[type='number'] {
+  width: 4rem;
+}
+.alk-midi .alk-midi-toolbar input[type='range'] {
+  width: 4.5rem;
+  height: 20px;
+  padding: 0;
+}
+.alk-midi .alk-midi-workspace {
+  display: grid;
+  grid-template-columns: 9rem minmax(0, 1fr);
+  height: var(--alk-midi-height, 300px);
+  min-height: 160px;
+  max-height: 600px;
+}
+.alk-midi .alk-midi-tracks {
+  overflow: auto;
+  min-width: 0;
+  border-right: 1px solid var(--alk-rule, #ccc);
+  background: var(--alk-field, #f6f6f6);
+}
+.alk-midi [data-voice='piano'] {
+  --midi-color: #1982f2;
+}
+.alk-midi [data-voice='supersaw'] {
+  --midi-color: #159b90;
+}
+.alk-midi [data-voice='bass'] {
+  --midi-color: #b78a26;
+}
+.alk-midi .alk-midi-track {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--alk-rule, #ccc);
+  border-left: 3px solid transparent;
+}
+.alk-midi .alk-midi-track[data-active='true'] {
+  border-left-color: var(--midi-color);
+  background: color-mix(in srgb, var(--midi-color) 9%, var(--alk-paper, #fff));
+}
+.alk-midi .alk-midi-track [data-midi-track] {
+  grid-column: 1/-1;
+  padding: 0.15rem 0;
+  min-height: 24px;
+  border: 0;
+  background: transparent;
+  font: 500 0.78rem/1.3 var(--alk-sans, system-ui, sans-serif);
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+.alk-midi .alk-midi-track :is(select, [data-midi-mute]) {
+  min-width: 0;
+  font-size: 0.64rem;
+  padding: 0.25rem;
+}
+.alk-midi .alk-midi-roll-wrap {
+  position: relative;
+  min-width: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  background: var(--alk-paper, #fff);
+}
+.alk-midi .alk-midi-ruler {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  height: 25px;
+  background: var(--alk-field, #f6f6f6);
+  border-bottom: 1px solid var(--alk-rule, #ccc);
+}
+.alk-midi .alk-midi-ruler span {
+  position: absolute;
+  top: 6px;
+  color: var(--alk-muted, #666);
+  font: 10px/1 var(--alk-mono, ui-monospace, monospace);
+  padding-left: 3px;
+  cursor: pointer;
+}
+.alk-midi .alk-midi-roll {
+  position: relative;
+  min-height: 100%;
+  background-image:
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 15px,
+      color-mix(in srgb, var(--alk-rule, #ccc) 60%, transparent) 15px,
+      color-mix(in srgb, var(--alk-rule, #ccc) 60%, transparent) 16px
+    ),
+    repeating-linear-gradient(
+      to right,
+      transparent 0,
+      transparent 31px,
+      color-mix(in srgb, var(--alk-rule, #ccc) 55%, transparent) 31px,
+      color-mix(in srgb, var(--alk-rule, #ccc) 55%, transparent) 32px
+    );
+  background-position: 44px 0;
+  touch-action: pan-x pan-y;
+}
+.alk-midi .alk-midi-note {
+  position: absolute;
+  z-index: 2;
+  min-height: 0;
+  border: 1px solid
+    color-mix(in srgb, var(--midi-color) 80%, var(--alk-ink, #111));
+  border-radius: 2px;
+  padding: 0 2px;
+  background: color-mix(in srgb, var(--midi-color) 28%, var(--alk-paper, #fff));
+  color: var(--alk-ink, #111);
+  font: 10px/1 var(--alk-mono, ui-monospace, monospace);
+  overflow: hidden;
+  white-space: nowrap;
+  text-align: left;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+}
+.alk-midi .alk-midi-note:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--midi-color) 45%, var(--alk-paper, #fff));
+  border-color: var(--midi-color);
+}
+.alk-midi .alk-midi-note[data-selected='true'] {
+  outline: 2px solid var(--midi-color);
+  outline-offset: 1px;
+  z-index: 3;
+}
+.alk-midi .alk-midi-note[data-ghost='true'] {
+  opacity: 0.35;
+}
+.alk-midi .alk-midi-note[data-muted='true'] {
+  opacity: 0.2;
+}
+.alk-midi .alk-midi-key {
+  position: absolute;
+  left: 0;
+  z-index: 4;
+  width: 44px;
+  height: 16px;
+  min-height: 0;
+  transform: translateY(-50%);
+  border: 0;
+  border-bottom: 1px solid var(--alk-rule, #ccc);
+  border-right: 1px solid var(--alk-rule, #ccc);
+  border-radius: 0;
+  background: var(--alk-field, #f0f0f0);
+  color: var(--alk-ink, #111);
+  font: 9px/1 var(--alk-mono, ui-monospace, monospace);
+  padding: 0 5px;
+  text-align: right;
+}
+.alk-midi .alk-midi-key[data-black='true'] {
+  background: color-mix(
+    in srgb,
+    var(--alk-ink, #111) 20%,
+    var(--alk-paper, #fff)
+  );
+}
+.alk-midi .alk-midi-playhead {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 3;
+  width: 2px;
+  background: #e25312;
+  pointer-events: none;
+}
+.alk-midi .alk-midi-inspector {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 0.4rem 0.6rem;
+  padding: 0.55rem 0.65rem;
+  border-top: 1px solid var(--alk-rule, #ccc);
+  background: var(--alk-field, #f6f6f6);
+}
+.alk-midi [hidden] {
+  display: none !important;
+}
+.alk-midi .alk-midi-inspector label {
+  display: grid;
+  gap: 0.25rem;
+  color: var(--alk-muted, #666);
+  font: 0.65rem/1.2 var(--alk-mono, ui-monospace, monospace);
+}
+.alk-midi .alk-midi-inspector input {
+  width: 4.25rem;
+  min-width: 0;
+  background: var(--alk-paper, #fff);
+}
+.alk-midi .alk-midi-caption {
+  margin: 0;
+  padding: 0.6rem 0.85rem;
+  border-top: 1px solid var(--alk-rule, #ccc);
+  color: var(--alk-muted, #666);
+  font: 0.78rem/1.5 var(--alk-sans, system-ui, sans-serif);
+}
+.alk-midi .alk-midi-fallback {
+  padding: 0.75rem;
+  font: 0.75rem/1.5 var(--alk-mono, ui-monospace, monospace);
+}
+.alk-midi .alk-midi-fallback svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.alk-midi .alk-midi-fallback ul {
+  max-height: 10rem;
+  overflow: auto;
+}
+.alk-midi[data-ready='true'] .alk-midi-fallback {
+  display: none;
+}
+.alk-midi:not([data-ready='true']) .alk-midi-workspace,
+.alk-midi:not([data-ready='true']) .alk-midi-inspector {
+  display: none;
+}
+@media (max-width: 640px) {
+  .alk-midi .alk-midi-workspace {
+    grid-template-columns: 6.25rem minmax(0, 1fr);
+  }
+  .alk-midi .alk-midi-heading {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .alk-midi .alk-midi-status {
+    max-width: 100%;
+    text-align: left;
+  }
+  .alk-midi .alk-midi-track {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 0.4rem;
+  }
+  .alk-midi .alk-midi-track [data-midi-track] {
+    grid-column: auto;
+  }
+  .alk-midi .alk-midi-toolbar {
+    gap: 0.4rem;
+  }
+}
