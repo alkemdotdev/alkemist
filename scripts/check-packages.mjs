@@ -78,6 +78,20 @@ const search: SearchProps = {label:'Search this existing site'};
 <html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Existing site</title></head><body><h1>My existing website</h1><Navigation items={items} currentPath="/"/><TableOfContents {...contents}/><h2 id="example">Example</h2><Search {...search}/><Math {...math}/><Code code="const answer = 42;" lang="javascript"/><style is:global>body {margin:31px;font-family:Georgia,serif;background:#fff8ed;color:#172b4d} h1{font-size:29px}</style></body></html>`,
   );
   await write(
+    'src/pages/media.astro',
+    `---
+import Audio, {type AudioProps} from '@alkemdotdev/alkemist-components/audio';
+import Video, {type VideoProps} from '@alkemdotdev/alkemist-components/video';
+const audio: AudioProps = {src:'/sample.wav',title:'Listening example',seekOffset:5,playbackRates:[0.5,1,2],transcript:'A quiet tone.'};
+const video: VideoProps = {src:'/sample.mp4',poster:'',title:'Moving example',tracks:[{src:'/captions.vtt',kind:'captions',srclang:'en',label:'English'}]};
+---
+<html lang="en"><head><title>Standalone media</title></head><body><h1>Media in my own layout</h1><Audio {...audio}/><Video {...video}/></body></html>`,
+  );
+  await write(
+    'src/pages/media-mdx.mdx',
+    'import Audio from "@alkemdotdev/alkemist-components/audio";\nimport Video from "@alkemdotdev/alkemist-components/video";\n\n# MDX media\n\n<Audio src="/sample.wav" />\n\n<Video src="/sample.mp4" />\n',
+  );
+  await write(
     'src/pages/figures.astro',
     `---
 import Chart from '@alkemdotdev/alkemist-components/chart';
@@ -145,6 +159,17 @@ const props: PostListProps = {items,layout,selectable:true,featuredHref:'/lead/'
   run(['install', '--no-audit', '--no-fund']);
   run(['run', 'check']);
   run(['run', 'build']);
+  for (const page of ['media', 'media-mdx']) {
+    const html = await readFile(
+      join(temporary, 'dist', page, 'index.html'),
+      'utf8',
+    );
+    assert.match(html, /<audio[^>]*controls[^>]*src="\/sample.wav"/);
+    assert.match(html, /<video[^>]*controls[^>]*src="\/sample.mp4"/);
+    assert.match(html, /media-time-range/);
+    assert.doesNotMatch(html, /class="alk-layout/);
+  }
+
   let html = await readFile(join(temporary, 'dist/index.html'), 'utf8');
   assert(
     html.includes('katex') &&

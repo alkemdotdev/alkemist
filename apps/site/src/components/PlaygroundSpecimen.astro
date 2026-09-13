@@ -1,4 +1,6 @@
 ---
+import Audio, { type AudioProps } from '@alkemdotdev/alkemist-components/audio';
+import Video, { type VideoProps } from '@alkemdotdev/alkemist-components/video';
 import Chart, { type ChartProps } from '@alkemdotdev/alkemist-components/chart';
 import Model, { type ModelProps } from '@alkemdotdev/alkemist-components/model';
 import Shader, {
@@ -32,6 +34,8 @@ const { id } = Astro.props;
 const values = definitions[id].defaults;
 ---
 
+{id === 'audio' && <Audio {...(values as unknown as AudioProps)} />}
+{id === 'video' && <Video {...(values as unknown as VideoProps)} />}
 {id === 'chart' && <Chart {...(values as unknown as ChartProps)} />}
 {id === 'model' && <Model {...(values as unknown as ModelProps)} />}
 {id === 'shader' && <Shader {...(values as unknown as ShaderProps)} />}
@@ -50,8 +54,13 @@ const values = definitions[id].defaults;
 {id === 'post-list' && <PostList {...(values as unknown as PostListProps)} />}
 {id === 'search' && <Search {...(values as unknown as SearchProps)} />}
 {
-  ['html', 'image', 'audio', 'video'].includes(id) && (
-    <Fragment set:html={renderNativeContent(id as NativeContentKind, values)} />
+  ['html', 'image', 'native-audio', 'native-video'].includes(id) && (
+    <Fragment
+      set:html={renderNativeContent(
+        id.replace('native-', '') as NativeContentKind,
+        values,
+      )}
+    />
   )
 }
 {

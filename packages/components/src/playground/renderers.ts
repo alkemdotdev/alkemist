@@ -13,3 +13,5 @@ export {
   renderSearch,
   updateLayoutPreview,
 } from '../website-renderers';
+
+export { renderMedia } from '../media-renderer';

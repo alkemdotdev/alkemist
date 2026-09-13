@@ -101,14 +101,21 @@ async function render(values: Record<string, JSONValue>, version: number) {
   validateStructure(values);
   let html = '';
   let native = false;
-  if (['html', 'image', 'audio', 'video'].includes(id)) {
+  if (['html', 'image', 'native-audio', 'native-video'].includes(id)) {
     const m =
       await import('../../../../../packages/components/src/native-content-renderer');
     html = m.renderNativeContent(
-      id as Parameters<typeof m.renderNativeContent>[0],
+      id.replace('native-', '') as Parameters<typeof m.renderNativeContent>[0],
       values,
     );
     native = true;
+  } else if (id === 'audio' || id === 'video') {
+    const m =
+      await import('../../../../../packages/components/src/media-renderer');
+    html = m.renderMedia(
+      id,
+      values as unknown as Parameters<typeof m.renderMedia>[1],
+    );
   } else if (id === 'math' || id === 'code') {
     const m =
       await import('../../../../../packages/components/src/content-renderers');
@@ -170,6 +177,12 @@ async function render(values: Record<string, JSONValue>, version: number) {
   fragment.innerHTML = html;
   headingSamples(fragment, values);
   host.replaceChildren(...fragment.childNodes);
+  if (id === 'audio' || id === 'video') {
+    const { initMediaPlayers } =
+      await import('../../../../../packages/components/src/media-client');
+    if (version !== revision) return;
+    initMediaPlayers(host);
+  }
   if (id === 'code') {
     const { enhanceCode } =
       await import('../../../../../packages/components/src/code-copy');
@@ -222,7 +235,7 @@ window.addEventListener('message', async (event: MessageEvent) => {
 new MutationObserver(() => {
   const failed = host.querySelector<HTMLElement>('[data-state="error"]');
   const message = failed
-    ?.querySelector('.alk-figure-status')
+    ?.querySelector('.alk-figure-status, .alk-media-status')
     ?.textContent?.trim();
   if (message && message !== lastError) error(message);
 }).observe(host, {
@@ -277,3 +290,19 @@ host.addEventListener('click', (event) => {
   shareValues({ currentPath: link.getAttribute('href') ?? '/' });
   void render(currentValues, revision).catch((cause) => error(String(cause)));
 });
+
+for (const [eventName, prop] of [
+  ['medialoop', 'loop'],
+  ['mediamuted', 'muted'],
+]) {
+  host.addEventListener(
+    eventName,
+    (event) => {
+      if (id !== 'audio' && id !== 'video') return;
+      const value = (event as CustomEvent).detail;
+      if (typeof value === 'boolean' && currentValues[prop] !== value)
+        shareValues({ [prop]: value });
+    },
+    { capture: true },
+  );
+}

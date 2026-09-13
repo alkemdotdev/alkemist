@@ -10,6 +10,7 @@ export const docsNavigation: NavigationItem[] = [
         label: 'Content',
         href: '/docs/content/',
         children: [
+          { label: 'Audio and video reference', href: '/docs/media/' },
           { label: 'Math and code reference', href: '/docs/math-code/' },
           { label: 'Native HTML & media', href: '/docs/native-content/' },
         ],

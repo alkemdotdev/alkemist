@@ -160,8 +160,8 @@ export const definitions: Record<string, PlaygroundDefinition> = {
       text('caption'),
     ],
   },
-  audio: {
-    id: 'audio',
+  'native-audio': {
+    id: 'native-audio',
     name: 'audio',
     defaults: {
       src: '/test/tone.wav',
@@ -178,8 +178,8 @@ export const definitions: Record<string, PlaygroundDefinition> = {
       select('preload', ['none', 'metadata', 'auto']),
     ],
   },
-  video: {
-    id: 'video',
+  'native-video': {
+    id: 'native-video',
     name: 'video',
     defaults: {
       src: '/test/waves.mp4',
@@ -200,6 +200,132 @@ export const definitions: Record<string, PlaygroundDefinition> = {
       select('preload', ['none', 'metadata', 'auto']),
     ],
   },
+  audio: component(
+    'audio',
+    'Audio',
+    {
+      src: '/test/media-study.wav',
+      title: 'Three tones',
+      caption: 'A synthetic 30-second listening study.',
+      preload: 'metadata',
+      autoplay: false,
+      muted: false,
+      loop: false,
+      playbackRates: [0.5, 0.75, 1, 1.25, 1.5, 2],
+      seekOffset: 10,
+      tracks: [
+        {
+          src: '/test/media-chapters.vtt',
+          kind: 'chapters',
+          srclang: 'en',
+          label: 'Sections',
+        },
+      ],
+      download: true,
+      transcript:
+        '0:00 — A quiet 220 Hz tone.\n0:10 — The tone rises to 330 Hz.\n0:20 — The tone rises to 440 Hz, then fades out.',
+    },
+    [
+      text('src'),
+      text('title'),
+      text('caption'),
+      select('preload', ['none', 'metadata', 'auto']),
+      bool('autoplay'),
+      bool('muted'),
+      bool('loop'),
+      json('playbackRates'),
+      number('seekOffset', 1, 60),
+      json('tracks'),
+      bool('download'),
+      area('transcript'),
+    ],
+    [
+      {
+        label: 'Minimal',
+        values: {
+          title: '',
+          caption: '',
+          tracks: [],
+          transcript: '',
+          download: false,
+        },
+      },
+      {
+        label: 'Listening study',
+        values: { loop: true, seekOffset: 5, playbackRates: [0.5, 1, 1.5, 2] },
+      },
+    ],
+  ),
+  video: component(
+    'video',
+    'Video',
+    {
+      src: '/test/media-study.mp4',
+      title: 'Wave study',
+      caption:
+        'Synthetic motion and tones, with two caption languages and three chapters.',
+      poster: '/test/media-poster.jpg',
+      preload: 'metadata',
+      autoplay: false,
+      muted: true,
+      loop: false,
+      playbackRates: [0.5, 0.75, 1, 1.25, 1.5, 2],
+      seekOffset: 10,
+      tracks: [
+        {
+          src: '/test/media-en.vtt',
+          kind: 'captions',
+          srclang: 'en',
+          label: 'English',
+          default: true,
+        },
+        {
+          src: '/test/media-es.vtt',
+          kind: 'subtitles',
+          srclang: 'es',
+          label: 'Español',
+        },
+        {
+          src: '/test/media-chapters.vtt',
+          kind: 'chapters',
+          srclang: 'en',
+          label: 'Sections',
+        },
+      ],
+      download: true,
+      transcript:
+        '0:00 — Blue waves drift across the frame over a low tone.\n0:10 — The tone rises as the wave pattern continues.\n0:20 — The final higher tone fades out with the study.',
+    },
+    [
+      text('src'),
+      text('title'),
+      text('caption'),
+      text('poster'),
+      select('preload', ['none', 'metadata', 'auto']),
+      bool('autoplay'),
+      bool('muted'),
+      bool('loop'),
+      json('playbackRates'),
+      number('seekOffset', 1, 60),
+      json('tracks'),
+      bool('download'),
+      area('transcript'),
+    ],
+    [
+      { label: 'With captions', values: { muted: true } },
+      {
+        label: 'Silent loop',
+        values: {
+          autoplay: true,
+          muted: true,
+          loop: true,
+          tracks: [],
+          transcript: '',
+          download: false,
+        },
+      },
+    ],
+  ),
   math: component(
     'math',
     'Math',
@@ -533,8 +659,8 @@ export const groups = [
     id: 'content',
     title: 'Content',
     description:
-      'Typeset equations and explain source code with purpose-built components.',
-    examples: ['math', 'code'],
+      'Publish equations, source code, audio, and video with reusable components.',
+    examples: ['math', 'code', 'audio', 'video'],
   },
   {
     id: 'visualization',
@@ -571,5 +697,5 @@ export const nativeContent = {
   title: 'Native HTML & media',
   description:
     'Standard browser elements styled by the Alkemist theme. No wrapper components or component imports required.',
-  examples: ['html', 'image', 'audio', 'video'],
+  examples: ['html', 'image', 'native-audio', 'native-video'],
 };

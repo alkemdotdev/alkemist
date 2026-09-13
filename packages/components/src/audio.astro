@@ -1,0 +1,14 @@
+---
+import './media.css';
+import { renderMedia, type AudioProps } from './media';
+
+export type { AudioProps } from './media';
+
+type Props = AudioProps;
+---
+
+<Fragment set:html={renderMedia('audio', Astro.props)} />
+
+<script>
+  import './media-client';
+</script>

@@ -1,0 +1,15 @@
+---
+title: Controls for listening and watching
+description: Audio and Video join the Content components, with a shared player and a native fallback.
+published: '2026-09-13'
+---
+
+A recording deserves the same care as a chart or code listing. Readers need to find a passage, slow it down, read the captions, and return to the surrounding explanation without learning a different player on every page.
+
+The new Audio and Video components use a common control system. A timeline shows playback and buffering; the transport controls handle play, skip, volume, speed, and repeat. Captions, chapter selection, downloadable originals, and expandable transcripts keep the content inspectable. Video adds platform controls such as fullscreen and picture-in-picture when the browser supports them.
+
+[Media Chrome](https://www.media-chrome.org/docs/en/get-started) supplies the media control elements. Alkemist supplies the Astro components, compact theme styling, authoring contract, chapter and transcript presentation, and examples. A plain browser media element remains underneath. Native controls stay available until enhancement succeeds, and the component does not require the site's Layout or integration.
+
+The demo is a locally generated 30-second wave and tone study. It includes captions in English, subtitles in Spanish, and chapters at ten-second intervals, so the controls have something meaningful to work with. This is a file player; adaptive streaming, DRM, and remote video providers require separate adapters.
+
+Try the [Audio and Video reference](/docs/media/) or edit every authoring parameter in the [Content playgrounds](/docs/content/#audio). Browser-native examples remain in the [HTML and media reference](/docs/native-content/).

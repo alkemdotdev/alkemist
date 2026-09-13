@@ -17,6 +17,9 @@ if (!definition) throw new Error(`Unknown playground: ${id}`);
   definition={definition}
   previewUrl={`/playground/${id}/`}
   initialSource={!definition.importPath
-    ? renderNativeContent(id as NativeContentKind, definition.defaults)
+    ? renderNativeContent(
+        id.replace('native-', '') as NativeContentKind,
+        definition.defaults,
+      )
     : undefined}
 />

@@ -12,6 +12,8 @@ const { group } = Astro.props;
 const names: Record<string, string> = {
   html: 'Standard HTML',
   image: 'Images',
+  'native-audio': 'Browser audio',
+  'native-video': 'Browser video',
   audio: 'Audio',
   video: 'Video',
   math: 'Math',
@@ -29,10 +31,14 @@ const descriptions: Record<string, string> = {
   html: 'Native text, lists, tables, disclosures, buttons, and inputs. Choose an element to see its relevant content. Lists and tables accept JSON data.',
   image:
     'Give an image meaningful alternative text. Compare containing the whole image with cropping it to fill its box.',
-  audio:
+  'native-audio':
     'A locally generated two-second tone. Native playback controls remain available; browsers decide whether autoplay is allowed.',
-  video:
+  'native-video':
     'A locally generated three-second wave study. Use native controls to play it; the poster appears before loading.',
+  audio:
+    'A 30-second tone study. Try the timeline, speed, repeat, chapter navigation, and transcript. Parameters regenerate the real component.',
+  video:
+    'A 30-second wave study with audio, English captions, Spanish subtitles, and chapters. Try captions, playback speed, fullscreen, and picture-in-picture.',
   math: 'Type TeX and switch between inline and display math. Invalid or unsupported expressions show an error. The preview uses the same KaTeX renderer as the built component.',
   code: 'Edit source, highlights, focus, changes, folds, and annotations. Choose a preset to try a complete example; preview and copied source update together.',
   chart:
@@ -53,6 +59,8 @@ const descriptions: Record<string, string> = {
     'Try the built site index. Change the placeholder, accessible label, or presentation, then search again. Pagefind needs a production build; plain development mode has no index.',
 };
 const references: Record<string, string> = {
+  audio: '/docs/media/',
+  video: '/docs/media/',
   math: '/docs/math-code/#the-component-form',
   code: '/docs/math-code/#the-code-component',
   chart: '/docs/charts/',
@@ -79,9 +87,20 @@ const references: Record<string, string> = {
   {
     group.id === 'content' && (
       <p>
-        For text, images, audio, and video, see the separate{' '}
+        For ordinary HTML and browser-native media controls, see the separate{' '}
         <a href="/docs/native-content/">native HTML and media reference</a>.
         Those examples use browser elements and theme styles.
+      </p>
+    )
+  }
+  {
+    group.id === 'native-content' && (
+      <p>
+        For consistent, customizable controls, use the{' '}
+        <a href="/docs/content/#audio">Audio</a> and{' '}
+        <a href="/docs/content/#video">Video</a> components. They add playback
+        speed, captions, chapters, transcripts, and an Alkemist control bar.
+        These specimens below retain the browser’s own controls.
       </p>
     )
   }

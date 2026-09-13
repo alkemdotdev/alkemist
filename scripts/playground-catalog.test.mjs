@@ -8,6 +8,8 @@ import {
   nativeContent,
 } from '../apps/site/src/lib/playground/definitions.ts';
 const contracts = {
+  audio: ['media.ts', 'AudioProps'],
+  video: ['media.ts', 'VideoProps'],
   chart: ['charts.ts', 'ChartProps'],
   model: ['model.astro', 'ModelProps'],
   shader: ['shader.astro', 'ShaderProps'],
@@ -37,9 +39,21 @@ test('every published content component prop has a playground control and defaul
       (s) => ts.isInterfaceDeclaration(s) && s.name.text === name,
     );
     assert.ok(declaration, `Missing interface ${name}`);
-    const expected = declaration.members
-      .map((m) => m.name.getText(tree))
-      .sort();
+    function members(node) {
+      const own = node.members.map((m) => m.name.getText(tree));
+      const inherited = (node.heritageClauses ?? []).flatMap((clause) =>
+        clause.types.flatMap((base) => {
+          const name = base.expression.getText(tree);
+          const parent = tree.statements.find(
+            (s) => ts.isInterfaceDeclaration(s) && s.name.text === name,
+          );
+          assert.ok(parent, `Missing inherited interface ${name}`);
+          return members(parent);
+        }),
+      );
+      return [...inherited, ...own];
+    }
+    const expected = members(declaration).sort();
     assert.deepEqual(
       definitions[id].controls.map((c) => c.name).sort(),
       expected,

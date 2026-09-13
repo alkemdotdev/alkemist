@@ -37,7 +37,9 @@
     "./code-theme": "./src/code-theme.ts",
     "./code-copy": "./src/code-copy.ts",
     "./playground": "./src/playground/index.ts",
-    "./playground/renderers": "./src/playground/renderers.ts"
+    "./playground/renderers": "./src/playground/renderers.ts",
+    "./audio": "./src/audio/index.ts",
+    "./video": "./src/video/index.ts"
   },
   "files": [
     "src",
@@ -49,12 +51,13 @@
   "dependencies": {
     "@alkemdotdev/alkemist-theme": "1.0.0-beta.1",
     "@types/three": "0.185.4",
+    "entities": "6.0.1",
     "katex": "0.18.7",
+    "media-chrome": "4.19.2",
     "shiki": "4.4.3",
     "three": "0.185.1",
     "vega": "6.4.0",
     "vega-embed": "7.2.0",
-    "vega-lite": "6.4.3",
-    "entities": "6.0.1"
+    "vega-lite": "6.4.3"
   }
 }

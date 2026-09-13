@@ -8,7 +8,7 @@ An Astro publishing toolkit for inventors and researchers. The demo website, doc
 
 Adopt individual packages or generate a complete site:
 
-- `@alkemdotdev/alkemist-components` supplies layouts, math, code, charts, models, and the bounded shader study.
+- `@alkemdotdev/alkemist-components` supplies layouts, math, code, audio, video, charts, models, and the bounded shader study.
 - `@alkemdotdev/alkemist-theme` supplies optional tokens, global CSS, palette data, and theme helpers.
 - `@alkemdotdev/alkemist-astro` supplies optional Astro integration and MDX defaults.
 - `create-alkemist` generates a complete site.
@@ -72,7 +72,7 @@ Use Node 24.20.0 (`.nvmrc`). Astro is pinned to 7.3.2; TypeScript 6.0.3 matches 
 ## Structure
 
 - `packages/astro`: shared Astro integration and MDX defaults.
-- `packages/components`: reusable layouts, math, code, charts, model/shader viewers.
+- `packages/components`: reusable layouts, math, code, audio/video players, charts, model/shader viewers.
 - `packages/theme`: optional theme tokens, fonts, palette data, and browser helpers.
 - `packages/create-alkemist`: the registry generator and its installed template.
 - `apps/site`: blog, labs, info, optional docs, one test page, and site-owned content.
@@ -100,7 +100,7 @@ These require an externally supplied `CLOUDFLARE_API_TOKEN` with appropriate Pag
 
 ## Current scope
 
-Ubuntu/Ubuntu Mono, handwritten annotations, #eee/#111 boards, and eight invariant inks are implemented. The reusable components cover KaTeX math, highlighted code, six CSV chart presets, uncompressed GLB/glTF, and a fixed interactive GLSL study. `/test/` exercises these beside rich MDX and ordinary controls.
+Ubuntu/Ubuntu Mono, handwritten annotations, #eee/#111 boards, and eight invariant inks are implemented. The reusable components cover KaTeX math, highlighted code, accessible audio/video controls, six CSV chart presets, uncompressed GLB/glTF, and a fixed interactive GLSL study. `/test/` exercises these beside rich MDX and ordinary controls.
 
 Splats, point clouds, robotics, compressed-asset pipelines, more statistical charts, and a general shader API remain future work. See [publishing.md](docs/publishing.md) for the beta-to-stable policy and registry prerequisite.
 

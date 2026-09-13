@@ -1,0 +1,14 @@
+---
+import './media.css';
+import { renderMedia, type VideoProps } from './media';
+
+export type { VideoProps } from './media';
+
+type Props = VideoProps;
+---
+
+<Fragment set:html={renderMedia('video', Astro.props)} />
+
+<script>
+  import './media-client';
+</script>
