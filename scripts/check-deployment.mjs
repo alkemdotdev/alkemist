@@ -189,7 +189,16 @@ const missing = await get('/alkemist-verification-missing-page/');
 assert.equal(missing.status, 404);
 const mediaChecks = [];
 for (const name of ['media-study.wav', 'media-study.mp4']) {
-  const response = await fetch(new URL(`/test/${name}`, origin), {
+  const mediaUrl = new URL(`/test/${name}`, origin);
+  // Advertise seeking on the full representation. A CDN may omit the advisory
+  // Accept-Ranges header when it constructs a partial response (RFC 9110 14.3).
+  const metadata = await fetch(mediaUrl, {
+    method: 'HEAD',
+    signal: AbortSignal.timeout(15000),
+  });
+  assert.equal(metadata.status, 200);
+  assert.equal(metadata.headers.get('accept-ranges'), 'bytes');
+  const response = await fetch(mediaUrl, {
     headers: { Range: 'bytes=16-79' },
     signal: AbortSignal.timeout(15000),
   });
@@ -202,11 +211,11 @@ for (const name of ['media-study.wav', 'media-study.mp4']) {
     response.headers.get('content-range') ?? '',
     /^bytes 16-79\/\d+$/,
   );
-  assert.equal(response.headers.get('accept-ranges'), 'bytes');
   const body = Buffer.from(await response.arrayBuffer());
   const source = await readFile(
     new URL(`../apps/site/public/test/${name}`, import.meta.url),
   );
+  assert.equal(Number(metadata.headers.get('content-length')), source.length);
   assert.deepEqual(
     body,
     source.subarray(16, 80),
@@ -214,6 +223,7 @@ for (const name of ['media-study.wav', 'media-study.mp4']) {
   );
   mediaChecks.push({
     name,
+    acceptsRanges: metadata.headers.get('accept-ranges'),
     status: response.status,
     range: response.headers.get('content-range'),
     bytes: body.length,
