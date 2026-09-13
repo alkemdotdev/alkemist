@@ -40,7 +40,7 @@ Publishing runs in its own job with `id-token: write`, using npm OIDC trusted
 publishing. The job downloads the verified artifacts; it does not reinstall
 build dependencies or repack source. SHA-256, SHA-512 integrity, package
 identities, versions, and source revision are checked before publication.
-Afterward, a separate job installs from npm and exercises standalone
+After npm accepts the uploads, verification waits for registry propagation for up to 30 checks at 10-second intervals. Different published bytes fail immediately; missing versions or stale channel tags are retried. Afterward, a separate job installs from npm and exercises standalone
 components, existing MDX integration, and the published starter.
 
 The root commands for a local release are:
@@ -94,7 +94,7 @@ or `latest` and records its GitHub Release.
 
 All four packages have trusted publisher bindings to `alkemdotdev/alkemist`,
 `release.yml`, environment `npm`. The initial beta was published locally;
-the first new version published by Actions will verify the OIDC path end to end.
+the canary for source revision `a8f56dc` was published by Actions with npm provenance for all four packages. No further account bootstrap is required.
 
 The first real release must be published from the authenticated npm account
 before a trusted publisher can be configured for those package names. Use
