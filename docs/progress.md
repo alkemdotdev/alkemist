@@ -487,3 +487,11 @@ Replaced the MIDI control rack with one top toolbar and horizontal track tabs. D
 Added an opt-in `focusPreview` mode to the reusable Playground. The MIDI demo uses its full width with collapsed source/parameter panels and content-driven iframe sizing. Source updates preserve the disclosure controls. Toolbar/menu CSS explicitly resets inherited prose defaults and adapts to the component's width.
 
 Observed validation: full project check/test/build gate passed (91 tests, 97 pages). Browser gestures moved a note one beat and one semitone, resized it, restored the exact original length with one Undo, drew a two-beat note, erased and restored it, switched instruments, selected/muted the bass track, and played/stopped successfully. Desktop and 390px review covered the toolbar, More panel, and full-width documentation demo. Logs: `.alkemist/midi-toolbar-*.log`.
+
+## Heading guidance — 2026-09-14
+
+Updated repository and generated-site agent instructions to omit decorative eyebrows and kickers above headings. The rule now applies even when the label does not repeat the heading. This changes authoring guidance only; existing page markup and component APIs are unchanged.
+
+`npm run verify` passed with zero Astro errors or warnings and 99 validated output pages. No browser check was needed for this guidance-only edit.
+
+Publication is authorized for the complete accumulated changes. The starter guidance joins the pending coordinated beta release; branch-preview verification precedes production promotion. Exact deployment and registry evidence is retained under `.alkemist/` and in the GitHub release workflows.
