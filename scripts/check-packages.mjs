@@ -169,9 +169,11 @@ const props: PostListProps = {items,layout,selectable:true,featuredHref:'/lead/'
     `---
 import Slides, { type SlidesProps } from '@alkemdotdev/alkemist-components/slides';
 import Note from '@alkemdotdev/alkemist-components/note';
+import Annotations, { type AnnotationsProps } from '@alkemdotdev/alkemist-components/annotations';
+const annotations: AnnotationsProps = {documentId: 'packed-example'};
 const props: SlidesProps = { title: 'Slides in my existing layout', view: 'read' };
 ---
-<html lang="en"><head><title>Standalone slides</title></head><body><header>Host navigation</header><main><Slides {...props}><section data-alk-slide id="first"><h1>Existing layout</h1><p>Host-owned document chrome remains in place.</p><Note for="first">A local note.</Note></section></Slides></main></body></html>`,
+<html lang="en"><head><title>Standalone slides</title></head><body><header>Host navigation</header><main><Annotations {...annotations}><p>Annotations also work in an existing document.</p></Annotations><Slides {...props}><section data-alk-slide id="first"><h1>Existing layout</h1><p>Host-owned document chrome remains in place.</p><Note for="first">A local note.</Note></section></Slides></main></body></html>`,
   );
   await write(
     'src/content/embedded.md',
@@ -295,6 +297,7 @@ format: slides
   );
   assert.match(standaloneSlides, /Host navigation/);
   assert.match(standaloneSlides, /<alk-slides/);
+  assert.match(standaloneSlides, /data-document-id="packed-example"/);
   assert.match(standaloneSlides, /data-initial-view="read"/);
   assert.doesNotMatch(standaloneSlides, /class="alk-layout/);
   const embeddedSlides = await readFile(

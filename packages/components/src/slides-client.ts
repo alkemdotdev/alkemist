@@ -1,3 +1,4 @@
+import { SlidesNative } from './slides-native';
 import type { RevealApi } from 'reveal.js';
 import type { NotesPlugin } from 'reveal.js/plugin/notes';
 import { fitSlideContent, prepareSlideLayouts } from './slides-layout';
@@ -9,6 +10,7 @@ let instance = 0;
 
 class SlidesElement extends HTMLElement {
   private deck?: RevealApi;
+  private native?: SlidesNative;
   private events?: AbortController;
   private resize?: ResizeObserver;
   private current = 0;
@@ -64,6 +66,36 @@ class SlidesElement extends HTMLElement {
       );
       return;
     }
+    this.native = new SlidesNative({
+      root: this,
+      position: () => ({
+        slide: this.current,
+        fragment: this.fragment,
+        blackout: this.dataset.blackout === 'true',
+      }),
+      apply: (state) => {
+        const section = this.sections[state.slide];
+        if (
+          !section ||
+          !this.deck ||
+          state.fragment >= section.querySelectorAll('.fragment').length
+        )
+          return;
+        this.setBlackout(state.blackout);
+        this.deck.slide(state.slide, 0, state.fragment);
+      },
+      command: (command) => {
+        if (command === 'blackout') this.toggleBlackout();
+        else this.deck?.[command]();
+      },
+      message: (text) => this.message(text),
+    });
+    this.button('audience-fullscreen').hidden = !this.native.audience;
+    this.button('audience-fullscreen').addEventListener(
+      'click',
+      () => void this.toggleFullscreen(),
+      { signal },
+    );
     this.prepareContent();
     prepareSlideLayouts(this);
     this.querySelectorAll<HTMLElement>('[data-slides-controls]').forEach(
@@ -127,7 +159,13 @@ class SlidesElement extends HTMLElement {
     );
     this.querySelector<HTMLElement>(
       '[data-slides-blackout-overlay]',
-    )!.addEventListener('click', () => this.setBlackout(false), { signal });
+    )!.addEventListener(
+      'click',
+      () => {
+        if (!this.native?.audience) this.setBlackout(false);
+      },
+      { signal },
+    );
     this.button('timer').addEventListener('click', () => this.toggleTimer(), {
       signal,
     });
@@ -147,6 +185,17 @@ class SlidesElement extends HTMLElement {
             block: 'start',
           });
         }
+      },
+      { signal },
+    );
+    this.addEventListener(
+      'alk:annotation-target',
+      (event) => {
+        const element = (event as CustomEvent<{ element: HTMLElement }>).detail
+          ?.element;
+        const section = element?.closest<HTMLElement>('[data-alk-slide]');
+        const index = section ? this.sections.indexOf(section) : -1;
+        if (index >= 0 && this.deck) this.deck.slide(index);
       },
       { signal },
     );
@@ -254,6 +303,7 @@ class SlidesElement extends HTMLElement {
     this.resize.observe(this.viewport);
     const view =
       !this.receiver &&
+      !this.native.audience &&
       (this.dataset.initialView === 'read' || window.innerWidth < 640)
         ? 'read'
         : 'present';
@@ -276,6 +326,8 @@ class SlidesElement extends HTMLElement {
     this.resize = undefined;
     this.stopTimer();
     this.teardown();
+    this.native?.destroy();
+    this.native = undefined;
   }
 
   private prepareContent() {
@@ -429,6 +481,7 @@ class SlidesElement extends HTMLElement {
     if (this.deck) return;
     this.dataset.view = 'present';
     this.setStageInert(this.dataset.embedded !== 'true');
+    this.native?.resume();
     this.updateActivity();
     prepareSlideLayouts(this);
     fitSlideContent(this);
@@ -444,8 +497,9 @@ class SlidesElement extends HTMLElement {
       center: false,
       controls: false,
       progress: false,
-      hash: this.dataset.embedded !== 'true',
-      respondToHashChanges: this.dataset.embedded !== 'true',
+      hash: this.dataset.embedded !== 'true' && !this.native?.audience,
+      respondToHashChanges:
+        this.dataset.embedded !== 'true' && !this.native?.audience,
       fragmentInURL: true,
       transition: matchMedia('(prefers-reduced-motion: reduce)').matches
         ? 'none'
@@ -499,6 +553,7 @@ class SlidesElement extends HTMLElement {
     fitSlideContent(this);
     void document.fonts.ready.then(() => fitSlideContent(this));
     this.sync();
+    this.native?.resume();
     if (
       !this.receiver &&
       (this.dataset.embedded !== 'true' ||
@@ -508,6 +563,7 @@ class SlidesElement extends HTMLElement {
   }
 
   private teardown() {
+    this.native?.suspend();
     this.stopTimer();
     this.setPointer(false);
     // Unload listeners may already have disposed widgets; never wake them here.
@@ -555,6 +611,7 @@ class SlidesElement extends HTMLElement {
         ? `${this.current + 1} / ${this.sections.length}${this.fragment >= 0 ? ` · step ${this.fragment + 1}` : ''}`
         : `${this.sections.length} slides`;
     this.dataset.ready = 'true';
+    this.native?.sync();
     this.updateActivity();
     fitSlideContent(this);
   }
@@ -728,6 +785,8 @@ class SlidesElement extends HTMLElement {
       return;
     }
     const url = new URL(location.href);
+    for (const key of ['alkAudience', 'alkCast', 'receiver'])
+      url.searchParams.delete(key);
     url.hash = this.deck?.getSlidePath() ?? url.hash;
     try {
       await navigator.clipboard.writeText(url.href);
@@ -769,12 +828,14 @@ class SlidesElement extends HTMLElement {
   }
 
   private touchStartAt(event: PointerEvent) {
+    if (this.native?.audience) return;
     if (event.pointerType !== 'touch' || this.isInteractive(event.target))
       return;
     this.touchStart = { x: event.clientX, y: event.clientY };
   }
 
   private touchEndAt(event: PointerEvent) {
+    if (this.native?.audience) return;
     const start = this.touchStart;
     this.touchStart = undefined;
     if (
@@ -802,7 +863,10 @@ class SlidesElement extends HTMLElement {
       !enabled;
     this.button('blackout').setAttribute('aria-pressed', String(enabled));
     if (enabled) this.stopTimer();
-    if (publishActivity) this.updateActivity();
+    if (publishActivity) {
+      this.updateActivity();
+      this.native?.sync();
+    }
     if (restoring && publishActivity)
       this.viewport.focus({ preventScroll: true });
   }
@@ -906,6 +970,7 @@ class SlidesElement extends HTMLElement {
   }
 
   private keydown(event: KeyboardEvent) {
+    if (this.native?.audience && event.key.toLowerCase() !== 'f') return;
     if (
       event.defaultPrevented ||
       event.metaKey ||

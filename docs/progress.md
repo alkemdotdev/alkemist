@@ -1,5 +1,13 @@
 # Alkemist progress
 
+## 2026-09-14 — Native presentation facilities
+
+Researched the platform contracts and browser support in `docs/browser-presentation-standards.md`. Shared Slides now owns opt-in screen wake locks, attached-display selection, a floating notes projection, audience-window synchronization, and an experimental opt-in Presentation API adapter. The local deck remains authoritative; remote state contains slides, steps and blackout, never local annotations or speaker-note payloads. Hidden local figures and media remain paused while floating notes can control the audience. Permission denial, late grants, close, Read and page lifecycle all have explicit recovery paths.
+
+The independent `Annotations` component uses Selection/Range and CSS Custom Highlights, browser-local storage, and bounded W3C JSON-LD import/export. It shares the slide toolbar without wrapping or remounting widgets. Quote/context anchors recover moved text and expose ambiguity/missing targets; Unicode positions convert between DOM and interchange representations. Added a standalone lab, adoption docs, a rehearsal deck with a cover, and a development article.
+
+Observed so far: full verification, desktop/mobile layout across 92 cases (5 decks, 1440/1280/1024/390px; minimum 20px presentation text), Chromium 153 and WebKit 26.5 audience synchronization and existing widget/print/media/speaker regressions. Both browsers granted actual wake locks; Chromium opened actual Document PiP notes. Deterministic adapters cover denied channels, late display grants, selected-display calls, wake denial, floating controls, and cast state/termination. Physical sleep prevention, multi-monitor placement and compatible cast hardware have not been exercised. Final local verification passed: 121 unit tests, 111 validated output pages, format check, fresh packed component consumers and generated starter (including upgrades/subpaths), independent embedded deck navigation and valid ARIA. Chromium/WebKit annotation workflows passed save/edit/reload/export/import/delete/Go-to, unavailable storage and navigation across slides. Browser evidence lives in `.alkemist/native-*.log` and `.alkemist/annotations-*.log`. Branch preview and production identity are checked during delivery.
+
 ## 2026-09-13 — Code-number spacing
 
 Increased the line-number/source gap to 1.5ch and aligned ordinary and diff-marked

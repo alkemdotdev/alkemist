@@ -1,0 +1,80 @@
+---
+import Annotations from '@alkemdotdev/alkemist-components/annotations';
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import { isPreview } from '../../lib/deployment';
+---
+
+<SiteLayout
+  title="Local annotations"
+  description="Select a passage, save a local note, and export a W3C Web Annotation JSON-LD file."
+  preview={isPreview}
+>
+  <header class="annotation-intro">
+    <p><a href="/labs/">← Labs</a></p>
+    <h1>Annotations stay with the reader.</h1>
+    <p class="alk-lead">
+      Select a passage in this field note, then save a highlight and optional
+      comment. Notes are local to this browser and this document until you
+      export them as JSON.
+    </p>
+  </header>
+  <Annotations documentId="labs:annotations">
+    <article class="annotation-paper">
+      <h2>A small observation</h2>
+      <p>
+        A useful notebook keeps the source intact while making room for a
+        reader’s response. The highlight is an address into the text, not a
+        markup change to the published document.
+      </p>
+      <p>
+        When a passage moves, its exact words and nearby context can recover a
+        unique anchor. If the source becomes ambiguous or disappears, the saved
+        note says so instead of attaching itself to an arbitrary sentence.
+      </p>
+      <p>
+        Exported notes use the W3C Web Annotation shape with plain text bodies.
+        Import only restores notes for this page; it does not publish or share
+        anything with another reader.
+      </p>
+    </article>
+  </Annotations>
+  <p class="annotation-links">
+    Read the <a href="/docs/annotations/">Annotations documentation</a> or see the
+    same control in <a href="/slides/">Slides</a>.
+  </p>
+</SiteLayout>
+
+<style>
+  .annotation-intro {
+    max-width: 46rem;
+    margin-bottom: 2rem;
+  }
+  .annotation-intro > p:first-child {
+    margin: 0 0 1.5rem;
+    font: 0.8rem var(--alk-mono);
+  }
+  .annotation-intro h1 {
+    max-width: 16ch;
+    margin-bottom: 0.8rem;
+  }
+  .annotation-intro .alk-lead {
+    margin: 0;
+  }
+  .annotation-paper {
+    max-width: 46rem;
+    border-top: 1px solid var(--alk-rule);
+    padding-top: 1.5rem;
+  }
+  .annotation-paper h2 {
+    font-size: 1.35rem;
+  }
+  .annotation-paper p {
+    max-width: 66ch;
+    line-height: 1.65;
+  }
+  .annotation-links {
+    margin-top: 2rem;
+    color: var(--alk-muted);
+    font-size: 0.9rem;
+  }
+</style>

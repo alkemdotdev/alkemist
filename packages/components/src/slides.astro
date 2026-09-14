@@ -1,4 +1,5 @@
 ---
+import Annotations from './annotations.astro';
 import 'reveal.js/reveal.css';
 import '@alkemdotdev/alkemist-theme/slides.css';
 
@@ -12,6 +13,10 @@ export interface SlidesProps {
   theme?: 'inherit' | 'paper' | 'chalk' | 'blueprint';
   transition?: 'none' | 'fade' | 'slide';
   aspect?: 'auto' | '16:9' | '4:3';
+  /** Local text highlights and comments; exported as W3C Web Annotations. */
+  annotations?: boolean;
+  /** Opt in to the experimental, receiver-dependent Presentation API. */
+  casting?: boolean;
   id?: string;
   class?: string;
   style?: string;
@@ -25,7 +30,9 @@ const {
   theme = 'inherit',
   transition = 'fade',
   aspect = 'auto',
-  id,
+  annotations = true,
+  casting = false,
+  id = `alk-slides-${crypto.randomUUID()}`,
   class: className,
   style,
 } = Astro.props;
@@ -39,6 +46,7 @@ const {
   data-theme={theme}
   data-transition={transition}
   data-aspect={aspect}
+  data-casting={String(casting)}
   style={style}
   aria-label={title}
 >
@@ -56,6 +64,11 @@ const {
       >
     </div>
     <button type="button" data-slides-overview>Overview</button>
+    {
+      annotations && (
+        <Annotations target={`${id}-viewport`} documentId={`slides:${title}`} />
+      )
+    }
     <details data-slides-tools>
       <summary>Tools</summary>
       <div class="alk-slides-tools-panel">
@@ -63,6 +76,16 @@ const {
           >Speaker view</button
         >
         <button type="button" data-slides-fullscreen>Fullscreen</button>
+        <button type="button" data-slides-screen hidden>Choose display…</button>
+        <button type="button" data-slides-audience>Audience window</button>
+        <button type="button" data-slides-floating aria-pressed="false" hidden
+          >Floating speaker notes</button
+        >
+        <button type="button" data-slides-awake aria-pressed="false" hidden
+          >Keep display awake</button
+        >
+        <button type="button" data-slides-cast hidden>Cast to a receiver</button
+        >
         <button type="button" data-slides-print>Print</button>
         <button type="button" data-slides-copy-link>Copy current link</button>
         <button type="button" data-slides-pointer aria-pressed="false"
@@ -87,7 +110,15 @@ const {
     </details>
     <button type="button" data-slides-help aria-label="Keyboard help">?</button>
   </div>
-  <div class="alk-slides-viewport" tabindex="0" aria-label={`${title} slides`}>
+  <button type="button" data-slides-audience-fullscreen hidden
+    >Fullscreen</button
+  >
+  <div
+    id={`${id}-viewport`}
+    class="alk-slides-viewport"
+    tabindex="0"
+    aria-label={`${title} slides`}
+  >
     <div class="slides"><slot /></div>
   </div>
   <div
@@ -123,6 +154,18 @@ const {
   >
     Restore presentation
   </button>
+  <dialog data-slides-screen-dialog aria-label="Choose presentation display">
+    <form method="dialog">
+      <header>
+        <h2>Choose display</h2><button type="submit">Close</button>
+      </header>
+    </form>
+    <p>
+      Present this deck on an attached display. Speaker view stays in its own
+      window.
+    </p>
+    <div data-slides-screens></div>
+  </dialog>
   <dialog data-slides-overview-dialog aria-label="Slide overview">
     <form method="dialog">
       <header>

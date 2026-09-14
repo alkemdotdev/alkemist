@@ -1,0 +1,46 @@
+---
+title: Text annotations
+description: Add local highlights and comments to documents and slides, with portable W3C Web Annotation exports.
+order: 21
+---
+
+`Annotations` adds text highlights and comments to ordinary Astro content. The same component is built into the Slides toolbar. [Try the annotation lab](/labs/annotations/) or [rehearse with a deck](/slides/presenting-from-the-browser/).
+
+```astro title="src/pages/paper.astro"
+---
+import Annotations, {
+  type AnnotationsProps,
+} from '@alkemdotdev/alkemist-components/annotations';
+const options: AnnotationsProps = { documentId: 'experiment-01' };
+---
+
+<Annotations {...options}>
+  <article>
+    <h1>An experiment</h1>
+    <p>Select a passage to record a question beside it.</p>
+  </article>
+</Annotations>
+```
+
+Select text, open **Annotations**, and optionally add a comment before saving. Saved notes can be edited, removed, or revisited. Export and import use JSON; nothing is sent to a server. Browser storage belongs to that browser and origin. Keep an exported copy if a note matters.
+
+## Put controls beside an existing document
+
+The optional `target` names an element ID. This places the annotation control independently of the content without wrapping or replacing it:
+
+```astro
+<Annotations target="paper-content" documentId="experiment-01" />
+<article id="paper-content">
+  <p>The text you want to annotate.</p>
+</article>
+```
+
+`documentId` is a stable storage key within the page URL. Give independent documents on one page different keys. `title` changes the button and dialog label. Slides supplies its own key from the deck title; changing that title starts a new local notebook. Set `annotations: false` in deck frontmatter, or pass `annotations={false}` to `Slides`, to omit the control.
+
+## Keep the text intact
+
+Selection and Range identify a passage. CSS Custom Highlights paints it without inserting wrappers into the document or disturbing charts and interactive figures. Where highlight painting is unavailable, the saved note list and Go to selection still work. The component uses the host's `--alk-*` theme tokens.
+
+Exports use the [W3C Web Annotation model](https://www.w3.org/TR/annotation-model/), with a plain-text body, source URL, quoted text and its surrounding context, and text positions. Positions are a fast hint; quoted context helps locate a passage after it moves. Missing or ambiguous passages are reported instead of attaching a note to guessed text. Import accepts this component's bounded text-annotation profile, not every possible W3C annotation shape.
+
+Authored `Note` and `SpeakerNotes` remain part of published content. Reader annotations stay local until you export and share them yourself. There is no shared annotation server, drawing layer, or cross-device account sync.

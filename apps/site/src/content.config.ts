@@ -32,6 +32,8 @@ const slidesSchema = z.object({
   theme: z.enum(['inherit', 'paper', 'chalk', 'blueprint']).default('inherit'),
   transition: z.enum(['none', 'fade', 'slide']).default('fade'),
   aspect: z.enum(['auto', '16:9', '4:3']).default('auto'),
+  annotations: z.boolean().default(true),
+  casting: z.boolean().default(false),
   class: z.string().optional(),
   style: z.string().optional(),
   draft: z.boolean().default(false),

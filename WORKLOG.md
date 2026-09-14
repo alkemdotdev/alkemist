@@ -1,3 +1,17 @@
+# Native presentation standards — September 14, 2026
+
+Research and implement browser capabilities in shared components and Slides: local text annotations, opt-in display wake lock, attached-display choice, floating speaker notes, synchronized audience windows, and optional casting. Preserve Markdown, one mounted local widget tree, current speaker view, and graceful reading mode.
+
+- Parent owns Slides native capability/session modules, component exports, integration, docs, verification and delivery.
+- `standards_research` owns `docs/browser-presentation-standards.md`; primary-source report complete, activation and BCD caveats corrected.
+- `annotations_native` owns the Annotations component/helpers, tests and standalone Labs demo.
+- Baseline: clean `0dc3bb6`; branch `feat/browser-presentation-standards`. Browser/device permission denial and disconnect must remain visible; physical projector/cast operation needs hardware and is not implied by simulated tests.
+- Validation: full verify passes (121 tests, 111 validated output pages); formatting passes. Chromium 153 and WebKit 26.5 pass native session/receiver adapters and local audience navigation/reload/end/resume; both granted a real wake lock. Chromium opened real Document PiP. Both browsers pass annotation save/edit/reload/export/import/delete/go-to/storage fallback and slide persistence. Existing widgets/notes/print/media/no-JS regressions pass. All 92 viewport/slide cases fit, minimum 20px text. Packed components/starter and two independently installed embedded decks pass.
+- Evidence: `.alkemist/native-verify-final.log`, `native-format-final.log`, `native-browser-final.log`, `native-webkit-final.log`, `native-layouts.log`, `annotations-browser.log`, `annotations-webkit.log`, `native-packages.log`, `native-starter.log`, `native-embedded.log`. Scope review fixed late permission grants, denied channels, audience Escape, receiver blackout on disconnect, and Unicode annotation offsets. Physical display placement/casting remain untested.
+- Delivery pending: verified branch preview, then checked main deployment. Source package release recorded by Changeset; no manual npm release.
+
+## Previous milestone
+
 # Presentation workspace — September 14, 2026
 
 User requested native presenting modes, usable controls, theme/style support, illustrated decks with thumbnails, and responsive layouts that work without configuration.

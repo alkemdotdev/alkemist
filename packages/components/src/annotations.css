@@ -1,0 +1,148 @@
+alk-annotations {
+  --alk-annotations-paper: var(--alk-paper, #fff);
+  --alk-annotations-ink: var(--alk-ink, #222);
+  --alk-annotations-muted: var(--alk-muted, #666);
+  --alk-annotations-rule: var(--alk-rule, #ddd);
+  --alk-annotations-mark: color-mix(
+    in srgb,
+    var(--alk-ink-violet, #7650bd) 32%,
+    transparent
+  );
+  color: var(--alk-annotations-ink);
+}
+alk-annotations .alk-annotations-content {
+  display: contents;
+}
+alk-annotations button,
+alk-annotations textarea,
+alk-annotations input {
+  font: inherit;
+}
+alk-annotations button {
+  border: 1px solid var(--alk-annotations-rule);
+  background: var(--alk-annotations-paper);
+  color: inherit;
+  padding: 0.35rem 0.55rem;
+  cursor: pointer;
+  min-height: 44px;
+}
+alk-annotations button:focus-visible,
+alk-annotations textarea:focus-visible,
+alk-annotations .alk-annotations-import:focus-within {
+  outline: 2px solid var(--alk-ink-violet, #7650bd);
+  outline-offset: 2px;
+}
+alk-annotations dialog {
+  width: min(36rem, calc(100vw - 2rem));
+  max-height: min(80vh, 42rem);
+  border: 1px solid var(--alk-annotations-rule);
+  background: var(--alk-annotations-paper);
+  color: var(--alk-annotations-ink);
+  box-shadow: 0 0.8rem 2rem #0004;
+}
+alk-annotations dialog::backdrop {
+  background: #0006;
+}
+alk-annotations form {
+  display: grid;
+  gap: 0.7rem;
+  margin: 0;
+}
+alk-annotations header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+alk-annotations h2 {
+  margin: 0;
+  font: 600 1rem var(--alk-sans, system-ui);
+}
+alk-annotations label {
+  display: grid;
+  gap: 0.3rem;
+  font: 0.78rem var(--alk-mono, ui-monospace);
+}
+alk-annotations textarea {
+  width: 100%;
+  resize: vertical;
+  border: 1px solid var(--alk-annotations-rule);
+  padding: 0.45rem;
+  background: transparent;
+  color: inherit;
+}
+alk-annotations .alk-annotations-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+}
+alk-annotations .alk-annotations-import {
+  display: inline-flex;
+  border: 1px solid var(--alk-annotations-rule);
+  padding: 0.35rem 0.55rem;
+  cursor: pointer;
+}
+alk-annotations .alk-annotations-import input {
+  width: 0;
+  height: 0;
+  opacity: 0;
+}
+alk-annotations [data-annotations-status] {
+  min-height: 1.2em;
+  margin: 0;
+  color: var(--alk-annotations-muted);
+  font: 0.75rem/1.4 var(--alk-mono, ui-monospace);
+}
+alk-annotations ol {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+alk-annotations li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: start;
+  border-top: 1px solid var(--alk-annotations-rule);
+  padding-top: 0.5rem;
+}
+alk-annotations li > div:first-child {
+  flex-basis: 100%;
+  min-width: 0;
+}
+alk-annotations li strong {
+  overflow-wrap: anywhere;
+}
+alk-annotations li p {
+  margin: 0.2rem 0 0;
+  white-space: pre-wrap;
+  font-size: 0.82rem;
+}
+alk-annotations li button {
+  font-size: 0.75rem;
+}
+alk-annotations li textarea {
+  width: 100%;
+  min-height: 4rem;
+  margin-top: 0.5rem;
+}
+alk-annotations .alk-annotations-edit-actions {
+  display: flex;
+  gap: 0.35rem;
+  margin-top: 0.35rem;
+}
+.alk-slides alk-annotations dialog {
+  width: min(36rem, calc(100vw - 2rem));
+}
+::highlight(alk-annotation) {
+  background: var(--alk-annotations-mark, #7650bd55);
+}
+@media print {
+  alk-annotations > [data-annotations-open],
+  alk-annotations dialog {
+    display: none !important;
+  }
+}

@@ -139,3 +139,25 @@ The starter includes `src/content/slides/first-talk.md`. The demo has four examp
 Read and Present share the same widget instances. Phones default to Read. Speaker view is available for standalone decks; embedded decks keep independent navigation within their host page.
 
 The slide index and route exclude `draft: true`, just as Blog does. Test the reading route and presentation controls at desktop and phone widths. Exercise backward steps, widget focus, media pause on slide change, resize, and a no-JavaScript reading load before publishing. Browser presentation does not establish a verified PDF or video export; treat those as separate artifact work.
+
+## Use the browser's presentation facilities
+
+**Tools → Audience window** opens a clean, synchronized view. Move it to a projector or second display and use Fullscreen there. The original deck controls slide position, progressive steps, and blackout; interactive widget settings are local to each display. Reloading the audience window rejoins the current session. Speaker notes are not sent through the audience synchronization protocol, though authored notes remain in the published HTML.
+
+**Choose display** lists attached screens when the browser supports and permits it. Selecting one requests fullscreen for the current deck on that display. Display access is requested only when you click the control. If access is denied, move the audience window manually.
+
+**Floating speaker notes** opens a compact, always-on-top notes window in supporting desktop browsers. It has the current and upcoming title, elapsed time, and Previous/Next/Blackout controls. It leaves live figures in the deck. The regular **Speaker view** remains available when floating windows are unsupported.
+
+**Keep display awake** is opt-in. Its label reflects whether the browser granted or released the lock. Hidden pages, reading mode, and blackout release it; returning to an eligible presentation reacquires an opted-in lock. Battery, browser, and operating-system policy can still prevent it.
+
+The native [Screen Wake Lock](https://developer.mozilla.org/en-US/docs/Web/API/Screen_Wake_Lock_API), [Window Management](https://developer.mozilla.org/en-US/docs/Web/API/Window_Management_API), and [Document Picture-in-Picture](https://developer.mozilla.org/en-US/docs/Web/API/Document_Picture-in-Picture_API) facilities have different support and permission requirements. Controls appear only when their API is available; permission denial keeps the local deck usable. These facilities need a secure context, such as HTTPS or localhost.
+
+### Optional casting
+
+Set `casting: true` in a deck's frontmatter, or pass `casting` to `Slides`, to expose **Cast to a receiver** when the browser provides the [Presentation API](https://developer.mozilla.org/en-US/docs/Web/API/Presentation_API). The receiver loads the same public deck URL and follows slide/step/blackout state. This is experimental and requires a compatible receiver selected by the browser. A supported browser alone does not establish device compatibility. **Stop casting** ends a connected presentation; cancelling or losing a receiver keeps the local view usable.
+
+### Local highlights and comments
+
+Select text and use **Annotations** to save a highlight or comment in your browser. The [Annotations component](/docs/annotations/) also works independently in an article. Export/import uses a bounded W3C Web Annotation JSON profile. These reader notes are separate from authored speaker notes and are not broadcast to other screens.
+
+[Ready for the room](/slides/presenting-from-the-browser/) is a rehearsal deck for these controls.

@@ -8,6 +8,7 @@ test('component package exposes only explicit extensionless entry points', async
   const root = new URL('../packages/components/', import.meta.url);
   const pkg = JSON.parse(await readFile(new URL('package.json', root), 'utf8'));
   assert.deepEqual(Object.keys(pkg.exports).sort(), [
+    './annotations',
     './audio',
     './chart',
     './code',

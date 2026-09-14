@@ -1,0 +1,68 @@
+---
+import './annotations.css';
+export interface AnnotationsProps {
+  /** Stable key distinguishing annotations on the same page. */
+  documentId?: string;
+  /** Existing element to annotate. When omitted, slotted content is the target. */
+  target?: string;
+  title?: string;
+}
+type Props = AnnotationsProps;
+const { documentId = 'default', target, title = 'Annotations' } = Astro.props;
+if (target !== undefined && (!target.trim() || /\s/.test(target)))
+  throw new Error(
+    'Annotations target must be an element ID without whitespace.',
+  );
+---
+
+<alk-annotations data-document-id={documentId} data-target={target}>
+  {
+    target ? null : (
+      <div class="alk-annotations-content" data-annotations-content>
+        <slot />
+      </div>
+    )
+  }
+  <button
+    type="button"
+    data-annotations-open
+    data-pagefind-ignore
+    aria-haspopup="dialog"
+    aria-expanded="false"
+    hidden>{title}</button
+  >
+  <dialog data-annotations-dialog data-pagefind-ignore aria-label={title}>
+    <form data-annotations-form>
+      <header>
+        <h2>{title}</h2><button type="button" data-annotations-close
+          >Close</button
+        >
+      </header>
+      <p data-annotations-selection>
+        Select text in the document, then open this dialog.
+      </p>
+      <label
+        >Comment <textarea data-annotations-comment rows="3" maxlength="10000"
+        ></textarea></label
+      >
+      <div class="alk-annotations-actions">
+        <button type="submit" data-annotations-save disabled
+          >Save highlight</button
+        ><button type="button" data-annotations-export>Export JSON</button
+        ><label class="alk-annotations-import"
+          >Import JSON<input
+            type="file"
+            accept="application/ld+json,application/json"
+            data-annotations-import
+          /></label
+        >
+      </div>
+      <p data-annotations-status role="status" aria-live="polite"></p>
+      <ol data-annotations-list></ol>
+    </form>
+  </dialog>
+</alk-annotations>
+
+<script>
+  import './annotations-client';
+</script>

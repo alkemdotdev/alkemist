@@ -10,6 +10,7 @@ async function checkSlideLayouts(page) {
     'field-notebook',
     'listening-to-the-fixture',
     'layout-sampler',
+    'presenting-from-the-browser',
   ];
   for (const width of [1440, 1280, 1024, 390]) {
     await page.setViewportSize({

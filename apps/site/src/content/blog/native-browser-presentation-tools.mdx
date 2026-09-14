@@ -1,0 +1,20 @@
+---
+title: A browser can help give the talk
+description: Display controls, floating notes, audience windows, and portable text annotations now share the presentation workspace.
+date: '2026-09-14'
+order: 0
+cover:
+  src: ../../assets/forms-engineering/interference.png
+  alt: Fine lines trace a field around a small central form.
+  fit: contain
+---
+
+The useful parts of a presentation extend beyond its slides. A speaker needs notes, an audience needs an unobstructed view, and a reader may want to leave a question beside a sentence.
+
+Alkemist now connects those tasks to browser facilities. A separate audience window follows the deck's slides, steps, and blackout. Supporting browsers can choose an attached display, keep the screen awake while presenting, or float a small notes window above other applications. Each capability is requested explicitly. If the browser denies it, the presentation remains usable in its current window.
+
+The shared [Annotations component](/docs/annotations/) records text highlights and comments in browser storage. It works in an article and in the Slides toolbar, using CSS Custom Highlights without rewriting the document. Its JSON export follows the W3C Web Annotation model: source, quoted passage, context, position, and a plain-text comment. A moved passage can be found again; a missing or ambiguous passage is reported.
+
+These are different kinds of support. Fullscreen and local audience windows are broadly useful. Display choice, floating notes, and optional casting depend on the browser and, for casting, a compatible receiver. Simulated connection tests cannot establish projector placement or receiver interoperability. Rehearse on the actual equipment.
+
+[Ready for the room](/slides/presenting-from-the-browser/) exercises the new controls. The [presentation guide](/docs/slides/) explains the workflow and browser limits, and the [annotation lab](/labs/annotations/) provides a small editable record to try.

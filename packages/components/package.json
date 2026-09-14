@@ -46,7 +46,8 @@
     "./step": "./src/step/index.ts",
     "./speaker-notes": "./src/speaker-notes/index.ts",
     "./diagram": "./src/diagram/index.ts",
-    "./diagram-client": "./src/diagram-client.ts"
+    "./diagram-client": "./src/diagram-client.ts",
+    "./annotations": "./src/annotations/index.ts"
   },
   "files": [
     "src",
