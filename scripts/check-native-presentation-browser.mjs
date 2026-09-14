@@ -23,6 +23,14 @@ async function checkNativePresentation(page) {
     );
   await page.setViewportSize({ width: 1440, height: 900 });
   await open(page);
+  await page.locator('[data-annotations-open]').click();
+  await page.keyboard.press('Escape');
+  assert(
+    (await page.locator('[data-annotations-dialog]').isHidden()) &&
+      (await page.locator('alk-slides').getAttribute('data-view')) ===
+        'present',
+    'Closing annotations left Present',
+  );
   await page.locator('[data-slides-tools] > summary').click();
   const popup = page.waitForEvent('popup');
   await page.locator('[data-slides-audience]').click();
@@ -200,6 +208,15 @@ async function checkNativePresentation(page) {
     'Stale permission opened chooser after leaving Present',
   );
   await probe.locator('[data-slides-present]').click();
+  await probe.locator('[data-slides-screen]').click();
+  await probe.evaluate(() => window.__native.resolveScreen());
+  await probe.keyboard.press('Escape');
+  assert(
+    (await probe.locator('[data-slides-screen-dialog]').isHidden()) &&
+      (await probe.locator('alk-slides').getAttribute('data-view')) ===
+        'present',
+    'Closing screen chooser left Present',
+  );
   await probe.locator('[data-slides-screen]').click();
   await probe.evaluate(() => window.__native.resolveScreen());
   await probe.getByRole('button', { name: 'Projector · 1920 × 1080' }).click();

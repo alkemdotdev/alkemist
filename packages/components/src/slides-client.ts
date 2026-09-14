@@ -979,11 +979,11 @@ class SlidesElement extends HTMLElement {
     )
       return;
     if (event.key === 'Escape') {
-      const open = [this.dialog('help'), this.dialog('overview')].find(
-        (dialog) => dialog.open,
-      );
-      if (open) open.close();
-      else if (this.dataset.blackout === 'true') this.setBlackout(false);
+      const open = this.querySelector<HTMLDialogElement>('dialog[open]');
+      if (open) {
+        event.preventDefault();
+        open.close();
+      } else if (this.dataset.blackout === 'true') this.setBlackout(false);
       else if (this.deck) void this.setView('read');
       return;
     }
