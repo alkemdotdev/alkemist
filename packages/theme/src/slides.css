@@ -392,6 +392,14 @@ body:has(.alk-slides[data-view='present']:not([data-embedded='true'])) {
   > :is(alk-chart, alk-model, alk-shader, alk-media, alk-midi, alk-diagram) {
   width: 100%;
   min-width: 0;
+  max-height: 100%;
+  overflow: auto;
+}
+.alk-slides .reveal alk-chart {
+  --alk-chart-height: clamp(140px, 32cqh, 360px);
+}
+.alk-slides .reveal .alk-chart-canvas {
+  min-height: var(--alk-chart-height) !important;
 }
 .alk-slides
   .reveal
@@ -412,11 +420,11 @@ body:has(.alk-slides[data-view='present']:not([data-embedded='true'])) {
   margin: 0;
 }
 .alk-slides .reveal .slides :is(.alk-model-viewport, .alk-shader-viewport) {
-  height: clamp(160px, 48cqh, 520px);
+  height: clamp(160px, 36cqh, 520px);
 }
 .alk-slides .reveal .slides .alk-media--video video {
   width: 100%;
-  height: min(48cqh, 56.25cqw);
+  height: min(36cqh, 56.25cqw);
   max-height: none;
   object-fit: contain;
   border-radius: 0;

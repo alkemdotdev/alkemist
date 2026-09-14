@@ -7,6 +7,7 @@
 }
 .alk-chart-canvas {
   width: 100%;
+  height: var(--alk-chart-height, auto);
   min-width: 0;
   position: relative;
   padding: 0 0.5rem 0.75rem;

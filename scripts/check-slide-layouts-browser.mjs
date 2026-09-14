@@ -11,10 +11,17 @@ async function checkSlideLayouts(page) {
     'listening-to-the-fixture',
     'layout-sampler',
   ];
-  for (const width of [1440, 1024, 390]) {
+  for (const width of [1440, 1280, 1024, 390]) {
     await page.setViewportSize({
       width,
-      height: width === 1440 ? 900 : width === 1024 ? 768 : 844,
+      height:
+        width === 1440
+          ? 900
+          : width === 1280
+            ? 720
+            : width === 1024
+              ? 768
+              : 844,
     });
     for (const slug of slugs) {
       await page.goto(`${base}/slides/${slug}/`);
@@ -78,6 +85,11 @@ async function checkSlideLayouts(page) {
               ...slide.querySelectorAll('.alk-slide-visual'),
             ].map((visual) => {
               const r = visual.getBoundingClientRect();
+              for (const child of visual.children) {
+                const box = child.getBoundingClientRect();
+                if (box.top < r.top - 2 || box.bottom > r.bottom + 2)
+                  throw new Error('A figure exceeds its reserved slide area');
+              }
               return { x: r.x, y: r.y, w: r.width, h: r.height };
             });
             return {

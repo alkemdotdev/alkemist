@@ -21,6 +21,7 @@ class ChartElement extends HTMLElement {
   private abort?: AbortController;
   private generation = 0;
   private width = 0;
+  private height = 0;
   private resizeTimer?: number;
   private isVisible = false;
   private active = true;
@@ -60,8 +61,11 @@ class ChartElement extends HTMLElement {
     window.addEventListener('alk:theme-change', this.themeChange);
     this.resize = new ResizeObserver(() => {
       const width = Math.floor(this.canvas.clientWidth);
-      if (width === this.width || width <= 0) return;
+      const height = this.layoutHeight();
+      if ((width === this.width && height === this.height) || width <= 0)
+        return;
       this.width = width;
+      this.height = height;
       window.clearTimeout(this.resizeTimer);
       // Tick density and legend columns are compiled from the container width.
       // A new specification keeps those readable after a desktop/mobile resize.
@@ -104,6 +108,14 @@ class ChartElement extends HTMLElement {
 
   private get canvas() {
     return this.querySelector<HTMLElement>('.alk-chart-canvas')!;
+  }
+
+  private layoutHeight() {
+    return getComputedStyle(this.canvas)
+      .getPropertyValue('--alk-chart-height')
+      .trim()
+      ? Math.max(100, Math.floor(this.canvas.clientHeight) - 12)
+      : (this.config.height ?? 300);
   }
 
   private canRun() {
@@ -180,11 +192,12 @@ class ChartElement extends HTMLElement {
     this.setStatus('Rendering the chart…', 'loading');
     try {
       this.width = Math.max(1, Math.floor(this.canvas.clientWidth));
+      this.height = this.layoutHeight();
       const mount = document.createElement('div');
       const result = await this.embed(
         mount,
         createChartSpec(
-          this.config,
+          { ...this.config, height: this.height },
           this.rows,
           this.resolveTheme(),
           this.width,
