@@ -31,12 +31,45 @@ async function checkNativePresentation(page) {
         'present',
     'Closing annotations left Present',
   );
+  await page
+    .locator('[data-alk-slide].present .alk-slide-copy p')
+    .first()
+    .evaluate((p) => {
+      const walker = document.createTreeWalker(p, NodeFilter.SHOW_TEXT);
+      let text;
+      while ((text = walker.nextNode()) && !text.textContent.trim()) {}
+      if (!text) throw new Error('Missing selectable text');
+      const range = document.createRange();
+      range.setStart(text, 0);
+      range.setEnd(text, text.textContent.length);
+      const selection = getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
+    });
+  await page.locator('[data-annotations-open]').click();
+  await page
+    .getByLabel('Comment', { exact: true })
+    .fill('Private receiver isolation fixture');
+  await page.locator('[data-annotations-save]').click();
+  await page.locator('[data-annotations-close]').click();
   await page.locator('[data-slides-tools] > summary').click();
   const popup = page.waitForEvent('popup');
   await page.locator('[data-slides-audience]').click();
   const audience = await popup;
   await audience.waitForFunction(
     () => document.querySelector('alk-slides')?.dataset.ready === 'true',
+  );
+  assert(
+    await audience.evaluate(
+      () =>
+        document.querySelector('alk-annotations')?.dataset.disabled ===
+          'receiver' &&
+        !document
+          .querySelector('[data-annotations-list]')
+          ?.textContent?.includes('Private receiver isolation fixture') &&
+        !CSS.highlights?.get('alk-annotation')?.size,
+    ),
+    'Audience loaded private reader annotations',
   );
   await choose(page, 1);
   await at(audience, 1);
@@ -73,6 +106,16 @@ async function checkNativePresentation(page) {
   await choose(page, 3);
   await at(audience, 3);
   await audience.close();
+  await page.locator('[data-annotations-open]').click();
+  for (const item of await page
+    .locator('[data-annotations-list] li')
+    .filter({ hasText: 'Private receiver isolation fixture' })
+    .all())
+    await item.getByRole('button', { name: 'Delete', exact: true }).click();
+  await page.locator('[data-annotations-close]').click();
+  evidence.push(
+    'Audience privacy: same-origin local reader notes and highlights are not loaded.',
+  );
   evidence.push(
     'Real audience window: synchronized navigation/blackout, reload rejoin, Escape isolation, end/resume lifecycle.',
   );

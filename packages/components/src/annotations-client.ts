@@ -135,6 +135,16 @@ class AnnotationsElement extends HTMLElement {
       this.status.textContent = 'Annotation target was not found.';
       return;
     }
+    // Receiver windows share origin storage with the reader. Never project
+    // personal notes or highlights into audience/cast/speaker-preview content.
+    const params = new URLSearchParams(location.search);
+    if (
+      (this.closest('alk-slides') || this.root.closest('alk-slides')) &&
+      ['receiver', 'alkAudience', 'alkCast'].some((key) => params.has(key))
+    ) {
+      this.dataset.disabled = 'receiver';
+      return;
+    }
     this.load();
     this.render();
     this.mutations = new MutationObserver(() => this.scheduleRender());
