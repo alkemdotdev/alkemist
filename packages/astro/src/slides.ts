@@ -402,12 +402,22 @@ function footnoteSlideIndex(node: Node) {
 }
 
 function footnoteItems(node: Node, result: Map<number, Node[]>) {
+  let ordinal = 0;
   walkHast(node, (current) => {
     if (current.type !== 'element' || current.tagName !== 'li') return;
     const index = footnoteSlideIndex(current);
     if (index === undefined) return;
+    ordinal += 1;
     const items = result.get(index) ?? [];
-    items.push(structuredClone(current));
+    const local = structuredClone(current);
+    local.properties = {
+      ...local.properties,
+      value:
+        typeof current.properties?.value === 'number'
+          ? current.properties.value
+          : ordinal,
+    };
+    items.push(local);
     result.set(index, items);
   });
 }

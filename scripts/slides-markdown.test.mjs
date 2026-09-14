@@ -93,6 +93,25 @@ test('transitive footnotes stay within the current slide with local references',
   assert.equal((html.match(/Nested note/g) ?? []).length, 2);
 });
 
+test('rehomed footnote markers retain the generated reference number', async () => {
+  const html = await render(
+    `# First[^a]\n\n---\n\n# Second[^c]\n\n[^a]: Uses nested[^b].\n\n[^b]: Nested note.\n\n[^c]: Second source.`,
+  );
+  const references = [
+    ...html.matchAll(
+      /href="#user-content-fn-([^"]+)" id="user-content-fnref-[^"]+"[^>]*>(\d+)</g,
+    ),
+  ];
+  assert(references.length >= 3);
+  for (const [, identifier, number] of references) {
+    const definition = new RegExp(
+      `<li id="user-content-fn-${identifier}" value="(\\d+)">`,
+    ).exec(html);
+    assert(definition, `missing local definition for ${identifier}`);
+    assert.equal(definition[1], number, `${identifier} marker must match ref`);
+  }
+});
+
 test('incremental decks use fragment classes independent of Markdown markers', async () => {
   const html = await render(`# Incremental\n\n* first\n* second`, {
     format: 'slides',
