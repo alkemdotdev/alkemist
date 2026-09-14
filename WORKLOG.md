@@ -1,3 +1,17 @@
+# Browser slides — implementation, September 14, 2026
+
+User authorized Markdown-first native browser slides and test presentations, with `/slides/` and `src/content/slides/` as defaults alongside Blog. Preserve existing article and widget behavior. Design source: `docs/slides-and-annotations.md`.
+
+- Parent owns presentation runtime, note/step/diagram components, widget lifecycle, dependencies, integration, release checks, and browser validation.
+- `slides_compiler` owns the opt-in Astro Markdown/MDX transform and focused compiler tests.
+- `slides_site` owns demo and starter collections/routes/content/navigation/documentation.
+- Implemented: opt-in AST compilation, shared Slides/Note/Step/SpeakerNotes/Diagram components, widget activation, default collection/routes in demo and starter, and three example decks.
+- Observed: full verify passed (108 tests, 105 validated pages). Chromium and WebKit exercised controls, notes synchronization, media pause, preserved widget instances, GPU print captures, 390px reading, and no-JavaScript fallback. Two installed embedded decks keep unique IDs, valid ARIA targets, separate positions, and no URL hash changes.
+- Evidence: `.alkemist/slides-verify.log`, `slides-browser.log`, `slides-webkit-browser.log`, `slides-embedded.log`, `slides-packages-check.log`, `slides-starter-check.log`, and `slides-*.png`. Browser regression scripts are in `scripts/check-slides*browser.mjs`.
+- Limits: no editable PPTX/video export, point annotations, or presenter ink. Presenter windows belong to standalone decks. Print layout was inspected in browser print media; paper pagination remains dependent on authored content and printer settings.
+
+## Previous milestone record
+
 # Optional publishing sections
 
 ## Objective

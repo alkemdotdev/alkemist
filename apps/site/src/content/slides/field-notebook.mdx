@@ -1,0 +1,68 @@
+---
+title: A field notebook in motion
+description: An MDX deck that keeps a chart, model, and shader connected to their fixtures.
+format: slides
+incremental: true
+---
+
+# A field notebook in motion
+
+The figures in this talk are reusable components with their normal controls.
+
+<SpeakerNotes>
+  Explain that each fixture is synthetic or geometric test material.
+</SpeakerNotes>
+
+---
+
+## A signal gives the model a rhythm
+
+<Chart
+  id="signal-chart"
+  src="/test/oscillation.csv"
+  type="line"
+  x="time"
+  y="position"
+  xLabel="Time (s)"
+  yLabel="Position (m)"
+  title="Damped oscillator"
+  description="A synthetic analytic trajectory with unit initial displacement."
+  sample
+/>
+
+<Note for="signal-chart">
+  The CSV is a deterministic test fixture, not measured data.
+</Note>
+
+---
+
+## Geometry makes the constraint visible
+
+<Model
+  id="torus-model"
+  src="/test/torus-knot.glb"
+  poster="/test/torus-knot.svg"
+  title="Torus knot"
+  description="A geometric GLB fixture. Drag to orbit and inspect the closed curve."
+/>
+
+<Note for="torus-model">
+  The model is a geometry specimen, not a physical prototype.
+</Note>
+
+---
+
+## The field stays interactive
+
+<Shader
+  id="interference-field"
+  title="Two-source interference"
+  frequency={9}
+  angle={24}
+/>
+
+<Step>Change frequency and angle, then compare the contour spacing.</Step>
+
+<SpeakerNotes>
+  Pause for a reader to use the shader controls before advancing.
+</SpeakerNotes>

@@ -7,13 +7,14 @@ export const sections = {
   blog: { enabled: true, label: 'Blog' },
   logs: { enabled: true, label: 'Logs' },
   labs: { enabled: true, label: 'Labs' },
+  slides: { enabled: true, label: 'Slides' },
   docs: { enabled: true, label: 'Docs' },
   book: { enabled: true, label: 'Book' },
   info: { enabled: true, label: 'Info' },
 } as const;
 
 export type SectionId = keyof typeof sections;
-export type ContentSectionId = Exclude<SectionId, 'labs' | 'info'>;
+export type ContentSectionId = Exclude<SectionId, 'labs' | 'info' | 'slides'>;
 
 export const sectionIds = Object.keys(sections) as SectionId[];
 export const enabledSections = sectionIds.filter(

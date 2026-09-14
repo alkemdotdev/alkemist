@@ -15,6 +15,7 @@ export type ChartInk =
   | 'violet';
 
 export interface ChartProps {
+  id?: string;
   src: string;
   type: ChartType;
   x: string;

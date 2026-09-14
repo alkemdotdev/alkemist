@@ -40,7 +40,13 @@
     "./playground/renderers": "./src/playground/renderers.ts",
     "./audio": "./src/audio/index.ts",
     "./video": "./src/video/index.ts",
-    "./midi": "./src/midi/index.ts"
+    "./midi": "./src/midi/index.ts",
+    "./slides": "./src/slides/index.ts",
+    "./note": "./src/note/index.ts",
+    "./step": "./src/step/index.ts",
+    "./speaker-notes": "./src/speaker-notes/index.ts",
+    "./diagram": "./src/diagram/index.ts",
+    "./diagram-client": "./src/diagram-client.ts"
   },
   "files": [
     "src",
@@ -56,6 +62,8 @@
     "entities": "6.0.1",
     "katex": "0.18.7",
     "media-chrome": "4.19.2",
+    "mermaid": "11.17.2",
+    "reveal.js": "6.0.2",
     "shiki": "4.4.3",
     "three": "0.185.1",
     "tone": "15.1.22",

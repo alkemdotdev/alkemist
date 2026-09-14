@@ -37,9 +37,14 @@ Search is enabled in the starter. Use `npm run build` followed by `npm run previ
 
 ### Choose your publishing sections
 
-The source starter offers optional Blog (developed writing), Logs (quick notes), Labs (interactive apps), Docs (project reference), and Book (an ordered guide), with Info for project background. Enable only what your project needs and choose your own labels. These conventions live in your generated site, not in the component package.
+The source starter offers optional Blog (developed writing), Logs (quick notes), Labs (interactive apps), Slides (browser presentations), Docs (project reference), and Book (an ordered guide), with Info for project background. Enable only what your project needs and choose your own labels. These conventions live in your generated site, not in the component package.
 
 The source starter includes these sections; generated sites keep their own files.
+
+Add talks under `src/content/slides/` as `.md` or `.mdx` with `format: slides`.
+Top-level `---` separates slides; ordinary Markdown provides the content, and
+MDX adds the same interactive components used in articles. See the
+[slide guide](https://alkemist.alkem.dev/docs/slides/) and [example decks](https://alkemist.alkem.dev/slides/).
 
 ### Use the source generator
 

@@ -12,5 +12,5 @@ export default defineConfig({
   base: deployment.base,
   output: 'static',
   trailingSlash: 'always',
-  integrations: [alkemist({ search: true })],
+  integrations: [alkemist({ search: true, slides: true })],
 });

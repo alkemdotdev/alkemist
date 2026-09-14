@@ -118,6 +118,15 @@ async function createModel(
     renderer.render(scene, camera);
     if (controls.autoRotate) requestRender();
   };
+  // Capture draws synchronously without retaining a framebuffer between frames.
+  const capture = () => {
+    if (disposed || !ready) return;
+    cancelAnimationFrame(frame);
+    frame = 0;
+    if (controls.autoRotate) controls.update(0);
+    renderer.render(scene, camera);
+    if (controls.autoRotate) requestRender();
+  };
   const pause = () => {
     cancelAnimationFrame(frame);
     frame = 0;
@@ -373,6 +382,9 @@ async function createModel(
       },
       { signal: events.signal },
     );
+    host.addEventListener('alk:before-capture', capture, {
+      signal: events.signal,
+    });
     const resize = () => {
       const width = viewport.clientWidth;
       const height = viewport.clientHeight;
@@ -410,10 +422,27 @@ class ModelElement extends HTMLElement {
   private lifetime?: AbortController;
   private observer?: IntersectionObserver;
   private visible = false;
+  private active = true;
 
   connectedCallback() {
     if (this.lifetime) return;
     this.lifetime = new AbortController();
+    this.active = this.dataset.alkActive !== 'false';
+    this.addEventListener(
+      'alk:presentation',
+      () => {
+        this.active = this.dataset.alkActive !== 'false';
+        this.runtime?.setVisible(this.canRun());
+        if (
+          this.canRun() &&
+          !this.load &&
+          !this.runtime &&
+          this.dataset.state !== 'error'
+        )
+          void this.start();
+      },
+      { signal: this.lifetime.signal },
+    );
     window.addEventListener('pagehide', () => this.stop(), {
       signal: this.lifetime.signal,
     });
@@ -434,13 +463,17 @@ class ModelElement extends HTMLElement {
     this.observer = new IntersectionObserver(
       (entries) => {
         this.visible = entries[0]?.isIntersecting ?? false;
-        this.runtime?.setVisible(this.visible);
-        if (this.visible && !this.load && this.dataset.state !== 'error')
+        this.runtime?.setVisible(this.canRun());
+        if (this.canRun() && !this.load && this.dataset.state !== 'error')
           void this.start();
       },
       { rootMargin: '0px', threshold: 0.01 },
     );
     this.observer.observe(this);
+  }
+
+  private canRun() {
+    return this.active && this.visible;
   }
 
   private async start() {
@@ -467,7 +500,7 @@ class ModelElement extends HTMLElement {
         'aria-busy',
         'false',
       );
-      runtime.setVisible(this.visible);
+      runtime.setVisible(this.canRun());
     } catch (error) {
       if (load.signal.aborted) return;
       this.fail(

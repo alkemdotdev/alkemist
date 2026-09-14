@@ -12,9 +12,9 @@ The trade-off is a little explicit metadata in exchange for reliable links, repe
 
 | Concern          | Current implementation                                                                                                                                                                                                  |
 | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Page URLs        | `/`, `/blog/`, `/blog/{id}/`, `/labs/`, `/labs/{app}/`, `/info/`, `/docs/`, `/docs/{id}/`, `/docs/components/`, and `/test/`.                                                                                           |
+| Page URLs        | `/`, `/blog/`, `/blog/{id}/`, `/labs/`, `/labs/{app}/`, `/slides/`, `/slides/{id}/`, `/info/`, `/docs/`, `/docs/{id}/`, `/docs/components/`, and `/test/`.                                                              |
 | URL formatting   | Static Astro output, trailing slashes on pages, production canonical origin, query state excluded from canonical URLs. Branch previews use the same paths on another hostname.                                          |
-| Content          | `apps/site/src/content/docs/**/*.mdx` and `blog/**/*.mdx`, using Astro's glob loader. Plain `.md` is not included yet.                                                                                                  |
+| Content          | Docs and Blog use `.mdx`; the Slides collection accepts `.md` and `.mdx` under `src/content/slides/`. A deck requires `format: slides`; optional `incremental: true` enables list progression.                          |
 | Identity         | Routes use the loader's entry ID, normally derived from the source path. Astro's default loader also honors raw `slug` frontmatter, but Alkemist does not explicitly declare or validate that field.                    |
 | Frontmatter      | Both collections share required `title` and `description`, `order` defaulting to 100, and optional unvalidated string `date`.                                                                                           |
 | Assets           | Files under `apps/site/public/` become unchanged public paths: for example `/test/oscillation.csv`, `/test/torus-knot.glb`, and `/notebook/eight-inks.jpg`. Astro bundles processed assets separately under `/_astro/`. |
@@ -22,7 +22,7 @@ The trade-off is a little explicit metadata in exchange for reliable links, repe
 | View state       | Design studies use allowlisted query parameters. The general board theme is a local browser preference. Other widget state does not yet have a shared URL contract.                                                     |
 | Machine files    | `/build.json`, `/robots.txt`, and static asset downloads. No published Alkemist JSON Schemas or asset catalog yet.                                                                                                      |
 
-The existing packages are `@alkemdotdev/alkemist-astro`, `@alkemdotdev/alkemist-components`, and `@alkemdotdev/alkemist-theme`; the demo owns its content and pages. The current integration is `alkemist()` without the configuration API described in future proposals.
+The existing packages are `@alkemdotdev/alkemist-astro`, `@alkemdotdev/alkemist-components`, and `@alkemdotdev/alkemist-theme`; the demo owns its content and pages. `alkemist({ slides: true })` enables deck compilation; normal Markdown remains ordinary document content.
 
 ## Accepted public URLs and navigation
 
@@ -32,6 +32,7 @@ The primary bar is **Blog · Labs · Info · More ›**. In the demo, More conta
 | ----------------------------------------------------- | ----------------------------------- | ------------------------------------------------------------- |
 | Blog posts, news, development articles                | `/blog/{slug}/`                     | `/blog/foundation/`                                           |
 | Interactive or usable apps                            | `/labs/{slug}/`                     | `/labs/interference/`                                         |
+| Browser talks                                         | `/slides/{slug}/`                   | `/slides/working-with-a-signal/`                              |
 | People, organization, company or project information  | `/info/` and nested pages as needed | `/info/`; future team bios could use `/info/team/{slug}/`.    |
 | Documentation, component references, site conventions | `/docs/` and nested topics          | `/docs/components/`, `/docs/charts/`, `/docs/site-structure/` |
 | One comprehensive test application                    | `/test/` with section anchors       | `/test/#math`                                                 |
@@ -49,6 +50,7 @@ Rules:
 - Keep documentation URLs unversioned until multiple documentation versions are maintained. Preserve current reference URLs such as `/docs/charts/`; deeper topic groups can be introduced with explicit redirects when needed.
 - The proposed machine contract remains `/schemas/v1/{name}.schema.json`, linked and explained from Docs. This endpoint is not implemented yet.
 - Preserve `/build.json` and reserve `/_alkemist/` for future generated catalogs. Leave `/_astro/` to Astro.
+- A published slide route has the same draft filter as Blog. A deck's read/present state is client-local; full-page presentation may use its fragment for navigation, while embedded decks do not own the page URL.
 - Preview and production use identical paths. Branch names belong in preview hostnames.
 - Changed published pages get permanent redirects. Validate redirect destinations, collisions, and loops, and retain published downloads.
 

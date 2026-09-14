@@ -9,6 +9,10 @@ const entrySchema = z.object({
 const datedEntrySchema = entrySchema.extend({
   published: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
 });
+const slidesSchema = entrySchema.extend({
+  format: z.literal('slides'),
+  incremental: z.boolean().default(false),
+});
 export const collections = {
   blog: defineCollection({
     loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/blog' }),
@@ -38,5 +42,9 @@ export const collections = {
   book: defineCollection({
     loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/book' }),
     schema: entrySchema.extend({ order: z.number().int().positive() }),
+  }),
+  slides: defineCollection({
+    loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/slides' }),
+    schema: slidesSchema,
   }),
 };

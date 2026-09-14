@@ -1,0 +1,21 @@
+---
+import '@alkemdotdev/alkemist-theme/slides.css';
+export interface NoteProps {
+  /** ID of the figure explained by this note. */
+  for: string;
+  id?: string;
+}
+type Props = NoteProps;
+const { for: target, id } = Astro.props;
+if (!target?.trim() || /\s/.test(target))
+  throw new Error('Note requires a figure ID without whitespace.');
+---
+
+<aside id={id} class="alk-note" data-note-target={target}>
+  <a
+    class="alk-note-link"
+    href={`#${target}`}
+    aria-label="Go to annotated figure">↗</a
+  >
+  <div><slot /></div>
+</aside>

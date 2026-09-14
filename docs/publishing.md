@@ -139,6 +139,11 @@ packs its dependencies into `vendor/`. It does not initialize Git, provision
 hosting, or update existing files after creation. The consumer owns content,
 configuration, styles, and the generated lockfile.
 
+The starter includes an enabled Slides section and one Markdown deck under
+`src/content/slides/`. Keep `format: slides` on deck entries and retain the
+`alkemist({ slides: true })` integration option when updating a generated site.
+The example is ordinary user-owned starter content and can be edited or removed.
+
 Its explicit `--update` mode refreshes those snapshots while preserving
 consumer files. Template changes are explicit migrations, not forced
 overwrites.

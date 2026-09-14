@@ -1,5 +1,5 @@
 import { cp, lstat, rename, rm } from 'node:fs/promises';
-import { join } from 'node:path';
+import { join, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const packageRoot = fileURLToPath(new URL('../', import.meta.url));
@@ -16,6 +16,23 @@ const requiredFiles = [
   'hosting/custom.md',
   '.gitignore',
 ];
+const generatedDirectories = new Set([
+  'node_modules',
+  '.astro',
+  '.vite',
+  'dist',
+  '.git',
+]);
+
+function excludeFromTemplate(candidate) {
+  const segments = relative(source, candidate).split(sep);
+  return segments.some(
+    (segment) =>
+      generatedDirectories.has(segment) ||
+      segment === '.npmrc' ||
+      (segment.startsWith('.env') && segment !== '.env.example'),
+  );
+}
 
 async function requireFile(root, relativePath) {
   try {
@@ -28,7 +45,11 @@ async function requireFile(root, relativePath) {
 
 for (const file of requiredFiles) await requireFile(source, file);
 await rm(destination, { recursive: true, force: true });
-await cp(source, destination, { recursive: true, errorOnExist: true });
+await cp(source, destination, {
+  recursive: true,
+  errorOnExist: true,
+  filter: (candidate) => !excludeFromTemplate(candidate),
+});
 await rename(join(destination, '.gitignore'), join(destination, 'gitignore'));
 for (const file of requiredFiles)
   await requireFile(destination, file === '.gitignore' ? 'gitignore' : file);

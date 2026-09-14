@@ -38,6 +38,7 @@ export const docsNavigation: NavigationItem[] = [
           { label: 'Post list reference', href: '/docs/post-lists/' },
           { label: 'Search reference', href: '/docs/search/' },
           { label: 'Build a playground', href: '/docs/playground/' },
+          { label: 'Browser slides', href: '/docs/slides/' },
         ],
       },
     ],

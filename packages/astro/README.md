@@ -25,6 +25,14 @@ Licensed under [Apache-2.0](./LICENSE).
 Ordinary Markdown headings, lists, links, tables, and images stay semantic HTML.
 Use the Alkemist theme for their typography; use explicit components for richer
 behavior. Set `code: false` to retain the host's code rendering and omit the
-Copy script. With both `math: false` and `code: false`, no presentation assets
-are injected. Asset injection uses Astro's standard
+Copy script. With `math: false`, `code: false`, and slides disabled, no
+presentation assets are injected. Asset injection uses Astro's standard
 [integration hooks](https://docs.astro.build/en/reference/integrations-reference/#injectscript-option).
+
+Set `slides: true` to compile `format: slides` Markdown/MDX documents into
+slide sections. Top-level `---` separates slides; `incremental: true` reveals
+list items. Markdown notes use `<!-- notes: ... -->`; MDX can use the built-in
+`SpeakerNotes`, `Step`, `Note`, and figure components without routine imports.
+Render the compiled content inside `@alkemdotdev/alkemist-components/slides`.
+The generated starter uses `src/content/slides/` and `/slides/` by default.
+The same option enables callouts and lazy Mermaid fences in ordinary articles.

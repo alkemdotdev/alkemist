@@ -24,6 +24,13 @@ const bookSchema = z.object({
   order: z.number().int().positive(),
   draft: z.boolean().default(false),
 });
+const slidesSchema = z.object({
+  title: z.string(),
+  description: z.string(),
+  format: z.literal('slides'),
+  incremental: z.boolean().default(false),
+  draft: z.boolean().default(false),
+});
 export const collections = {
   docs: defineCollection({
     loader: glob({ pattern: '**/*.mdx', base: './src/content/docs' }),
@@ -53,5 +60,9 @@ export const collections = {
   book: defineCollection({
     loader: glob({ pattern: '**/*.mdx', base: './src/content/book' }),
     schema: bookSchema,
+  }),
+  slides: defineCollection({
+    loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/slides' }),
+    schema: slidesSchema,
   }),
 };

@@ -13,6 +13,7 @@ export interface MediaTrack {
 
 /** Shared browser-media inputs. HLS and DRM need a separate media element integration. */
 export interface MediaProps {
+  id?: string;
   /** HTTP(S) or relative URL to a browser-supported media file. */
   src: string;
   title?: string;
@@ -181,7 +182,8 @@ export function renderMedia(
       ? `<a class="alk-media-download" href="${src}" download>Download ${kind} <span aria-hidden="true">↓</span></a>`
       : '';
 
-  return `<alk-media class="alk-media alk-media--${kind}" data-media-player data-state="native">
+  const id = optionalText(props.id, 'id')?.trim() ?? '';
+  return `<alk-media${id ? ` id="${escapeHtml(id)}"` : ''} class="alk-media alk-media--${kind}" data-media-player data-state="native">
     <figure aria-label="${escapeHtml(label)}">
       ${heading}
       <media-controller${kind === 'audio' ? ' audio' : ''} class="alk-media-controller" autohide="-1" keyboardbackwardseekoffset="${offset}" keyboardforwardseekoffset="${offset}">

@@ -8,7 +8,9 @@ npm run verify
 npm run dev
 ```
 
-Edit `src/lib/site.ts` to change the name, tagline, and `sections` configuration. Each section (`blog`, `logs`, `labs`, `docs`, `book`, and `info`) has an `enabled` flag and label; disabled sections produce no index or detail routes and are omitted from navigation. Edit `src/styles/site.css` for theme overrides, the matching `src/content/` directory for writing, and `src/pages/labs/[id].astro` for interactive apps.
+Edit `src/lib/site.ts` to change the name, tagline, and `sections` configuration. Each section (`blog`, `logs`, `labs`, `slides`, `docs`, `book`, and `info`) has an `enabled` flag and label; disabled sections produce no index or detail routes and are omitted from navigation. Edit `src/styles/site.css` for theme overrides, the matching `src/content/` directory for writing, and `src/pages/labs/[id].astro` for interactive apps.
+
+The starter's first deck is `src/content/slides/first-talk.md`. Keep `format: slides` in its frontmatter, use a top-level `---` to start the next slide, and choose `.mdx` only when a talk needs an interactive component. `incremental: true` enables list progression. `alkemist({ slides: true })` in `astro.config.ts` enables the deck compiler.
 
 Blog posts may include an optional local `cover` in frontmatter. Its `src` is resolved with Astro's `image()` schema, `alt` is required, and optional `caption`, `fit`, focal coordinates, and `showInPost` control the thumbnail and article cover. Covers are for individual posts; ordinary text rows need no image metadata.
 

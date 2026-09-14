@@ -10,6 +10,7 @@ import {
 export type { MidiSequence, MusicVoice } from './midi-model.ts';
 
 export interface MidiProps {
+  id?: string;
   title?: string;
   caption?: string;
   preset?: 'nocturne' | 'pulse' | 'bassline' | 'ensemble';
@@ -137,7 +138,7 @@ export function renderMidi(props: MidiProps = {}): string {
       return `<rect x="${x}" y="${y}" width="${Math.max(1, (note.duration / end) * 320 - 0.5)}" height="3" fill="${track.voice === 'bass' ? '#b78a26' : track.voice === 'supersaw' ? '#159b90' : '#1982f2'}"><title>${escapeHtml(`${track.name}: ${noteName(note.pitch)}`)}</title></rect>`;
     }),
   );
-  return `<alk-midi class="alk-midi" data-config="${escapedJson(config)}" data-state="idle" style="--alk-midi-height:${config.height}px">
+  return `<alk-midi${props.id ? ` id="${escapeHtml(props.id)}"` : ''} class="alk-midi" data-config="${escapedJson(config)}" data-state="idle" style="--alk-midi-height:${config.height}px">
     <section class="alk-midi-frame" aria-label="${escapeHtml(title)} MIDI editor">
       <header class="alk-midi-toolbar" aria-label="${escapeHtml(title)} controls">
         <div class="alk-midi-transport">

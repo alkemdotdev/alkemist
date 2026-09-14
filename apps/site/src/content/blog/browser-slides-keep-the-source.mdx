@@ -1,0 +1,31 @@
+---
+title: Browser slides keep the source
+description: Markdown decks now share the site's content pipeline, while MDX adds the figures that need interaction.
+date: '2026-09-14'
+order: 0
+---
+
+Slides are now a content collection, rather than a second presentation tool with a separate source file. A talk begins in `src/content/slides/` with `format: slides`; a top-level rule starts the next slide. The same headings, links, lists, tables, equations, fenced code, images, and footnotes remain the document a reader can inspect.
+
+That choice matters because the source stays close to the evidence. The first Markdown deck uses a board study only as an image, calls its oscillator CSV synthetic, and leaves the definition attached to its footnote. The structure of the talk does not turn a fixture into an observation.
+
+```md
+---
+title: A question worth showing
+description: A short browser presentation.
+format: slides
+incremental: true
+---
+
+# A question
+
+---
+
+# The evidence
+```
+
+MDX remains available when a figure needs controls. The included field notebook places a `Chart`, `Model`, and `Shader` in separate slides; the media talk exercises `Audio`, `Video`, and `Midi`. These are their ordinary components with the same explicit inputs they use in articles and Labs. A widget may take an `id` so a nearby `Note` can name the figure it explains.
+
+Presentation enhancement sits behind `Slides`. It provides read and present views, keyboard navigation, steps, and a presenter-notes control while retaining semantic slide sections in the initial output. The route omits draft decks, as the Blog route does. Media does not begin just because a slide becomes visible.
+
+The current work covers browser reading and presentation. It does not establish a verified PDF export, video export, private presenter notes, or saved presenter drawings. Those need their own artifact and privacy checks before they can be treated as publishing features. The [browser slides reference](/docs/slides/) documents the authoring form and the [Slides page](/slides/) contains the three working examples.

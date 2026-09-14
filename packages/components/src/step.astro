@@ -1,0 +1,16 @@
+---
+export interface StepProps {
+  /** Reveal each direct child individually, useful around a Markdown list. */
+  each?: boolean;
+}
+type Props = StepProps;
+const { each = false } = Astro.props;
+---
+
+<div
+  class:list={['alk-step', { fragment: !each }]}
+  data-alk-step
+  data-step-each={each || undefined}
+>
+  <slot />
+</div>

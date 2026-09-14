@@ -43,10 +43,15 @@ type DisplayEntry = {
     };
   };
 };
+type SlideEntry = {
+  id: string;
+  data: { title: string; description: string; draft: boolean };
+};
 const descriptions: Record<SectionId, string> = {
   blog: 'Developed writing about the work and what it means.',
   logs: 'Quick notes from the workbench.',
   labs: 'Interactive, quick one-off apps you can use.',
+  slides: 'Browser talks written in Markdown or MDX.',
   docs: 'Project reference for using and understanding the work.',
   book: 'A curated, ordered guide for getting started.',
   info: 'The people, purpose, and questions behind this project.',
@@ -67,6 +72,10 @@ if (section === 'docs')
   entries = await getCollection('docs', ({ data }) => !data.draft);
 if (section === 'book')
   entries = await getCollection('book', ({ data }) => !data.draft);
+const slideEntries: SlideEntry[] =
+  section === 'slides'
+    ? await getCollection('slides', ({ data }) => !data.draft)
+    : [];
 const logs =
   section === 'logs'
     ? await Promise.all(
@@ -155,6 +164,19 @@ const orderedEntries = [...entries].sort((a, b) => {
             cover: entry.data.cover,
           }))}
         />
+      </>
+    ) : section === 'slides' ? (
+      <>
+        <h1>{label}</h1>
+        <p>{descriptions.slides}</p>
+        {slideEntries.map((entry) => (
+          <article class="lab-card lab-section">
+            <h2>
+              <a href={withBase(`slides/${entry.id}/`)}>{entry.data.title}</a>
+            </h2>
+            <p>{entry.data.description}</p>
+          </article>
+        ))}
       </>
     ) : (
       <>

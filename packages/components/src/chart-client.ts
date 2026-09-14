@@ -22,6 +22,8 @@ class ChartElement extends HTMLElement {
   private generation = 0;
   private width = 0;
   private resizeTimer?: number;
+  private isVisible = false;
+  private active = true;
   private themeChange = () => {
     if (this.rows) void this.render();
   };
@@ -34,7 +36,19 @@ class ChartElement extends HTMLElement {
 
   connectedCallback() {
     this.config = JSON.parse(this.dataset.config ?? '{}');
+    this.active = this.dataset.alkActive !== 'false';
     this.abort = new AbortController();
+    this.addEventListener(
+      'alk:presentation',
+      () => {
+        this.active = this.dataset.alkActive !== 'false';
+        if (this.canRun()) {
+          if (this.rows) void this.render();
+          else void this.load();
+        }
+      },
+      { signal: this.abort.signal },
+    );
     this.querySelector('[data-chart-reset]')?.addEventListener(
       'click',
       this.resetView,
@@ -52,13 +66,14 @@ class ChartElement extends HTMLElement {
       // Tick density and legend columns are compiled from the container width.
       // A new specification keeps those readable after a desktop/mobile resize.
       this.resizeTimer = window.setTimeout(() => {
-        void this.render();
+        if (this.canRun()) void this.render();
       }, 120);
     });
     this.resize.observe(this.canvas);
     this.visible = new IntersectionObserver(
       (entries) => {
-        if (entries.some((entry) => entry.isIntersecting)) {
+        this.isVisible = entries.some((entry) => entry.isIntersecting);
+        if (this.canRun()) {
           this.visible?.disconnect();
           void this.load();
         }
@@ -91,6 +106,10 @@ class ChartElement extends HTMLElement {
     return this.querySelector<HTMLElement>('.alk-chart-canvas')!;
   }
 
+  private canRun() {
+    return this.active && this.isVisible;
+  }
+
   private setStatus(message: string, state: 'loading' | 'ready' | 'error') {
     this.dataset.state = state;
     this.querySelector('.alk-chart-status')!.textContent = message;
@@ -102,6 +121,7 @@ class ChartElement extends HTMLElement {
   }
 
   private async load() {
+    if (!this.canRun() || this.rows) return;
     const generation = ++this.generation;
     this.setStatus('Loading the CSV and chart engine…', 'loading');
     try {
@@ -119,7 +139,7 @@ class ChartElement extends HTMLElement {
       this.raw = raw;
       this.embed = embedModule.default;
       this.renderTable();
-      await this.render();
+      if (this.canRun()) await this.render();
     } catch (error) {
       if (!this.isConnected || generation !== this.generation) return;
       this.fail(error);
@@ -153,7 +173,8 @@ class ChartElement extends HTMLElement {
   }
 
   private async render() {
-    if (!this.rows || !this.embed || !this.isConnected) return;
+    if (!this.rows || !this.embed || !this.isConnected || !this.canRun())
+      return;
     window.clearTimeout(this.resizeTimer);
     const generation = ++this.generation;
     this.setStatus('Rendering the chart…', 'loading');

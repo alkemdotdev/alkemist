@@ -1,0 +1,58 @@
+---
+import { getCollection } from 'astro:content';
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import { isPreview } from '../../lib/deployment';
+
+const decks = (await getCollection('slides'))
+  .filter((entry) => !entry.data.draft)
+  .sort((a, b) => a.data.title.localeCompare(b.data.title));
+---
+
+<SiteLayout
+  title="Slides"
+  description="Browser talks written in Markdown and MDX."
+  preview={isPreview}
+>
+  <h1>Slides</h1>
+  <p class="alk-lead">Browser talks written in Markdown and MDX.</p>
+  <div class="slides-list">
+    {
+      decks.map((deck) => (
+        <article>
+          <h2>
+            <a href={`/slides/${deck.id}/`}>{deck.data.title}</a>
+          </h2>
+          <p>{deck.data.description}</p>
+        </article>
+      ))
+    }
+  </div>
+</SiteLayout>
+
+<style>
+  .slides-list {
+    border-top: 1px solid var(--alk-rule);
+  }
+  .slides-list article {
+    padding: 1.35rem 0;
+    border-bottom: 1px solid var(--alk-rule);
+  }
+  .slides-list h2 {
+    margin: 0 0 0.4rem;
+    font-size: 1.2rem;
+    font-weight: 500;
+  }
+  .slides-list h2 a {
+    color: inherit;
+    text-decoration: none;
+  }
+  .slides-list h2 a:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.24em;
+  }
+  .slides-list p {
+    max-width: 58ch;
+    margin: 0;
+    color: var(--alk-muted);
+  }
+</style>

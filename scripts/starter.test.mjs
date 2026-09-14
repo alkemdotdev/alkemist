@@ -1,6 +1,13 @@
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { cp, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import {
+  cp,
+  mkdtemp,
+  readFile,
+  readdir,
+  rm,
+  writeFile,
+} from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { test } from 'node:test';
@@ -184,6 +191,34 @@ test('packed create-alkemist uses its own bumped version outside this source che
   } finally {
     await rm(temporary, { recursive: true, force: true });
   }
+});
+
+test('prepared create-alkemist template excludes source caches and secrets', async () => {
+  const packageDir = join(root, 'packages', 'create-alkemist');
+  execFileSync('npm', ['run', 'build'], {
+    cwd: packageDir,
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'pipe'],
+  });
+  const files = await readdir(join(packageDir, 'template'), {
+    recursive: true,
+  });
+  assert(files.includes('.env.example'));
+  assert(
+    !files.some((file) =>
+      file
+        .split(/[\\/]/)
+        .some(
+          (segment) =>
+            ['node_modules', '.astro', '.vite', 'dist', '.git'].includes(
+              segment,
+            ) ||
+            segment === '.npmrc' ||
+            (segment.startsWith('.env') && segment !== '.env.example'),
+        ),
+    ),
+    'Prepared template contains generated or secret source files.',
+  );
 });
 
 test('create-alkemist accepts an explicit provider and one destination', () => {

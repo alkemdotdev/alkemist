@@ -1,12 +1,12 @@
 ---
 title: Site structure and navigation
-description: Optional Blog, Logs, Labs, Docs, and Book sections, with Info for project background. Choose the formats your project needs.
+description: Optional Blog, Logs, Labs, Slides, Docs, and Book sections, with Info for project background. Choose the formats your project needs.
 order: 15
 ---
 
-Alkemist offers five publishing conventions: **Blog · Logs · Labs · Docs · Book**. **Info** remains the place for project background. Use only the sections that help your readers; these names and divisions are starting points, not a required taxonomy.
+Alkemist offers six publishing conventions: **Blog · Logs · Labs · Slides · Docs · Book**. **Info** remains the place for project background. Use only the sections that help your readers; these names and divisions are starting points, not a required taxonomy.
 
-The demo shows all five so you can try each format. Adopting projects own their navigation and content. On small screens, the header puts navigation in one keyboard-accessible menu; More holds the Test page.
+The demo shows all six so you can try each format. Adopting projects own their navigation and content. On small screens, the header puts navigation in one keyboard-accessible menu; More holds the Test page.
 
 The appearance icon opens **Whiteboard**, **Blackboard**, and **System** choices. Sun, moon, and monitor icons show the selected preference. The preference is restored before paint and follows operating-system changes when System is selected. Arrow keys move through the choices; selecting with a pointer closes the panel.
 
@@ -26,14 +26,15 @@ These helpers run in the browser. `Layout` initializes them; `setTheme` persists
 
 ## What belongs where
 
-| Section  | Purpose                                                | Reading pattern                           |
-| -------- | ------------------------------------------------------ | ----------------------------------------- |
-| `/blog/` | Developed articles, explanations, and essays           | Browse titles, then read a complete piece |
-| `/logs/` | Quick notes, observations, and small progress updates  | Scan newest first, with permanent links   |
-| `/labs/` | Interactive one-off apps, experiments, and small tools | Open and use something                    |
-| `/docs/` | Reference documentation for this project               | Find the answer to a specific question    |
-| `/book/` | A carefully curated guide, tutorial, or starting point | Follow chapters in a deliberate order     |
-| `/info/` | About the project and its people                       | Understand who and what is behind it      |
+| Section    | Purpose                                                | Reading pattern                           |
+| ---------- | ------------------------------------------------------ | ----------------------------------------- |
+| `/blog/`   | Developed articles, explanations, and essays           | Browse titles, then read a complete piece |
+| `/logs/`   | Quick notes, observations, and small progress updates  | Scan newest first, with permanent links   |
+| `/labs/`   | Interactive one-off apps, experiments, and small tools | Open and use something                    |
+| `/slides/` | Browser talks written in Markdown or MDX               | Read or present a complete deck           |
+| `/docs/`   | Reference documentation for this project               | Find the answer to a specific question    |
+| `/book/`   | A carefully curated guide, tutorial, or starting point | Follow chapters in a deliberate order     |
+| `/info/`   | About the project and its people                       | Understand who and what is behind it      |
 
 Docs and Book serve different reading needs. Docs explains a component's properties or a configuration option. Book leads a reader through a complete task and links to those references when needed. A project may need either, both, or neither.
 
@@ -85,6 +86,7 @@ export const sections = {
   blog: { enabled: true, label: 'Articles' },
   logs: { enabled: true, label: 'Notes' },
   labs: { enabled: true, label: 'Labs' },
+  slides: { enabled: true, label: 'Slides' },
   docs: { enabled: false, label: 'Docs' },
   book: { enabled: false, label: 'Book' },
   info: { enabled: true, label: 'Info' },
@@ -93,11 +95,11 @@ export const sections = {
 
 The object order determines navigation order. Changing a label changes its display name, while `/blog/` and `/logs/` remain stable. Set `enabled: false` to omit a section's navigation and routes. Keep your content sources, then enable the section when it is ready. Site links include the deployment base, including GitLab project paths.
 
-The starting examples demonstrate all five formats. They are editable content in your application, not content injected by the integration. Add custom Astro routes and navigation when your project needs a different shape.
+The starting examples demonstrate all six formats. They are editable content in your application, not content injected by the integration. Add custom Astro routes and navigation when your project needs a different shape.
 
 ## Authoring the formats
 
-Blog and Logs are chronological collections. Give an entry a title, description, and date; keep a log small enough to scan in its feed. Draft entries stay out of public feeds and detail routes. The Book collection uses explicit chapter order rather than publication dates, with a contents page and previous/next links. Docs remains reference material organized around the project. Labs contains Astro pages with the actual interactive applications.
+Blog and Logs are chronological collections. Give an entry a title, description, and date; keep a log small enough to scan in its feed. Draft entries stay out of public feeds and detail routes. Slides contains Markdown or MDX decks with `format: slides`; see the [browser slides guide](/docs/slides/). The Book collection uses explicit chapter order rather than publication dates, with a contents page and previous/next links. Docs remains reference material organized around the project. Labs contains Astro pages with the actual interactive applications.
 
 The source starter supplies examples and owns the route generation. Disabling a starter section omits its index and detail pages from the build and removes its navigation links; content files remain available for later use. Its verification script checks the generated links. Adding arbitrary new sections or changing route names is a normal site-owned Astro change, not a promise that labels rewrite URLs.
 

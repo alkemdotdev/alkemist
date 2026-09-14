@@ -88,6 +88,7 @@ export const definitions: Record<string, PlaygroundDefinition> = {
     'midi',
     'Midi',
     {
+      id: '',
       title: 'Music sketch',
       caption: 'Edit a phrase, compare the voices, and export the result.',
       preset: 'nocturne',
@@ -101,6 +102,7 @@ export const definitions: Record<string, PlaygroundDefinition> = {
       height: 300,
     },
     [
+      text('id', 'Optional stable figure ID for an attached note.'),
       text('title'),
       area('caption'),
       select('preset', ['nocturne', 'pulse', 'bassline', 'ensemble']),
@@ -282,6 +284,7 @@ export const definitions: Record<string, PlaygroundDefinition> = {
     'audio',
     'Audio',
     {
+      id: '',
       src: '/test/media-study.wav',
       title: 'Three tones',
       caption: 'A synthetic 30-second listening study.',
@@ -304,6 +307,7 @@ export const definitions: Record<string, PlaygroundDefinition> = {
         '0:00 — A quiet 220 Hz tone.\n0:10 — The tone rises to 330 Hz.\n0:20 — The tone rises to 440 Hz, then fades out.',
     },
     [
+      text('id', 'Optional stable figure ID for an attached note.'),
       text('src'),
       text('title'),
       text('caption'),
@@ -338,6 +342,7 @@ export const definitions: Record<string, PlaygroundDefinition> = {
     'video',
     'Video',
     {
+      id: '',
       src: '/test/media-study.mp4',
       title: 'Wave study',
       caption:
@@ -375,6 +380,7 @@ export const definitions: Record<string, PlaygroundDefinition> = {
         '0:00 — Blue waves drift across the frame over a low tone.\n0:10 — The tone rises as the wave pattern continues.\n0:20 — The final higher tone fades out with the study.',
     },
     [
+      text('id', 'Optional stable figure ID for an attached note.'),
       text('src'),
       text('title'),
       text('caption'),
@@ -504,6 +510,7 @@ export const definitions: Record<string, PlaygroundDefinition> = {
     'chart',
     'Chart',
     {
+      id: '',
       src: '/test/oscillation.csv',
       type: 'line',
       x: 'time',
@@ -527,6 +534,7 @@ export const definitions: Record<string, PlaygroundDefinition> = {
       sample: true,
     },
     [
+      text('id', 'Optional stable figure ID for an attached note.'),
       select('type', ['line', 'bar', 'scatter', 'pie', 'donut', 'heatmap']),
       text('src', 'CSV URL. Presets select a matching dataset and fields.'),
       text('x'),
@@ -597,6 +605,7 @@ export const definitions: Record<string, PlaygroundDefinition> = {
     'model',
     'Model',
     {
+      id: '',
       src: '/test/torus-knot.glb',
       title: 'A torus knot',
       description: 'Drag to inspect this generated teaching mesh.',
@@ -604,6 +613,7 @@ export const definitions: Record<string, PlaygroundDefinition> = {
       class: '',
     },
     [
+      text('id', 'Optional stable figure ID for an attached note.'),
       text('src'),
       text('title'),
       area('description'),
@@ -614,8 +624,9 @@ export const definitions: Record<string, PlaygroundDefinition> = {
   shader: component(
     'shader',
     'Shader',
-    { title: 'Two wave sources', frequency: 9, angle: 24, class: '' },
+    { id: '', title: 'Two wave sources', frequency: 9, angle: 24, class: '' },
     [
+      text('id', 'Optional stable figure ID for an attached note.'),
       text('title'),
       number('frequency', 3, 18, 0.1),
       number('angle', 0, 180),

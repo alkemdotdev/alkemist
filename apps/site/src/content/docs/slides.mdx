@@ -1,0 +1,91 @@
+---
+title: Browser slides
+description: Write readable browser talks in Markdown and add interactive figures with MDX.
+order: 20
+---
+
+`Slides` turns a content entry into a browser presentation while retaining the same rendered document structure for reading. It is enabled through the Alkemist integration and used by the site's `/slides/` collection.
+
+## Start with Markdown
+
+Add the integration option, then create `src/content/slides/` and a document with `format: slides`. A top-level rule begins the next slide. Use `.md` for ordinary Markdown and `.mdx` when a deck needs a component.
+
+```ts title="astro.config.ts"
+import alkemist from '@alkemdotdev/alkemist-astro';
+import { defineConfig } from 'astro/config';
+
+export default defineConfig({
+  integrations: [alkemist({ slides: true })],
+});
+```
+
+```md title="src/content/slides/first-talk.md"
+---
+title: First talk
+description: A short browser presentation.
+format: slides
+incremental: true
+---
+
+# A question worth showing
+
+Start with Markdown.
+
+<!-- notes: Introduce the question before describing the work. -->
+
+---
+
+# One clear observation
+
+- State the observation.
+- Show the evidence.
+```
+
+The `incremental` option enables ordinary list progression for the deck. `<Step>` gives MDX authors an explicit progression point. Reading output shows all steps.
+
+## Use the forms Markdown already has
+
+Headings, lists, images, links, tables, math, fenced code, and footnotes use their usual Markdown syntax. The integration also accepts GitHub-style alerts and `mermaid` fences in a deck. These forms render through the configured Markdown pipeline; they do not require a second slide-specific language.
+
+Use an HTML comment beginning `notes:` for a short presenter note in Markdown, as in the example above. MDX uses `<SpeakerNotes>` because MDX comments are JSX comments. Notes remain in distributed HTML, so never place private material in them.
+
+## Add a figure in MDX
+
+When slide authoring is enabled, Alkemist supplies the built-in component names `Model`, `Chart`, `Shader`, `Math`, `Code`, `Audio`, `Video`, `Midi`, `Note`, `Step`, `SpeakerNotes`, and `Diagram` when they are not already bound by an explicit import or local declaration. Widgets keep their existing props.
+
+```mdx title="src/content/slides/field-notebook.mdx"
+---
+title: Field notebook
+description: A chart with a note.
+format: slides
+---
+
+# A signal
+
+<Chart
+  id="signal-chart"
+  src="/test/oscillation.csv"
+  type="line"
+  x="time"
+  y="position"
+  title="Damped oscillator"
+  description="A synthetic analytic trajectory."
+  sample
+/>
+
+<Note for="signal-chart">The CSV is a deterministic teaching fixture.</Note>
+```
+
+`id` is optional on widgets. Give a figure an ID when attaching a `Note`; the note text appears beside its target in reading and presentation views. A missing target is an authoring error. `Slides` is also available to an Astro page through `@alkemdotdev/alkemist-components/slides`; pass a title, optional description, and compiled slide sections in its default slot.
+
+## Publish and check a talk
+
+The starter includes `src/content/slides/first-talk.md`. The demo has three examples:
+
+- [Working with a signal](/slides/working-with-a-signal/) uses plain Markdown, equations, code, footnotes, and Mermaid.
+- [A field notebook in motion](/slides/field-notebook/) combines Chart, Model, Shader, and figure notes.
+- [Listening to the fixture](/slides/listening-to-the-fixture/) exercises Audio, Video, and the MIDI editor.
+
+Read and Present share the same widget instances. Phones default to Read. Notes opens a presenter window for a standalone deck; embedded decks keep independent navigation within their host page. Print prepares lazy figures and current GPU frames before opening the browser's print dialog.
+
+The slide index and route exclude `draft: true`, just as Blog does. Test the reading route and presentation controls at desktop and phone widths. Exercise backward steps, widget focus, media pause on slide change, resize, and a no-JavaScript reading load before publishing. Browser presentation does not establish a verified PDF or video export; treat those as separate artifact work.

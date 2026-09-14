@@ -10,6 +10,7 @@ import {
 } from '@alkemdotdev/alkemist-components/code-theme';
 import type { ShikiTransformer, ThemeRegistration } from 'shiki';
 import { buildSearchIndex } from './search.ts';
+import { rehypeAlkemistSlides, remarkAlkemistSlides } from './slides.ts';
 
 export interface MdxOptions {
   /** Disable the bundled MDX integration when an existing site already owns it. */
@@ -36,6 +37,8 @@ export interface IntegrationOptions {
   mdx?: boolean | MdxOptions;
   math?: boolean | MathOptions;
   code?: boolean | CodeIntegrationOptions;
+  /** Enable Markdown-first deck compilation and shared callouts/diagrams. */
+  slides?: boolean;
   /** Opt in only when a site needs Alkemist's asset-file behavior. */
   vite?: { assetsInlineLimit?: number };
 }
@@ -78,6 +81,29 @@ export default function alkemist(
   const mathEnabled = math.enabled ?? true;
   const codeEnabled = code.enabled ?? true;
   const mdxEnabled = mdxConfig.enabled ?? true;
+  const slidesEnabled = options.slides === true;
+  const remarkPlugins: any[] = [
+    ...(mathEnabled ? [remarkMath] : []),
+    ...(slidesEnabled ? [remarkAlkemistSlides] : []),
+  ];
+  const rehypePlugins: any[] = [
+    ...(mathEnabled
+      ? [
+          [
+            rehypeKatex,
+            {
+              output: 'htmlAndMathml',
+              trust: false,
+              strict: 'error',
+              maxExpand: 1000,
+              maxSize: 20,
+            },
+          ],
+          failInvalidMath,
+        ]
+      : []),
+    ...(slidesEnabled ? [rehypeAlkemistSlides] : []),
+  ];
 
   return {
     name: '@alkemdotdev/alkemist-astro',
@@ -100,32 +126,33 @@ export default function alkemist(
             'page',
             'import "@alkemdotdev/alkemist-components/code-copy";',
           );
+        if (slidesEnabled) {
+          injectScript(
+            'page-ssr',
+            'import "@alkemdotdev/alkemist-theme/slides.css";',
+          );
+          injectScript(
+            'page',
+            'import "@alkemdotdev/alkemist-components/diagram-client";',
+          );
+        }
         const markdown = {
-          ...(mathEnabled
+          ...(remarkPlugins.length || rehypePlugins.length
             ? {
-                processor: unified({
-                  remarkPlugins: [remarkMath],
-                  rehypePlugins: [
-                    [
-                      rehypeKatex,
-                      {
-                        output: 'htmlAndMathml',
-                        trust: false,
-                        strict: 'error',
-                        maxExpand: 1000,
-                        maxSize: 20,
-                      },
-                    ],
-                    failInvalidMath,
-                  ],
-                }),
+                processor: unified({ remarkPlugins, rehypePlugins }),
               }
             : {}),
           ...(codeEnabled
             ? {
                 syntaxHighlight: {
                   type: 'shiki' as const,
-                  excludeLangs: code?.excludeLangs ?? ['math'],
+                  excludeLangs: [
+                    ...(code?.excludeLangs ?? ['math']),
+                    ...(slidesEnabled ? ['mermaid'] : []),
+                  ].filter(
+                    (language, index, languages) =>
+                      languages.indexOf(language) === index,
+                  ),
                 },
                 shikiConfig: {
                   theme: code?.theme ?? codeTheme,

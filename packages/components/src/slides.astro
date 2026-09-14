@@ -1,0 +1,82 @@
+---
+import 'reveal.js/reveal.css';
+import '@alkemdotdev/alkemist-theme/slides.css';
+
+export interface SlidesProps {
+  title: string;
+  description?: string;
+  /** Small screens start in reading mode; Present remains available. */
+  view?: 'read' | 'present';
+  /** Embedded decks keep independent navigation without changing the URL. */
+  embedded?: boolean;
+  id?: string;
+}
+type Props = SlidesProps;
+const {
+  title,
+  description,
+  view = 'present',
+  embedded = false,
+  id,
+} = Astro.props;
+---
+
+<alk-slides
+  id={id}
+  class="alk-slides"
+  data-initial-view={view}
+  data-embedded={String(embedded)}
+  aria-label={title}
+>
+  <div
+    class="alk-slides-toolbar"
+    data-slides-controls
+    hidden
+    data-pagefind-ignore
+  >
+    <span class="alk-slides-title">{title}</span>
+    <div class="alk-slides-modes" role="group" aria-label="Viewing mode">
+      <button type="button" data-slides-read aria-pressed="true">Read</button>
+      <button type="button" data-slides-present aria-pressed="false"
+        >Present</button
+      >
+    </div>
+    <button type="button" data-slides-notes title="Open presenter view"
+      >Notes</button
+    >
+    <button type="button" data-slides-fullscreen>Fullscreen</button>
+    <button type="button" data-slides-print>Print</button>
+  </div>
+  <div class="alk-slides-viewport" tabindex="0" aria-label={`${title} slides`}>
+    <div class="slides"><slot /></div>
+  </div>
+  <div
+    class="alk-slides-navigation"
+    data-slides-controls
+    hidden
+    data-pagefind-ignore
+  >
+    <button type="button" data-slides-prev aria-label="Previous slide or step"
+      >←</button
+    >
+    <select data-slides-picker aria-label="Choose slide"></select>
+    <button type="button" data-slides-next aria-label="Next slide or step"
+      >→</button
+    >
+    <output class="alk-slides-count" data-slides-count aria-live="polite"
+    ></output>
+  </div>
+  <p class="alk-slides-message" data-slides-message role="status" hidden></p>
+  {
+    description && (
+      <span class="alk-slides-description" hidden>
+        {description}
+      </span>
+    )
+  }
+</alk-slides>
+
+<script>
+  import './slides-client';
+  import './diagram-client';
+</script>

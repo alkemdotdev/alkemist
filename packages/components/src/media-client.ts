@@ -12,7 +12,12 @@ function setStatus(
 }
 
 async function upgradePlayer(player: HTMLElement): Promise<void> {
-  if (player.dataset.mediaUpgraded || player.dataset.mediaLoading) return;
+  if (
+    player.dataset.alkActive === 'false' ||
+    player.dataset.mediaUpgraded ||
+    player.dataset.mediaLoading
+  )
+    return;
   player.dataset.mediaLoading = 'true';
   try {
     await Promise.all([import('media-chrome'), import('media-chrome/menu')]);
@@ -37,7 +42,7 @@ async function upgradePlayer(player: HTMLElement): Promise<void> {
       'media-fullscreen-button',
     ];
     await Promise.all(required.map((name) => customElements.whenDefined(name)));
-    if (!player.isConnected) return;
+    if (!player.isConnected || player.dataset.alkActive === 'false') return;
     const media = player.querySelector<HTMLMediaElement>('.alk-media-native');
     if (!media) throw new Error('The native media element is missing.');
     // Only remove the fallback after all needed custom elements have upgraded.
@@ -65,12 +70,20 @@ function observePlayer(player: HTMLElement) {
   const lifecycle = new AbortController();
   const signal = lifecycle.signal;
   let observer: IntersectionObserver | undefined;
+  let visible = false;
+  const active = () => player.dataset.alkActive !== 'false';
+  const updatePresentation = () => {
+    if (!active()) media?.pause();
+    else if (visible) void upgradePlayer(player);
+  };
   cleanups.set(player, () => {
     lifecycle.abort();
     observer?.disconnect();
     cleanups.delete(player);
   });
   const media = player.querySelector<HTMLMediaElement>('.alk-media-native');
+  player.addEventListener('alk:presentation', updatePresentation, { signal });
+  if (!active()) media?.pause();
   if (media) {
     media.addEventListener(
       'loadstart',
@@ -134,12 +147,13 @@ function observePlayer(player: HTMLElement) {
   }
   if (player.dataset.mediaUpgraded) return;
   if (!('IntersectionObserver' in window)) {
-    void upgradePlayer(player);
+    if (active()) void upgradePlayer(player);
     return;
   }
   observer = new IntersectionObserver(
     (entries) => {
-      if (!entries.some((entry) => entry.isIntersecting)) return;
+      visible = entries.some((entry) => entry.isIntersecting);
+      if (!visible || !active()) return;
       observer?.disconnect();
       void upgradePlayer(player);
     },

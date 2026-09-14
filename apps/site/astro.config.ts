@@ -9,7 +9,7 @@ export default defineConfig({
   trailingSlash: 'always',
   redirects,
   integrations: [
-    alkemist({ search: true }),
+    alkemist({ search: true, slides: true }),
     {
       name: 'alkemist-site-redirects',
       hooks: {

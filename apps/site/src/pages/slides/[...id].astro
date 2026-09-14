@@ -1,0 +1,49 @@
+---
+import { getCollection, render } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import Slides from '@alkemdotdev/alkemist-components/slides';
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import { isPreview } from '../../lib/deployment';
+
+export async function getStaticPaths() {
+  return (await getCollection('slides'))
+    .filter((entry) => !entry.data.draft)
+    .map((entry) => ({ params: { id: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props as { entry: CollectionEntry<'slides'> };
+const { Content } = await render(entry);
+---
+
+<SiteLayout
+  title={entry.data.title}
+  description={entry.data.description}
+  preview={isPreview}
+>
+  <div class="slides-page" data-slides-page>
+    <p class="slides-back"><a href="/slides/">← Slides</a></p>
+    <Slides title={entry.data.title} description={entry.data.description}>
+      <Content />
+    </Slides>
+  </div>
+</SiteLayout>
+
+<style>
+  .slides-page {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .slides-back {
+    margin: 0 0 0.8rem;
+    font: 0.8rem var(--alk-mono);
+  }
+  .slides-back a {
+    color: var(--alk-muted);
+    text-decoration: none;
+  }
+  .slides-back a:hover {
+    color: var(--alk-ink);
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
+  }
+</style>

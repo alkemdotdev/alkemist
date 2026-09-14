@@ -42,6 +42,8 @@ function run(args) {
 }
 try {
   await mkdir(join(temporary, 'src/pages'), { recursive: true });
+  await mkdir(join(temporary, 'src/pages/slides'), { recursive: true });
+  await mkdir(join(temporary, 'src/content'), { recursive: true });
   await write(
     'package.json',
     JSON.stringify({
@@ -163,8 +165,90 @@ const props: PostListProps = {items,layout,selectable:true,featuredHref:'/lead/'
     '# Existing MDX\n\nHost-authored content.\n',
   );
   await write(
+    'src/pages/slides.astro',
+    `---
+import Slides, { type SlidesProps } from '@alkemdotdev/alkemist-components/slides';
+import Note from '@alkemdotdev/alkemist-components/note';
+const props: SlidesProps = { title: 'Slides in my existing layout', view: 'read' };
+---
+<html lang="en"><head><title>Standalone slides</title></head><body><header>Host navigation</header><main><Slides {...props}><section data-alk-slide id="first"><h1>Existing layout</h1><p>Host-owned document chrome remains in place.</p><Note for="first">A local note.</Note></section></Slides></main></body></html>`,
+  );
+  await write(
+    'src/content/embedded.md',
+    `---
+title: Embedded source
+description: A shared Markdown deck source.
+format: slides
+---
+
+# One source, two instances
+
+The same Markdown source retains its footnote.[^source]
+
+[^source]: This footnote is part of each embedded deck.
+
+---
+
+# A second slide
+
+Each instance navigates independently.`,
+  );
+  await write(
+    'src/pages/slides/embedded.astro',
+    `---
+import Slides from '@alkemdotdev/alkemist-components/slides';
+import EmbeddedContent from '../../content/embedded.md';
+---
+<html lang="en"><head><title>Embedded slides</title></head><body><main><Slides title="First embedded instance" embedded><EmbeddedContent /></Slides><Slides title="Second embedded instance" embedded><EmbeddedContent /></Slides></main></body></html>`,
+  );
+  await write(
+    'src/pages/deck.md',
+    `---
+title: Markdown deck
+description: A deck authored without MDX.
+format: slides
+incremental: true
+---
+
+# Markdown deck
+
+- First observation
+- Second observation
+
+<!-- notes: Keep the source visible. -->
+
+---
+
+# A second slide
+
+> [!NOTE]
+> This source is a fixture.`,
+  );
+  await write(
+    'src/pages/deck-mdx.mdx',
+    `---
+title: MDX deck
+description: Built-in figures need no explicit imports.
+format: slides
+---
+
+# An auto-imported chart
+
+<Chart id="fixture-chart" src="/sample.csv" type="line" x="x" y="y" title="Fixture chart" description="Three synthetic rows." sample />
+
+<Note for="fixture-chart">The chart is a local fixture.</Note>
+
+<SpeakerNotes>Describe the source before the controls.</SpeakerNotes>
+
+---
+
+# An explicit step
+
+<Step>Advance this point deliberately.</Step>`,
+  );
+  await write(
     'astro.config.mjs',
-    `import {defineConfig} from 'astro/config';import mdx from '@astrojs/mdx';export default defineConfig({integrations:[mdx()]});`,
+    `import {defineConfig} from 'astro/config';import alkemist from '@alkemdotdev/alkemist-astro';export default defineConfig({integrations:[alkemist({slides:true})]});`,
   );
   console.log(
     `Installing ${registryMode ? 'registry releases' : 'packed releases'} in ${temporary}`,
@@ -204,6 +288,66 @@ const props: PostListProps = {items,layout,selectable:true,featuredHref:'/lead/'
     html.includes('katex') &&
       html.includes('const') &&
       html.includes('My existing website'),
+  );
+  const standaloneSlides = await readFile(
+    join(temporary, 'dist/slides/index.html'),
+    'utf8',
+  );
+  assert.match(standaloneSlides, /Host navigation/);
+  assert.match(standaloneSlides, /<alk-slides/);
+  assert.match(standaloneSlides, /data-initial-view="read"/);
+  assert.doesNotMatch(standaloneSlides, /class="alk-layout/);
+  const embeddedSlides = await readFile(
+    join(temporary, 'dist/slides/embedded/index.html'),
+    'utf8',
+  );
+  assert.equal((embeddedSlides.match(/<alk-slides/g) ?? []).length, 2);
+  assert.equal(
+    (embeddedSlides.match(/<h1\b[^>]*>One source, two instances<\/h1>/g) ?? [])
+      .length,
+    2,
+  );
+  assert.equal(
+    (embeddedSlides.match(/This footnote is part of each embedded deck/g) ?? [])
+      .length,
+    2,
+  );
+  assert.equal((embeddedSlides.match(/data-embedded="true"/g) ?? []).length, 2);
+  const markdownDeck = await readFile(
+    join(temporary, 'dist/deck/index.html'),
+    'utf8',
+  );
+  assert.match(markdownDeck, /data-alk-slide/);
+  assert.match(markdownDeck, /class="fragment"/);
+  assert.match(markdownDeck, /Keep the source visible/);
+  assert.match(markdownDeck, /alk-callout-note/);
+  const mdxDeck = await readFile(
+    join(temporary, 'dist/deck-mdx/index.html'),
+    'utf8',
+  );
+  assert.match(mdxDeck, /<alk-chart id="fixture-chart"/);
+  assert.match(mdxDeck, /data-note-target="fixture-chart"/);
+  assert.match(mdxDeck, /data-alk-speaker-notes/);
+  assert.match(mdxDeck, /data-alk-step/);
+  // The following host-owned-MDX phase intentionally disables the deck
+  // compiler. Keep this fixture valid there without weakening the auto-import
+  // assertion above.
+  await write(
+    'src/pages/deck-mdx.mdx',
+    `import Chart from '@alkemdotdev/alkemist-components/chart';
+import Note from '@alkemdotdev/alkemist-components/note';
+import SpeakerNotes from '@alkemdotdev/alkemist-components/speaker-notes';
+import Step from '@alkemdotdev/alkemist-components/step';
+
+# An explicitly imported chart
+
+<Chart id="fixture-chart" src="/sample.csv" type="line" x="x" y="y" title="Fixture chart" description="Three synthetic rows." sample />
+
+<Note for="fixture-chart">The chart is a local fixture.</Note>
+
+<SpeakerNotes>Describe the source before the controls.</SpeakerNotes>
+
+<Step>Advance this point deliberately.</Step>`,
   );
   {
     const posts = await readFile(
@@ -394,6 +538,12 @@ export default defineConfig({integrations:[mdx(),alkemist({mdx:{enabled:false},m
   await write('src/pages/article.mdx', '# Math in existing MDX\n\n$E=mc^2$\n');
   run(['run', 'build']);
   run(['ci', '--no-audit', '--no-fund']);
+  // Preserve a presentation-enabled artifact for --keep browser inspection.
+  await write(
+    'astro.config.mjs',
+    `import {defineConfig} from 'astro/config';import alkemist from '@alkemdotdev/alkemist-astro';export default defineConfig({integrations:[alkemist({slides:true})]});`,
+  );
+  run(['run', 'build']);
   const generator = manifest.artifacts.find(
     (artifact) => artifact.name === 'create-alkemist',
   );

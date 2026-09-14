@@ -2,7 +2,8 @@
 
 Astro components for technical publishing: `Layout`, `Math`, `Code`,
 `Audio`, `Video`, `Chart`, `Midi`, `Model`, `Shader`, `PostList`, `Search`,
-`Navigation`, `TableOfContents`, and `Playground`.
+`Navigation`, `TableOfContents`, `Playground`, `Slides`, `Note`, `Step`,
+`SpeakerNotes`, and `Diagram`.
 
 Each component has a lowercase, extensionless public entry. Import its types
 from the same entry; there is no root component barrel.
@@ -62,3 +63,15 @@ For docs, `<Playground focusPreview>` gives the specimen full width and reveals
 parameters/source on demand. Set `previewHeight={440}` for a deliberately scrolling
 frame (finite 80–1600 pixels); omit it to accept the frame's content-size messages.
 See the [plain-host embed lab](https://alkemist.alkem.dev/labs/embeds/).
+
+### Browser presentations
+
+`Slides` enhances semantic `<section data-alk-slide>` content in any host layout.
+Enable `alkemist({ slides: true })` to author those sections with Markdown rules
+in a `format: slides` document. Add figures using the same components as an
+article. `Note for="figure-id"` attaches text to a figure, `Step` controls reveals,
+and `SpeakerNotes` supplies presenter notes. `Diagram` renders Mermaid source.
+Use `embedded` for independent decks inside a page, or a standalone route for
+deep links and the presenter window. Reading mode preserves the same DOM;
+mobile and no-JavaScript loads remain readable. See the
+[slide authoring guide](https://alkemist.alkem.dev/docs/slides/).

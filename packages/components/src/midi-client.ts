@@ -36,6 +36,8 @@ class MidiElement extends HTMLElement {
   private engine?: MusicEngine;
   private enginePromise?: Promise<MusicEngine>;
   private observer?: IntersectionObserver;
+  private visible = false;
+  private active = true;
   private events = new AbortController();
   private sourceLoad?: AbortController;
   private history: MidiSequence[] = [];
@@ -70,6 +72,7 @@ class MidiElement extends HTMLElement {
   connectedCallback() {
     if (this.config && !this.events.signal.aborted) return;
     if (this.events.signal.aborted) this.events = new AbortController();
+    this.active = this.dataset.alkActive !== 'false';
     try {
       this.config = JSON.parse(this.dataset.config ?? '{}') as Config;
       this.sequence = validateSequence(this.config.sequence);
@@ -90,6 +93,15 @@ class MidiElement extends HTMLElement {
       );
       return;
     }
+    this.addEventListener(
+      'alk:presentation',
+      () => {
+        this.active = this.dataset.alkActive !== 'false';
+        if (!this.active) this.halt(false);
+        else if (this.visible) void this.ready();
+      },
+      { signal: this.events.signal },
+    );
     this.observe();
   }
 
@@ -109,7 +121,8 @@ class MidiElement extends HTMLElement {
   private observe() {
     this.observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0]?.isIntersecting) void this.ready();
+        this.visible = entries[0]?.isIntersecting ?? false;
+        if (this.active && this.visible) void this.ready();
       },
       { rootMargin: '180px' },
     );
@@ -119,7 +132,13 @@ class MidiElement extends HTMLElement {
   private async ready() {
     this.observer?.disconnect();
     this.observer = undefined;
-    if (!this.isConnected || this.dataset.ready === 'true') return;
+    if (
+      !this.isConnected ||
+      !this.active ||
+      !this.visible ||
+      this.dataset.ready === 'true'
+    )
+      return;
     this.render();
     this.bind();
     this.dataset.ready = 'true';
@@ -986,6 +1005,7 @@ class MidiElement extends HTMLElement {
   }
 
   private async play() {
+    if (!this.active) return;
     if (this.playing) {
       this.halt(false);
       return;

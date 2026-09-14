@@ -106,9 +106,9 @@ function mountShader(
     const angle = host.querySelector<HTMLInputElement>('[data-angle]')!;
     const button = host.querySelector<HTMLButtonElement>('[data-play]')!;
     const status = host.querySelector<HTMLElement>('[role="status"]')!;
-    const render = (time: number) => {
+    const render = (time: number, force = false) => {
       frame = 0;
-      if (disposed || !visible || document.hidden) return;
+      if (disposed || (!force && (!visible || document.hidden))) return;
       if (playing && previousTime)
         phase += Math.min((time - previousTime) / 1000, 0.05) * 0.8;
       previousTime = time;
@@ -123,6 +123,11 @@ function mountShader(
     const requestRender = () => {
       if (!disposed && visible && !document.hidden && !frame)
         frame = requestAnimationFrame(render);
+    };
+    // Capture draws synchronously without retaining a framebuffer between frames.
+    const capture = () => {
+      pauseFrame();
+      render(performance.now(), true);
     };
     const updatePlay = () => {
       button.textContent = playing ? 'Pause waves' : 'Play waves';
@@ -232,6 +237,9 @@ function mountShader(
       },
       { signal: events.signal },
     );
+    host.addEventListener('alk:before-capture', capture, {
+      signal: events.signal,
+    });
     canvas.addEventListener(
       'webglcontextlost',
       (event) => {
@@ -266,10 +274,22 @@ function registerShader() {
     private runtime?: ShaderRuntime;
     private observer?: IntersectionObserver;
     private events?: AbortController;
+    private visible = false;
+    private active = true;
 
     connectedCallback() {
       if (this.events) return;
       this.events = new AbortController();
+      this.active = this.dataset.alkActive !== 'false';
+      this.addEventListener(
+        'alk:presentation',
+        () => {
+          this.active = this.dataset.alkActive !== 'false';
+          this.runtime?.setVisible(this.canRun());
+          if (this.canRun()) this.start();
+        },
+        { signal: this.events.signal },
+      );
       window.addEventListener('pagehide', () => this.stop(), {
         signal: this.events.signal,
       });
@@ -287,24 +307,29 @@ function registerShader() {
       if (this.observer || !this.isConnected) return;
       this.observer = new IntersectionObserver(
         (entries) => {
-          const visible = entries[0]?.isIntersecting ?? false;
-          if (visible && !this.runtime && this.dataset.state !== 'error') {
-            try {
-              this.runtime = mountShader(this, (message) => this.fail(message));
-              this.dataset.state = 'ready';
-            } catch (error) {
-              this.fail(
-                error instanceof Error
-                  ? error.message
-                  : 'The shader could not be initialized.',
-              );
-            }
-          }
-          this.runtime?.setVisible(visible);
+          this.visible = entries[0]?.isIntersecting ?? false;
+          if (this.canRun()) this.start();
+          this.runtime?.setVisible(this.canRun());
         },
         { threshold: 0.01 },
       );
       this.observer.observe(this);
+    }
+    private canRun() {
+      return this.active && this.visible;
+    }
+    private start() {
+      if (this.runtime || this.dataset.state === 'error') return;
+      try {
+        this.runtime = mountShader(this, (message) => this.fail(message));
+        this.dataset.state = 'ready';
+      } catch (error) {
+        this.fail(
+          error instanceof Error
+            ? error.message
+            : 'The shader could not be initialized.',
+        );
+      }
     }
     private fail(message: string) {
       this.runtime?.dispose();

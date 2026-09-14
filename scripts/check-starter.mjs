@@ -114,6 +114,33 @@ draft: true
 This draft stays out of the guide and its detail route.\n`,
   );
   await writeFile(
+    join(site, 'src/content/slides/draft.md'),
+    `---
+title: Unpublished deck
+description: This deck must not become a public route.
+format: slides
+draft: true
+---
+
+# Unpublished slide
+`,
+  );
+  await writeFile(
+    join(site, 'src/content/slides/interactive.mdx'),
+    `---
+title: Interactive fixture
+description: An auto-imported widget and note in a generated site.
+format: slides
+---
+
+# Synthetic signal
+
+<Chart id="starter-chart" src={import.meta.env.BASE_URL + 'data/oscillation.csv'} type="line" x="time" y="position" title="Starter oscillator" description="Synthetic teaching data." sample />
+
+<Note for="starter-chart">The source fixture is synthetic.</Note>
+`,
+  );
+  await writeFile(
     join(site, 'src/content/logs/later-reading.md'),
     `---
 title: Later reading
@@ -180,8 +207,26 @@ This entry uses a text-only listing.\n`,
     join(site, 'dist/book/index.html'),
     'utf8',
   );
+  const defaultSlides = await readFile(
+    join(site, 'dist/slides/index.html'),
+    'utf8',
+  );
+  const firstTalk = await readFile(
+    join(site, 'dist/slides/first-talk/index.html'),
+    'utf8',
+  );
+  const interactiveTalk = await readFile(
+    join(site, 'dist/slides/interactive/index.html'),
+    'utf8',
+  );
   assert(!defaultLogs.includes('Unpublished log'));
   assert(!defaultBook.includes('Unpublished chapter'));
+  assert(defaultSlides.includes('First talk'));
+  assert(defaultSlides.includes('Interactive fixture'));
+  assert(!defaultSlides.includes('Unpublished deck'));
+  assert.match(firstTalk, /<alk-slides/);
+  assert.match(interactiveTalk, /<alk-chart id="starter-chart"/);
+  assert.match(interactiveTalk, /data-note-target="starter-chart"/);
   assert(defaultLogs.includes('Later reading'));
   assert(defaultLogs.includes('First reading'));
   assert(
@@ -189,6 +234,7 @@ This entry uses a text-only listing.\n`,
   );
   await assert.rejects(readFile(join(site, 'dist/logs/draft/index.html')));
   await assert.rejects(readFile(join(site, 'dist/book/draft/index.html')));
+  await assert.rejects(readFile(join(site, 'dist/slides/draft/index.html')));
   for (const snapshot of initial.packages) {
     assert(
       !(
@@ -288,17 +334,34 @@ This entry uses a text-only listing.\n`,
     labs: { enabled: false, label: 'Labs' },
     docs: { enabled: false, label: 'Docs' },
     book: { enabled: false, label: 'Book' },
+    slides: { enabled: false, label: 'Slides' },
     info: { enabled: false, label: 'Info' },
   });
   run(['run', 'verify'], sectionEnv);
-  for (const section of ['blog', 'logs', 'labs', 'docs', 'book', 'info'])
+  for (const section of [
+    'blog',
+    'logs',
+    'labs',
+    'docs',
+    'book',
+    'slides',
+    'info',
+  ])
     assert.equal(
       (await readdir(join(site, 'dist'))).includes(section),
       false,
       `Disabled ${section} route was emitted.`,
     );
   const disabledHome = await readFile(join(site, 'dist/index.html'), 'utf8');
-  for (const section of ['blog', 'logs', 'labs', 'docs', 'book', 'info'])
+  for (const section of [
+    'blog',
+    'logs',
+    'labs',
+    'docs',
+    'book',
+    'slides',
+    'info',
+  ])
     assert(!disabledHome.includes(`/sections/${section}/`));
   await configureSections({
     docs: { enabled: true, label: 'Reference' },
@@ -306,6 +369,7 @@ This entry uses a text-only listing.\n`,
     blog: { enabled: true, label: 'Writing' },
     logs: { enabled: true, label: 'Field notes' },
     labs: { enabled: true, label: 'Apps' },
+    slides: { enabled: true, label: 'Talks' },
     info: { enabled: true, label: 'Project' },
   });
   run(['run', 'verify'], sectionEnv);
@@ -315,6 +379,13 @@ This entry uses a text-only listing.\n`,
   assert(
     configuredHome.indexOf('Reference') < configuredHome.indexOf('Writing'),
   );
+  assert(configuredHome.includes('Talks'));
+  const configuredSlides = await readFile(
+    join(site, 'dist/slides/index.html'),
+    'utf8',
+  );
+  assert(configuredSlides.includes('<title>Talks'));
+  assert(configuredSlides.includes('/sections/slides/first-talk/'));
   for (const provider of ['gitlab', 'cloudflare']) {
     const destination = join(temporary, provider);
     await createSite({ destination, provider });

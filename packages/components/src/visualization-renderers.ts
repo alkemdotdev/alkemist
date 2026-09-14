@@ -27,7 +27,7 @@ function url(value: string) {
 export function renderChart(props: ChartProps): string {
   const canZoom = chartCanZoom(props);
   const height = Number.isFinite(props.height) ? props.height! : 300;
-  return `<alk-chart class="alk-chart" data-config="${escape(JSON.stringify(props))}">
+  return `<alk-chart${props.id ? ` id="${escape(props.id)}"` : ''} class="alk-chart" data-config="${escape(JSON.stringify(props))}">
   <figure class="alk-figure" aria-label="${escape(props.title)}">
     <figcaption class="alk-chart-caption alk-figure-heading"><div>
       ${props.sample ? '<p class="alk-figure-label">Synthetic data</p>' : ''}
@@ -49,13 +49,14 @@ export function renderChart(props: ChartProps): string {
 }
 
 export function renderModel({
+  id,
   src,
   title,
   description,
   poster,
   class: className,
 }: ModelProps): string {
-  return `<alk-model class="alk-model ${escape(className)}" data-src="${url(src)}" data-state="idle">
+  return `<alk-model${id ? ` id="${escape(id)}"` : ''} class="alk-model ${escape(className)}" data-src="${url(src)}" data-state="idle">
     <figure class="alk-figure" aria-label="${escape(title)}">
       <figcaption class="alk-model-heading alk-figure-heading"><div>
       <h3 class="alk-figure-title">${escape(title)}</h3>${description ? `<p class="alk-model-description alk-figure-description">${escape(description)}</p>` : ''}</div></figcaption>
@@ -74,6 +75,7 @@ export function renderModel({
 }
 
 export function renderShader({
+  id,
   title = 'Interference field',
   frequency = 9,
   angle = 24,
@@ -96,7 +98,7 @@ export function renderShader({
         ).join('')}</g>`,
     )
     .join('');
-  return `<alk-shader class="alk-shader ${escape(className)}" data-state="idle"><figure class="alk-figure" aria-label="${escape(title)}">
+  return `<alk-shader${id ? ` id="${escape(id)}"` : ''} class="alk-shader ${escape(className)}" data-state="idle"><figure class="alk-figure" aria-label="${escape(title)}">
     <figcaption class="alk-shader-heading alk-figure-heading"><div><h3 class="alk-figure-title">${escape(title)}</h3></div></figcaption>
     <div class="alk-shader-viewport"><svg class="alk-shader-poster" viewBox="0 0 960 520" role="img" aria-label="Static illustration of two overlapping concentric wave sources; the interactive shader loads when visible.">${circles}</svg>
     <canvas role="img" aria-label="${escape(title)}: interference contours from two point sources, rendered with the eight Alkemist inks."></canvas></div>

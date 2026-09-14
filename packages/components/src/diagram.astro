@@ -1,0 +1,18 @@
+---
+import '@alkemdotdev/alkemist-theme/slides.css';
+export interface DiagramProps {
+  code: string;
+  title?: string;
+  id?: string;
+}
+type Props = DiagramProps;
+const { code, title = 'Diagram', id } = Astro.props;
+if (!code?.trim()) throw new Error('Diagram requires Mermaid source.');
+---
+
+<alk-diagram id={id} class="alk-diagram" aria-label={title}>
+  <pre data-diagram-source><code>{code}</code></pre>
+</alk-diagram>
+<script>
+  import './diagram-client';
+</script>

@@ -1,0 +1,59 @@
+---
+title: Listening to the fixture
+description: An MDX deck for audio, video, and MIDI with local sample material.
+format: slides
+incremental: true
+---
+
+# Listening to the fixture
+
+The files here are local test material for testing browser media behavior.
+
+<SpeakerNotes>
+  Make clear that playback begins only after a reader chooses it.
+</SpeakerNotes>
+
+---
+
+## A short tone is enough to test the path
+
+<Audio
+  id="tone"
+  src="/test/tone.wav"
+  title="Test tone"
+  caption="A local synthetic tone fixture for the audio component."
+/>
+
+<Note for="tone">
+  No recording claim is attached to this generated fixture.
+</Note>
+
+---
+
+## Motion needs an explicit source
+
+<Video
+  id="wave-study"
+  src="/test/waves.mp4"
+  poster="/test/media-poster.jpg"
+  title="Wave study"
+  caption="A local test video used to exercise controls and slide deactivation."
+/>
+
+<SpeakerNotes>
+  Do not autoplay the video while presenting this slide.
+</SpeakerNotes>
+
+---
+
+## Notes stay editable in the browser
+
+<Midi
+  id="pulse-study"
+  src="/test/music/pulse.mid"
+  editable
+  title="Pulse study"
+  caption="A bundled test MIDI file; playback uses the reader's browser synthesizer."
+/>
+
+<Step>Open the score, then use playback after focusing the player.</Step>

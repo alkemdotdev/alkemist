@@ -4,6 +4,7 @@ export const siteSectionIds = [
   'blog',
   'logs',
   'labs',
+  'slides',
   'docs',
   'book',
   'info',
@@ -40,6 +41,12 @@ export const siteSections = {
     label: 'Labs',
     href: '/labs/',
     description: 'One-off interactive applications and experiments.',
+  },
+  slides: {
+    enabled: true,
+    label: 'Slides',
+    href: '/slides/',
+    description: 'Browser talks built from Markdown and MDX.',
   },
   docs: {
     enabled: true,
