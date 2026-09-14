@@ -43,6 +43,55 @@ Start with Markdown.
 
 The `incremental` option enables ordinary list progression for the deck. `<Step>` gives MDX authors an explicit progression point. Reading output shows all steps.
 
+## Let the content choose the layout
+
+Slides infer a compact layout from their content: a title gets room, an image beside prose becomes a split, a widget becomes a media slide, and a quote remains quiet. You do not need frontmatter layout names for ordinary decks. When a real slide needs a different treatment, add a comment immediately before it:
+
+```md
+<!-- layout: split -->
+
+## A picture and an explanation
+
+![A descriptive image.](./figure.png)
+
+Keep the source and the interpretation together.
+```
+
+MDX uses a JSX comment: `{/* layout: split */}`. Available layouts are `title`, `split`, `media`, `quote`, and `content`; unknown values produce a build-time authoring error rather than changing a deck silently. The reading view keeps the same sections in a responsive document flow.
+
+## Choose a surface and motion
+
+Each deck can select a theme and navigation transition in frontmatter. The defaults are `theme: inherit`, `transition: fade`, and `aspect: auto`; `auto` uses the available responsive viewport. Use a fixed aspect only when a venue requires it.
+
+```yaml
+theme: blueprint # inherit, paper, chalk, or blueprint
+transition: slide # none, fade, or slide
+aspect: '16:9' # auto, 16:9, or 4:3
+```
+
+Themes expose `--alk-slide-background`, `--alk-slide-foreground`, `--alk-slide-accent`, `--alk-slide-font`, and `--alk-slide-heading-font`. Site authors can set these variables or use a deck class/style for a custom surface without replacing the semantic slide structure.
+
+For example, add `class: research-talk` to a deck and put this in your site stylesheet:
+
+```css
+.research-talk {
+  --alk-slide-accent: #7654b8;
+  --alk-slide-heading-font: var(--alk-serif);
+}
+```
+
+Content is laid out first, then text fitting makes small adjustments within a readable size. Long tables, code, or unusually dense slides remain scrollable; split the material across slides when it needs more room.
+
+## Present from the browser
+
+**Present** fills the window with the deck; **Read** returns to the document. **Overview** shows selectable cards with images and audience-facing text. The bottom controls move between slides or individual steps, and the slide picker jumps directly to a section.
+
+**Tools** contains Speaker view, Fullscreen, Print, Copy current link, Laser pointer, Blackout, and optional timed advance. Timed advance starts only when requested and stops when the page is hidden, the overview opens, blackout begins, or the deck ends. Media never begins playing automatically.
+
+Focus the slide and use arrow keys or Space to advance. **O** opens Overview, **S** opens Speaker view, **B** toggles Blackout, **L** toggles the pointer, **F** toggles Fullscreen, and **?** shows keyboard help. Escape closes an overlay or leaves the presentation. Browser shortcuts and interactive figure controls keep their normal behavior. Touch users can swipe the slide background and use the visible controls.
+
+Use **Tools → Print** to load lazy figures and capture current GPU views before opening the browser print dialog. Speaker view uses a separate window, so allow that window if your browser blocks it.
+
 ## Use the forms Markdown already has
 
 Headings, lists, images, links, tables, math, fenced code, and footnotes use their usual Markdown syntax. The integration also accepts GitHub-style alerts and `mermaid` fences in a deck. These forms render through the configured Markdown pipeline; they do not require a second slide-specific language.
@@ -76,16 +125,17 @@ format: slides
 <Note for="signal-chart">The CSV is a deterministic teaching fixture.</Note>
 ```
 
-`id` is optional on widgets. Give a figure an ID when attaching a `Note`; the note text appears beside its target in reading and presentation views. A missing target is an authoring error. `Slides` is also available to an Astro page through `@alkemdotdev/alkemist-components/slides`; pass a title, optional description, and compiled slide sections in its default slot.
+`id` is optional on widgets. Give a figure an ID when attaching a `Note`; the note text appears beside its target in reading and presentation views. A missing target is an authoring error. `Slides` is also available to an Astro page through `@alkemdotdev/alkemist-components/slides`; pass a title, optional description, `theme`, `transition`, `aspect`, and compiled slide sections in its default slot.
 
 ## Publish and check a talk
 
-The starter includes `src/content/slides/first-talk.md`. The demo has three examples:
+The starter includes `src/content/slides/first-talk.md`. The demo has four examples:
 
 - [Working with a signal](/slides/working-with-a-signal/) uses plain Markdown, equations, code, footnotes, and Mermaid.
 - [A field notebook in motion](/slides/field-notebook/) combines Chart, Model, Shader, and figure notes.
 - [Listening to the fixture](/slides/listening-to-the-fixture/) exercises Audio, Video, and the MIDI editor.
+- [A page can change its posture](/slides/layout-sampler/) shows inferred title, image/prose, list, quote, table, and code layouts.
 
-Read and Present share the same widget instances. Phones default to Read. Notes opens a presenter window for a standalone deck; embedded decks keep independent navigation within their host page. Print prepares lazy figures and current GPU frames before opening the browser's print dialog.
+Read and Present share the same widget instances. Phones default to Read. Speaker view is available for standalone decks; embedded decks keep independent navigation within their host page.
 
 The slide index and route exclude `draft: true`, just as Blog does. Test the reading route and presentation controls at desktop and phone widths. Exercise backward steps, widget focus, media pause on slide change, resize, and a no-JavaScript reading load before publishing. Browser presentation does not establish a verified PDF or video export; treat those as separate artifact work.

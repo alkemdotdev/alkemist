@@ -1,11 +1,13 @@
 ---
 import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import { isPreview } from '../../lib/deployment';
 
 const decks = (await getCollection('slides'))
   .filter((entry) => !entry.data.draft)
   .sort((a, b) => a.data.title.localeCompare(b.data.title));
+const slidesPath = (id = '') => `${import.meta.env.BASE_URL}slides/${id}`;
 ---
 
 <SiteLayout
@@ -14,15 +16,37 @@ const decks = (await getCollection('slides'))
   preview={isPreview}
 >
   <h1>Slides</h1>
-  <p class="alk-lead">Browser talks written in Markdown and MDX.</p>
-  <div class="slides-list">
+  <p class="alk-lead">Markdown talks with interactive figures.</p>
+  <div class="slides-list" aria-label="Published slide decks">
     {
       decks.map((deck) => (
-        <article>
-          <h2>
-            <a href={`/slides/${deck.id}/`}>{deck.data.title}</a>
-          </h2>
-          <p>{deck.data.description}</p>
+        <article class="slides-card">
+          <a
+            class="slides-card-link"
+            href={slidesPath(`${deck.id}/`)}
+            aria-label={`Open ${deck.data.title}`}
+          >
+            {deck.data.cover ? (
+              <Image
+                src={deck.data.cover.src}
+                alt={deck.data.cover.alt}
+                widths={[480, 800]}
+                sizes="(max-width: 720px) calc(100vw - 2.5rem), (max-width: 1100px) calc(50vw - 2rem), 520px"
+                format={deck.data.cover.src.format === 'svg' ? 'svg' : 'webp'}
+                style={`--cover-fit: ${deck.data.cover.fit}; --cover-position: ${deck.data.cover.focalX}% ${deck.data.cover.focalY}%;`}
+              />
+            ) : (
+              <span class="slides-card-fallback" aria-hidden="true">
+                <span>{deck.data.title.slice(0, 1)}</span>
+              </span>
+            )}
+          </a>
+          <div class="slides-card-copy">
+            <h2>
+              <a href={slidesPath(`${deck.id}/`)}>{deck.data.title}</a>
+            </h2>
+            <p>{deck.data.description}</p>
+          </div>
         </article>
       ))
     }
@@ -31,11 +55,44 @@ const decks = (await getCollection('slides'))
 
 <style>
   .slides-list {
-    border-top: 1px solid var(--alk-rule);
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
   }
-  .slides-list article {
-    padding: 1.35rem 0;
+  .slides-card {
+    overflow: hidden;
     border-bottom: 1px solid var(--alk-rule);
+    border: 1px solid var(--alk-rule);
+    background: var(--alk-field);
+  }
+  .slides-card-link {
+    display: block;
+    aspect-ratio: 16 / 9;
+    background: var(--alk-paper);
+    overflow: hidden;
+  }
+  .slides-card-link :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: var(--cover-fit);
+    object-position: var(--cover-position);
+    transition: transform 220ms ease;
+  }
+  .slides-card:hover .slides-card-link :global(img) {
+    transform: scale(1.025);
+  }
+  .slides-card-fallback {
+    display: grid;
+    width: 100%;
+    height: 100%;
+    place-items: center;
+    color: var(--alk-paper);
+    background: var(--alk-ink);
+    font: clamp(4rem, 15vw, 8rem) / 1 var(--alk-serif);
+  }
+  .slides-card-copy {
+    padding: 1.05rem 1.1rem 1.15rem;
   }
   .slides-list h2 {
     margin: 0 0 0.4rem;
@@ -51,8 +108,13 @@ const decks = (await getCollection('slides'))
     text-underline-offset: 0.24em;
   }
   .slides-list p {
-    max-width: 58ch;
     margin: 0;
     color: var(--alk-muted);
+    line-height: 1.5;
+  }
+  @media (max-width: 720px) {
+    .slides-list {
+      grid-template-columns: 1fr;
+    }
   }
 </style>

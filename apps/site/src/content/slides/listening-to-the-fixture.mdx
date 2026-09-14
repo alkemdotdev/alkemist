@@ -1,13 +1,23 @@
 ---
 title: Listening to the fixture
-description: An MDX deck for audio, video, and MIDI with local sample material.
+description: A compact media study that keeps sound, motion, and score deliberately inspectable.
 format: slides
 incremental: true
+theme: paper
+transition: fade
+cover:
+  src: ../../assets/forms-color/orbit.png
+  alt: A translucent pink conical surface crossed by thin blue curves.
+  fit: cover
+  focalX: 52
+  focalY: 48
 ---
 
-# Listening to the fixture
+# Listening is a form of inspection
 
-The files here are local test material for testing browser media behavior.
+These local files test the browser path without pretending to be a recording session or a finished film.
+
+![A translucent pink conical surface crossed by thin blue curves.](../../assets/forms-color/orbit.png)
 
 <SpeakerNotes>
   Make clear that playback begins only after a reader chooses it.
@@ -15,7 +25,7 @@ The files here are local test material for testing browser media behavior.
 
 ---
 
-## A short tone is enough to test the path
+## A short tone establishes the path
 
 <Audio
   id="tone"
@@ -30,7 +40,7 @@ The files here are local test material for testing browser media behavior.
 
 ---
 
-## Motion needs an explicit source
+## Motion needs a named source
 
 <Video
   id="wave-study"
@@ -46,7 +56,7 @@ The files here are local test material for testing browser media behavior.
 
 ---
 
-## Notes stay editable in the browser
+## A score leaves the timing visible
 
 <Midi
   id="pulse-study"
@@ -56,4 +66,4 @@ The files here are local test material for testing browser media behavior.
   caption="A bundled test MIDI file; playback uses the reader's browser synthesizer."
 />
 
-<Step>Open the score, then use playback after focusing the player.</Step>
+<Step>Open the score, focus the player, then choose playback.</Step>

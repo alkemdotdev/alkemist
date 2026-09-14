@@ -74,6 +74,7 @@ interface Props {
 }
 const { entry, section } = Astro.props as Props;
 const { Content } = await render(entry);
+const slideData = entry.data as CollectionEntry<'slides'>['data'];
 const data = entry.data as {
   title: string;
   description: string;
@@ -127,7 +128,15 @@ const next = position >= 0 ? bookEntries[position + 1] : undefined;
         <p class="slides-back">
           <a href={withBase('slides/')}>← Slides</a>
         </p>
-        <Slides title={data.title} description={data.description}>
+        <Slides
+          title={data.title}
+          description={data.description}
+          theme={slideData.theme}
+          transition={slideData.transition}
+          aspect={slideData.aspect}
+          class={slideData.class}
+          style={slideData.style}
+        >
           <Content />
         </Slides>
       </div>

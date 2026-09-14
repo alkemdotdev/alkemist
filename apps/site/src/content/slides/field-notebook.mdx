@@ -1,13 +1,23 @@
 ---
 title: A field notebook in motion
-description: An MDX deck that keeps a chart, model, and shader connected to their fixtures.
+description: 'Three views of one synthetic experiment: trace, geometry, and field.'
 format: slides
 incremental: true
+theme: blueprint
+transition: slide
+cover:
+  src: ../../assets/forms-engineering/interference.png
+  alt: Fine cyan and gray curves circle a small central form.
+  fit: cover
+  focalX: 50
+  focalY: 48
 ---
 
-# A field notebook in motion
+# One question, three views
 
-The figures in this talk are reusable components with their normal controls.
+Start with a changing quantity. Then ask what geometry and a field view make easier to notice.
+
+![Fine cyan and gray curves circle a small central form.](../../assets/forms-engineering/interference.png)
 
 <SpeakerNotes>
   Explain that each fixture is synthetic or geometric test material.
@@ -15,7 +25,7 @@ The figures in this talk are reusable components with their normal controls.
 
 ---
 
-## A signal gives the model a rhythm
+## The trace gives the question a tempo
 
 <Chart
   id="signal-chart"
@@ -25,8 +35,8 @@ The figures in this talk are reusable components with their normal controls.
   y="position"
   xLabel="Time (s)"
   yLabel="Position (m)"
-  title="Damped oscillator"
-  description="A synthetic analytic trajectory with unit initial displacement."
+  title="A synthetic damped oscillator"
+  description="An analytic trajectory with unit initial displacement, provided as a deterministic fixture."
   sample
 />
 
@@ -36,7 +46,7 @@ The figures in this talk are reusable components with their normal controls.
 
 ---
 
-## Geometry makes the constraint visible
+## Geometry makes continuity visible
 
 <Model
   id="torus-model"
@@ -52,7 +62,7 @@ The figures in this talk are reusable components with their normal controls.
 
 ---
 
-## The field stays interactive
+## The field shows interference at a glance
 
 <Shader
   id="interference-field"
@@ -61,7 +71,10 @@ The figures in this talk are reusable components with their normal controls.
   angle={24}
 />
 
-<Step>Change frequency and angle, then compare the contour spacing.</Step>
+<Step>
+  Change frequency and angle, then compare the contour spacing before returning
+  to the trace.
+</Step>
 
 <SpeakerNotes>
   Pause for a reader to use the shader controls before advancing.

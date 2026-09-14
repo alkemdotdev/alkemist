@@ -9,6 +9,9 @@ async function checkEmbeddedSlides(page) {
     );
   });
   const decks = page.locator('alk-slides');
+  for (let index = 0; index < 2; index++)
+    if ((await decks.nth(index).getAttribute('data-view')) === 'read')
+      await decks.nth(index).locator('[data-slides-present]').click();
   await decks.nth(0).locator('[data-slides-next]').click();
   const state = await page.evaluate(() => {
     const ids = [...document.querySelectorAll('[id]')].map(

@@ -43,6 +43,46 @@ async function renderIntegrated(value, frontmatter = { format: 'slides' }) {
   return (await processor.render(value, { frontmatter })).code;
 }
 
+test('slide layout comments are optional, scoped, and validated', async () => {
+  const html = await render(
+    '# First\n\n<!-- layout: split -->\n\n![Figure](figure.svg)\n\n---\n\n# Second',
+  );
+  assert.match(html, /id="slide-first"[^>]*data-layout="split"/);
+  assert.match(html, /id="slide-second"[^>]*data-layout="auto"/);
+  assert.doesNotMatch(html, /alk-slide-layout/);
+  await assert.rejects(
+    render('# Wrong\n\n<!-- layout: unknown -->'),
+    /Unknown slide layout/,
+  );
+  await assert.rejects(
+    render('# Conflicting\n\n<!-- layout: split -->\n\n<!-- layout: media -->'),
+    /more than one layout/,
+  );
+  assert.doesNotMatch(
+    await render('# Article\n\n<!-- layout: split -->', {}),
+    /data-layout/,
+  );
+});
+
+test('MDX layout comments retain component bindings and fenced examples remain code', async () => {
+  const file = new VFile({
+    value:
+      '# A figure\n\n{/* layout: media */}\n\n<Chart src="/data.csv" title="Signal" />',
+    data: { astro: { frontmatter: { format: 'slides' } } },
+  });
+  const code = String(
+    await compile(file, {
+      remarkPlugins: [remarkAlkemistSlides],
+      rehypePlugins: [rehypeAlkemistSlides],
+    }),
+  );
+  assert.match(code, /"data-layout": "media"/);
+  assert.match(code, /import Chart from/);
+  const html = await render('# Syntax\n\n```html\n<!-- layout: split -->\n```');
+  assert.match(html, /data-layout="auto"/);
+  assert.match(html, /<code class="language-html">&#x3C;!-- layout: split -->/);
+});
+
 test('a deck splits only parsed top-level thematic breaks', async () => {
   const html = await render(
     `# First\n\n\`\`\`md\n---\n\`\`\`\n\n- outer\n  - ---\n\n---\n\n# Second`,

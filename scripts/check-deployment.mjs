@@ -56,6 +56,7 @@ for (const [path, title] of [
   ['/slides/working-with-a-signal/', 'Working with a signal'],
   ['/slides/field-notebook/', 'A field notebook in motion'],
   ['/slides/listening-to-the-fixture/', 'Listening to the fixture'],
+  ['/slides/layout-sampler/', 'A page can change its posture'],
   ['/blog/notes-you-can-change/', 'Notes you can change'],
   ['/docs/graphics/', 'Graphics'],
   ['/docs/website/', 'Website'],

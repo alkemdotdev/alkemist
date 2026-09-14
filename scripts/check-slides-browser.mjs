@@ -148,6 +148,7 @@ async function checkSlides(page) {
   );
 
   await choose(0);
+  await page.locator('[data-slides-tools] > summary').click();
   const popupPromise = page.waitForEvent('popup');
   await page.locator('[data-slides-notes]').click();
   const notes = await popupPromise;
@@ -213,6 +214,35 @@ async function checkSlides(page) {
   await page.emulateMedia({ media: 'screen' });
   evidence.push(
     'Print: current model/shader captures contain pixels; duplicate posters hidden',
+  );
+
+  // A page restored from the back-forward cache must restart once on pageshow,
+  // never during pagehide after the model's own disposal listener has run.
+  const unload = await page.evaluate(async () => {
+    const originalFetch = window.fetch;
+    let reloads = 0;
+    window.fetch = (...args) => {
+      if (String(args[0]).includes('torus-knot.glb')) reloads++;
+      return originalFetch(...args);
+    };
+    window.dispatchEvent(
+      new PageTransitionEvent('pagehide', { persisted: true }),
+    );
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    window.fetch = originalFetch;
+    const state = document.querySelector('alk-model').dataset.state;
+    window.dispatchEvent(
+      new PageTransitionEvent('pageshow', { persisted: true }),
+    );
+    return { reloads, state };
+  });
+  assert(
+    unload.reloads === 0 && unload.state === 'idle',
+    'Presentation teardown reactivated a disposed model',
+  );
+  await ready('alk-model');
+  evidence.push(
+    'Lifecycle: pagehide does not restart disposed models; pageshow restores them',
   );
 
   await open('listening-to-the-fixture');

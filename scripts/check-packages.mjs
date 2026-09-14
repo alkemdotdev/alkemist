@@ -199,7 +199,7 @@ Each instance navigates independently.`,
 import Slides from '@alkemdotdev/alkemist-components/slides';
 import EmbeddedContent from '../../content/embedded.md';
 ---
-<html lang="en"><head><title>Embedded slides</title></head><body><main><Slides title="First embedded instance" embedded><EmbeddedContent /></Slides><Slides title="Second embedded instance" embedded><EmbeddedContent /></Slides></main></body></html>`,
+<html lang="en"><head><meta charset="utf-8"/><title>Embedded slides</title></head><body><main><Slides title="First embedded instance" embedded><EmbeddedContent /></Slides><Slides title="Second embedded instance" embedded><EmbeddedContent /></Slides></main></body></html>`,
   );
   await write(
     'src/pages/deck.md',

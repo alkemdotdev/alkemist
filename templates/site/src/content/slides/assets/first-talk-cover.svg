@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+  <title id="title">Signal on a measurement grid</title>
+  <desc id="desc">A blue oscillating line crosses a pale grid with an orange reference point.</desc>
+  <rect width="1200" height="675" fill="#eeeeee"/>
+  <g stroke="#c7c7c7" stroke-width="2">
+    <path d="M0 135H1200M0 270H1200M0 405H1200M0 540H1200"/>
+    <path d="M200 0V675M400 0V675M600 0V675M800 0V675M1000 0V675"/>
+  </g>
+  <path d="M70 378C145 110 218 110 292 338S440 565 520 332 670 104 752 338 900 567 982 336 1120 102 1160 215" fill="none" stroke="#1982f2" stroke-width="20" stroke-linecap="round"/>
+  <circle cx="600" cy="270" r="18" fill="#e25312"/>
+  <path d="M600 214V112M544 270H442" stroke="#111" stroke-width="8" stroke-linecap="round"/>
+</svg>

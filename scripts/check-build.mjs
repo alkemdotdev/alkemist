@@ -26,6 +26,7 @@ const required = [
   'slides/working-with-a-signal/index.html',
   'slides/field-notebook/index.html',
   'slides/listening-to-the-fixture/index.html',
+  'slides/layout-sampler/index.html',
   'playground/midi/index.html',
   'test/music/nocturne.mid',
   'playground/audio/index.html',

@@ -1,29 +1,39 @@
 ---
 title: Working with a signal
-description: A Markdown-first talk with ordinary document features and presentation notes.
+description: A small argument for keeping a signal, its model, and its limits in view together.
 format: slides
 incremental: true
+theme: chalk
+transition: fade
+cover:
+  src: ../../assets/fields/flux.png
+  alt: Glossy cyan ribbons curve around a multicolored central form.
+  fit: cover
+  focalX: 48
+  focalY: 48
 ---
 
-# Working with a signal
+# A signal is a claim in motion
 
-One short talk can preserve the evidence, the source, and the next question.
+The useful unit is not a chart. It is a trace, a model, and a question that can still be checked.
+
+![Glossy cyan ribbons curve around a multicolored central form.](../../assets/fields/flux.png)
 
 <!-- notes: Start with the notebook rather than the finished chart. -->
 
 ---
 
-## Start with what is observed
+## Begin with the surface
 
-![A dark board with a pale field sketch.](/studies/boards/seminar-blackboard.jpg)
+![A blackboard-style website study with a pale oscillator plot.](/studies/boards/seminar-blackboard.jpg)
 
-The image is a site study, not a measurement. The data used later is synthetic.[^fixture]
+This is a site study, not an observation. The data used later is synthetic.[^fixture]
 
 [^fixture]: The chart fixture follows an analytic damped oscillator.
 
 ---
 
-## Keep the model legible
+## Name the quantities before the curve
 
 | Quantity | Meaning      | Unit |
 | -------- | ------------ | ---- |
@@ -36,7 +46,7 @@ $$
 
 ---
 
-## Make the calculation inspectable
+## Let the short model stay inspectable
 
 ```typescript title="oscillator.ts" {4-5} focus={4-5}
 const damping = 0.18;
@@ -50,7 +60,7 @@ const displacement = (time: number) =>
 
 ---
 
-## Preserve relationships
+## A result should leave a trail
 
 ```mermaid
 flowchart LR
@@ -59,6 +69,6 @@ flowchart LR
   Claim --> Question[Next question]
 ```
 
-The important part is the path back to the source.
+The point is not a beautiful diagram. It is a path back to what the diagram means.
 
 <!-- notes: The alert and diagram are Markdown fences; explain their source role. -->

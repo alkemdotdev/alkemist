@@ -1,5 +1,6 @@
 ---
 import { getCollection, render } from 'astro:content';
+import { Image } from 'astro:assets';
 import PostList from '@alkemdotdev/alkemist-components/post-list';
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import {
@@ -45,7 +46,34 @@ type DisplayEntry = {
 };
 type SlideEntry = {
   id: string;
-  data: { title: string; description: string; draft: boolean };
+  data: {
+    title: string;
+    description: string;
+    draft: boolean;
+    theme: 'inherit' | 'paper' | 'chalk' | 'blueprint';
+    transition: 'none' | 'fade' | 'slide';
+    cover?: {
+      src: {
+        src: string;
+        width: number;
+        height: number;
+        format:
+          | 'jpeg'
+          | 'jpg'
+          | 'png'
+          | 'apng'
+          | 'tiff'
+          | 'webp'
+          | 'gif'
+          | 'svg'
+          | 'avif';
+      };
+      alt: string;
+      fit: 'cover' | 'contain';
+      focalX: number;
+      focalY: number;
+    };
+  };
 };
 const descriptions: Record<SectionId, string> = {
   blog: 'Developed writing about the work and what it means.',
@@ -171,10 +199,23 @@ const orderedEntries = [...entries].sort((a, b) => {
         <p>{descriptions.slides}</p>
         {slideEntries.map((entry) => (
           <article class="lab-card lab-section">
+            {entry.data.cover && (
+              <Image
+                src={entry.data.cover.src}
+                alt={entry.data.cover.alt}
+                widths={[480, 800]}
+                sizes="(max-width: 720px) calc(100vw - 2.5rem), 720px"
+                format={entry.data.cover.src.format === 'svg' ? 'svg' : 'webp'}
+                style={`object-fit:${entry.data.cover.fit};object-position:${entry.data.cover.focalX}% ${entry.data.cover.focalY}%;`}
+              />
+            )}
             <h2>
               <a href={withBase(`slides/${entry.id}/`)}>{entry.data.title}</a>
             </h2>
             <p>{entry.data.description}</p>
+            <p class="alk-eyebrow">
+              {entry.data.theme} theme · {entry.data.transition} transition
+            </p>
           </article>
         ))}
       </>

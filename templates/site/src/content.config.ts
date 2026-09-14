@@ -12,6 +12,11 @@ const datedEntrySchema = entrySchema.extend({
 const slidesSchema = entrySchema.extend({
   format: z.literal('slides'),
   incremental: z.boolean().default(false),
+  theme: z.enum(['inherit', 'paper', 'chalk', 'blueprint']).default('inherit'),
+  transition: z.enum(['none', 'fade', 'slide']).default('fade'),
+  aspect: z.enum(['auto', '16:9', '4:3']).default('auto'),
+  class: z.string().optional(),
+  style: z.string().optional(),
 });
 export const collections = {
   blog: defineCollection({
@@ -45,6 +50,17 @@ export const collections = {
   }),
   slides: defineCollection({
     loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/slides' }),
-    schema: slidesSchema,
+    schema: ({ image }) =>
+      slidesSchema.extend({
+        cover: z
+          .object({
+            src: image(),
+            alt: z.string().trim().min(1),
+            fit: z.enum(['cover', 'contain']).default('cover'),
+            focalX: z.number().min(0).max(100).default(50),
+            focalY: z.number().min(0).max(100).default(50),
+          })
+          .optional(),
+      }),
   }),
 };

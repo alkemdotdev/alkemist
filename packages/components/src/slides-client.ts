@@ -1,5 +1,6 @@
 import type { RevealApi } from 'reveal.js';
 import type { NotesPlugin } from 'reveal.js/plugin/notes';
+import { fitSlideContent, prepareSlideLayouts } from './slides-layout';
 
 type View = 'read' | 'present';
 const widgets =
@@ -16,6 +17,11 @@ class SlidesElement extends HTMLElement {
   private operation = Promise.resolve();
   private epoch = 0;
   private printing = false;
+  private timer?: number;
+  private timerRunning = false;
+  private lastOverlayFocus?: HTMLElement;
+  private touchStart?: { x: number; y: number };
+  private inerted: Array<{ element: HTMLElement; inert: boolean }> = [];
   private receiver =
     window.parent !== window &&
     new URLSearchParams(location.search).has('receiver');
@@ -33,6 +39,11 @@ class SlidesElement extends HTMLElement {
   }
   private button(name: string) {
     return this.querySelector<HTMLButtonElement>(`[data-slides-${name}]`)!;
+  }
+  private dialog(name: 'overview' | 'help') {
+    return this.querySelector<HTMLDialogElement>(
+      `[data-slides-${name}-dialog]`,
+    )!;
   }
 
   connectedCallback() {
@@ -54,6 +65,7 @@ class SlidesElement extends HTMLElement {
       return;
     }
     this.prepareContent();
+    prepareSlideLayouts(this);
     this.querySelectorAll<HTMLElement>('[data-slides-controls]').forEach(
       (control) => (control.hidden = false),
     );
@@ -73,27 +85,50 @@ class SlidesElement extends HTMLElement {
     this.button('next').addEventListener('click', () => this.deck?.next(), {
       signal,
     });
+    this.button('overview').addEventListener(
+      'click',
+      () => this.openOverview(),
+      { signal },
+    );
+    this.button('help').addEventListener('click', () => this.openHelp(), {
+      signal,
+    });
     this.button('notes').addEventListener(
       'click',
-      () => (this.deck?.getPlugin('notes') as NotesPlugin | undefined)?.open(),
+      () => this.openSpeakerView(),
       { signal },
     );
     this.button('fullscreen').addEventListener(
       'click',
-      () => {
-        const action =
-          document.fullscreenElement === this
-            ? document.exitFullscreen()
-            : this.requestFullscreen?.();
-        void action?.catch(() =>
-          this.message(
-            'Fullscreen is unavailable in this browser. Presentation controls remain available.',
-          ),
-        );
-      },
+      () => void this.toggleFullscreen(),
       { signal },
     );
     this.button('print').addEventListener('click', () => void this.print(), {
+      signal,
+    });
+    this.button('copy-link').addEventListener(
+      'click',
+      () => void this.copyCurrentLink(),
+      { signal },
+    );
+    this.button('pointer').addEventListener(
+      'click',
+      () => this.togglePointer(),
+      {
+        signal,
+      },
+    );
+    this.button('blackout').addEventListener(
+      'click',
+      () => this.toggleBlackout(),
+      {
+        signal,
+      },
+    );
+    this.querySelector<HTMLElement>(
+      '[data-slides-blackout-overlay]',
+    )!.addEventListener('click', () => this.setBlackout(false), { signal });
+    this.button('timer').addEventListener('click', () => this.toggleTimer(), {
       signal,
     });
     this.querySelector<HTMLSelectElement>(
@@ -118,9 +153,50 @@ class SlidesElement extends HTMLElement {
     this.addEventListener('click', (event) => this.followAnchor(event), {
       signal,
     });
-    document.addEventListener('visibilitychange', () => this.updateActivity(), {
+    this.addEventListener('keydown', (event) => this.keydown(event), {
       signal,
     });
+    this.viewport.addEventListener(
+      'pointermove',
+      (event) => this.movePointer(event),
+      {
+        signal,
+      },
+    );
+    this.viewport.addEventListener(
+      'pointerdown',
+      (event) => this.touchStartAt(event),
+      {
+        signal,
+      },
+    );
+    this.viewport.addEventListener(
+      'pointerup',
+      (event) => this.touchEndAt(event),
+      {
+        signal,
+      },
+    );
+    for (const name of ['overview', 'help'] as const) {
+      const dialog = this.dialog(name);
+      dialog.addEventListener('close', () => this.closeOverlay(), { signal });
+      dialog.addEventListener(
+        'cancel',
+        (event) => {
+          event.preventDefault();
+          dialog.close();
+        },
+        { signal },
+      );
+    }
+    document.addEventListener(
+      'visibilitychange',
+      () => {
+        if (document.hidden) this.stopTimer();
+        this.updateActivity();
+      },
+      { signal },
+    );
     document.addEventListener(
       'fullscreenchange',
       () => {
@@ -164,14 +240,17 @@ class SlidesElement extends HTMLElement {
               data.method === 'triggerKey' &&
               Number.isInteger(data.args?.[0])
             )
-              this.deck?.triggerKey(data.args[0]);
+              this.triggerRemoteKey(data.args[0]);
           } catch {
             /* Other page tools may send messages using a different format. */
           }
         },
         { signal },
       );
-    this.resize = new ResizeObserver(() => this.deck?.layout());
+    this.resize = new ResizeObserver(() => {
+      this.deck?.layout();
+      fitSlideContent(this);
+    });
     this.resize.observe(this.viewport);
     const view =
       !this.receiver &&
@@ -184,6 +263,8 @@ class SlidesElement extends HTMLElement {
         (section.dataset.alkActive = String(view === 'read' || i === 0)),
     );
     this.updateActivity();
+    window.addEventListener('load', () => fitSlideContent(this), { signal });
+    void document.fonts.ready.then(() => fitSlideContent(this));
     void this.setView(view);
   }
 
@@ -193,6 +274,7 @@ class SlidesElement extends HTMLElement {
     this.events = undefined;
     this.resize?.disconnect();
     this.resize = undefined;
+    this.stopTimer();
     this.teardown();
   }
 
@@ -336,6 +418,7 @@ class SlidesElement extends HTMLElement {
 
   private async changeView(view: View) {
     if (!this.isConnected) return;
+    delete this.dataset.printReady;
     const epoch = this.epoch;
     if (view === 'read') {
       this.teardown();
@@ -345,7 +428,10 @@ class SlidesElement extends HTMLElement {
     }
     if (this.deck) return;
     this.dataset.view = 'present';
+    this.setStageInert(this.dataset.embedded !== 'true');
     this.updateActivity();
+    prepareSlideLayouts(this);
+    fitSlideContent(this);
     const [{ default: Reveal }, { default: Notes }] = await Promise.all([
       import('reveal.js'),
       import('reveal.js/plugin/notes'),
@@ -354,11 +440,7 @@ class SlidesElement extends HTMLElement {
     this.viewport.classList.add('reveal');
     const deck = new Reveal(this.viewport, {
       embedded: true,
-      width: 1100,
-      height: 700,
-      margin: 0.025,
-      minScale: 0.15,
-      maxScale: 1.5,
+      disableLayout: true,
       center: false,
       controls: false,
       progress: false,
@@ -367,13 +449,16 @@ class SlidesElement extends HTMLElement {
       fragmentInURL: true,
       transition: matchMedia('(prefers-reduced-motion: reduce)').matches
         ? 'none'
-        : 'fade',
+        : this.transition(),
       backgroundTransition: 'none',
       view: null,
       scrollActivationWidth: 0,
       autoPlayMedia: false,
       autoSlide: 0,
       autoAnimate: false,
+      keyboard: false,
+      overview: false,
+      help: false,
       touch: false,
       hideInactiveCursor: false,
       postMessage: false,
@@ -411,10 +496,23 @@ class SlidesElement extends HTMLElement {
       'overviewhidden',
     ])
       deck.on(event, () => this.sync());
+    fitSlideContent(this);
+    void document.fonts.ready.then(() => fitSlideContent(this));
     this.sync();
+    if (
+      !this.receiver &&
+      (this.dataset.embedded !== 'true' ||
+        this.contains(document.activeElement))
+    )
+      this.viewport.focus({ preventScroll: true });
   }
 
   private teardown() {
+    this.stopTimer();
+    this.setPointer(false);
+    // Unload listeners may already have disposed widgets; never wake them here.
+    this.setBlackout(false, false);
+    this.setStageInert(false);
     if (this.deck) {
       const indices = this.deck.getIndices();
       this.current = indices.h ?? 0;
@@ -458,13 +556,17 @@ class SlidesElement extends HTMLElement {
         : `${this.sections.length} slides`;
     this.dataset.ready = 'true';
     this.updateActivity();
+    fitSlideContent(this);
   }
 
   private updateActivity() {
     const presenting = this.dataset.view === 'present';
+    const suspended =
+      document.hidden ||
+      this.dataset.blackout === 'true' ||
+      this.dataset.overview === 'true';
     this.sections.forEach((section, index) => {
-      const active =
-        !document.hidden && (!presenting || index === this.current);
+      const active = !suspended && (!presenting || index === this.current);
       section.dataset.alkActive = String(active);
       section.querySelectorAll<HTMLElement>(widgets).forEach((widget) => {
         const visible =
@@ -484,6 +586,416 @@ class SlidesElement extends HTMLElement {
             media.pause();
         });
     });
+  }
+
+  private openOverview() {
+    if (!this.deck) return;
+    const dialog = this.dialog('overview');
+    const cards = dialog.querySelector<HTMLElement>(
+      '[data-slides-overview-cards]',
+    )!;
+    cards.replaceChildren(
+      ...this.sections.map((section, index) => {
+        const card = document.createElement('button');
+        card.type = 'button';
+        card.dataset.slidesOverviewSlide = String(index);
+        const heading =
+          section.querySelector('h1,h2,h3')?.textContent?.trim() ||
+          `Slide ${index + 1}`;
+        const image = section.querySelector<HTMLImageElement>(
+          'img, .alk-model-poster',
+        );
+        card.innerHTML = `<span class="alk-slides-overview-number">${index + 1}</span><strong>${this.escape(heading)}</strong>`;
+        const preview = document.createElement('span');
+        preview.className = 'alk-slides-overview-preview';
+        const audience = document.createTreeWalker(
+          section,
+          NodeFilter.SHOW_TEXT,
+          {
+            acceptNode: (node) =>
+              !node.parentElement?.closest('.alk-slide-copy') ||
+              node.parentElement.closest(
+                '.notes,[data-alk-speaker-notes],[data-footnotes],.alk-note a,script,style,noscript,h1,h2,h3,button,summary',
+              )
+                ? NodeFilter.FILTER_REJECT
+                : NodeFilter.FILTER_ACCEPT,
+          },
+        );
+        const text: string[] = [];
+        while (audience.nextNode())
+          text.push(audience.currentNode.textContent ?? '');
+        preview.textContent = text
+          .join(' ')
+          .replace(heading, '')
+          .replace(/\s+/g, ' ')
+          .trim()
+          .slice(0, 180);
+        if (preview.textContent) card.append(preview);
+        const selected = index === this.current;
+        card.dataset.current = String(selected);
+        if (selected) card.setAttribute('aria-current', 'true');
+        if (image?.currentSrc || image?.src) {
+          const thumbnail = document.createElement('img');
+          thumbnail.src = image.currentSrc || image.src;
+          thumbnail.alt = image.alt || '';
+          thumbnail.loading = 'lazy';
+          card.prepend(thumbnail);
+        }
+        card.addEventListener(
+          'click',
+          () => {
+            this.deck?.slide(index, 0, -1);
+            this.lastOverlayFocus = this.viewport;
+            dialog.close();
+            this.viewport.focus({ preventScroll: true });
+          },
+          { signal: this.events?.signal },
+        );
+        return card;
+      }),
+    );
+    this.openDialog(dialog, 'overview');
+  }
+
+  private openHelp() {
+    this.openDialog(this.dialog('help'), 'help');
+  }
+
+  private openDialog(dialog: HTMLDialogElement, kind: 'overview' | 'help') {
+    if (dialog.open) return;
+    this.lastOverlayFocus =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : undefined;
+    if (kind === 'overview') {
+      this.stopTimer();
+      this.dataset.overview = 'true';
+      this.updateActivity();
+    }
+    dialog.showModal();
+  }
+
+  private closeOverlay() {
+    const overview = this.dialog('overview');
+    if (!overview.open) {
+      delete this.dataset.overview;
+      this.updateActivity();
+    }
+    this.lastOverlayFocus?.focus({ preventScroll: true });
+    this.lastOverlayFocus = undefined;
+  }
+
+  private openSpeakerView() {
+    if (!this.deck || this.dataset.embedded === 'true') {
+      this.message('Speaker view is available from the standalone deck.');
+      return;
+    }
+    const notes = this.deck.getPlugin('notes') as NotesPlugin | undefined;
+    if (!notes) {
+      this.message(
+        'Speaker view could not be opened because the notes plugin is unavailable.',
+      );
+      return;
+    }
+    notes.open();
+  }
+
+  private async toggleFullscreen() {
+    try {
+      if (document.fullscreenElement === this) {
+        await document.exitFullscreen();
+        return;
+      }
+      if (!this.requestFullscreen) {
+        this.message(
+          'Fullscreen is unavailable in this browser. Presentation controls remain available.',
+        );
+        return;
+      }
+      await this.requestFullscreen();
+    } catch {
+      this.message(
+        'Fullscreen was blocked or is unavailable in this browser. Presentation controls remain available.',
+      );
+    }
+  }
+
+  private async copyCurrentLink() {
+    if (this.dataset.embedded === 'true') {
+      this.message(
+        'Copy the standalone deck URL to share this embedded presentation.',
+      );
+      return;
+    }
+    const url = new URL(location.href);
+    url.hash = this.deck?.getSlidePath() ?? url.hash;
+    try {
+      await navigator.clipboard.writeText(url.href);
+      this.message('Current slide link copied.');
+    } catch {
+      const field = document.createElement('textarea');
+      field.value = url.href;
+      field.style.position = 'fixed';
+      field.style.opacity = '0';
+      document.body.append(field);
+      field.select();
+      const copied = document.execCommand('copy');
+      field.remove();
+      this.message(
+        copied
+          ? 'Current slide link copied.'
+          : 'Copy was blocked; use the address bar link.',
+      );
+    }
+  }
+
+  private togglePointer() {
+    this.setPointer(this.dataset.pointer !== 'true');
+  }
+
+  private setPointer(enabled: boolean) {
+    this.dataset.pointer = String(enabled);
+    const pointer = this.querySelector<HTMLElement>('[data-slides-laser]')!;
+    pointer.hidden = !enabled;
+    this.button('pointer').setAttribute('aria-pressed', String(enabled));
+  }
+
+  private movePointer(event: PointerEvent) {
+    if (this.dataset.pointer !== 'true' || !this.deck) return;
+    const rect = this.getBoundingClientRect();
+    const pointer = this.querySelector<HTMLElement>('[data-slides-laser]')!;
+    pointer.style.left = `${event.clientX - rect.left}px`;
+    pointer.style.top = `${event.clientY - rect.top}px`;
+  }
+
+  private touchStartAt(event: PointerEvent) {
+    if (event.pointerType !== 'touch' || this.isInteractive(event.target))
+      return;
+    this.touchStart = { x: event.clientX, y: event.clientY };
+  }
+
+  private touchEndAt(event: PointerEvent) {
+    const start = this.touchStart;
+    this.touchStart = undefined;
+    if (
+      !start ||
+      event.pointerType !== 'touch' ||
+      this.isInteractive(event.target)
+    )
+      return;
+    const horizontal = event.clientX - start.x;
+    const vertical = event.clientY - start.y;
+    if (Math.abs(horizontal) < 48 || Math.abs(horizontal) < Math.abs(vertical))
+      return;
+    if (horizontal < 0) this.deck?.next();
+    else this.deck?.prev();
+  }
+
+  private toggleBlackout() {
+    this.setBlackout(this.dataset.blackout !== 'true');
+  }
+
+  private setBlackout(enabled: boolean, publishActivity = true) {
+    const restoring = this.dataset.blackout === 'true' && !enabled;
+    this.dataset.blackout = String(enabled);
+    this.querySelector<HTMLElement>('[data-slides-blackout-overlay]')!.hidden =
+      !enabled;
+    this.button('blackout').setAttribute('aria-pressed', String(enabled));
+    if (enabled) this.stopTimer();
+    if (publishActivity) this.updateActivity();
+    if (restoring && publishActivity)
+      this.viewport.focus({ preventScroll: true });
+  }
+
+  private toggleTimer() {
+    if (this.timerRunning) this.stopTimer();
+    else this.startTimer();
+  }
+
+  private startTimer() {
+    if (
+      !this.deck ||
+      this.dataset.blackout === 'true' ||
+      this.dataset.overview === 'true'
+    )
+      return;
+    const seconds = Number(
+      this.querySelector<HTMLSelectElement>('[data-slides-timer-seconds]')!
+        .value,
+    );
+    if (![5, 10, 20].includes(seconds)) return;
+    this.stopTimer();
+    this.timerRunning = true;
+    this.timer = window.setInterval(() => {
+      if (
+        document.hidden ||
+        this.dataset.blackout === 'true' ||
+        this.dataset.overview === 'true'
+      ) {
+        this.stopTimer();
+        return;
+      }
+      if (this.deck?.isLastSlide() && !this.deck.availableFragments().next) {
+        this.stopTimer();
+        return;
+      }
+      this.deck?.next();
+    }, seconds * 1000);
+    this.button('timer').textContent = 'Pause timer';
+    this.button('timer').setAttribute('aria-pressed', 'true');
+    const status = this.querySelector<HTMLOutputElement>(
+      '[data-slides-timer-status]',
+    )!;
+    status.hidden = false;
+    status.textContent = `Auto · ${seconds}s`;
+    status.setAttribute('aria-label', `Timed advance every ${seconds} seconds`);
+  }
+
+  private stopTimer() {
+    if (this.timer) window.clearInterval(this.timer);
+    this.timer = undefined;
+    this.timerRunning = false;
+    const button = this.querySelector<HTMLButtonElement>('[data-slides-timer]');
+    if (button) {
+      button.textContent = 'Start timer';
+      button.setAttribute('aria-pressed', 'false');
+    }
+    const status = this.querySelector<HTMLOutputElement>(
+      '[data-slides-timer-status]',
+    );
+    if (status) status.hidden = true;
+  }
+
+  private setStageInert(enabled: boolean) {
+    if (enabled) {
+      if (this.inerted.length) return;
+      const siblings = new Set<HTMLElement>();
+      let branch: HTMLElement | null = this;
+      while (branch?.parentElement) {
+        for (const sibling of Array.from(branch.parentElement.children))
+          if (sibling instanceof HTMLElement && sibling !== branch)
+            siblings.add(sibling);
+        if (branch.parentElement === document.body) break;
+        branch = branch.parentElement;
+      }
+      this.inerted = Array.from(siblings).map((element) => ({
+        element,
+        inert: element.inert,
+      }));
+      this.inerted.forEach(({ element }) => (element.inert = true));
+      return;
+    }
+    this.inerted.forEach(({ element, inert }) => (element.inert = inert));
+    this.inerted = [];
+  }
+
+  private transition(): 'none' | 'fade' | 'slide' {
+    const transition = this.dataset.transition;
+    return transition === 'none' || transition === 'slide'
+      ? transition
+      : 'fade';
+  }
+
+  private triggerRemoteKey(key: number) {
+    if (!this.deck) return;
+    if ([32, 39, 40, 78].includes(key)) this.deck.next();
+    else if ([37, 38, 80].includes(key)) this.deck.prev();
+    else if (key === 36) this.deck.slide(0);
+    else if (key === 35) this.deck.slide(this.sections.length - 1);
+    else this.deck.triggerKey(key);
+  }
+
+  private keydown(event: KeyboardEvent) {
+    if (
+      event.defaultPrevented ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.altKey
+    )
+      return;
+    if (event.key === 'Escape') {
+      const open = [this.dialog('help'), this.dialog('overview')].find(
+        (dialog) => dialog.open,
+      );
+      if (open) open.close();
+      else if (this.dataset.blackout === 'true') this.setBlackout(false);
+      else if (this.deck) void this.setView('read');
+      return;
+    }
+    if (!this.deck || this.isInteractive(event.target)) return;
+    const action = () => {
+      switch (event.key) {
+        case 'n':
+        case 'N':
+        case 'ArrowRight':
+        case ' ':
+          this.deck?.next();
+          break;
+        case 'p':
+        case 'P':
+        case 'ArrowLeft':
+          this.deck?.prev();
+          break;
+        case 'Home':
+          this.deck?.slide(0);
+          break;
+        case 'End':
+          this.deck?.slide(this.sections.length - 1);
+          break;
+        case 'o':
+        case 'O':
+          this.openOverview();
+          break;
+        case 'b':
+        case 'B':
+          this.toggleBlackout();
+          break;
+        case 'l':
+        case 'L':
+          this.togglePointer();
+          break;
+        case 'f':
+        case 'F':
+          void this.toggleFullscreen();
+          break;
+        case 's':
+        case 'S':
+          this.openSpeakerView();
+          break;
+        case '?':
+          this.openHelp();
+          break;
+        default:
+          return false;
+      }
+      return true;
+    };
+    if (action()) event.preventDefault();
+  }
+
+  private escape(value: string) {
+    return value.replace(
+      /[&<>"']/g,
+      (character) =>
+        ({
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#39;',
+        })[character]!,
+    );
+  }
+
+  private isInteractive(target: EventTarget | null) {
+    return (
+      target instanceof Element &&
+      Boolean(
+        target.closest(
+          'input,textarea,select,button,summary,a,[contenteditable],canvas,alk-midi,alk-media',
+        ),
+      )
+    );
   }
 
   private followAnchor(event: MouseEvent) {
@@ -520,6 +1032,7 @@ class SlidesElement extends HTMLElement {
   /** Prepare every lazy figure before the browser captures pages. */
   async preparePrint() {
     await this.setView('read');
+    this.dataset.printReady = 'true';
     await document.fonts.ready;
     for (const section of this.sections) {
       section.scrollIntoView({ block: 'center' });

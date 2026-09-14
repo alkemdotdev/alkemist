@@ -9,7 +9,12 @@ export interface SlidesProps {
   view?: 'read' | 'present';
   /** Embedded decks keep independent navigation without changing the URL. */
   embedded?: boolean;
+  theme?: 'inherit' | 'paper' | 'chalk' | 'blueprint';
+  transition?: 'none' | 'fade' | 'slide';
+  aspect?: 'auto' | '16:9' | '4:3';
   id?: string;
+  class?: string;
+  style?: string;
 }
 type Props = SlidesProps;
 const {
@@ -17,15 +22,24 @@ const {
   description,
   view = 'present',
   embedded = false,
+  theme = 'inherit',
+  transition = 'fade',
+  aspect = 'auto',
   id,
+  class: className,
+  style,
 } = Astro.props;
 ---
 
 <alk-slides
   id={id}
-  class="alk-slides"
+  class:list={['alk-slides', className]}
   data-initial-view={view}
   data-embedded={String(embedded)}
+  data-theme={theme}
+  data-transition={transition}
+  data-aspect={aspect}
+  style={style}
   aria-label={title}
 >
   <div
@@ -41,11 +55,37 @@ const {
         >Present</button
       >
     </div>
-    <button type="button" data-slides-notes title="Open presenter view"
-      >Notes</button
-    >
-    <button type="button" data-slides-fullscreen>Fullscreen</button>
-    <button type="button" data-slides-print>Print</button>
+    <button type="button" data-slides-overview>Overview</button>
+    <details data-slides-tools>
+      <summary>Tools</summary>
+      <div class="alk-slides-tools-panel">
+        <button type="button" data-slides-notes data-slides-speaker
+          >Speaker view</button
+        >
+        <button type="button" data-slides-fullscreen>Fullscreen</button>
+        <button type="button" data-slides-print>Print</button>
+        <button type="button" data-slides-copy-link>Copy current link</button>
+        <button type="button" data-slides-pointer aria-pressed="false"
+          >Laser pointer</button
+        >
+        <button type="button" data-slides-blackout aria-pressed="false"
+          >Blackout</button
+        >
+        <label
+          >Advance <select
+            data-slides-timer-seconds
+            aria-label="Timed advance interval"
+            ><option value="5">5 seconds</option><option value="10" selected
+              >10 seconds</option
+            ><option value="20">20 seconds</option></select
+          ></label
+        >
+        <button type="button" data-slides-timer aria-pressed="false"
+          >Start timer</button
+        >
+      </div>
+    </details>
+    <button type="button" data-slides-help aria-label="Keyboard help">?</button>
   </div>
   <div class="alk-slides-viewport" tabindex="0" aria-label={`${title} slides`}>
     <div class="slides"><slot /></div>
@@ -63,10 +103,57 @@ const {
     <button type="button" data-slides-next aria-label="Next slide or step"
       >→</button
     >
+    <output
+      class="alk-slides-timer-status"
+      data-slides-timer-status
+      aria-live="polite"
+      hidden></output>
     <output class="alk-slides-count" data-slides-count aria-live="polite"
     ></output>
   </div>
   <p class="alk-slides-message" data-slides-message role="status" hidden></p>
+  <span class="alk-slides-laser" data-slides-laser hidden aria-hidden="true"
+  ></span>
+  <button
+    type="button"
+    class="alk-slides-blackout"
+    data-slides-blackout-overlay
+    hidden
+    aria-label="Restore presentation"
+  >
+    Restore presentation
+  </button>
+  <dialog data-slides-overview-dialog aria-label="Slide overview">
+    <form method="dialog">
+      <header>
+        <h2>Overview</h2><button type="submit" aria-label="Close overview"
+          >Close</button
+        >
+      </header><div data-slides-overview-cards></div>
+    </form>
+  </dialog>
+  <dialog data-slides-help-dialog aria-label="Presentation keyboard help">
+    <form method="dialog">
+      <header>
+        <h2>Keyboard controls</h2><button
+          type="submit"
+          aria-label="Close keyboard help">Close</button
+        >
+      </header><dl>
+        <dt>N / → / Space</dt><dd>Next slide or step</dd><dt>P / ←</dt><dd>
+          Previous slide or step
+        </dd><dt>Home / End</dt><dd>First / last slide</dd><dt>O</dt><dd>
+          Overview
+        </dd><dt>B</dt><dd>Blackout</dd><dt>L</dt><dd>Laser pointer</dd><dt>
+          F
+        </dt><dd>Fullscreen</dd><dt>S</dt><dd>Speaker view</dd><dt>?</dt><dd>
+          Keyboard help
+        </dd><dt>Escape</dt><dd>
+          Close overlays, blackout, or leave presentation
+        </dd>
+      </dl>
+    </form>
+  </dialog>
   {
     description && (
       <span class="alk-slides-description" hidden>

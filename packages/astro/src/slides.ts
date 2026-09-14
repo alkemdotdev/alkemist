@@ -33,6 +33,34 @@ const builtinComponents = {
   Diagram: 'diagram',
 } as const;
 const builtinNames = new Set(Object.keys(builtinComponents));
+const slideLayouts = new Set([
+  'auto',
+  'title',
+  'content',
+  'split',
+  'media',
+  'quote',
+]);
+
+function layoutComment(node: Node): Node {
+  const comment =
+    node.type === 'html'
+      ? node.value?.match(/^<!--\s*layout:\s*(.*?)\s*-->$/s)
+      : node.type === 'mdxFlowExpression'
+        ? node.value?.match(/^\s*\/\*\s*layout:\s*(.*?)\s*\*\/\s*$/s)
+        : undefined;
+  if (!comment) return node;
+  const layout = comment[1].trim();
+  if (!slideLayouts.has(layout))
+    throw new Error(
+      `Unknown slide layout “${layout}”. Use auto, title, content, split, media, or quote.`,
+    );
+  return {
+    type: 'paragraph',
+    data: { hName: 'alk-slide-layout', hProperties: { dataLayout: layout } },
+    children: [],
+  };
+}
 
 function isSlideDeck(file: FileLike) {
   return file.data?.astro?.frontmatter?.format === 'slides';
@@ -227,7 +255,9 @@ export function remarkAlkemistSlides(this: any) {
   const parse = this.parse.bind(this) as (value: string) => Node;
   return (tree: any, file: any) => {
     if (!isSlideDeck(file)) return;
-    tree.children = speakerNotesFromComments(tree.children ?? [], parse);
+    tree.children = speakerNotesFromComments(tree.children ?? [], parse).map(
+      layoutComment,
+    );
     injectSlideBuiltinImports(tree, parse);
     const definitions = new Map<string, Node>();
     const content = ((tree as Node).children ?? []).filter((node: Node) => {
@@ -516,11 +546,25 @@ export function rehypeAlkemistSlides() {
       }
       usedIds.set(base, occurrence + 1);
       reservedIds.add(id);
+      const layoutNodes = children.filter(
+        (node) => node.tagName === 'alk-slide-layout',
+      );
+      if (layoutNodes.length > 1)
+        throw new Error(`Slide “${title}” has more than one layout comment.`);
+      const layout = String(layoutNodes[0]?.properties?.dataLayout ?? 'auto');
       return {
         type: 'element',
         tagName: 'section',
-        properties: { dataAlkSlide: '', id, ariaLabel: title, title },
-        children,
+        properties: {
+          dataAlkSlide: '',
+          id,
+          ariaLabel: title,
+          title,
+          dataLayout: layout,
+        },
+        children: children.filter(
+          (node) => node.tagName !== 'alk-slide-layout',
+        ),
       };
     });
   };

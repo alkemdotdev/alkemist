@@ -1,20 +1,36 @@
 ---
 title: First talk
-description: A small Markdown deck to start from.
+description: A small Markdown deck that begins with a question and ends with an observable next step.
 format: slides
 incremental: true
+theme: inherit
+transition: fade
+cover:
+  src: ./assets/first-talk-cover.svg
+  alt: Cobalt signal arcs crossing a pale measurement grid.
+  fit: cover
 ---
 
-# A question worth showing
+# Start with a question worth showing
 
-Start with Markdown. Use a top-level rule for the next slide.
+Markdown is enough for the part of a talk that needs to remain easy to inspect.
+
+![Cobalt signal arcs crossing a pale measurement grid.](./assets/first-talk-cover.svg)
 
 <!-- notes: Introduce the question before describing the work. -->
 
 ---
 
-# One clear observation
+## Give the observation a shape
 
-- State the observation.
-- Show the evidence.
-- Leave a useful next question.
+- Name the observation.
+- Link the evidence.
+- Leave one useful next question.
+
+---
+
+## Let the source stay close
+
+> A deck can be concise without hiding how its claims were made.
+
+Use `.mdx` only when an interactive figure helps the reader test the idea.
