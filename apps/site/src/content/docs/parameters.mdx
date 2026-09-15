@@ -1,0 +1,40 @@
+---
+title: Live figure parameters
+description: Expose a small, local set of controls for a Shader or Chart without turning its source data into application state.
+order: 5
+---
+
+`Shader` and `Chart` can expose documented figure parameters with one `parameters` prop. The normal component props still provide initial values. Controls stay local to the mounted figure: they do not change the URL, audience view, or source CSV.
+
+```mdx
+import Shader from '@alkemdotdev/alkemist-components/shader';
+import Chart from '@alkemdotdev/alkemist-components/chart';
+
+<Shader
+  title="Interference field"
+  frequency={8}
+  angle={30}
+  parameters={['frequency']}
+/>
+
+<Chart
+  src="/data/series.csv"
+  type="line"
+  x="time"
+  y="value"
+  title="Measured response"
+  description="A local CSV fixture."
+  ink="teal"
+  parameters={true}
+/>
+```
+
+`Shader` exposes `frequency` and `angle` by default. Set `parameters={false}` to render the authored field without visible controls, or pass a readonly list such as `['angle']` to expose only that setting.
+
+`Chart` has no parameter controls by default. Its known keys are `ink`, `grid`, and `zoom`; use `parameters={true}` or a list of those names. Zoom appears only for line and scatter charts with quantitative or temporal x data. A chart can begin with `zoom={false}` and still expose its Zoom and pan toggle when its structure supports zooming.
+
+Each control includes a Reset values button that returns to the authored initial values. Invalid programmatic patches fail explicitly: numeric Shader values must be finite and remain within frequency 3–18 and angle 0–180; selections and booleans must match their declared control.
+
+Mounted `alk-shader` and `alk-chart` hosts provide `getParameters()` and `setParameters(patch)` for an embedding page. Successful changes bubble `alk:parameters-change` with a plain values object in `event.detail`. Updating a Chart parameter redraws the rows already loaded in memory; it does not fetch the CSV again.
+
+Controls are hidden when printing. Parameter state remains on the existing mounted figure through reader, presentation, and slide navigation, but it is intentionally not persisted for another viewer or a new page load.

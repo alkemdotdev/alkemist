@@ -12,6 +12,7 @@ import type { TableOfContentsHeading } from './table-of-contents.astro';
 import type { NavigationProps } from './navigation.astro';
 import type { SearchProps } from './search.astro';
 import type { LayoutProps, NavLink } from './layout.astro';
+import { isThemeStyle } from '@alkemdotdev/alkemist-theme';
 
 /** Escape data before placing it in either text or attribute HTML context. */
 export function escapeHtml(value: unknown): string {
@@ -178,6 +179,11 @@ export function updateLayoutPreview(
   document: Document,
   props: LayoutProps,
 ): void {
+  const style = props.theme ?? 'default';
+  if (isThemeStyle(style)) {
+    document.documentElement.dataset.alkThemeStyle = style;
+    document.defaultView?.dispatchEvent(new CustomEvent('alk:theme-change'));
+  }
   const siteName = props.siteName ?? 'Alkemist';
   const title =
     props.title === siteName ? props.title : `${props.title} · ${siteName}`;

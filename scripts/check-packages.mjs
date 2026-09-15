@@ -169,23 +169,30 @@ const props: PostListProps = {items,layout,selectable:true,featuredHref:'/lead/'
     `---
 import Slides, { type SlidesProps } from '@alkemdotdev/alkemist-components/slides';
 import Note from '@alkemdotdev/alkemist-components/note';
+import Focus, { type FocusProps } from '@alkemdotdev/alkemist-components/focus';
 import Annotations, { type AnnotationsProps } from '@alkemdotdev/alkemist-components/annotations';
+const focus: FocusProps = {for: 'first'};
 const annotations: AnnotationsProps = {documentId: 'packed-example'};
 const props: SlidesProps = { title: 'Slides in my existing layout', view: 'read' };
 ---
-<html lang="en"><head><title>Standalone slides</title></head><body><header>Host navigation</header><main><Annotations {...annotations}><p>Annotations also work in an existing document.</p></Annotations><Slides {...props}><section data-alk-slide id="first"><h1>Existing layout</h1><p>Host-owned document chrome remains in place.</p><Note for="first">A local note.</Note></section></Slides></main></body></html>`,
+<html lang="en"><head><title>Standalone slides</title></head><body><header>Host navigation</header><main><Annotations {...annotations}><p>Annotations also work in an existing document.</p></Annotations><Slides {...props}><section data-alk-slide id="first"><h1>Existing layout</h1><p>Host-owned document chrome remains in place.</p><Note for="first">A local note.</Note><Focus {...focus} /></section></Slides></main></body></html>`,
   );
   await write(
-    'src/content/embedded.md',
+    'src/content/embedded.mdx',
     `---
 title: Embedded source
 description: A shared Markdown deck source.
 format: slides
 ---
 
+import Focus from '@alkemdotdev/alkemist-components/focus';
+
 # One source, two instances
 
 The same Markdown source retains its footnote.[^source]
+
+<div id="shared-figure"><p>A figure shared by two deck instances.</p><button>Figure control</button></div>
+<Focus for="shared-figure" />
 
 [^source]: This footnote is part of each embedded deck.
 
@@ -199,7 +206,7 @@ Each instance navigates independently.`,
     'src/pages/slides/embedded.astro',
     `---
 import Slides from '@alkemdotdev/alkemist-components/slides';
-import EmbeddedContent from '../../content/embedded.md';
+import EmbeddedContent from '../../content/embedded.mdx';
 ---
 <html lang="en"><head><meta charset="utf-8"/><title>Embedded slides</title></head><body><main><Slides title="First embedded instance" embedded><EmbeddedContent /></Slides><Slides title="Second embedded instance" embedded><EmbeddedContent /></Slides></main></body></html>`,
   );
@@ -297,6 +304,7 @@ format: slides
   );
   assert.match(standaloneSlides, /Host navigation/);
   assert.match(standaloneSlides, /<alk-slides/);
+  assert.match(standaloneSlides, /<alk-focus/);
   assert.match(standaloneSlides, /data-document-id="packed-example"/);
   assert.match(standaloneSlides, /data-initial-view="read"/);
   assert.doesNotMatch(standaloneSlides, /class="alk-layout/);
@@ -377,8 +385,14 @@ import Step from '@alkemdotdev/alkemist-components/step';
       !css.includes('font-family:Ubuntu'),
     'Standalone component must not load the full theme fonts',
   );
+  // An explicit deck override may opt into the system scheme without changing
+  // the host document. Continue rejecting any unscoped theme initialization.
+  const hostCss = css.replace(
+    /\.alk-slides\[data-color-scheme=(?:["']?)system(?:["']?)\]\{color-scheme:light dark;?\}/g,
+    '',
+  );
   assert(
-    !css.includes('color-scheme:light dark'),
+    !hostCss.includes('color-scheme:light dark'),
     'Standalone component must not set global color scheme',
   );
 

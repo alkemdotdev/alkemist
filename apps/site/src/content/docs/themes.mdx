@@ -1,0 +1,63 @@
+---
+title: Named themes
+description: Choose a semantic style independently from light, dark, or system color mode.
+order: 2.75
+---
+
+Alkemist keeps color mode and named style separate. A reader can use Paper in dark mode, or Blueprint in light mode. The header stores both choices locally and publishes `alk:theme-change` after either changes.
+
+## Use a page theme
+
+Pass `theme` to `Layout`. It sets `data-alk-theme-style` before the page renders. A saved reader choice takes precedence; without one, the authored value remains in place.
+
+```astro
+---
+import Layout from '@alkemdotdev/alkemist-components/layout';
+---
+
+<Layout title="Lab notes" theme="blueprint">
+  <h1>Lab notes</h1>
+</Layout>
+```
+
+The available values are `default` (Neutral), `paper`, `chalk`, and `blueprint`. Each one uses `light-dark()` semantic tokens, so it follows the separate Light, Dark, or System choice.
+
+## Control a preference
+
+The browser helpers use `alk-theme` for color mode and `alk-theme-style` for style. `Layout` initializes them.
+
+```ts
+import {
+  getTheme,
+  getThemeStyle,
+  setTheme,
+  setThemeStyle,
+} from '@alkemdotdev/alkemist-theme';
+
+setTheme('dark');
+setThemeStyle('chalk');
+
+window.addEventListener('alk:theme-change', () => {
+  redraw(getTheme(), getThemeStyle());
+});
+```
+
+`isThemeStyle(value)` validates an unknown value, and `THEME_STYLES` exposes the ordered `{ value, label }` catalog for custom controls.
+
+## Scope tokens without the full theme
+
+Import tokens and named styles in an embedded surface, then put a named scope around the surface. These files define variables only; they do not set page fonts or global element styles.
+
+```css
+@import '@alkemdotdev/alkemist-theme/tokens.css';
+@import '@alkemdotdev/alkemist-theme/styles.css';
+
+.instrument[data-alk-theme-style='blueprint'] {
+  color: var(--alk-ink);
+  background-color: var(--alk-paper);
+  background-image: var(--alk-surface-image);
+  background-size: var(--alk-surface-size);
+}
+```
+
+Blueprint supplies a subtle grid through `--alk-surface-image` and `--alk-surface-size`. Paper, Chalk, and Neutral leave that image empty.

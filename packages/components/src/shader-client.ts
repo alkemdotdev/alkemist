@@ -1,13 +1,18 @@
 import { INKS } from '@alkemdotdev/alkemist-theme/palette';
 import { interferenceFragment, vertexShader } from './shader-helpers';
+import { validateParameters, type ParameterValues } from './parameters';
+import { shaderParameters } from './figure-parameters';
 
 type ShaderRuntime = {
   dispose: () => void;
   setVisible: (value: boolean) => void;
+  setParameters: (patch: Record<string, unknown>) => void;
 };
 
 function mountShader(
   host: HTMLElement,
+  values: ParameterValues,
+  onParametersChange: (values: ParameterValues) => void,
   onError: (message: string) => void,
 ): ShaderRuntime {
   const viewport = host.querySelector<HTMLElement>('.alk-shader-viewport')!;
@@ -102,8 +107,8 @@ function mountShader(
     const angleUniform = uniform('u_angle');
     const paperUniform = uniform('u_paper');
     const inksUniform = uniform('u_inks[0]');
-    const frequency = host.querySelector<HTMLInputElement>('[data-frequency]')!;
-    const angle = host.querySelector<HTMLInputElement>('[data-angle]')!;
+    const frequency = host.querySelector<HTMLInputElement>('[data-frequency]');
+    const angle = host.querySelector<HTMLInputElement>('[data-angle]');
     const button = host.querySelector<HTMLButtonElement>('[data-play]')!;
     const status = host.querySelector<HTMLElement>('[role="status"]')!;
     const render = (time: number, force = false) => {
@@ -115,8 +120,8 @@ function mountShader(
       gl.useProgram(program);
       gl.bindVertexArray(vao);
       gl.uniform1f(phaseUniform, phase);
-      gl.uniform1f(frequencyUniform, Number(frequency.value));
-      gl.uniform1f(angleUniform, (Number(angle.value) * Math.PI) / 180);
+      gl.uniform1f(frequencyUniform, Number(values.frequency));
+      gl.uniform1f(angleUniform, (Number(values.angle) * Math.PI) / 180);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
       if (playing) requestRender();
     };
@@ -182,23 +187,40 @@ function mountShader(
       gl.uniform2f(resolutionUniform, width, height);
       requestRender();
     };
-    for (const control of [frequency, angle, button]) control.disabled = false;
-    frequency.addEventListener(
+    for (const control of [frequency, angle, button])
+      if (control) control.disabled = false;
+    const reset = host.querySelector<HTMLButtonElement>(
+      '[data-parameters-reset]',
+    );
+    if (reset) reset.disabled = false;
+    const updateControl = (name: string) => {
+      const input = host.querySelector<HTMLInputElement>(
+        `[data-parameter="${name}"]`,
+      );
+      const output = host.querySelector<HTMLOutputElement>(
+        `[data-parameter-output="${name}"]`,
+      );
+      if (input) input.value = String(values[name]);
+      if (output)
+        output.value = `${Number(values[name]).toFixed(name === 'frequency' ? 1 : 0)}${name === 'angle' ? '°' : ''}`;
+    };
+    const setParameters = (patch: Record<string, unknown>) => {
+      Object.assign(values, validateParameters(shaderParameters, patch));
+      for (const name of Object.keys(patch)) updateControl(name);
+      onParametersChange({ ...values });
+      requestRender();
+    };
+    frequency?.addEventListener(
       'input',
       () => {
-        host.querySelector<HTMLOutputElement>(
-          '[data-frequency-output]',
-        )!.value = Number(frequency.value).toFixed(1);
-        requestRender();
+        setParameters({ frequency: Number(frequency.value) });
       },
       { signal: events.signal },
     );
-    angle.addEventListener(
+    angle?.addEventListener(
       'input',
       () => {
-        host.querySelector<HTMLOutputElement>('[data-angle-output]')!.value =
-          `${Number(angle.value).toFixed(0)}°`;
-        requestRender();
+        setParameters({ angle: Number(angle.value) });
       },
       { signal: events.signal },
     );
@@ -262,6 +284,7 @@ function mountShader(
         if (value) requestRender();
         else pauseFrame();
       },
+      setParameters,
     };
   } catch (error) {
     dispose();
@@ -276,10 +299,42 @@ function registerShader() {
     private events?: AbortController;
     private visible = false;
     private active = true;
+    private values: ParameterValues = { frequency: 9, angle: 24 };
+
+    getParameters() {
+      return { ...this.values };
+    }
+
+    setParameters(patch: Record<string, unknown>) {
+      Object.assign(this.values, validateParameters(shaderParameters, patch));
+      if (this.runtime) {
+        this.runtime.setParameters(patch);
+        return;
+      }
+      this.dispatchEvent(
+        new CustomEvent('alk:parameters-change', {
+          bubbles: true,
+          detail: { ...this.values },
+        }),
+      );
+    }
 
     connectedCallback() {
       if (this.events) return;
       this.events = new AbortController();
+      this.values = {
+        ...this.values,
+        ...JSON.parse(this.dataset.parameterValues ?? '{}'),
+      };
+      const reset = this.querySelector<HTMLButtonElement>(
+        '[data-parameters-reset]',
+      );
+      reset?.addEventListener(
+        'click',
+        () =>
+          this.setParameters(JSON.parse(this.dataset.parameterValues ?? '{}')),
+        { signal: this.events.signal },
+      );
       this.active = this.dataset.alkActive !== 'false';
       this.addEventListener(
         'alk:presentation',
@@ -321,7 +376,18 @@ function registerShader() {
     private start() {
       if (this.runtime || this.dataset.state === 'error') return;
       try {
-        this.runtime = mountShader(this, (message) => this.fail(message));
+        this.runtime = mountShader(
+          this,
+          this.values,
+          (values) =>
+            this.dispatchEvent(
+              new CustomEvent('alk:parameters-change', {
+                bubbles: true,
+                detail: values,
+              }),
+            ),
+          (message) => this.fail(message),
+        );
         this.dataset.state = 'ready';
       } catch (error) {
         this.fail(
@@ -338,7 +404,7 @@ function registerShader() {
       this.querySelector<HTMLElement>('[role="status"]')!.textContent = message;
       for (const control of this.querySelectorAll<
         HTMLInputElement | HTMLButtonElement
-      >('input, button'))
+      >('[data-parameter], [data-play], [data-parameters-reset]'))
         control.disabled = true;
     }
     private stop() {
@@ -354,7 +420,7 @@ function registerShader() {
         'Shader loads when visible. The static illustration remains available.';
       for (const control of this.querySelectorAll<
         HTMLInputElement | HTMLButtonElement
-      >('input, button'))
+      >('[data-parameter], [data-play], [data-parameters-reset]'))
         control.disabled = true;
     }
   }

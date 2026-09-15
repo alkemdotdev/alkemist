@@ -12,7 +12,12 @@ const datedEntrySchema = entrySchema.extend({
 const slidesSchema = entrySchema.extend({
   format: z.literal('slides'),
   incremental: z.boolean().default(false),
-  theme: z.enum(['inherit', 'paper', 'chalk', 'blueprint']).default('inherit'),
+  theme: z
+    .enum(['inherit', 'default', 'paper', 'chalk', 'blueprint'])
+    .default('inherit'),
+  colorScheme: z
+    .enum(['inherit', 'system', 'light', 'dark'])
+    .default('inherit'),
   transition: z.enum(['none', 'fade', 'slide']).default('fade'),
   aspect: z.enum(['auto', '16:9', '4:3']).default('auto'),
   annotations: z.boolean().default(true),

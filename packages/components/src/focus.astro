@@ -1,0 +1,17 @@
+---
+import './focus.css';
+export interface FocusProps {
+  /** ID of an existing figure. The live figure stays in its original DOM tree. */
+  for: string;
+  label?: string;
+}
+type Props = FocusProps;
+const { for: target, label = 'Focus figure' } = Astro.props;
+---
+
+<alk-focus data-target={target}>
+  <button type="button" class="alk-figure-focus" hidden>{label}</button>
+</alk-focus>
+<script>
+  import './focus-client';
+</script>

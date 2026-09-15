@@ -1,5 +1,6 @@
 ---
 import '@alkemdotdev/alkemist-theme/theme.css';
+import { THEME_STYLES, type ThemeStyle } from '@alkemdotdev/alkemist-theme';
 import './header.css';
 import HeaderIcon from './HeaderIcon.astro';
 import Search, { type SearchProps } from './search.astro';
@@ -20,6 +21,8 @@ export interface LayoutProps {
   navigation?: NavLink[];
   moreNavigation?: NavLink[];
   footerNavigation?: NavLink[];
+  /** Named semantic token set. Reader preference takes precedence when saved. */
+  theme?: ThemeStyle;
   /** Enables Pagefind-backed site search in the shared header. */
   search?: boolean | SearchProps;
 }
@@ -39,6 +42,7 @@ const {
   ],
   moreNavigation = [],
   footerNavigation = [],
+  theme = 'default',
   search = false,
 }: Props = Astro.props;
 const searchProps = search === true ? {} : search || undefined;
@@ -56,7 +60,7 @@ function current(href: string) {
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" data-alk-theme-style={theme}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
@@ -71,6 +75,9 @@ function current(href: string) {
         document.documentElement.dataset.alkTheme = theme;
         document.documentElement.style.colorScheme =
           theme === 'system' ? 'light dark' : theme;
+        const savedStyle = localStorage.getItem('alk-theme-style');
+        if (['default', 'paper', 'chalk', 'blueprint'].includes(savedStyle))
+          document.documentElement.dataset.alkThemeStyle = savedStyle;
       } catch {
         /* The system palette works without browser storage. */
       }
@@ -134,7 +141,7 @@ function current(href: string) {
           name="alk-header-panels"
           hidden
         >
-          <summary class="alk-icon-button" title="Color theme: System">
+          <summary class="alk-icon-button" title="Appearance: Neutral, System">
             {
               (['light', 'dark', 'system'] as const).map((theme) => (
                 <span data-theme-icon={theme}>
@@ -142,17 +149,38 @@ function current(href: string) {
                 </span>
               ))
             }
-            <span class="alk-sr-only" data-theme-label>Color theme: System</span
+            <span class="alk-sr-only" data-theme-label
+              >Appearance: Neutral, System</span
             >
           </summary>
           <div class="alk-theme-panel alk-header-panel">
             <fieldset>
-              <legend>Appearance</legend>
+              <legend>Theme</legend>
+              {
+                THEME_STYLES.map(({ value, label }) => (
+                  <label class="alk-theme-choice">
+                    <input
+                      type="radio"
+                      name="alk-theme-style"
+                      value={value}
+                      checked={value === theme}
+                    />
+                    <span class="alk-theme-swatch" data-theme-style={value} />
+                    <span>{label}</span>
+                    <span class="alk-choice-check">
+                      <HeaderIcon name="check" />
+                    </span>
+                  </label>
+                ))
+              }
+            </fieldset>
+            <fieldset>
+              <legend>Color mode</legend>
               {
                 (
                   [
-                    ['light', 'Whiteboard'],
-                    ['dark', 'Blackboard'],
+                    ['light', 'Light'],
+                    ['dark', 'Dark'],
                     ['system', 'System'],
                   ] as const
                 ).map(([value, label]) => (

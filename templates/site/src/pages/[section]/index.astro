@@ -2,6 +2,7 @@
 import { getCollection, render } from 'astro:content';
 import { Image } from 'astro:assets';
 import PostList from '@alkemdotdev/alkemist-components/post-list';
+import type { ThemeStyle } from '@alkemdotdev/alkemist-theme';
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import {
   blogDisplay,
@@ -50,7 +51,7 @@ type SlideEntry = {
     title: string;
     description: string;
     draft: boolean;
-    theme: 'inherit' | 'paper' | 'chalk' | 'blueprint';
+    theme: 'inherit' | ThemeStyle;
     transition: 'none' | 'fade' | 'slide';
     cover?: {
       src: {

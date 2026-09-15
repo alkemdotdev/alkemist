@@ -1,0 +1,60 @@
+---
+title: A figure you can question
+description: Adjust live parameters, focus a figure, and keep the thread of a talk.
+format: slides
+theme: inherit
+cover:
+  src: ../../assets/forms-engineering/interference.png
+  alt: Fine curves wrap around a central form.
+---
+
+# What changes when the sources turn?
+
+An explanation gets more useful when a reader can vary one thing and see what follows.
+
+![Fine curves wrap around a central form.](../../assets/forms-engineering/interference.png)
+
+---
+
+## Change one thing at a time
+
+<Shader
+  id="live-field"
+  title="Two-source interference"
+  frequency={9}
+  angle={24}
+  parameters
+/>
+
+<SpeakerNotes>
+  Ask someone to choose an angle. Focus the figure while exploring, then return
+  to the talk.
+</SpeakerNotes>
+
+---
+
+## The same trace, another view
+
+<Chart
+  id="live-trace"
+  src="/test/oscillation.csv"
+  type="line"
+  x="time"
+  y="position"
+  title="A damped oscillator"
+  description="Synthetic data from an analytic trajectory."
+  parameters={['ink', 'grid', 'zoom']}
+  sample
+/>
+
+---
+
+## Keep the source small
+
+Choose the controls a reader needs. The initial values are ordinary component props.
+
+```astro
+<Shader frequency={9} angle={24} parameters />
+```
+
+Return from Focus with Escape. Move between Read and Present without resetting the figure.

@@ -3,12 +3,15 @@ import type embed from 'vega-embed';
 import type { Result } from 'vega-embed';
 import {
   chartInks,
+  chartCanZoom,
   createChartSpec,
   prepareChartRows,
   type ChartProps,
   type ChartRow,
   type ChartTheme,
 } from './charts';
+import { validateParameters, type ParameterValues } from './parameters';
+import { chartParameters } from './figure-parameters';
 
 class ChartElement extends HTMLElement {
   private config!: ChartProps;
@@ -25,6 +28,7 @@ class ChartElement extends HTMLElement {
   private resizeTimer?: number;
   private isVisible = false;
   private active = true;
+  private initialParameters: ParameterValues = {};
   private themeChange = () => {
     if (this.rows) void this.render();
   };
@@ -35,8 +39,34 @@ class ChartElement extends HTMLElement {
     void this.load();
   };
 
+  getParameters() {
+    return {
+      ink: this.config.ink ?? 'cobalt',
+      grid: this.config.grid !== false,
+      zoom: this.config.zoom !== false,
+    };
+  }
+
+  setParameters(patch: Record<string, unknown>) {
+    const controls = chartParameters.filter(
+      (control) =>
+        control.name !== 'zoom' || chartCanZoom({ ...this.config, zoom: true }),
+    );
+    const values = validateParameters(controls, patch);
+    this.config = { ...this.config, ...values } as ChartProps;
+    this.syncParameters();
+    this.dispatchEvent(
+      new CustomEvent('alk:parameters-change', {
+        bubbles: true,
+        detail: this.getParameters(),
+      }),
+    );
+    if (this.rows) void this.render();
+  }
+
   connectedCallback() {
     this.config = JSON.parse(this.dataset.config ?? '{}');
+    this.initialParameters = this.getParameters();
     this.active = this.dataset.alkActive !== 'false';
     this.abort = new AbortController();
     this.addEventListener(
@@ -57,6 +87,40 @@ class ChartElement extends HTMLElement {
     this.querySelector('[data-chart-retry]')?.addEventListener(
       'click',
       this.retryLoad,
+    );
+    this.querySelectorAll<HTMLInputElement | HTMLSelectElement>(
+      '[data-parameter]',
+    ).forEach((control) => {
+      control.addEventListener(
+        'input',
+        () => {
+          this.setParameters({
+            [control.dataset.parameter!]:
+              control instanceof HTMLInputElement && control.type === 'checkbox'
+                ? control.checked
+                : control.value,
+          });
+        },
+        { signal: this.abort!.signal },
+      );
+    });
+    this.querySelector<HTMLButtonElement>(
+      '[data-parameters-reset]',
+    )?.addEventListener(
+      'click',
+      () => {
+        const visible = [
+          ...this.querySelectorAll<HTMLElement>('[data-parameter]'),
+        ]
+          .map((control) => control.dataset.parameter)
+          .filter((name): name is string => Boolean(name));
+        this.setParameters(
+          Object.fromEntries(
+            visible.map((name) => [name, this.initialParameters[name]]),
+          ),
+        );
+      },
+      { signal: this.abort.signal },
     );
     window.addEventListener('alk:theme-change', this.themeChange);
     this.resize = new ResizeObserver(() => {
@@ -127,7 +191,19 @@ class ChartElement extends HTMLElement {
     this.querySelector('.alk-chart-status')!.textContent = message;
     this.canvas.setAttribute('aria-busy', String(state === 'loading'));
     const reset = this.querySelector<HTMLButtonElement>('[data-chart-reset]');
-    if (reset) reset.disabled = state !== 'ready';
+    if (reset) {
+      reset.disabled = state !== 'ready';
+      reset.hidden = this.config.zoom === false;
+    }
+    const hint = this.querySelector<HTMLElement>('[data-chart-hint]');
+    if (hint) hint.hidden = this.config.zoom === false;
+    this.querySelectorAll<
+      HTMLButtonElement | HTMLInputElement | HTMLSelectElement
+    >(
+      '[data-parameters] input, [data-parameters] select, [data-parameters-reset]',
+    ).forEach((control) => {
+      control.disabled = state !== 'ready';
+    });
     this.querySelector<HTMLButtonElement>('[data-chart-retry]')!.hidden =
       state !== 'error';
   }
@@ -233,6 +309,23 @@ class ChartElement extends HTMLElement {
       `Chart unavailable: ${error instanceof Error ? error.message : 'An unexpected error occurred.'} The source CSV is still available below.`,
       'error',
     );
+  }
+
+  private syncParameters() {
+    const values: ParameterValues = this.getParameters();
+    this.querySelectorAll<HTMLInputElement | HTMLSelectElement>(
+      '[data-parameter]',
+    ).forEach((control) => {
+      const value = values[control.dataset.parameter!];
+      if (control instanceof HTMLInputElement && control.type === 'checkbox')
+        control.checked = Boolean(value);
+      else control.value = String(value);
+    });
+    const zoomEnabled = values.zoom === true;
+    const reset = this.querySelector<HTMLButtonElement>('[data-chart-reset]');
+    if (reset) reset.hidden = !zoomEnabled;
+    const hint = this.querySelector<HTMLElement>('[data-chart-hint]');
+    if (hint) hint.hidden = !zoomEnabled;
   }
 
   private renderTable() {

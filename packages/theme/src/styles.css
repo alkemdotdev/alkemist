@@ -1,0 +1,54 @@
+/* Named styles only: import this with tokens.css when a host needs scoped variants. */
+[data-alk-theme-style='default'] {
+  --alk-paper: light-dark(#eee, #111);
+  --alk-ink: light-dark(#111, #eee);
+  --alk-muted: light-dark(#5e5e5e, #aaa);
+  --alk-rule: light-dark(#ccc, #383838);
+  --alk-accent: var(--alk-ink);
+  --alk-field: light-dark(#e5e5e5, #191919);
+  --alk-code: #111;
+  --alk-surface-image: none;
+  --alk-surface-size: auto;
+}
+
+[data-alk-theme-style='paper'] {
+  --alk-paper: light-dark(#f5f0e6, #1c1915);
+  --alk-ink: light-dark(#2b2924, #f2ede2);
+  --alk-muted: light-dark(#716a60, #b8afa2);
+  --alk-rule: light-dark(#d7cfc1, #494238);
+  --alk-accent: light-dark(#6d4828, #dfb47d);
+  --alk-field: light-dark(#ebe3d5, #29241e);
+  --alk-code: #191714;
+  --alk-surface-image: none;
+  --alk-surface-size: auto;
+}
+
+[data-alk-theme-style='chalk'] {
+  --alk-paper: light-dark(#e8eee5, #17241f);
+  --alk-ink: light-dark(#1d3028, #edf4ed);
+  --alk-muted: light-dark(#587066, #a9c0b3);
+  --alk-rule: light-dark(#bfcec3, #395148);
+  --alk-accent: light-dark(#2d6b53, #a9d8b5);
+  --alk-field: light-dark(#dce7de, #20342c);
+  --alk-code: #102018;
+  --alk-surface-image: none;
+  --alk-surface-size: auto;
+}
+
+[data-alk-theme-style='blueprint'] {
+  --alk-paper: light-dark(#eaf2fa, #10233b);
+  --alk-ink: light-dark(#173754, #edf7ff);
+  --alk-muted: light-dark(#52708c, #afc6d9);
+  --alk-rule: light-dark(#bed0df, #365574);
+  --alk-accent: light-dark(#075d9e, #82caff);
+  --alk-field: light-dark(#dce9f4, #16304d);
+  --alk-code: #0d1c2e;
+  --alk-surface-image:
+    linear-gradient(light-dark(#5b84a01c, #8ec7ef18) 1px, transparent 1px),
+    linear-gradient(
+      90deg,
+      light-dark(#5b84a01c, #8ec7ef18) 1px,
+      transparent 1px
+    );
+  --alk-surface-size: 1.5rem 1.5rem;
+}

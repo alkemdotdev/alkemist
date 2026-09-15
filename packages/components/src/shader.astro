@@ -1,6 +1,8 @@
 ---
 import './shader.css';
+import './parameters.css';
 import './figure.css';
+import type { ParametersProp } from './parameters';
 export interface ShaderProps {
   id?: string;
   title?: string;
@@ -8,6 +10,8 @@ export interface ShaderProps {
   frequency?: number;
   /** Rotation of the two sources in degrees, clamped to 0–180. */
   angle?: number;
+  /** Controls to expose locally; defaults to frequency and source angle. */
+  parameters?: ParametersProp<'frequency' | 'angle'>;
   class?: string;
 }
 type Props = ShaderProps;

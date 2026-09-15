@@ -1,0 +1,27 @@
+---
+title: Figure focus
+description: Explore an existing live figure without resetting it.
+order: 23
+---
+
+Slides adds **Focus** to figure headings. It enlarges the existing figure, leaving its controls, selected values, camera, and playback state attached to the same element. **Exit focus** or Escape returns to the figure. Opening focus stops timed slide advance.
+
+Inside a figure, arrow keys and gestures belong to the figure. Slide navigation resumes when focus returns to the slide background. Tab stays within the focused view; Escape closes an open options group before leaving focus.
+
+## Add focus to an ordinary page
+
+```astro
+---
+import Shader from '@alkemdotdev/alkemist-components/shader';
+import Focus from '@alkemdotdev/alkemist-components/focus';
+---
+
+<Shader id="field" frequency={9} angle={24} parameters />
+<Focus for="field" />
+```
+
+`for` names the existing figure ID. An optional `label` changes the button text. The [theme and parameter lab](/labs/themes-and-parameters/) uses this component outside a deck.
+
+The browser [Popover API](https://developer.mozilla.org/en-US/docs/Web/API/Popover_API/Using) puts the existing element in the top layer without moving it to another document. Focus also implements background inertness, keyboard containment, and return to the invoking control following the [WAI dialog pattern](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/). Browsers without the Popover API retain the inline figure and omit the focus button.
+
+Live parameter changes remain local to the current page. Audience windows synchronize slide navigation; arbitrary figure parameters are not mirrored between displays.

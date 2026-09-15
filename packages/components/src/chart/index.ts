@@ -1,5 +1,10 @@
 export { default } from '../chart.astro';
 export type { ChartProps } from '../charts';
+export type {
+  ParametersProp,
+  ParameterControl,
+  ParameterValues,
+} from '../parameters';
 export {
   chartCanZoom,
   chartInks,

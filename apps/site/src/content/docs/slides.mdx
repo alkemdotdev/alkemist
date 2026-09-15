@@ -59,12 +59,13 @@ Keep the source and the interpretation together.
 
 MDX uses a JSX comment: `{/* layout: split */}`. Available layouts are `title`, `split`, `media`, `quote`, and `content`; unknown values produce a build-time authoring error rather than changing a deck silently. The reading view keeps the same sections in a responsive document flow.
 
-## Choose a surface and motion
+## Share the site theme
 
-Each deck can select a theme and navigation transition in frontmatter. The defaults are `theme: inherit`, `transition: fade`, and `aspect: auto`; `auto` uses the available responsive viewport. Use a fixed aspect only when a venue requires it.
+The site and slides share Neutral, Paper, Chalk, and Blueprint. Named styles are separate from Light/Dark/System color mode. A deck inherits the site by default; override a particular talk in frontmatter or try a scoped choice under **Tools → Appearance**. These controls change the current deck, while the site header changes the site preference. `aspect: auto` uses the available viewport; use a fixed aspect only when a venue requires it.
 
 ```yaml
-theme: blueprint # inherit, paper, chalk, or blueprint
+theme: blueprint # inherit, default, paper, chalk, or blueprint
+colorScheme: dark # inherit, system, light, or dark
 transition: slide # none, fade, or slide
 aspect: '16:9' # auto, 16:9, or 4:3
 ```
@@ -84,9 +85,9 @@ Content is laid out first, then text fitting makes small adjustments within a re
 
 ## Present from the browser
 
-**Present** fills the window with the deck; **Read** returns to the document. **Overview** shows selectable cards with images and audience-facing text. The bottom controls move between slides or individual steps, and the slide picker jumps directly to a section.
+**Present** fills the window with the deck; **Read** returns to the document. The slide count at the bottom opens **Overview**, with selectable cards containing images and audience-facing text. The bottom controls move between slides or individual steps, and the slide picker jumps directly to a section.
 
-**Tools** contains Speaker view, Fullscreen, Print, Copy current link, Laser pointer, Blackout, and optional timed advance. Timed advance starts only when requested and stops when the page is hidden, the overview opens, blackout begins, or the deck ends. Media never begins playing automatically.
+**Tools** groups appearance, presenter views, presentation controls, sharing, and keyboard help. Timed advance starts only when requested and stops when the page is hidden, the overview opens, blackout begins, or the deck ends. Media never begins playing automatically.
 
 Focus the slide and use arrow keys or Space to advance. **O** opens Overview, **S** opens Speaker view, **B** toggles Blackout, **L** toggles the pointer, **F** toggles Fullscreen, and **?** shows keyboard help. Escape closes an overlay or leaves the presentation. Browser shortcuts and interactive figure controls keep their normal behavior. Touch users can swipe the slide background and use the visible controls.
 
@@ -127,10 +128,23 @@ format: slides
 
 `id` is optional on widgets. Give a figure an ID when attaching a `Note`; the note text appears beside its target in reading and presentation views. A missing target is an authoring error. `Slides` is also available to an Astro page through `@alkemdotdev/alkemist-components/slides`; pass a title, optional description, `theme`, `transition`, `aspect`, and compiled slide sections in its default slot.
 
+## Explore live parameters
+
+A component’s ordinary props set its initial values. `parameters` exposes its supported live controls; an array exposes only the named subset.
+
+```astro
+<Shader frequency={9} angle={24} parameters />
+<Chart {...chartProps} parameters={['ink', 'grid', 'zoom']} />
+```
+
+**Focus** in a figure heading enlarges the same figure. Escape returns to the deck without resetting values. Inputs, charts, and model gestures keep their own keyboard and touch behavior. Opening Focus stops timed advance. The [parameter guide](/docs/parameters/) lists supported controls and the [Focus component](/docs/focus/) adds the same behavior to ordinary pages.
+
 ## Publish and check a talk
 
-The starter includes `src/content/slides/first-talk.md`. The demo has four examples:
+The starter includes `src/content/slides/first-talk.md`. The demo includes:
 
+- [A figure you can question](/slides/interacting-with-the-field/) demonstrates live parameters and focused figures with the inherited site theme.
+- [Ready for the room](/slides/presenting-from-the-browser/) rehearses audience views and native browser tools.
 - [Working with a signal](/slides/working-with-a-signal/) uses plain Markdown, equations, code, footnotes, and Mermaid.
 - [A field notebook in motion](/slides/field-notebook/) combines Chart, Model, Shader, and figure notes.
 - [Listening to the fixture](/slides/listening-to-the-fixture/) exercises Audio, Video, and the MIDI editor.

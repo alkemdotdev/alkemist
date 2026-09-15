@@ -260,7 +260,7 @@ async function createModel(
     status.textContent = `${Math.round(triangles).toLocaleString()} triangles`;
     for (const control of host.querySelectorAll<
       HTMLButtonElement | HTMLInputElement
-    >('button, input'))
+    >('[data-view], [data-wireframe], [data-spin]'))
       control.disabled = false;
     const spin = host.querySelector<HTMLInputElement>('[data-spin]')!;
     const wireframe = host.querySelector<HTMLInputElement>('[data-wireframe]')!;
@@ -522,7 +522,7 @@ class ModelElement extends HTMLElement {
     this.querySelector<HTMLElement>('.alk-model-status')!.textContent = message;
     for (const control of this.querySelectorAll<
       HTMLButtonElement | HTMLInputElement
-    >('button, input'))
+    >('[data-view], [data-wireframe], [data-spin]'))
       control.disabled = true;
   }
 
@@ -542,7 +542,7 @@ class ModelElement extends HTMLElement {
       'Interactive view loads when visible.';
     for (const control of this.querySelectorAll<
       HTMLButtonElement | HTMLInputElement
-    >('button, input'))
+    >('[data-view], [data-wireframe], [data-spin]'))
       control.disabled = true;
   }
 }

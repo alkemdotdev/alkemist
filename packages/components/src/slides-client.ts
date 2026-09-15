@@ -2,6 +2,8 @@ import { SlidesNative } from './slides-native';
 import type { RevealApi } from 'reveal.js';
 import type { NotesPlugin } from 'reveal.js/plugin/notes';
 import { fitSlideContent, prepareSlideLayouts } from './slides-layout';
+import { addFigureFocus, type FigureFocus } from './figure-focus';
+import { isThemeStyle } from '@alkemdotdev/alkemist-theme';
 
 type View = 'read' | 'present';
 const widgets =
@@ -24,6 +26,7 @@ class SlidesElement extends HTMLElement {
   private lastOverlayFocus?: HTMLElement;
   private touchStart?: { x: number; y: number };
   private inerted: Array<{ element: HTMLElement; inert: boolean }> = [];
+  private figureFocus: FigureFocus[] = [];
   private receiver =
     window.parent !== window &&
     new URLSearchParams(location.search).has('receiver');
@@ -98,6 +101,67 @@ class SlidesElement extends HTMLElement {
     );
     this.prepareContent();
     prepareSlideLayouts(this);
+    if (!this.receiver && !this.native.audience) {
+      this.querySelectorAll<HTMLElement>(widgets).forEach((widget) => {
+        const focus = addFigureFocus(widget);
+        if (focus) this.figureFocus.push(focus);
+      });
+    }
+    this.addEventListener(
+      'alk:focus-change',
+      (event) => {
+        if ((event as CustomEvent).detail?.focused) {
+          this.stopTimer();
+          this.closeTools();
+        }
+      },
+      { signal },
+    );
+    this.querySelector<HTMLSelectElement>(
+      '[data-slides-theme]',
+    )!.addEventListener(
+      'change',
+      (event) => {
+        const value = (event.target as HTMLSelectElement).value;
+        if (value !== 'inherit' && !isThemeStyle(value)) return;
+        this.dataset.theme = value;
+        if (value === 'inherit') delete this.dataset.alkThemeStyle;
+        else this.dataset.alkThemeStyle = value;
+        window.dispatchEvent(new CustomEvent('alk:theme-change'));
+      },
+      { signal },
+    );
+    this.querySelector<HTMLSelectElement>(
+      '[data-slides-color-scheme]',
+    )!.addEventListener(
+      'change',
+      (event) => {
+        const value = (event.target as HTMLSelectElement).value;
+        if (!['inherit', 'system', 'light', 'dark'].includes(value)) return;
+        this.dataset.colorScheme = value;
+        window.dispatchEvent(new CustomEvent('alk:theme-change'));
+      },
+      { signal },
+    );
+    const tools = this.querySelector<HTMLDetailsElement>(
+      '[data-slides-tools]',
+    )!;
+    document.addEventListener(
+      'pointerdown',
+      (event) => {
+        if (event.target instanceof Node && !tools.contains(event.target))
+          this.closeTools();
+      },
+      { signal },
+    );
+    document.addEventListener(
+      'focusin',
+      (event) => {
+        if (event.target instanceof Node && !tools.contains(event.target))
+          this.closeTools();
+      },
+      { signal },
+    );
     this.querySelectorAll<HTMLElement>('[data-slides-controls]').forEach(
       (control) => (control.hidden = false),
     );
@@ -326,6 +390,8 @@ class SlidesElement extends HTMLElement {
     this.resize = undefined;
     this.stopTimer();
     this.teardown();
+    this.figureFocus.forEach((focus) => focus.destroy());
+    this.figureFocus = [];
     this.native?.destroy();
     this.native = undefined;
   }
@@ -360,6 +426,12 @@ class SlidesElement extends HTMLElement {
       }
     });
     if (embedded) {
+      this.querySelectorAll<HTMLElement>('alk-focus[data-target]').forEach(
+        (focus) => {
+          focus.dataset.target =
+            ids.get(focus.dataset.target!) ?? focus.dataset.target;
+        },
+      );
       this.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach(
         (link) => {
           const mapped = ids.get(link.getAttribute('href')!.slice(1));
@@ -563,6 +635,8 @@ class SlidesElement extends HTMLElement {
   }
 
   private teardown() {
+    this.figureFocus.forEach((focus) => focus.close(false));
+    this.closeTools();
     this.native?.suspend();
     this.stopTimer();
     this.setPointer(false);
@@ -646,6 +720,7 @@ class SlidesElement extends HTMLElement {
   }
 
   private openOverview() {
+    this.closeTools();
     if (!this.deck) return;
     const dialog = this.dialog('overview');
     const cards = dialog.querySelector<HTMLElement>(
@@ -983,6 +1058,11 @@ class SlidesElement extends HTMLElement {
       if (open) {
         event.preventDefault();
         open.close();
+      } else if (
+        this.querySelector<HTMLDetailsElement>('[data-slides-tools]')?.open
+      ) {
+        event.preventDefault();
+        this.closeTools(true);
       } else if (this.dataset.blackout === 'true') this.setBlackout(false);
       else if (this.deck) void this.setView('read');
       return;
@@ -1057,10 +1137,18 @@ class SlidesElement extends HTMLElement {
       target instanceof Element &&
       Boolean(
         target.closest(
-          'input,textarea,select,button,summary,a,[contenteditable],canvas,alk-midi,alk-media',
+          `input,textarea,select,button,summary,a,[contenteditable],canvas,[data-alk-interactive],[data-alk-focused],${widgets}`,
         ),
       )
     );
+  }
+
+  private closeTools(restoreFocus = false) {
+    const tools = this.querySelector<HTMLDetailsElement>('[data-slides-tools]');
+    if (!tools?.open) return;
+    tools.open = false;
+    if (restoreFocus)
+      tools.querySelector('summary')?.focus({ preventScroll: true });
   }
 
   private followAnchor(event: MouseEvent) {

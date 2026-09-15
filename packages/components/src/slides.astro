@@ -1,5 +1,8 @@
 ---
 import Annotations from './annotations.astro';
+import { THEME_STYLES, type ThemeStyle } from '@alkemdotdev/alkemist-theme';
+import './focus.css';
+import '@alkemdotdev/alkemist-theme/styles.css';
 import 'reveal.js/reveal.css';
 import '@alkemdotdev/alkemist-theme/slides.css';
 
@@ -10,7 +13,8 @@ export interface SlidesProps {
   view?: 'read' | 'present';
   /** Embedded decks keep independent navigation without changing the URL. */
   embedded?: boolean;
-  theme?: 'inherit' | 'paper' | 'chalk' | 'blueprint';
+  theme?: 'inherit' | ThemeStyle;
+  colorScheme?: 'inherit' | 'system' | 'light' | 'dark';
   transition?: 'none' | 'fade' | 'slide';
   aspect?: 'auto' | '16:9' | '4:3';
   /** Local text highlights and comments; exported as W3C Web Annotations. */
@@ -28,6 +32,7 @@ const {
   view = 'present',
   embedded = false,
   theme = 'inherit',
+  colorScheme = 'inherit',
   transition = 'fade',
   aspect = 'auto',
   annotations = true,
@@ -44,6 +49,8 @@ const {
   data-initial-view={view}
   data-embedded={String(embedded)}
   data-theme={theme}
+  data-alk-theme-style={theme === 'inherit' ? undefined : theme}
+  data-color-scheme={colorScheme}
   data-transition={transition}
   data-aspect={aspect}
   data-casting={String(casting)}
@@ -63,7 +70,6 @@ const {
         >Present</button
       >
     </div>
-    <button type="button" data-slides-overview>Overview</button>
     {
       annotations && (
         <Annotations target={`${id}-viewport`} documentId={`slides:${title}`} />
@@ -72,43 +78,94 @@ const {
     <details data-slides-tools>
       <summary>Tools</summary>
       <div class="alk-slides-tools-panel">
-        <button type="button" data-slides-notes data-slides-speaker
-          >Speaker view</button
-        >
-        <button type="button" data-slides-fullscreen>Fullscreen</button>
-        <button type="button" data-slides-screen hidden>Choose display…</button>
-        <button type="button" data-slides-audience>Audience window</button>
-        <button type="button" data-slides-floating aria-pressed="false" hidden
-          >Floating speaker notes</button
-        >
-        <button type="button" data-slides-awake aria-pressed="false" hidden
-          >Keep display awake</button
-        >
-        <button type="button" data-slides-cast hidden>Cast to a receiver</button
-        >
-        <button type="button" data-slides-print>Print</button>
-        <button type="button" data-slides-copy-link>Copy current link</button>
-        <button type="button" data-slides-pointer aria-pressed="false"
-          >Laser pointer</button
-        >
-        <button type="button" data-slides-blackout aria-pressed="false"
-          >Blackout</button
-        >
-        <label
-          >Advance <select
-            data-slides-timer-seconds
-            aria-label="Timed advance interval"
-            ><option value="5">5 seconds</option><option value="10" selected
-              >10 seconds</option
-            ><option value="20">20 seconds</option></select
-          ></label
-        >
-        <button type="button" data-slides-timer aria-pressed="false"
-          >Start timer</button
-        >
+        <fieldset class="alk-slides-tool-group alk-slides-appearance">
+          <legend>Appearance</legend>
+          <label
+            >Theme <select data-slides-theme aria-label="Presentation theme">
+              <option value="inherit" selected={theme === 'inherit'}
+                >Site theme</option
+              >
+              {
+                THEME_STYLES.map(({ value, label }) => (
+                  <option value={value} selected={theme === value}>
+                    {label}
+                  </option>
+                ))
+              }
+            </select></label
+          >
+          <label
+            >Color <select
+              data-slides-color-scheme
+              aria-label="Presentation color mode"
+            >
+              <option value="inherit" selected={colorScheme === 'inherit'}
+                >Site color</option
+              >
+              <option value="system" selected={colorScheme === 'system'}
+                >System</option
+              >
+              <option value="light" selected={colorScheme === 'light'}
+                >Light</option
+              >
+              <option value="dark" selected={colorScheme === 'dark'}
+                >Dark</option
+              >
+            </select></label
+          >
+        </fieldset>
+        <fieldset class="alk-slides-tool-group">
+          <legend>Views</legend>
+          <button type="button" data-slides-notes data-slides-speaker
+            >Speaker view</button
+          >
+          <button type="button" data-slides-audience>Audience window</button>
+          <button type="button" data-slides-fullscreen>Fullscreen</button>
+          <button type="button" data-slides-screen hidden
+            >Choose display…</button
+          >
+          <button type="button" data-slides-floating aria-pressed="false" hidden
+            >Floating notes</button
+          >
+          <button type="button" data-slides-cast hidden
+            >Cast to a receiver</button
+          >
+        </fieldset>
+        <fieldset class="alk-slides-tool-group">
+          <legend>Presenting</legend>
+          <button type="button" data-slides-pointer aria-pressed="false"
+            >Laser pointer</button
+          >
+          <button type="button" data-slides-blackout aria-pressed="false"
+            >Blackout</button
+          >
+          <button type="button" data-slides-awake aria-pressed="false" hidden
+            >Keep display awake</button
+          >
+          <label
+            >Advance <select
+              data-slides-timer-seconds
+              aria-label="Timed advance interval"
+            >
+              <option value="5">5 seconds</option><option value="10" selected
+                >10 seconds</option
+              ><option value="20">20 seconds</option>
+            </select></label
+          >
+          <button type="button" data-slides-timer aria-pressed="false"
+            >Start timer</button
+          >
+        </fieldset>
+        <fieldset class="alk-slides-tool-group">
+          <legend>Share</legend>
+          <button type="button" data-slides-print>Print</button>
+          <button type="button" data-slides-copy-link>Copy current link</button>
+          <button type="button" data-slides-help aria-label="Keyboard help"
+            >Keyboard help</button
+          >
+        </fieldset>
       </div>
     </details>
-    <button type="button" data-slides-help aria-label="Keyboard help">?</button>
   </div>
   <button type="button" data-slides-audience-fullscreen hidden
     >Fullscreen</button
@@ -139,8 +196,17 @@ const {
       data-slides-timer-status
       aria-live="polite"
       hidden></output>
-    <output class="alk-slides-count" data-slides-count aria-live="polite"
-    ></output>
+    <button
+      type="button"
+      class="alk-slides-overview-button"
+      data-slides-overview
+      aria-label="Slide overview"
+      title="Slide overview (O)"
+    >
+      <output class="alk-slides-count" data-slides-count aria-live="polite"
+      ></output>
+      <span aria-hidden="true">▦</span>
+    </button>
   </div>
   <p class="alk-slides-message" data-slides-message role="status" hidden></p>
   <span class="alk-slides-laser" data-slides-laser hidden aria-hidden="true"

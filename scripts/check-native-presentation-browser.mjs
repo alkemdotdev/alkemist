@@ -15,6 +15,15 @@ async function checkNativePresentation(page) {
   };
   const choose = (target, index) =>
     target.locator('[data-slides-picker]').selectOption(String(index));
+  const openTools = async (target) => {
+    const tools = target.locator('[data-slides-tools]');
+    if (!(await tools.evaluate((element) => element.open)))
+      await tools.locator('summary').click();
+    assert(
+      await tools.evaluate((element) => element.open),
+      'Tools did not open',
+    );
+  };
   const at = (target, index) =>
     target.waitForFunction(
       (i) =>
@@ -52,7 +61,7 @@ async function checkNativePresentation(page) {
     .fill('Private receiver isolation fixture');
   await page.locator('[data-annotations-save]').click();
   await page.locator('[data-annotations-close]').click();
-  await page.locator('[data-slides-tools] > summary').click();
+  await openTools(page);
   const popup = page.waitForEvent('popup');
   await page.locator('[data-slides-audience]').click();
   const audience = await popup;
@@ -89,6 +98,7 @@ async function checkNativePresentation(page) {
   );
   await audience.reload();
   await at(audience, 2);
+  await openTools(page);
   await page.locator('[data-slides-blackout]').click();
   await audience.waitForFunction(
     () => document.querySelector('alk-slides').dataset.blackout === 'true',
@@ -130,6 +140,7 @@ async function checkNativePresentation(page) {
   // Exercise the real browser request; this records a grant/denial, not physical sleep prevention.
   if (capabilities.wake) {
     await page.bringToFront();
+    await openTools(page);
     await page.locator('[data-slides-awake]').click();
     await page.waitForFunction(() =>
       ['active', 'denied'].includes(
@@ -141,6 +152,7 @@ async function checkNativePresentation(page) {
         .locator('[data-slides-awake]')
         .getAttribute('data-state'),
     });
+    await openTools(page);
     await page.locator('[data-slides-awake]').click();
   }
   // Isolated, deterministic API adapters test permission and late-completion paths.
@@ -233,7 +245,7 @@ async function checkNativePresentation(page) {
     };
   });
   await open(probe);
-  await probe.locator('[data-slides-tools] > summary').click();
+  await openTools(probe);
   const fallbackPromise = probe.waitForEvent('popup');
   await probe.locator('[data-slides-audience]').click();
   const fallback = await fallbackPromise;
@@ -243,6 +255,7 @@ async function checkNativePresentation(page) {
   evidence.push(
     'Denied BroadcastChannel: validated direct-window fallback still synchronizes.',
   );
+  await openTools(probe);
   await probe.locator('[data-slides-screen]').click();
   await probe.locator('[data-slides-read]').click();
   await probe.evaluate(() => window.__native.resolveScreen());
@@ -251,6 +264,7 @@ async function checkNativePresentation(page) {
     'Stale permission opened chooser after leaving Present',
   );
   await probe.locator('[data-slides-present]').click();
+  await openTools(probe);
   await probe.locator('[data-slides-screen]').click();
   await probe.evaluate(() => window.__native.resolveScreen());
   await probe.keyboard.press('Escape');
@@ -260,6 +274,7 @@ async function checkNativePresentation(page) {
         'present',
     'Closing screen chooser left Present',
   );
+  await openTools(probe);
   await probe.locator('[data-slides-screen]').click();
   await probe.evaluate(() => window.__native.resolveScreen());
   await probe.getByRole('button', { name: 'Projector · 1920 × 1080' }).click();
@@ -268,6 +283,7 @@ async function checkNativePresentation(page) {
       'Projector',
     'Screen selection failed',
   );
+  await openTools(probe);
   await probe.locator('[data-slides-screen]').click();
   await probe.evaluate(() =>
     window.__native.rejectScreen(new DOMException('Denied', 'NotAllowedError')),
@@ -276,25 +292,31 @@ async function checkNativePresentation(page) {
     .getByText('Display access was not granted.', { exact: false })
     .waitFor();
   await probe.evaluate(() => (window.__native.deny = true));
+  await openTools(probe);
   await probe.locator('[data-slides-awake]').click();
   await probe.waitForFunction(
     () =>
       document.querySelector('[data-slides-awake]').dataset.state === 'denied',
   );
+  await openTools(probe);
   await probe.locator('[data-slides-awake]').click();
+  await openTools(probe);
   await probe.locator('[data-slides-floating]').click();
   await probe
     .getByText('Floating speaker notes could not open.', { exact: false })
     .waitFor();
+  await openTools(probe);
   await probe.locator('[data-slides-cast]').click();
   await probe.getByText('No receiver connected.', { exact: false }).waitFor();
   await probe.evaluate(() => (window.__native.deny = false));
+  await openTools(probe);
   await probe.locator('[data-slides-awake]').click();
   await probe.waitForFunction(
     () =>
       document.querySelector('[data-slides-awake]').dataset.state === 'active',
   );
   const pipPromise = probe.waitForEvent('popup');
+  await openTools(probe);
   await probe.locator('[data-slides-floating]').click();
   const pip = await pipPromise;
   await pip.locator('[data-floating-title]').waitFor();
@@ -306,6 +328,7 @@ async function checkNativePresentation(page) {
     'Floating title did not update',
   );
   await pip.screenshot({ path: '.alkemist/native-floating-adapter.png' });
+  await openTools(probe);
   await probe.locator('[data-slides-cast]').click();
   await choose(probe, 3);
   assert(
@@ -316,6 +339,7 @@ async function checkNativePresentation(page) {
     ),
     'Cast state missing or leaked notes',
   );
+  await openTools(probe);
   await probe.locator('[data-slides-cast]').click();
   assert(
     (await probe.evaluate(() => window.__native.cast.state)) === 'terminated',

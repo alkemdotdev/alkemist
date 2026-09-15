@@ -1,4 +1,5 @@
 import type { TopLevelSpec } from 'vega-lite';
+import type { ParametersProp } from './parameters';
 
 export type ChartType =
   'line' | 'bar' | 'scatter' | 'pie' | 'donut' | 'heatmap';
@@ -37,6 +38,8 @@ export interface ChartProps {
   stacked?: boolean;
   caption?: string;
   sample?: boolean;
+  /** Controls to expose locally; disabled by default. */
+  parameters?: ParametersProp<'ink' | 'grid' | 'zoom'>;
 }
 
 export interface ChartTheme {
@@ -79,7 +82,6 @@ export function chartXType(config: ChartProps): ChartFieldType {
 
 export function chartCanZoom(config: ChartProps): boolean {
   return (
-    config.zoom !== false &&
     ['line', 'scatter'].includes(config.type) &&
     ['quantitative', 'temporal'].includes(chartXType(config))
   );
@@ -370,7 +372,7 @@ export function createChartSpec(
   }
   return {
     ...base,
-    ...(chartCanZoom(config)
+    ...(chartCanZoom(config) && config.zoom !== false
       ? {
           params: [
             {

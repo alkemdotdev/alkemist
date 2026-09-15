@@ -8,6 +8,7 @@ async function checkSlideLayouts(page) {
   const slugs = [
     'working-with-a-signal',
     'field-notebook',
+    'interacting-with-the-field',
     'listening-to-the-fixture',
     'layout-sampler',
     'presenting-from-the-browser',

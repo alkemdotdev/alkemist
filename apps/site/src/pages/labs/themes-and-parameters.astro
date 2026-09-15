@@ -1,0 +1,183 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Shader from '@alkemdotdev/alkemist-components/shader';
+import Chart from '@alkemdotdev/alkemist-components/chart';
+import Focus from '@alkemdotdev/alkemist-components/focus';
+import { THEME_STYLES } from '@alkemdotdev/alkemist-theme';
+import { isPreview } from '../../lib/deployment';
+const descriptions = {
+  default: 'A quiet, neutral surface.',
+  paper: 'Warm paper and ink.',
+  chalk: 'A soft green board.',
+  blueprint: 'A precise blue grid.',
+};
+---
+
+<SiteLayout title="Themes and live figures" preview={isPreview}>
+  <div class="theme-lab">
+    <header>
+      <a href="/labs/">← Labs</a>
+      <h1>One theme, room to explore.</h1>
+      <p class="alk-lead">
+        Choose a surface. Adjust a figure, focus it, and return with your values
+        intact. The same choices work in a page or a presentation.
+      </p>
+    </header>
+    <div class="theme-choices" role="group" aria-label="Theme style">
+      {
+        THEME_STYLES.map(({ value, label }) => (
+          <button
+            type="button"
+            data-choose-theme={value}
+            data-alk-theme-style={value}
+            aria-pressed="false"
+          >
+            <>
+              <strong>{label}</strong>
+              <span>{descriptions[value]}</span>
+              <span class="theme-line" aria-hidden="true" />
+            </>
+          </button>
+        ))
+      }
+    </div>
+    <section class="theme-figure">
+      <header>
+        <h2>Turn the sources. Follow the field.</h2><Focus for="theme-field" />
+      </header>
+      <Shader
+        id="theme-field"
+        title="Two-source interference"
+        frequency={9}
+        angle={24}
+        parameters
+      />
+    </section>
+    <section class="theme-figure">
+      <header>
+        <h2>Give the trace a different treatment.</h2><Focus
+          for="theme-chart"
+        />
+      </header>
+      <Chart
+        id="theme-chart"
+        src="/test/oscillation.csv"
+        type="line"
+        x="time"
+        y="position"
+        title="Damped oscillator"
+        description="A synthetic analytic trajectory."
+        sample
+        parameters={['ink', 'grid', 'zoom']}
+      />
+    </section>
+    <p>
+      <a href="/slides/interacting-with-the-field/"
+        >Open the interactive presentation</a
+      > · <a href="/docs/parameters/">Parameter API</a> · <a
+        href="/docs/themes/">Theme guide</a
+      >
+    </p>
+  </div>
+</SiteLayout>
+<script>
+  import {
+    getThemeStyle,
+    setThemeStyle,
+    isThemeStyle,
+  } from '@alkemdotdev/alkemist-theme';
+  const choices = document.querySelectorAll<HTMLButtonElement>(
+    '[data-choose-theme]',
+  );
+  const sync = () =>
+    choices.forEach((button) =>
+      button.setAttribute(
+        'aria-pressed',
+        String(button.dataset.chooseTheme === getThemeStyle()),
+      ),
+    );
+  choices.forEach((button) =>
+    button.addEventListener('click', () => {
+      if (isThemeStyle(button.dataset.chooseTheme))
+        setThemeStyle(button.dataset.chooseTheme);
+    }),
+  );
+  window.addEventListener('alk:theme-change', sync);
+  sync();
+</script>
+<style>
+  .theme-lab {
+    max-width: 1100px;
+    margin: auto;
+  }
+  .theme-lab > header {
+    max-width: 48rem;
+    margin-bottom: 2rem;
+  }
+  .theme-lab > header > a {
+    display: inline-block;
+    margin-bottom: 1.5rem;
+    font-size: 0.8rem;
+  }
+  .theme-choices {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    margin: 2rem 0 3.5rem;
+  }
+  .theme-choices button {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 150px;
+    text-align: left;
+    padding: 20px;
+    color: var(--alk-ink);
+    background-color: var(--alk-paper);
+    background-image: var(--alk-surface-image);
+    background-size: var(--alk-surface-size);
+    border: 1px solid var(--alk-rule);
+    border-radius: 7px;
+    cursor: pointer;
+  }
+  .theme-choices button[aria-pressed='true'] {
+    outline: 2px solid var(--alk-accent);
+    outline-offset: 3px;
+  }
+  .theme-choices strong {
+    font-size: 1.15rem;
+    font-weight: 500;
+  }
+  .theme-choices span {
+    font-size: 0.78rem;
+    color: var(--alk-muted);
+  }
+  .theme-line {
+    height: 2px;
+    width: 40%;
+    background: var(--alk-accent);
+    margin-top: auto;
+  }
+  .theme-figure {
+    margin: 3.5rem 0;
+  }
+  .theme-figure > header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 1rem;
+  }
+  .theme-figure h2 {
+    margin: 0;
+  }
+  @media (max-width: 700px) {
+    .theme-choices {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .theme-figure > header {
+      align-items: flex-start;
+    }
+  }
+</style>

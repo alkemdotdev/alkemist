@@ -532,6 +532,7 @@ export const definitions: Record<string, PlaygroundDefinition> = {
       stacked: false,
       caption: '',
       sample: true,
+      parameters: false,
     },
     [
       text('id', 'Optional stable figure ID for an attached note.'),
@@ -559,6 +560,7 @@ export const definitions: Record<string, PlaygroundDefinition> = {
         'violet',
       ]),
       number('height', 120, 900),
+      json('parameters', 'true, false, or an array of ink, grid, and zoom.'),
       bool('grid'),
       bool('zoom'),
       bool('horizontal'),
@@ -624,12 +626,20 @@ export const definitions: Record<string, PlaygroundDefinition> = {
   shader: component(
     'shader',
     'Shader',
-    { id: '', title: 'Two wave sources', frequency: 9, angle: 24, class: '' },
+    {
+      id: '',
+      title: 'Two wave sources',
+      frequency: 9,
+      angle: 24,
+      parameters: true,
+      class: '',
+    },
     [
       text('id', 'Optional stable figure ID for an attached note.'),
       text('title'),
       number('frequency', 3, 18, 0.1),
       number('angle', 0, 180),
+      json('parameters', 'true, false, or an array of frequency and angle.'),
       text('class'),
     ],
     [
@@ -714,6 +724,7 @@ export const definitions: Record<string, PlaygroundDefinition> = {
         description: 'A place for experiments and explanations.',
         section: 'docs',
         preview: false,
+        theme: 'default',
         siteName: 'My lab',
         tagline: 'research in public',
         faviconHref: '/favicon.svg',
@@ -730,6 +741,7 @@ export const definitions: Record<string, PlaygroundDefinition> = {
         area('description'),
         text('section'),
         bool('preview'),
+        select('theme', ['default', 'paper', 'chalk', 'blueprint']),
         text('siteName'),
         text('tagline'),
         text('faviconHref'),

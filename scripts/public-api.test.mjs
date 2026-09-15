@@ -16,6 +16,7 @@ test('component package exposes only explicit extensionless entry points', async
     './code-theme',
     './diagram',
     './diagram-client',
+    './focus',
     './layout',
     './math',
     './midi',

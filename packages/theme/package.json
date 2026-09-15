@@ -26,6 +26,7 @@
     ".": "./src/theme.ts",
     "./theme.css": "./src/theme.css",
     "./tokens.css": "./src/tokens.css",
+    "./styles.css": "./src/styles.css",
     "./math-code.css": "./src/math-code.css",
     "./slides.css": "./src/slides.css",
     "./palette": "./src/palette.ts"

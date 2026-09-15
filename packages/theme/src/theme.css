@@ -13,6 +13,7 @@
 @import '@fontsource/caveat/400.css';
 @import '@fontsource/caveat/600.css';
 @import './tokens.css';
+@import './styles.css';
 @import './math-code.css';
 
 :root {
@@ -28,7 +29,9 @@
 }
 body {
   margin: 0;
-  background: var(--alk-paper);
+  background-color: var(--alk-paper);
+  background-image: var(--alk-surface-image);
+  background-size: var(--alk-surface-size);
   color: var(--alk-ink);
 }
 a {

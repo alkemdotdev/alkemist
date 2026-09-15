@@ -1,8 +1,12 @@
 import {
   getTheme,
+  getThemeStyle,
   initTheme,
   setTheme,
+  setThemeStyle,
+  THEME_STYLES,
   type Theme,
+  type ThemeStyle,
 } from '@alkemdotdev/alkemist-theme';
 
 const header = document.querySelector<HTMLElement>('.alk-header');
@@ -16,7 +20,15 @@ if (header) {
   const radios = [
     ...header.querySelectorAll<HTMLInputElement>('input[name="alk-theme"]'),
   ];
-  const labels = { system: 'System', light: 'Whiteboard', dark: 'Blackboard' };
+  const styleRadios = [
+    ...header.querySelectorAll<HTMLInputElement>(
+      'input[name="alk-theme-style"]',
+    ),
+  ];
+  const labels = { system: 'System', light: 'Light', dark: 'Dark' };
+  const styleLabels = Object.fromEntries(
+    THEME_STYLES.map(({ value, label }) => [value, label]),
+  ) as Record<ThemeStyle, string>;
   const close = (panel: HTMLDetailsElement, restoreFocus = false) => {
     panel.open = false;
     if (restoreFocus) panel.querySelector('summary')?.focus();
@@ -26,9 +38,17 @@ if (header) {
     radios.forEach((input) => {
       input.checked = input.value === selected;
     });
-    trigger?.setAttribute('title', `Color theme: ${labels[selected]}`);
+    const style = getThemeStyle();
+    styleRadios.forEach((input) => {
+      input.checked = input.value === style;
+    });
+    trigger?.setAttribute(
+      'title',
+      `Appearance: ${styleLabels[style]}, ${labels[selected]}`,
+    );
     const label = trigger?.querySelector('[data-theme-label]');
-    if (label) label.textContent = `Color theme: ${labels[selected]}`;
+    if (label)
+      label.textContent = `Appearance: ${styleLabels[style]}, ${labels[selected]}`;
   };
   window.addEventListener('alk:theme-change', syncTheme);
   initTheme();
@@ -38,6 +58,14 @@ if (header) {
     input.addEventListener('change', () => setTheme(input.value as Theme));
     input.addEventListener('click', (event) => {
       // Arrow keys synthesize clicks on radios; keep that keyboard group open.
+      if (theme && event.detail > 0) close(theme, true);
+    });
+  });
+  styleRadios.forEach((input) => {
+    input.addEventListener('change', () =>
+      setThemeStyle(input.value as ThemeStyle),
+    );
+    input.addEventListener('click', (event) => {
       if (theme && event.detail > 0) close(theme, true);
     });
   });

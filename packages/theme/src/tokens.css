@@ -9,6 +9,8 @@
   --alk-accent: var(--alk-ink);
   --alk-field: light-dark(#e5e5e5, #191919);
   --alk-code: #111;
+  --alk-surface-image: none;
+  --alk-surface-size: auto;
   --alk-sans: 'Ubuntu', sans-serif;
   --alk-serif: 'IBM Plex Serif', serif;
   --alk-mono: 'Ubuntu Mono', monospace;

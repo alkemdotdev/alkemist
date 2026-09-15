@@ -39,36 +39,12 @@ alk-shader.alk-shader {
   pointer-events: none;
 }
 .alk-shader-controls.alk-figure-controls {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
-  gap: 0.6rem;
-}
-.alk-shader-controls label {
-  display: block;
-  min-width: 0;
-}
-.alk-shader-controls label > span {
   display: flex;
+  align-items: end;
+  flex-wrap: wrap;
   gap: 0.6rem;
-  justify-content: space-between;
-  margin-bottom: 0.2rem;
-}
-.alk-shader-controls output {
-  color: var(--alk-muted, #5e5e5e);
-}
-.alk-shader-controls input {
-  display: block;
-  width: 100%;
-  accent-color: var(--alk-ink-violet, #a464e3);
 }
 @container (max-width: 380px) {
-  .alk-shader-controls.alk-figure-controls {
-    grid-template-columns: 1fr 1fr;
-    gap: 0.5rem;
-  }
-  .alk-shader-controls button {
-    grid-column: 1 / -1;
-  }
   .alk-shader-coordinate {
     font-size: 0.6rem;
   }

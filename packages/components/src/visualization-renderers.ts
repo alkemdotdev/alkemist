@@ -2,6 +2,8 @@ import { chartCanZoom, type ChartProps } from './charts.ts';
 import type { ModelProps } from './model.astro';
 import type { ShaderProps } from './shader.astro';
 import { INKS } from '@alkemdotdev/alkemist-theme/palette';
+import { exposedParameters, renderParameters } from './parameters.ts';
+import { shaderParameters, chartParameters } from './figure-parameters.ts';
 
 const escape = (value: unknown) =>
   String(value ?? '').replace(
@@ -25,7 +27,12 @@ function url(value: string) {
 
 /** Shared by Astro output and the live specimen; engines still load lazily. */
 export function renderChart(props: ChartProps): string {
-  const canZoom = chartCanZoom(props);
+  const canZoom = chartCanZoom({ ...props, zoom: true });
+  const controls = exposedParameters(
+    chartParameters.filter((control) => control.name !== 'zoom' || canZoom),
+    props.parameters,
+    false,
+  );
   const height = Number.isFinite(props.height) ? props.height! : 300;
   return `<alk-chart${props.id ? ` id="${escape(props.id)}"` : ''} class="alk-chart" data-config="${escape(JSON.stringify(props))}">
   <figure class="alk-figure" aria-label="${escape(props.title)}">
@@ -35,11 +42,12 @@ export function renderChart(props: ChartProps): string {
     </div></figcaption>
     <div class="alk-chart-canvas" style="min-height: ${height}px" aria-busy="true"></div>
     <div class="alk-chart-tools alk-figure-controls" aria-label="${escape(props.title)} controls">
-      ${canZoom ? '<button type="button" data-chart-reset disabled>Reset view</button>' : ''}
+      ${canZoom ? `<button type="button" data-chart-reset${props.zoom === false ? ' hidden' : ''} disabled>Reset view</button>` : ''}
       <button type="button" data-chart-retry hidden>Retry</button>
       <a href="${url(props.src)}" download>Download CSV</a>
-      ${canZoom ? '<span class="alk-chart-hint">Shift + scroll to zoom · drag to pan</span>' : ''}
+      ${canZoom ? `<span class="alk-chart-hint" data-chart-hint${props.zoom === false ? ' hidden' : ''}>Shift + scroll to zoom · drag to pan</span>` : ''}
     </div>
+    ${renderParameters(controls, { ink: props.ink ?? 'cobalt', grid: props.grid !== false, zoom: props.zoom !== false })}
     <div class="alk-figure-footer"><p class="alk-chart-status alk-figure-status" role="status" aria-live="polite">Chart loads when visible.</p></div>
     <details class="alk-chart-table"><summary>Data table <span data-chart-count></span></summary>
       <div class="alk-chart-table-scroll" tabindex="0" aria-label="${escape(props.title)} data table"><p data-chart-table-placeholder>The table loads alongside the chart.</p></div></details>
@@ -79,13 +87,18 @@ export function renderShader({
   title = 'Interference field',
   frequency = 9,
   angle = 24,
+  parameters,
   class: className,
 }: ShaderProps): string {
-  const f = Math.max(
-    3,
-    Math.min(18, Number.isFinite(frequency) ? frequency : 9),
-  );
-  const a = Math.max(0, Math.min(180, Number.isFinite(angle) ? angle : 24));
+  const clampStep = (value: number, min: number, max: number, step: number) =>
+    Number(
+      Math.max(
+        min,
+        Math.min(max, Math.round((value - min) / step) * step + min),
+      ).toFixed(10),
+    );
+  const f = clampStep(Number.isFinite(frequency) ? frequency : 9, 3, 18, 0.1);
+  const a = clampStep(Number.isFinite(angle) ? angle : 24, 0, 180, 1);
   const circles = [-1, 1]
     .map(
       (side) =>
@@ -98,13 +111,12 @@ export function renderShader({
         ).join('')}</g>`,
     )
     .join('');
-  return `<alk-shader${id ? ` id="${escape(id)}"` : ''} class="alk-shader ${escape(className)}" data-state="idle"><figure class="alk-figure" aria-label="${escape(title)}">
+  return `<alk-shader${id ? ` id="${escape(id)}"` : ''} class="alk-shader ${escape(className)}" data-state="idle" data-parameter-values="${escape(JSON.stringify({ frequency: f, angle: a }))}"><figure class="alk-figure" aria-label="${escape(title)}">
     <figcaption class="alk-shader-heading alk-figure-heading"><div><h3 class="alk-figure-title">${escape(title)}</h3></div></figcaption>
     <div class="alk-shader-viewport"><svg class="alk-shader-poster" viewBox="0 0 960 520" role="img" aria-label="Static illustration of two overlapping concentric wave sources; the interactive shader loads when visible.">${circles}</svg>
     <canvas role="img" aria-label="${escape(title)}: interference contours from two point sources, rendered with the eight Alkemist inks."></canvas></div>
     <div class="alk-shader-controls alk-figure-controls" aria-label="${escape(title)} controls">
-      <label><span>Frequency <output data-frequency-output>${f.toFixed(1)}</output></span><input type="range" min="3" max="18" step="0.1" value="${f}" data-frequency disabled /></label>
-      <label><span>Source angle <output data-angle-output>${a.toFixed(0)}°</output></span><input type="range" min="0" max="180" step="1" value="${a}" data-angle disabled /></label>
+      ${renderParameters(exposedParameters(shaderParameters, parameters, true), { frequency: f, angle: a })}
       <button type="button" data-play aria-pressed="false" disabled>Play waves</button>
     </div>
     <div class="alk-shader-footer alk-figure-footer"><p class="alk-figure-status" role="status" aria-live="polite">Shader loads when visible.</p></div>

@@ -1,3 +1,16 @@
+# Shared themes and interactive figure focus — September 15, 2026
+
+Make live parameters easy to expose, preserve widget state when focusing a figure, share named styles between site and slides, and simplify presentation chrome. Parent owns focus, Slides UI/runtime, demos, integration and delivery. `shared_theme_styles` owns shared styles/header; `widget_parameters` owns Shader/Chart parameter controls. The earlier native-presentation revision `0cae203` is now verified by production build identity.
+
+- Default contract: Markdown still chooses ordinary layouts; components expose bounded live parameters. Named Neutral/Paper/Chalk/Blueprint styles are independent of Light/Dark/System and may be scoped to a deck.
+- Focus uses the browser top layer for the existing widget, with explicit input ownership, Escape, focus return and preserved DOM state. Popovers are not natively modal: background inertness and keyboard containment are implemented deliberately. Sources: https://developer.mozilla.org/en-US/docs/Web/API/Popover_API/Using and https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/ (checked September 15, 2026).
+- Required evidence: full verify/format, focused controls/theme/focus browser cases on desktop/mobile Chromium/WebKit, existing slide lifecycle/no-JS/installed-package regressions, branch preview then checked main deployment.
+- Implementation complete on `feat/shared-themes-figure-focus`. Full verify: 124 tests, 117 validated pages; formatting, fresh packed consumers and generated starter pass. Chromium/WebKit pass focus, parameters, shared themes, mobile controls, existing slide/native-presentation regressions; six decks pass 108 layout cases with minimum 20px text. Two installed embedded decks retain unique IDs and resolve Focus within their own namespace. Evidence: `.alkemist/themes-focus-*.log` and browser scripts in `scripts/`.
+- Review fixes include target-removal cleanup, late target binding, embedded target remapping, explicit invoker focus return in WebKit, authored attribute restoration, input ownership, eligible zoom reenable, shared parameter descriptors, and starter theme typing. Unsupported Popover retains usable inline controls. Parameter values stay local to the mounted figure; physical receiver use is not claimed.
+- Delivery: ready for branch-preview verification, then main promotion. Coordinated Changeset and development article included.
+
+## Previous milestone
+
 # Native presentation standards — September 14, 2026
 
 Research and implement browser capabilities in shared components and Slides: local text annotations, opt-in display wake lock, attached-display choice, floating speaker notes, synchronized audience windows, and optional casting. Preserve Markdown, one mounted local widget tree, current speaker view, and graceful reading mode.

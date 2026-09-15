@@ -9,6 +9,13 @@ async function checkEmbeddedSlides(page) {
     );
   });
   const decks = page.locator('alk-slides');
+  for (let index = 0; index < 2; index++) {
+    const deck = decks.nth(index);
+    await deck.locator('alk-focus button').click();
+    if (!(await deck.locator('[data-alk-focused="true"]').count()))
+      throw new Error(`Focus targeted another embedded instance: ${index}`);
+    await page.keyboard.press('Escape');
+  }
   for (let index = 0; index < 2; index++)
     if ((await decks.nth(index).getAttribute('data-view')) === 'read')
       await decks.nth(index).locator('[data-slides-present]').click();

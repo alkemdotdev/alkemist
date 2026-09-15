@@ -1,0 +1,60 @@
+.alk-parameters {
+  display: flex;
+  gap: 0.65rem;
+  align-items: end;
+  flex-wrap: wrap;
+  color: var(--alk-ink, #111);
+  font: 0.78rem/1.35 var(--alk-sans, system-ui, sans-serif);
+}
+.alk-shader-controls > .alk-parameters {
+  flex: 1 1 28rem;
+}
+.alk-figure > .alk-parameters {
+  padding: 0.6rem var(--alk-figure-gutter, 0.65rem);
+  border-top: 1px solid var(--alk-rule, #ccc);
+  flex-shrink: 0;
+}
+.alk-parameters select,
+.alk-parameters button {
+  min-height: 36px;
+  padding: 0.35rem 0.55rem;
+  border: 1px solid var(--alk-rule, #ccc);
+  border-radius: 4px;
+  color: var(--alk-ink, #111);
+  background: var(--alk-paper, #fff);
+  font: inherit;
+}
+.alk-parameters-fields {
+  display: flex;
+  gap: 0.65rem;
+  flex: 1 1 18rem;
+  flex-wrap: wrap;
+}
+.alk-parameters label {
+  min-width: min(11rem, 100%);
+  flex: 1 1 9rem;
+}
+.alk-parameters label > span {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.alk-parameters output {
+  color: var(--alk-muted, #5e5e5e);
+}
+.alk-parameters input[type='range'],
+.alk-parameters select {
+  width: 100%;
+}
+.alk-parameters input {
+  accent-color: var(--alk-accent, var(--alk-ink, #111));
+}
+.alk-parameters-toggle {
+  align-self: center;
+  min-width: auto !important;
+}
+@media print {
+  .alk-parameters {
+    display: none;
+  }
+}

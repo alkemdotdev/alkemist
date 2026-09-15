@@ -1,0 +1,25 @@
+---
+title: Live controls, shared themes
+description: Adjust a figure, give it the screen, and bring the same visual style from a page into a talk.
+date: '2026-09-15'
+cover:
+  src: ../../assets/forms-engineering/interference.png
+  alt: Curving lines trace an interference field.
+  fit: contain
+---
+
+An interference figure becomes easier to understand when you can move its sources. Change the angle and the pattern turns. Change the frequency and the bands tighten. The source that puts that experiment in a slide is small:
+
+```mdx
+<Shader frequency={9} angle={24} parameters />
+```
+
+`Shader` and `Chart` now share a parameter control panel. Initial values still come from their normal props. Use `parameters` to expose the available controls, or a list such as `parameters={['frequency']}` to choose the useful ones. Reset values returns to the authored starting point. Charts can change their ink, grid, and eligible zoom behavior using the rows already loaded.
+
+Focus gives a live figure more room. In a presentation, its heading has a Focus button; on an ordinary page, add the reusable `Focus` component with the figure's ID. The browser promotes the existing element into its top layer, preserving its canvas, controls, and current values. Keyboard input stays with the figure. Escape returns to the button that opened it. The [focus guide](/docs/focus/) explains the behavior and the native browser mechanism.
+
+The presentation frame is smaller too. Read and Present stay beside the title; Tools collects appearance, presenter utilities, and sharing. Navigation and overview live together at the bottom. The slide itself remains the main surface.
+
+That surface now uses the same named styles as the rest of the site: Neutral, Paper, Chalk, and Blueprint. Light, Dark, and System remain a separate preference. A deck inherits the site style by default, while its Tools menu can choose a local override. Blueprint's grid comes from shared surface tokens, so it works in a page, a component preview, and a presentation.
+
+Try the [interactive field presentation](/slides/interacting-with-the-field/) or compare the four styles in [Themes and live figures](/labs/themes-and-parameters/). The [parameter guide](/docs/parameters/) covers the live API, and the [theme guide](/docs/themes/) covers page defaults and scoped tokens. Parameter changes stay in the current mounted figure; sharing a slide link does not transmit those values to another viewer.

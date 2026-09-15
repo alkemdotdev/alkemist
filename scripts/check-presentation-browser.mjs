@@ -13,13 +13,25 @@ async function checkPresentation(page) {
     () => document.querySelector('alk-slides')?.dataset.ready === 'true',
   );
   const root = page.locator('alk-slides');
+  const tools = page.locator('[data-slides-tools]');
+  const toolsOpen = () => tools.evaluate((element) => element.open);
+  const openTools = async () => {
+    if (!(await toolsOpen())) await tools.locator('summary').click();
+    assert(await toolsOpen(), 'Tools did not open');
+  };
+  const closeTools = async () => {
+    if (await toolsOpen()) await tools.locator('summary').click();
+    assert(!(await toolsOpen()), 'Tools did not close');
+  };
   await page.keyboard.press('ArrowRight');
   assert(
     (await page.locator('[data-slides-picker]').inputValue()) === '1',
     'Presentation must accept navigation immediately on entry',
   );
   await page.keyboard.press('Home');
-  await page.getByRole('button', { name: 'Overview', exact: true }).click();
+  await page
+    .getByRole('button', { name: 'Slide overview', exact: true })
+    .click();
   await page.waitForFunction(
     () => document.querySelector('[data-slides-overview-dialog]')?.open,
   );
@@ -47,15 +59,13 @@ async function checkPresentation(page) {
     (await page.locator('[data-slides-picker]').inputValue()) === '1',
     'Overview selection did not navigate',
   );
+  await openTools();
   await page.getByRole('button', { name: 'Keyboard help' }).click();
   await page.waitForFunction(
     () => document.querySelector('[data-slides-help-dialog]')?.open,
   );
   await page.keyboard.press('Escape');
-  await page.locator('[data-slides-tools] > summary').click();
-  await page.waitForFunction(
-    () => document.querySelector('[data-slides-tools]')?.open,
-  );
+  await openTools();
   await page.locator('[data-slides-pointer]').click();
   assert(
     (await root.getAttribute('data-pointer')) === 'true',
@@ -79,6 +89,7 @@ async function checkPresentation(page) {
       .evaluate((element) => document.activeElement === element),
     'Restoring blackout lost keyboard focus',
   );
+  await openTools();
   await page.locator('[data-slides-timer]').click();
   assert(
     (await page.locator('[data-slides-timer]').getAttribute('aria-pressed')) ===
@@ -99,8 +110,8 @@ async function checkPresentation(page) {
     (await page.locator('[data-slides-picker]').inputValue()) === '0',
     'Viewport Home shortcut did not navigate to the first slide',
   );
-  await page.locator('[data-slides-tools] > summary').click();
-  await page.locator('[data-slides-tools] > summary').focus();
+  await closeTools();
+  await tools.locator('summary').focus();
   await page.keyboard.press('Space');
   assert(
     await page
@@ -131,7 +142,7 @@ async function checkPresentation(page) {
     shortcuts.every(Boolean),
     'Browser modifier shortcuts were intercepted',
   );
-  await page.locator('[data-slides-tools] > summary').click();
+  await openTools();
   for (const [aspect, ratio] of [
     ['16:9', 16 / 9],
     ['4:3', 4 / 3],
@@ -159,7 +170,7 @@ async function checkPresentation(page) {
     'Custom slide tokens were not applied',
   );
   await root.evaluate((element) => element.removeAttribute('style'));
-  await page.locator('[data-slides-tools] > summary').click();
+  await openTools();
   await page.locator('[data-slides-timer-seconds]').selectOption('5');
   await page.locator('[data-slides-timer]').click();
   await page.waitForFunction(
@@ -188,14 +199,16 @@ async function checkPresentation(page) {
     document.querySelector('.alk-slides-viewport').classList.contains('reveal'),
   );
   if (await page.evaluate(() => document.fullscreenEnabled)) {
+    await openTools();
     await page.locator('[data-slides-fullscreen]').click();
     await page.waitForFunction(
       () => document.fullscreenElement?.tagName === 'ALK-SLIDES',
     );
+    await openTools();
     await page.locator('[data-slides-fullscreen]').click();
     await page.waitForFunction(() => !document.fullscreenElement);
   }
-  await page.locator('[data-slides-tools] > summary').click();
+  await openTools();
   await page.screenshot({ path: '.alkemist/presentation-controls.png' });
   return 'Presentation controls: overview, dialogs, pointer, blackout restore, timer, viewport keyboard navigation, aspect ratios, theme tokens, timed navigation, and fullscreen where available.';
 }
