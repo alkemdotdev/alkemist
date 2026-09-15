@@ -385,7 +385,7 @@ body:has(.alk-slides[data-view='present']:not([data-embedded='true'])) {
 .alk-slides .reveal alk-chart {
   --alk-chart-height: clamp(140px, 32cqh, 360px);
 }
-.alk-slides .reveal .alk-chart-canvas {
+.alk-slides .reveal alk-chart:not([data-alk-focused='true']) .alk-chart-canvas {
   min-height: var(--alk-chart-height) !important;
 }
 .alk-slides
@@ -498,6 +498,38 @@ body:has(.alk-slides[data-view='present']:not([data-embedded='true'])) {
   margin: 0 0 2rem;
   scroll-margin-top: 100px;
 }
+/* Articles retain continuous prose. A deck exposes its authored slide boundaries. */
+.alk-slides[data-layout-kind='article']:not([data-view='present'])
+  .slides
+  > [data-alk-slide] {
+  margin-bottom: 0;
+}
+.alk-slides[data-layout-kind='deck']:not([data-view='present']) {
+  max-width: var(--alk-deck-width, 1100px);
+}
+.alk-slides[data-layout-kind='deck']:not([data-view='present']) .slides {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(18px, 3vw, 32px);
+}
+.alk-slides[data-layout-kind='deck']:not([data-view='present'])
+  .slides
+  > [data-alk-slide] {
+  margin: 0;
+  min-width: 0;
+  padding: clamp(22px, 4vw, 52px);
+  border: 1px solid var(--alk-rule, #ccc);
+  border-radius: 8px;
+  background: var(--alk-slide-background, var(--alk-paper, #f4f7fb));
+  background-image: var(--alk-surface-image, none);
+  background-size: var(--alk-surface-size, auto);
+}
+.alk-slides[data-layout-kind='deck']:not([data-view='present'])
+  .slides
+  :is(img, video) {
+  max-height: 65svh;
+  object-fit: contain;
+}
 .alk-slides:not([data-view='present']) .slides :is(h1, h2, h3, [id]) {
   scroll-margin-top: 100px;
 }
@@ -548,6 +580,9 @@ body:has(.alk-slides[data-view='present']:not([data-embedded='true'])) {
   :is(pre, .alk-code, table) {
   max-width: 100%;
   overflow-x: auto;
+}
+.alk-slides:not([data-view='present']) .slides > [data-alk-slide] table {
+  display: block;
 }
 .alk-slides dialog {
   color: inherit;

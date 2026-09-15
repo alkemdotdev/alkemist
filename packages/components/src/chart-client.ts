@@ -10,13 +10,17 @@ import {
   type ChartRow,
   type ChartTheme,
 } from './charts';
+import {
+  chartExportFilename,
+  chartRowsToCsv,
+  chartTablePage,
+} from './chart-data';
 import { validateParameters, type ParameterValues } from './parameters';
 import { chartParameters } from './figure-parameters';
 
 class ChartElement extends HTMLElement {
   private config!: ChartProps;
   private rows?: ChartRow[];
-  private raw?: ChartRow[];
   private embed?: typeof embed;
   private result?: Result;
   private visible?: IntersectionObserver;
@@ -29,11 +33,12 @@ class ChartElement extends HTMLElement {
   private isVisible = false;
   private active = true;
   private initialParameters: ParameterValues = {};
+  private tablePage = 0;
   private themeChange = () => {
     if (this.rows) void this.render();
   };
   private resetView = () => {
-    void this.render();
+    void this.render({ preserveZoom: false });
   };
   private retryLoad = () => {
     void this.load();
@@ -87,6 +92,31 @@ class ChartElement extends HTMLElement {
     this.querySelector('[data-chart-retry]')?.addEventListener(
       'click',
       this.retryLoad,
+    );
+    this.querySelector('[data-chart-download-csv]')?.addEventListener(
+      'click',
+      () => this.downloadCsv(),
+      { signal: this.abort.signal },
+    );
+    this.querySelectorAll<HTMLButtonElement>('[data-chart-export]').forEach(
+      (control) => {
+        control.addEventListener(
+          'click',
+          () =>
+            void this.exportChart(control.dataset.chartExport as 'svg' | 'png'),
+          { signal: this.abort!.signal },
+        );
+      },
+    );
+    this.querySelector('[data-chart-table-previous]')?.addEventListener(
+      'click',
+      () => this.changeTablePage(-1),
+      { signal: this.abort.signal },
+    );
+    this.querySelector('[data-chart-table-next]')?.addEventListener(
+      'click',
+      () => this.changeTablePage(1),
+      { signal: this.abort.signal },
     );
     this.querySelectorAll<HTMLInputElement | HTMLSelectElement>(
       '[data-parameter]',
@@ -204,6 +234,11 @@ class ChartElement extends HTMLElement {
     ).forEach((control) => {
       control.disabled = state !== 'ready';
     });
+    this.querySelectorAll<HTMLButtonElement>(
+      '[data-chart-download-csv], [data-chart-export], [data-chart-table-previous], [data-chart-table-next]',
+    ).forEach((control) => {
+      control.disabled = state !== 'ready';
+    });
     this.querySelector<HTMLButtonElement>('[data-chart-retry]')!.hidden =
       state !== 'error';
   }
@@ -224,7 +259,6 @@ class ChartElement extends HTMLElement {
       if (!this.isConnected || generation !== this.generation) return;
       const raw = vega.read(csv, { type: 'csv' }) as ChartRow[];
       this.rows = prepareChartRows(raw, this.config);
-      this.raw = raw;
       this.embed = embedModule.default;
       this.renderTable();
       if (this.canRun()) await this.render();
@@ -260,7 +294,7 @@ class ChartElement extends HTMLElement {
     return theme;
   }
 
-  private async render() {
+  private async render({ preserveZoom = true } = {}) {
     if (!this.rows || !this.embed || !this.isConnected || !this.canRun())
       return;
     window.clearTimeout(this.resizeTimer);
@@ -289,13 +323,24 @@ class ChartElement extends HTMLElement {
         result.finalize();
         return;
       }
+      const priorState = preserveZoom ? this.interactionState() : undefined;
       this.result?.finalize();
       this.result = result;
+      const domains = Object.entries(priorState?.signals ?? {});
+      if (domains.length) {
+        for (const [name, domain] of domains) result.view.signal(name, domain);
+        await result.view.runAsync();
+      }
+      if (!this.isCurrent(result, generation)) {
+        result.finalize();
+        return;
+      }
       this.canvas.replaceChildren(mount);
       this.setStatus(
-        `${this.rows.length.toLocaleString()} rows loaded from CSV.`,
+        `${this.rows.length.toLocaleString()} prepared rows plotted from CSV.`,
         'ready',
       );
+      this.renderTable();
     } catch (error) {
       if (this.isConnected && generation === this.generation) this.fail(error);
     }
@@ -328,31 +373,143 @@ class ChartElement extends HTMLElement {
     if (hint) hint.hidden = !zoomEnabled;
   }
 
+  private interactionState() {
+    if (!chartCanZoom(this.config)) return;
+    const state = this.result?.view.getState({
+      signals: (name) => name?.startsWith('alk_window_') ?? false,
+      data: () => false,
+      recurse: false,
+    });
+    if (!state) return;
+    return {
+      signals: Object.fromEntries(
+        Object.entries(state.signals ?? {}).filter(([, value]) =>
+          isZoomDomain(value),
+        ),
+      ),
+    };
+  }
+
+  private isCurrent(result: Result, generation: number) {
+    return (
+      this.isConnected &&
+      generation === this.generation &&
+      this.result === result
+    );
+  }
+
   private renderTable() {
-    if (!this.raw) return;
-    const fields = Object.keys(this.raw[0]);
-    const visibleRows = this.raw.slice(0, 100);
+    if (!this.rows) return;
+    const page = chartTablePage(this.rows, this.tablePage);
+    this.tablePage = page.page;
     const table = document.createElement('table');
     const caption = table.createCaption();
-    caption.textContent = `${this.config.title}. ${this.raw.length > 100 ? `Showing the first 100 of ${this.raw.length} rows; download the CSV for all rows.` : `All ${this.raw.length} source rows.`} Empty cells are missing values.`;
+    caption.textContent = `${this.config.title}. Prepared rows plotted in this chart. Showing rows ${page.total ? page.page * 25 + 1 : 0}–${Math.min((page.page + 1) * 25, page.total)} of ${page.total}. Empty cells are missing values.`;
     const heading = table.createTHead().insertRow();
-    for (const field of fields) {
+    for (const field of page.fields) {
       const cell = document.createElement('th');
       cell.scope = 'col';
       cell.textContent = field;
       heading.append(cell);
     }
     const body = table.createTBody();
-    for (const row of visibleRows) {
+    for (const row of page.rows) {
       const tr = body.insertRow();
-      for (const field of fields)
+      for (const field of page.fields)
         tr.insertCell().textContent =
           row[field] === null ? '' : String(row[field]);
     }
     this.querySelector('.alk-chart-table-scroll')!.replaceChildren(table);
     this.querySelector('[data-chart-count]')!.textContent =
-      `(${this.raw.length.toLocaleString()} rows)`;
+      `(${page.total.toLocaleString()} prepared rows)`;
+    const current = this.querySelector<HTMLElement>('[data-chart-table-page]');
+    if (current)
+      current.textContent = `Page ${page.page + 1} of ${page.pageCount}`;
+    const previous = this.querySelector<HTMLButtonElement>(
+      '[data-chart-table-previous]',
+    );
+    const next = this.querySelector<HTMLButtonElement>(
+      '[data-chart-table-next]',
+    );
+    if (previous)
+      previous.disabled = page.page === 0 || this.dataset.state !== 'ready';
+    if (next)
+      next.disabled =
+        page.page >= page.pageCount - 1 || this.dataset.state !== 'ready';
   }
+
+  private changeTablePage(delta: number) {
+    if (!this.rows) return;
+    this.tablePage += delta;
+    this.renderTable();
+  }
+
+  private downloadCsv() {
+    if (!this.rows) return;
+    this.download(
+      new Blob([chartRowsToCsv(this.rows)], { type: 'text/csv;charset=utf-8' }),
+      chartExportFilename(this.config.title, 'csv'),
+    );
+    this.setStatus('Prepared plotted data exported as CSV.', 'ready');
+    this.renderTable();
+  }
+
+  private async exportChart(format: 'svg' | 'png') {
+    const result = this.result;
+    const generation = this.generation;
+    if (!result) return;
+    const control = this.querySelector<HTMLButtonElement>(
+      `[data-chart-export="${format}"]`,
+    );
+    if (control) control.disabled = true;
+    this.setStatus(`Preparing ${format.toUpperCase()} export…`, 'loading');
+    try {
+      if (format === 'svg') {
+        const svg = await result.view.toSVG();
+        if (!this.isCurrent(result, generation)) return;
+        this.download(
+          new Blob([svg], { type: 'image/svg+xml;charset=utf-8' }),
+          chartExportFilename(this.config.title, 'svg'),
+        );
+      } else {
+        const url = await result.view.toImageURL('png', 2);
+        if (!this.isCurrent(result, generation)) return;
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = chartExportFilename(this.config.title, 'png');
+        link.click();
+      }
+      if (!this.isCurrent(result, generation)) return;
+      this.setStatus(`Chart exported as ${format.toUpperCase()}.`, 'ready');
+      this.renderTable();
+    } catch (error) {
+      if (!this.isCurrent(result, generation)) return;
+      this.setStatus(
+        `Could not export ${format.toUpperCase()}: ${error instanceof Error ? error.message : 'an unexpected error occurred.'}`,
+        'ready',
+      );
+      this.renderTable();
+    }
+  }
+
+  private download(blob: Blob, filename: string) {
+    const link = document.createElement('a');
+    const objectUrl = URL.createObjectURL(blob);
+    link.href = objectUrl;
+    link.download = filename;
+    link.click();
+    window.setTimeout(() => URL.revokeObjectURL(objectUrl), 0);
+  }
+}
+
+function isZoomDomain(value: unknown): value is [number | Date, number | Date] {
+  return (
+    Array.isArray(value) &&
+    value.length === 2 &&
+    value.every(
+      (endpoint) => typeof endpoint === 'number' || endpoint instanceof Date,
+    )
+  );
 }
 
 if (!customElements.get('alk-chart'))

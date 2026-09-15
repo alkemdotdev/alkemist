@@ -10,7 +10,9 @@ npm run dev
 
 Edit `src/lib/site.ts` to change the name, tagline, and `sections` configuration. Each section (`blog`, `logs`, `labs`, `slides`, `docs`, `book`, and `info`) has an `enabled` flag and label; disabled sections produce no index or detail routes and are omitted from navigation. Edit `src/styles/site.css` for theme overrides, the matching `src/content/` directory for writing, and `src/pages/labs/[id].astro` for interactive apps.
 
-The starter's first deck is `src/content/slides/first-talk.md`. Keep `format: slides` in its frontmatter, use a top-level `---` to start the next slide, and choose `.mdx` only when a talk needs an interactive component. `incremental: true` enables list progression. `alkemist({ slides: true })` in `astro.config.ts` enables the deck compiler.
+The starter's first deck is `src/content/slides/first-talk.md`. Use `format: deck` in its frontmatter, use a top-level `---` to start the next slide, and choose `.mdx` only when a talk needs an interactive component. `incremental: true` enables list progression. `alkemist({ presentations: true })` in `astro.config.ts` enables the deck compiler.
+
+Presentations is the public section label, with `/slides/` and `src/content/slides/` preserved as defaults. The `Deck` layout keeps authored slide boundaries visible; `Presentation` adds the shared controls to continuous articles. `Slide` is available for explicit Astro compositions. Existing `Slides` imports, `format: slides`, and `slides: true` remain compatible.
 
 Documents open in a scrolling Read view, with a Present button that starts from your reading position. Ordinary content entries can also set `present: true`: H2 headings and top-level rules become presentation boundaries, while reading retains the original Markdown and footnotes. The example `src/content/blog/first-experiment.mdx` demonstrates this. The title and lead appear in both views; MDX articles keep explicit component imports.
 

@@ -23,25 +23,32 @@ test('registry verification waits for propagation but rejects changed bytes', as
       },
     ],
   };
-  const visible = {
-    versions: {
-      '1.0.0-canary.abc': { dist: { integrity: 'sha512-expected' } },
-    },
-    'dist-tags': { canary: '1.0.0-canary.abc' },
-  };
-  let reads = 0;
+  const visible = { dist: { integrity: 'sha512-expected' } };
+  let versionReads = 0;
+  let tagReads = 0;
   let waits = 0;
   await waitForRegistry(manifest, {
-    read: async () => (++reads === 1 ? null : visible),
+    readVersion: async (_name, version) => {
+      assert.equal(version, manifest.artifacts[0].version);
+      versionReads++;
+      return visible;
+    },
+    readTags: async () =>
+      ++tagReads === 1
+        ? { canary: 'stale-canary' }
+        : { canary: manifest.artifacts[0].version },
     sleep: async () => {
       waits++;
     },
     attempts: 2,
   });
   assert.equal(waits, 1);
+  assert.equal(versionReads, 2);
+  assert.equal(tagReads, 2);
   await assert.rejects(
     waitForRegistry(manifest, {
-      read: async () => null,
+      readVersion: async () => null,
+      readTags: async () => ({ canary: manifest.artifacts[0].version }),
       sleep: async () => {},
       attempts: 2,
     }),
@@ -49,32 +56,27 @@ test('registry verification waits for propagation but rejects changed bytes', as
   );
   await assert.rejects(
     waitForRegistry(manifest, {
-      read: async () => ({
-        ...visible,
-        versions: {
-          '1.0.0-canary.abc': { dist: { integrity: 'sha512-tampered' } },
-        },
-      }),
+      readVersion: async () => ({ dist: { integrity: 'sha512-tampered' } }),
+      readTags: async () => ({ canary: manifest.artifacts[0].version }),
       sleep: async () => assert.fail('Must not retry different bytes'),
     }),
     /registry integrity differs/,
   );
 });
-test('registry verification permits only the original bootstrap beta on latest', async () => {
+test('registry verification permits bootstrap latest only before any stable version', async () => {
   const artifact = {
     name: 'sample',
     version: '1.0.0-beta.1',
     integrity: 'sha512-expected',
   };
   const manifest = { tag: 'beta', artifacts: [artifact] };
-  const metadata = {
-    versions: {
-      '1.0.0-beta.1': { dist: { integrity: artifact.integrity } },
-    },
-    'dist-tags': { beta: artifact.version, latest: artifact.version },
-  };
   await waitForRegistry(manifest, {
-    read: async () => metadata,
+    readVersion: async () => ({ dist: { integrity: artifact.integrity } }),
+    readTags: async () => ({
+      beta: artifact.version,
+      latest: artifact.version,
+    }),
+    readPackage: async () => ({ versions: {} }),
     sleep: async () => assert.fail('Bootstrap tag is already visible'),
   });
 
@@ -91,12 +93,10 @@ test('registry verification permits only the original bootstrap beta on latest',
       waitForRegistry(
         { tag, artifacts: [prerelease] },
         {
-          read: async () => ({
-            versions: {
-              [version]: { dist: { integrity: prerelease.integrity } },
-            },
-            'dist-tags': { [tag]: version, latest: version },
+          readVersion: async () => ({
+            dist: { integrity: prerelease.integrity },
           }),
+          readTags: async () => ({ [tag]: version, latest: version }),
           sleep: async () => assert.fail('Must reject an invalid latest tag'),
         },
       ),
@@ -106,12 +106,13 @@ test('registry verification permits only the original bootstrap beta on latest',
 
   await assert.rejects(
     waitForRegistry(manifest, {
-      read: async () => ({
-        ...metadata,
-        versions: {
-          ...metadata.versions,
-          '1.0.0': { dist: { integrity: 'sha512-stable' } },
-        },
+      readVersion: async () => ({ dist: { integrity: artifact.integrity } }),
+      readTags: async () => ({
+        beta: artifact.version,
+        latest: artifact.version,
+      }),
+      readPackage: async () => ({
+        versions: { '2.0.0': { dist: { integrity: 'sha512-stable' } } },
       }),
       sleep: async () => assert.fail('Must reject bootstrap after stable'),
     }),

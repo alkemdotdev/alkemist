@@ -4,6 +4,11 @@ import type { ShaderProps } from './shader.astro';
 import { INKS } from '@alkemdotdev/alkemist-theme/palette';
 import { exposedParameters, renderParameters } from './parameters.ts';
 import { shaderParameters, chartParameters } from './figure-parameters.ts';
+import {
+  modelParameters,
+  modelViews,
+  type ModelView,
+} from './model-parameters.ts';
 
 const escape = (value: unknown) =>
   String(value ?? '').replace(
@@ -44,13 +49,13 @@ export function renderChart(props: ChartProps): string {
     <div class="alk-chart-tools alk-figure-controls" aria-label="${escape(props.title)} controls">
       ${canZoom ? `<button type="button" data-chart-reset${props.zoom === false ? ' hidden' : ''} disabled>Reset view</button>` : ''}
       <button type="button" data-chart-retry hidden>Retry</button>
-      <a href="${url(props.src)}" download>Download CSV</a>
+      <a href="${url(props.src)}" download>Original CSV</a>
       ${canZoom ? `<span class="alk-chart-hint" data-chart-hint${props.zoom === false ? ' hidden' : ''}>Shift + scroll to zoom · drag to pan</span>` : ''}
     </div>
     ${renderParameters(controls, { ink: props.ink ?? 'cobalt', grid: props.grid !== false, zoom: props.zoom !== false })}
     <div class="alk-figure-footer"><p class="alk-chart-status alk-figure-status" role="status" aria-live="polite">Chart loads when visible.</p></div>
-    <details class="alk-chart-table"><summary>Data table <span data-chart-count></span></summary>
-      <div class="alk-chart-table-scroll" tabindex="0" aria-label="${escape(props.title)} data table"><p data-chart-table-placeholder>The table loads alongside the chart.</p></div></details>
+    <details class="alk-chart-table alk-chart-data-tools"><summary>Data and export <span data-chart-count></span></summary><div class="alk-chart-data-tools-panel"><p>Inspect the prepared rows plotted in this chart, or save the current chart view.</p><div class="alk-chart-export-actions"><button type="button" data-chart-download-csv disabled>Download plotted CSV</button><button type="button" data-chart-export="svg" disabled>Download SVG</button><button type="button" data-chart-export="png" disabled>Download PNG</button></div>
+      <div class="alk-chart-table-scroll" tabindex="0" aria-label="${escape(props.title)} data table"><p data-chart-table-placeholder>The table loads alongside the chart.</p></div><div class="alk-chart-table-pages" aria-label="Data table pages"><button type="button" data-chart-table-previous disabled>Previous page</button><span data-chart-table-page>Page 1 of 1</span><button type="button" data-chart-table-next disabled>Next page</button></div></div></details>
     ${props.caption ? `<p class="alk-chart-source alk-figure-caption">${escape(props.caption)}</p>` : ''}
     <noscript><p class="alk-figure-caption">JavaScript is required for this interactive view. Download the CSV to inspect the source data.</p></noscript>
   </figure></alk-chart>`;
@@ -62,9 +67,19 @@ export function renderModel({
   title,
   description,
   poster,
+  view = 'perspective',
+  wireframe = false,
+  parameters,
   class: className,
 }: ModelProps): string {
-  return `<alk-model${id ? ` id="${escape(id)}"` : ''} class="alk-model ${escape(className)}" data-src="${url(src)}" data-state="idle">
+  const initialView: ModelView = modelViews.includes(view)
+    ? view
+    : 'perspective';
+  const initialParameters = {
+    view: initialView,
+    wireframe: Boolean(wireframe),
+  };
+  return `<alk-model${id ? ` id="${escape(id)}"` : ''} class="alk-model ${escape(className)}" data-src="${url(src)}" data-state="idle" data-parameter-values="${escape(JSON.stringify(initialParameters))}">
     <figure class="alk-figure" aria-label="${escape(title)}">
       <figcaption class="alk-model-heading alk-figure-heading"><div>
       <h3 class="alk-figure-title">${escape(title)}</h3>${description ? `<p class="alk-model-description alk-figure-description">${escape(description)}</p>` : ''}</div></figcaption>
@@ -75,8 +90,9 @@ export function renderModel({
       </div>
       <div class="alk-model-toolbar alk-figure-controls" aria-label="${escape(title)} controls">
         <button type="button" data-view="perspective" disabled>Reset view</button><details class="alk-figure-options"><summary>View options</summary><div class="alk-figure-options-panel"><div class="alk-model-presets" role="group" aria-label="Camera view"><button type="button" data-view="front" disabled>Front</button><button type="button" data-view="top" disabled>Top</button></div>
-        <div class="alk-model-switches"><label><input type="checkbox" data-wireframe disabled /> Wireframe</label><label><input type="checkbox" data-spin disabled /> Spin</label></div></div></details><a href="${url(src)}" download>Download model</a>
+        <div class="alk-model-switches"><label><input type="checkbox" data-wireframe${initialParameters.wireframe ? ' checked' : ''} disabled /> Wireframe</label><label><input type="checkbox" data-spin disabled /> Spin</label></div></div></details><a href="${url(src)}" download>Download model</a>
       </div>
+      ${renderParameters(exposedParameters(modelParameters, parameters, false), initialParameters)}
       <div class="alk-model-footer alk-figure-footer"><p class="alk-model-status alk-figure-status" role="status" aria-live="polite">Interactive view loads when visible.</p></div>
       <noscript><p class="alk-figure-caption">Enable JavaScript to explore this model. The original file is available above.</p></noscript>
     </figure></alk-model>`;

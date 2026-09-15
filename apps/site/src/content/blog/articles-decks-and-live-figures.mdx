@@ -1,0 +1,59 @@
+---
+title: Articles, decks, and live figures
+description: Separate reading layouts, shared presentation controls, and figures you can inspect.
+date: '2026-09-15'
+present: true
+cover:
+  src: ../../assets/forms-engineering/interference.png
+  alt: Fine curves wrapping around a central form.
+---
+
+import Chart from '@alkemdotdev/alkemist-components/chart';
+import Model from '@alkemdotdev/alkemist-components/model';
+
+## Two kinds of page
+
+An article builds an argument in a continuous column. A deck gives each observation its own frame. They share Markdown, figures, themes, and presentation controls, while keeping distinct reading layouts.
+
+The public components now make that distinction explicit: `Presentation` adds presenting to sectioned content, `Deck` gives authored slides their own reading surfaces, and `Slide` defines a section in an Astro composition. This article uses `Presentation`; [Look closer](/slides/look-closer/) uses `Deck`. The [layout comparison](/labs/presentation-layouts/) renders one source through both.
+
+The navigation says **Presentations**. Existing `/slides/` links, content folders, and `Slides` imports continue to work. New decks can use `format: deck`, with `presentations: true` enabling the integration.
+
+## A chart with inspectable data
+
+A plotted curve should leave its values within reach. **Data and export** now contains a paged table of the prepared rows supplied to the plot, a CSV of those rows, and SVG or PNG exports of the current view. The original CSV remains separately available.
+
+<Chart
+  id="article-trace"
+  src="/test/oscillation.csv"
+  type="line"
+  x="time"
+  y="position"
+  title="A damped oscillator"
+  description="A synthetic analytic trajectory, not a measured experiment."
+  sample
+  parameters={['ink', 'grid', 'zoom']}
+/>
+
+Zoom into the trace, then change its ink. The visible window stays in place; Reset view restores the whole domain. Image export captures that visible window. The data table and plotted CSV cover all prepared rows, including values outside the current zoom window.
+
+## The same controls for geometry
+
+Models now join shaders and charts in the shared parameter API. Ordinary props set initial values; `parameters` exposes a small set of reader controls. Camera presets and wireframe changes update the loaded scene.
+
+<Model
+  id="article-knot"
+  src="/test/torus-knot.glb"
+  poster="/test/torus-knot.svg"
+  title="A torus knot"
+  description="An original generated teaching mesh."
+  parameters
+/>
+
+Focus, Read, and Present retain the same local figure. Parameters are local to that mounted instance; audience windows currently follow slide position, steps, and blackout rather than figure values.
+
+## Keep the source small
+
+Plain Markdown remains the starting point. Components add behavior where it is useful, and the site's Neutral, Paper, Chalk, and Blueprint themes work across the page and its figures.
+
+The [presentation guide](/docs/slides/), [chart guide](/docs/charts/), and [parameter reference](/docs/parameters/) describe the supported APIs. The [live figures lab](/labs/themes-and-parameters/) provides a place to try them together.

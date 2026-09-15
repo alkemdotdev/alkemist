@@ -29,16 +29,18 @@ Copy script. With `math: false`, `code: false`, and slides disabled, no
 presentation assets are injected. Asset injection uses Astro's standard
 [integration hooks](https://docs.astro.build/en/reference/integrations-reference/#injectscript-option).
 
-Set `slides: true` to compile `format: slides` Markdown/MDX documents into
+Set `presentations: true` to compile `format: deck` Markdown/MDX documents into
 slide sections. Top-level `---` separates slides; `incremental: true` reveals
 list items. Markdown notes use `<!-- notes: ... -->`; MDX can use the built-in
 `SpeakerNotes`, `Step`, `Note`, and figure components without routine imports.
-Render the compiled content inside `@alkemdotdev/alkemist-components/slides`.
+Render the compiled content inside `@alkemdotdev/alkemist-components/deck`.
 The generated starter uses `src/content/slides/` and `/slides/` by default.
 The same option enables callouts and lazy Mermaid fences in ordinary articles.
 
 An ordinary article can opt into presentation with `present: true` instead of
-`format: slides`. Its H2 headings and top-level rules define sections; the rules
+`format: deck`. Its H2 headings and top-level rules define sections; the rules
 and a single ordinary footnote list remain in the reading document. MDX articles
-keep explicit imports. Render the compiled content once inside `Slides`; the
-starter supports this flag in its content routes.
+keep explicit imports. Render the compiled content once inside `Presentation`; the
+starter supports this flag in its content routes. Articles keep continuous prose;
+decks have distinct reading surfaces. Existing `slides: true` and `format: slides`
+remain compatible aliases. Conflicting integration flags are rejected.

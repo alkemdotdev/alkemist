@@ -7,7 +7,7 @@ export const sections = {
   blog: { enabled: true, label: 'Blog' },
   logs: { enabled: true, label: 'Logs' },
   labs: { enabled: true, label: 'Labs' },
-  slides: { enabled: true, label: 'Slides' },
+  slides: { enabled: true, label: 'Presentations' },
   docs: { enabled: true, label: 'Docs' },
   book: { enabled: true, label: 'Book' },
   info: { enabled: true, label: 'Info' },

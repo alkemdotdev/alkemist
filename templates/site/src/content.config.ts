@@ -11,7 +11,7 @@ const datedEntrySchema = entrySchema.extend({
   published: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
 });
 const slidesSchema = entrySchema.extend({
-  format: z.literal('slides'),
+  format: z.enum(['deck', 'slides']),
   incremental: z.boolean().default(false),
   theme: z
     .enum(['inherit', 'default', 'paper', 'chalk', 'blueprint'])

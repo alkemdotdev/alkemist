@@ -1,0 +1,22 @@
+---
+export interface SlideProps {
+  id?: string;
+  title?: string;
+  layout?: 'auto' | 'title' | 'content' | 'split' | 'media' | 'quote';
+  class?: string;
+  style?: string;
+}
+type Props = SlideProps;
+const { id, title, layout = 'auto', class: className, style } = Astro.props;
+---
+
+<section
+  id={id}
+  data-alk-slide
+  data-layout={layout}
+  class={className}
+  style={style}
+>
+  {title && <h2>{title}</h2>}
+  <slot />
+</section>

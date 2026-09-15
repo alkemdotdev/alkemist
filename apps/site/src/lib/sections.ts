@@ -44,7 +44,7 @@ export const siteSections = {
   },
   slides: {
     enabled: true,
-    label: 'Slides',
+    label: 'Presentations',
     href: '/slides/',
     description: 'Browser talks built from Markdown and MDX.',
   },

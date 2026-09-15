@@ -1,10 +1,10 @@
 ---
 title: Live figure parameters
-description: Expose a small, local set of controls for a Shader or Chart without turning its source data into application state.
+description: Expose a small, local set of controls for a Shader, Chart, or Model without turning its source data into application state.
 order: 5
 ---
 
-`Shader` and `Chart` can expose documented figure parameters with one `parameters` prop. The normal component props still provide initial values. Controls stay local to the mounted figure: they do not change the URL, audience view, or source CSV.
+`Shader`, `Chart`, and `Model` can expose documented figure parameters with one `parameters` prop. The normal component props still provide initial values. Controls stay local to the mounted figure: they do not change the URL, audience view, or source CSV.
 
 ```mdx
 import Shader from '@alkemdotdev/alkemist-components/shader';
@@ -35,6 +35,8 @@ import Chart from '@alkemdotdev/alkemist-components/chart';
 
 Each control includes a Reset values button that returns to the authored initial values. Invalid programmatic patches fail explicitly: numeric Shader values must be finite and remain within frequency 3–18 and angle 0–180; selections and booleans must match their declared control.
 
-Mounted `alk-shader` and `alk-chart` hosts provide `getParameters()` and `setParameters(patch)` for an embedding page. Successful changes bubble `alk:parameters-change` with a plain values object in `event.detail`. Updating a Chart parameter redraws the rows already loaded in memory; it does not fetch the CSV again.
+`Model` exposes `view` (perspective, front, or top) and `wireframe` (boolean), disabled by default. `parameters={true}` reveals both; ordinary `view` and `wireframe` props set their initial values. Camera and material changes reuse the loaded scene, and turning wireframe off restores each material's authored setting. Spin remains an explicit playback control.
+
+Mounted `alk-shader`, `alk-chart`, and `alk-model` hosts provide `getParameters()` and `setParameters(patch)` for an embedding page. Successful changes bubble `alk:parameters-change` with a plain values object in `event.detail`. Updating a Chart parameter redraws the rows already loaded in memory; it does not fetch the CSV again. Compatible redraws retain the current zoom window; Reset view restores the full plotted domain. Model patches update the existing camera and materials without loading the model again.
 
 Controls are hidden when printing. Parameter state remains on the existing mounted figure through reader, presentation, and slide navigation, but it is intentionally not persisted for another viewer or a new page load.

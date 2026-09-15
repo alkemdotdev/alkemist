@@ -77,7 +77,7 @@ test('embedded figures keep downloads outside ready-state diagnostics', () => {
     const markup = renderChart({ ...chart, type });
     assert.match(
       markup,
-      /alk-chart-tools[\s\S]*Download CSV<\/a>[\s\S]*alk-figure-footer/,
+      /alk-chart-tools[\s\S]*Original CSV<\/a>[\s\S]*alk-figure-footer[\s\S]*Data and export/,
     );
     assert.doesNotMatch(markup, /Data visualization|alk-figure-format/);
   }

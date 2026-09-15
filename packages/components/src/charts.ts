@@ -372,7 +372,7 @@ export function createChartSpec(
   }
   return {
     ...base,
-    ...(chartCanZoom(config) && config.zoom !== false
+    ...(chartCanZoom(config)
       ? {
           params: [
             {
@@ -383,7 +383,8 @@ export function createChartSpec(
                   config.type === 'scatter'
                     ? ['x' as const, 'y' as const]
                     : ['x' as const],
-                zoom: 'wheel![event.shiftKey]',
+                translate: config.zoom !== false,
+                zoom: config.zoom !== false ? 'wheel![event.shiftKey]' : false,
               },
               bind: 'scales' as const,
             },

@@ -1,8 +1,15 @@
 import type { Object3D, Material, Texture, Mesh, SkinnedMesh } from 'three';
+import {
+  modelParameters,
+  type ModelParameterValues,
+  type ModelView,
+} from './model-parameters';
+import { validateParameters } from './parameters';
 
 type ModelRuntime = {
   dispose: () => void;
   setVisible: (value: boolean) => void;
+  setParameters: (patch: { view?: unknown; wireframe?: unknown }) => void;
 };
 
 /** Release shared mesh resources once, including GLTFLoader-owned ImageBitmaps. */
@@ -51,6 +58,7 @@ async function createModel(
   host: HTMLElement,
   signal: AbortSignal,
   reportError: (message: string) => void,
+  initialParameters: ModelParameterValues,
 ): Promise<ModelRuntime> {
   // Importing the custom element is cheap; GPU code arrives only near the viewport.
   const [THREE, { GLTFLoader }, { OrbitControls }] = await Promise.all([
@@ -152,7 +160,7 @@ async function createModel(
     const horizontal = Math.atan(Math.tan(vertical) * camera.aspect);
     return (radius / Math.sin(Math.min(vertical, horizontal))) * 1.12;
   };
-  const preset = (view: string) => {
+  const preset = (view: ModelView) => {
     const direction =
       view === 'top'
         ? new THREE.Vector3(0, 1, 0.001)
@@ -259,13 +267,55 @@ async function createModel(
     const status = host.querySelector<HTMLElement>('.alk-model-status')!;
     status.textContent = `${Math.round(triangles).toLocaleString()} triangles`;
     for (const control of host.querySelectorAll<
-      HTMLButtonElement | HTMLInputElement
-    >('[data-view], [data-wireframe], [data-spin]'))
+      HTMLButtonElement | HTMLInputElement | HTMLSelectElement
+    >(
+      '[data-view], [data-wireframe], [data-spin], [data-parameter], [data-parameters-reset]',
+    ))
       control.disabled = false;
     const spin = host.querySelector<HTMLInputElement>('[data-spin]')!;
     const wireframe = host.querySelector<HTMLInputElement>('[data-wireframe]')!;
     spin.checked = false;
-    wireframe.checked = false;
+    const authoredWireframes = new Map<Material, boolean>();
+    gltf.scene.traverse((object) => {
+      const mesh = object as Mesh;
+      if (!mesh.material) return;
+      for (const material of Array.isArray(mesh.material)
+        ? mesh.material
+        : [mesh.material]) {
+        if ('wireframe' in material)
+          authoredWireframes.set(material, Boolean(material.wireframe));
+      }
+    });
+    const updateControl = (name: string, value: string | boolean) => {
+      const parameter = host.querySelector<
+        HTMLInputElement | HTMLSelectElement
+      >(`[data-parameter="${name}"]`);
+      if (
+        parameter instanceof HTMLInputElement &&
+        parameter.type === 'checkbox'
+      )
+        parameter.checked = Boolean(value);
+      else if (parameter) parameter.value = String(value);
+      if (name === 'wireframe') wireframe.checked = Boolean(value);
+    };
+    const setParameters = (patch: { view?: unknown; wireframe?: unknown }) => {
+      const values = validateParameters(
+        modelParameters,
+        patch as Record<string, unknown>,
+      );
+      if (values.view) preset(values.view as ModelView);
+      if (Object.hasOwn(values, 'wireframe')) {
+        const enabled = values.wireframe as boolean;
+        for (const [material, authored] of authoredWireframes) {
+          (material as Material & { wireframe: boolean }).wireframe =
+            enabled || authored;
+          material.needsUpdate = true;
+        }
+      }
+      for (const [name, value] of Object.entries(values))
+        updateControl(name, value as string | boolean);
+      requestRender();
+    };
     const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
     const setSpin = () => {
       controls.autoRotate = spin.checked;
@@ -285,29 +335,27 @@ async function createModel(
     );
     wireframe.addEventListener(
       'change',
-      () => {
-        gltf.scene.traverse((object) => {
-          const mesh = object as Mesh;
-          if (!mesh.material) return;
-          for (const material of Array.isArray(mesh.material)
-            ? mesh.material
-            : [mesh.material]) {
-            if ('wireframe' in material) {
-              material.wireframe = wireframe.checked;
-              material.needsUpdate = true;
-            }
-          }
-        });
-        requestRender();
-      },
+      () =>
+        host.dispatchEvent(
+          new CustomEvent('alk:parameter-input', {
+            detail: { wireframe: wireframe.checked },
+          }),
+        ),
       { signal: events.signal },
     );
     for (const button of host.querySelectorAll<HTMLButtonElement>(
       '[data-view]',
     ))
-      button.addEventListener('click', () => preset(button.dataset.view!), {
-        signal: events.signal,
-      });
+      button.addEventListener(
+        'click',
+        () =>
+          host.dispatchEvent(
+            new CustomEvent('alk:parameter-input', {
+              detail: { view: button.dataset.view },
+            }),
+          ),
+        { signal: events.signal },
+      );
     canvas.addEventListener(
       'keydown',
       (event) => {
@@ -336,7 +384,11 @@ async function createModel(
             break;
           case 'Home':
             event.preventDefault();
-            preset('perspective');
+            host.dispatchEvent(
+              new CustomEvent('alk:parameter-input', {
+                detail: { view: 'perspective' },
+              }),
+            );
             return;
           default:
             return;
@@ -389,18 +441,30 @@ async function createModel(
       const width = viewport.clientWidth;
       const height = viewport.clientHeight;
       if (!width || !height) return;
-      const previousAspect = camera.aspect;
+      const previousFit = fitDistance();
+      const offset = camera.position.clone().sub(controls.target);
+      const relativeDistance = offset.length() / previousFit;
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
       renderer.setSize(width, height, false);
-      if (previousAspect !== camera.aspect) preset('perspective');
+      if (offset.length() > 0) {
+        const distance = THREE.MathUtils.clamp(
+          fitDistance() * relativeDistance,
+          controls.minDistance,
+          controls.maxDistance,
+        );
+        camera.position
+          .copy(controls.target)
+          .add(offset.normalize().multiplyScalar(distance));
+        controls.update();
+      }
       requestRender();
     };
     ready = true;
     resizeObserver = new ResizeObserver(resize);
     resizeObserver.observe(viewport);
     resize();
-    preset('perspective');
+    setParameters(initialParameters);
     updateTheme();
     return {
       dispose,
@@ -409,6 +473,7 @@ async function createModel(
         if (value) requestRender();
         else pause();
       },
+      setParameters,
     };
   } catch (error) {
     dispose();
@@ -423,11 +488,76 @@ class ModelElement extends HTMLElement {
   private observer?: IntersectionObserver;
   private visible = false;
   private active = true;
+  private values: ModelParameterValues = {
+    view: 'perspective',
+    wireframe: false,
+  };
+  private initialized = false;
+
+  getParameters(): ModelParameterValues {
+    return { ...this.values };
+  }
+
+  setParameters(patch: Record<string, unknown>) {
+    const values = validateParameters(modelParameters, patch);
+    Object.assign(this.values, values as Partial<ModelParameterValues>);
+    this.runtime?.setParameters(values);
+    this.syncParameters();
+    this.dispatchEvent(
+      new CustomEvent('alk:parameters-change', {
+        bubbles: true,
+        detail: this.getParameters(),
+      }),
+    );
+  }
 
   connectedCallback() {
     if (this.lifetime) return;
     this.lifetime = new AbortController();
+    if (!this.initialized) {
+      this.values = {
+        ...this.values,
+        ...(validateParameters(
+          modelParameters,
+          JSON.parse(this.dataset.parameterValues ?? '{}'),
+        ) as Partial<ModelParameterValues>),
+      };
+      this.initialized = true;
+    }
     this.active = this.dataset.alkActive !== 'false';
+    this.addEventListener(
+      'alk:parameter-input',
+      (event) => this.setParameters((event as CustomEvent).detail),
+      { signal: this.lifetime.signal },
+    );
+    this.querySelectorAll<HTMLInputElement | HTMLSelectElement>(
+      '[data-parameter]',
+    ).forEach((control) => {
+      control.addEventListener(
+        'input',
+        () =>
+          this.setParameters({
+            [control.dataset.parameter!]:
+              control instanceof HTMLInputElement && control.type === 'checkbox'
+                ? control.checked
+                : control.value,
+          }),
+        { signal: this.lifetime!.signal },
+      );
+    });
+    this.querySelector<HTMLButtonElement>(
+      '[data-parameters-reset]',
+    )?.addEventListener(
+      'click',
+      () =>
+        this.setParameters(
+          JSON.parse(this.dataset.parameterValues ?? '{}') as Record<
+            string,
+            unknown
+          >,
+        ),
+      { signal: this.lifetime.signal },
+    );
     this.addEventListener(
       'alk:presentation',
       () => {
@@ -487,8 +617,11 @@ class ModelElement extends HTMLElement {
     this.querySelector<HTMLElement>('.alk-model-status')!.textContent =
       'Loading interactive geometry…';
     try {
-      const runtime = await createModel(this, load.signal, (message) =>
-        this.fail(message),
+      const runtime = await createModel(
+        this,
+        load.signal,
+        (message) => this.fail(message),
+        this.values,
       );
       if (load.signal.aborted || !this.isConnected) {
         runtime.dispose();
@@ -501,6 +634,7 @@ class ModelElement extends HTMLElement {
         'false',
       );
       runtime.setVisible(this.canRun());
+      this.syncParameters();
     } catch (error) {
       if (load.signal.aborted) return;
       this.fail(
@@ -521,9 +655,26 @@ class ModelElement extends HTMLElement {
     );
     this.querySelector<HTMLElement>('.alk-model-status')!.textContent = message;
     for (const control of this.querySelectorAll<
-      HTMLButtonElement | HTMLInputElement
-    >('[data-view], [data-wireframe], [data-spin]'))
+      HTMLButtonElement | HTMLInputElement | HTMLSelectElement
+    >(
+      '[data-view], [data-wireframe], [data-spin], [data-parameter], [data-parameters-reset]',
+    ))
       control.disabled = true;
+  }
+
+  private syncParameters() {
+    for (const control of this.querySelectorAll<
+      HTMLInputElement | HTMLSelectElement
+    >('[data-parameter]')) {
+      const name = control.dataset.parameter;
+      if (name !== 'view' && name !== 'wireframe') continue;
+      const value = this.values[name];
+      if (control instanceof HTMLInputElement && control.type === 'checkbox')
+        control.checked = Boolean(value);
+      else control.value = String(value);
+    }
+    const wireframe = this.querySelector<HTMLInputElement>('[data-wireframe]');
+    if (wireframe) wireframe.checked = Boolean(this.values.wireframe);
   }
 
   private stop() {
@@ -541,8 +692,10 @@ class ModelElement extends HTMLElement {
     this.querySelector<HTMLElement>('.alk-model-status')!.textContent =
       'Interactive view loads when visible.';
     for (const control of this.querySelectorAll<
-      HTMLButtonElement | HTMLInputElement
-    >('[data-view], [data-wireframe], [data-spin]'))
+      HTMLButtonElement | HTMLInputElement | HTMLSelectElement
+    >(
+      '[data-view], [data-wireframe], [data-spin], [data-parameter], [data-parameters-reset]',
+    ))
       control.disabled = true;
   }
 }

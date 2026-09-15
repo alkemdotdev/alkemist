@@ -1,0 +1,9 @@
+---
+import Presentation from './presentation.astro';
+import type { PresentationProps } from './presentation.astro';
+/** An authored sequence of slides, readable as a document or presented on stage. */
+export type DeckProps = Omit<PresentationProps, 'layout'>;
+type Props = DeckProps;
+---
+
+<Presentation {...Astro.props} layout="deck"><slot /></Presentation>

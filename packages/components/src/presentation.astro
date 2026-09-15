@@ -1,0 +1,304 @@
+---
+import Annotations from './annotations.astro';
+import { THEME_STYLES, type ThemeStyle } from '@alkemdotdev/alkemist-theme';
+import './focus.css';
+import '@alkemdotdev/alkemist-theme/styles.css';
+import 'reveal.js/reveal.css';
+import '@alkemdotdev/alkemist-theme/slides.css';
+
+export interface PresentationProps {
+  /** Article preserves prose flow; deck keeps authored slide boundaries visible. */
+  layout?: 'article' | 'deck';
+  title: string;
+  description?: string;
+  /** Documents open in Read. Explicit presentation links retain their mode. */
+  view?: 'read' | 'present';
+  /** Embedded decks keep independent navigation without changing the URL. */
+  embedded?: boolean;
+  theme?: 'inherit' | ThemeStyle;
+  colorScheme?: 'inherit' | 'system' | 'light' | 'dark';
+  transition?: 'none' | 'fade' | 'slide';
+  aspect?: 'auto' | '16:9' | '4:3';
+  /** Local text highlights and comments; exported as W3C Web Annotations. */
+  annotations?: boolean;
+  /** Opt in to the experimental, receiver-dependent Presentation API. */
+  casting?: boolean;
+  id?: string;
+  class?: string;
+  style?: string;
+}
+type Props = PresentationProps;
+const {
+  title,
+  description,
+  layout = 'article',
+  view = 'read',
+  embedded = false,
+  theme = 'inherit',
+  colorScheme = 'inherit',
+  transition = 'fade',
+  aspect = 'auto',
+  annotations = true,
+  casting = false,
+  id = `alk-slides-${crypto.randomUUID()}`,
+  class: className,
+  style,
+} = Astro.props;
+---
+
+<alk-slides
+  id={id}
+  class:list={['alk-slides', 'alk-presentation', className]}
+  data-layout-kind={layout}
+  data-initial-view={view}
+  data-embedded={String(embedded)}
+  data-theme={theme}
+  data-alk-theme-style={theme === 'inherit' ? undefined : theme}
+  data-color-scheme={colorScheme}
+  data-transition={transition}
+  data-aspect={aspect}
+  data-casting={String(casting)}
+  style={style}
+  aria-label={title}
+>
+  <div
+    class="alk-slides-toolbar"
+    data-slides-controls
+    hidden
+    data-pagefind-ignore
+  >
+    <span class="alk-slides-title">{title}</span>
+    <div class="alk-slides-modes" role="group" aria-label="Viewing mode">
+      <button
+        type="button"
+        data-slides-read
+        aria-pressed="true"
+        title="Return to reading (Esc)"
+        aria-controls={`${id}-viewport`}>Back to reading</button
+      >
+      <button
+        type="button"
+        data-slides-present
+        aria-pressed="false"
+        title="Present from your reading position"
+        aria-controls={`${id}-viewport`}
+      >
+        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24"
+          ><path d="m8 5 11 7-11 7Z" fill="currentColor"></path></svg
+        >
+        <span data-slides-present-label>Present</span>
+      </button>
+    </div>
+    {
+      annotations && (
+        <Annotations target={`${id}-viewport`} documentId={`slides:${title}`} />
+      )
+    }
+    <details data-slides-tools>
+      <summary>Tools</summary>
+      <div class="alk-slides-tools-panel">
+        <fieldset class="alk-slides-tool-group alk-slides-appearance">
+          <legend>Appearance</legend>
+          <label
+            >Theme <select data-slides-theme aria-label="Presentation theme">
+              <option value="inherit" selected={theme === 'inherit'}
+                >Site theme</option
+              >
+              {
+                THEME_STYLES.map(({ value, label }) => (
+                  <option value={value} selected={theme === value}>
+                    {label}
+                  </option>
+                ))
+              }
+            </select></label
+          >
+          <label
+            >Color <select
+              data-slides-color-scheme
+              aria-label="Presentation color mode"
+            >
+              <option value="inherit" selected={colorScheme === 'inherit'}
+                >Site color</option
+              >
+              <option value="system" selected={colorScheme === 'system'}
+                >System</option
+              >
+              <option value="light" selected={colorScheme === 'light'}
+                >Light</option
+              >
+              <option value="dark" selected={colorScheme === 'dark'}
+                >Dark</option
+              >
+            </select></label
+          >
+        </fieldset>
+        <fieldset class="alk-slides-tool-group" data-slides-present-tools>
+          <legend>Views</legend>
+          <button type="button" data-slides-notes data-slides-speaker
+            >Speaker view</button
+          >
+          <button type="button" data-slides-audience>Audience window</button>
+          <button type="button" data-slides-fullscreen>Fullscreen</button>
+          <button type="button" data-slides-screen hidden
+            >Choose display…</button
+          >
+          <button type="button" data-slides-floating aria-pressed="false" hidden
+            >Floating notes</button
+          >
+          <button type="button" data-slides-cast hidden
+            >Cast to a receiver</button
+          >
+        </fieldset>
+        <fieldset class="alk-slides-tool-group" data-slides-present-tools>
+          <legend>Presenting</legend>
+          <button type="button" data-slides-pointer aria-pressed="false"
+            >Laser pointer</button
+          >
+          <button type="button" data-slides-blackout aria-pressed="false"
+            >Blackout</button
+          >
+          <button type="button" data-slides-awake aria-pressed="false" hidden
+            >Keep display awake</button
+          >
+          <label
+            >Advance <select
+              data-slides-timer-seconds
+              aria-label="Timed advance interval"
+            >
+              <option value="5">5 seconds</option><option value="10" selected
+                >10 seconds</option
+              ><option value="20">20 seconds</option>
+            </select></label
+          >
+          <button type="button" data-slides-timer aria-pressed="false"
+            >Start timer</button
+          >
+        </fieldset>
+        <fieldset class="alk-slides-tool-group">
+          <legend>Document</legend>
+          <button type="button" data-slides-contents>Contents</button>
+          <button type="button" data-slides-print>Print</button>
+          <button type="button" data-slides-copy-link>Copy current link</button>
+          <button type="button" data-slides-help aria-label="Keyboard help"
+            >Keyboard help</button
+          >
+        </fieldset>
+      </div>
+    </details>
+  </div>
+  <button type="button" data-slides-audience-fullscreen hidden
+    >Fullscreen</button
+  >
+  <div
+    id={`${id}-viewport`}
+    class="alk-slides-viewport"
+    tabindex="0"
+    aria-label={`${title} presentation`}
+  >
+    <div class="slides"><slot /></div>
+  </div>
+  <div
+    class="alk-slides-navigation"
+    data-slides-controls
+    hidden
+    data-pagefind-ignore
+  >
+    <button type="button" data-slides-prev aria-label="Previous slide or step"
+      >←</button
+    >
+    <select
+      data-slides-picker
+      aria-label={layout === 'article' ? 'Choose section' : 'Choose slide'}
+    ></select>
+    <button type="button" data-slides-next aria-label="Next slide or step"
+      >→</button
+    >
+    <output
+      class="alk-slides-timer-status"
+      data-slides-timer-status
+      aria-live="polite"
+      hidden></output>
+    <button
+      type="button"
+      class="alk-slides-overview-button"
+      data-slides-overview
+      aria-label={layout === 'article' ? 'Section overview' : 'Slide overview'}
+      title="Slide overview (O)"
+    >
+      <output class="alk-slides-count" data-slides-count aria-live="polite"
+      ></output>
+      <span aria-hidden="true">▦</span>
+    </button>
+  </div>
+  <p class="alk-slides-message" data-slides-message role="status" hidden></p>
+  <span class="alk-slides-laser" data-slides-laser hidden aria-hidden="true"
+  ></span>
+  <button
+    type="button"
+    class="alk-slides-blackout"
+    data-slides-blackout-overlay
+    hidden
+    aria-label="Restore presentation"
+  >
+    Restore presentation
+  </button>
+  <dialog data-slides-screen-dialog aria-label="Choose presentation display">
+    <form method="dialog">
+      <header>
+        <h2>Choose display</h2><button type="submit">Close</button>
+      </header>
+    </form>
+    <p>
+      Present this deck on an attached display. Speaker view stays in its own
+      window.
+    </p>
+    <div data-slides-screens></div>
+  </dialog>
+  <dialog
+    data-slides-overview-dialog
+    aria-label={layout === 'article' ? 'Section overview' : 'Slide overview'}
+  >
+    <form method="dialog">
+      <header>
+        <h2>Overview</h2><button type="submit" aria-label="Close overview"
+          >Close</button
+        >
+      </header><div data-slides-overview-cards></div>
+    </form>
+  </dialog>
+  <dialog data-slides-help-dialog aria-label="Presentation keyboard help">
+    <form method="dialog">
+      <header>
+        <h2>Keyboard controls</h2><button
+          type="submit"
+          aria-label="Close keyboard help">Close</button
+        >
+      </header><dl>
+        <dt>N / → / Space</dt><dd>Next slide or step</dd><dt>P / ←</dt><dd>
+          Previous slide or step
+        </dd><dt>Home / End</dt><dd>First / last slide</dd><dt>O</dt><dd>
+          Overview
+        </dd><dt>B</dt><dd>Blackout</dd><dt>L</dt><dd>Laser pointer</dd><dt>
+          F
+        </dt><dd>Fullscreen</dd><dt>S</dt><dd>Speaker view</dd><dt>?</dt><dd>
+          Keyboard help
+        </dd><dt>Escape</dt><dd>
+          Close overlays, blackout, or leave presentation
+        </dd>
+      </dl>
+    </form>
+  </dialog>
+  {
+    description && (
+      <span class="alk-slides-description" hidden>
+        {description}
+      </span>
+    )
+  }
+</alk-slides>
+
+<script>
+  import './slides-client';
+  import './diagram-client';
+</script>

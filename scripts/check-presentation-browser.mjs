@@ -60,7 +60,7 @@ async function checkPresentation(page) {
   assert(
     !(
       await page.locator('[data-slides-overview-cards]').textContent()
-    ).includes('Download CSV'),
+    ).includes('Original CSV'),
     'Overview included widget controls in its excerpt',
   );
   await page.locator('[data-slides-overview-cards] button').nth(1).click();

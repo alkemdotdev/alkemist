@@ -2,7 +2,7 @@
 
 Astro components for technical publishing: `Layout`, `Math`, `Code`,
 `Audio`, `Video`, `Chart`, `Midi`, `Model`, `Shader`, `PostList`, `Search`,
-`Navigation`, `TableOfContents`, `Playground`, `Slides`, `Note`, `Step`,
+`Navigation`, `TableOfContents`, `Playground`, `Presentation`, `Deck`, `Slide`, `Slides`, `Note`, `Step`,
 `SpeakerNotes`, and `Diagram`.
 
 Each component has a lowercase, extensionless public entry. Import its types
@@ -64,11 +64,25 @@ parameters/source on demand. Set `previewHeight={440}` for a deliberately scroll
 frame (finite 80–1600 pixels); omit it to accept the frame's content-size messages.
 See the [plain-host embed lab](https://alkemist.alkem.dev/labs/embeds/).
 
+### Inspectable figures
+
+`Chart` includes a paged table of prepared rows and CSV, SVG, and PNG downloads.
+Zoom survives theme, parameter, and size changes; Reset view restores the full
+plotted domain. The original CSV stays available independently.
+
+`Shader`, `Chart`, and `Model` share `parameters={true|false|keys}` and the mounted
+`getParameters()` / `setParameters(patch)` API. Model exposes `view` and
+`wireframe`; camera and material changes reuse the loaded scene. Add `Focus`
+to enlarge the same figure on a page. See the
+[parameter reference](https://alkemist.alkem.dev/docs/parameters/).
+
 ### Browser presentations
 
-`Slides` enhances semantic `<section data-alk-slide>` content in any host layout.
-Enable `alkemist({ slides: true })` to author those sections with Markdown rules
-in a `format: slides` document. Add figures using the same components as an
+`Presentation` adds shared presenting controls with an article reading layout. `Deck`
+keeps authored slide boundaries visible in Read; `Slide` renders an explicit
+section for an Astro composition. Both enhance semantic `<section data-alk-slide>` content in any host layout.
+Enable `alkemist({ presentations: true })` to author those sections with Markdown rules
+in a `format: deck` document. Add figures using the same components as an
 article. `Note for="figure-id"` attaches text to a figure, `Step` controls reveals,
 and `SpeakerNotes` supplies presenter notes. `Diagram` renders Mermaid source.
 Use `embedded` for independent decks inside a page, or a standalone route for
@@ -76,6 +90,7 @@ deep links and the presenter window. Read is the default at every screen size;
 Present starts at the reading position, and Back to reading returns to the same
 section. Both views preserve the same mounted content and local widget state.
 Use `view="present"` or a presentation deep link to start in Present explicitly.
-Ordinary posts can use `present: true` with the integration and a `Slides` wrapper.
+Ordinary posts can use `present: true` with the integration and a `Presentation` wrapper. `Slides` remains a compatible alias for `Deck`,
+and the integration still accepts `slides: true` and `format: slides`.
 No-JavaScript loads remain readable. See the
-[slide authoring guide](https://alkemist.alkem.dev/docs/slides/).
+[presentation authoring guide](https://alkemist.alkem.dev/docs/slides/).

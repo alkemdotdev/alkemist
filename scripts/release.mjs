@@ -34,12 +34,17 @@ function hasStableVersion(metadata) {
   );
 }
 
-function assertLatestTagIsAllowed(artifact, metadata, bootstrapNotices) {
-  const latest = metadata?.['dist-tags']?.latest;
+function assertLatestTagIsAllowed(
+  artifact,
+  tags,
+  bootstrapMetadata,
+  bootstrapNotices,
+) {
+  const latest = tags?.latest;
   if (!latest || !latest.includes('-')) return;
   if (latest === bootstrapLatestVersion) {
     assert(
-      !hasStableVersion(metadata),
+      !hasStableVersion(bootstrapMetadata),
       `${artifact.name}: bootstrap prerelease remains latest after a stable version exists`,
     );
     if (!bootstrapNotices.has(artifact.name)) {
@@ -174,6 +179,21 @@ export async function readManifest() {
   }
   return manifest;
 }
+async function registryVersion(name, version) {
+  const response = await fetch(
+    `${registry}/${encodeURIComponent(name)}/${encodeURIComponent(version)}`,
+    {
+      signal: AbortSignal.timeout(20000),
+      headers: { accept: 'application/json' },
+    },
+  );
+  if (response.status === 404) return null;
+  assert(
+    response.ok,
+    `Registry version query failed for ${name}@${version}: ${response.status}`,
+  );
+  return response.json();
+}
 async function registryPackage(name) {
   const response = await fetch(`${registry}/${encodeURIComponent(name)}`, {
     signal: AbortSignal.timeout(20000),
@@ -181,6 +201,21 @@ async function registryPackage(name) {
   });
   if (response.status === 404) return null;
   assert(response.ok, `Registry query failed for ${name}: ${response.status}`);
+  return response.json();
+}
+async function registryTags(name) {
+  const response = await fetch(
+    `${registry}/-/package/${encodeURIComponent(name)}/dist-tags`,
+    {
+      signal: AbortSignal.timeout(20000),
+      headers: { accept: 'application/json' },
+    },
+  );
+  if (response.status === 404) return null;
+  assert(
+    response.ok,
+    `Registry tag query failed for ${name}: ${response.status}`,
+  );
   return response.json();
 }
 export async function publish() {
@@ -226,8 +261,7 @@ export async function publish() {
   assert.equal(sourcePackages[0].version, manifest.version);
   const result = [];
   for (const artifact of manifest.artifacts) {
-    const metadata = await registryPackage(artifact.name);
-    const existing = metadata?.versions?.[artifact.version];
+    const existing = await registryVersion(artifact.name, artifact.version);
     if (existing) {
       assert.equal(
         existing.dist.integrity,
@@ -271,7 +305,9 @@ export async function publish() {
 export async function waitForRegistry(
   manifest,
   {
-    read = registryPackage,
+    readVersion = registryVersion,
+    readTags = registryTags,
+    readPackage = registryPackage,
     sleep = delay,
     attempts = 30,
     interval = 10000,
@@ -281,8 +317,11 @@ export async function waitForRegistry(
   for (let attempt = 0; attempt < attempts; attempt++) {
     const pending = [];
     for (const artifact of manifest.artifacts) {
-      const metadata = await read(artifact.name);
-      const integrity = metadata?.versions?.[artifact.version]?.dist?.integrity;
+      const [published, tags] = await Promise.all([
+        readVersion(artifact.name, artifact.version),
+        readTags(artifact.name),
+      ]);
+      const integrity = published?.dist?.integrity;
       // A missing upload or stale tag can be propagation; different bytes cannot.
       if (integrity !== undefined)
         assert.equal(
@@ -290,11 +329,20 @@ export async function waitForRegistry(
           artifact.integrity,
           `${artifact.name}: registry integrity differs`,
         );
-      assertLatestTagIsAllowed(artifact, metadata, bootstrapNotices);
-      if (
-        !integrity ||
-        metadata?.['dist-tags']?.[manifest.tag] !== artifact.version
-      )
+      // Only the legacy bootstrap latest exception needs aggregate metadata to
+      // reject it after any stable release. Artifact integrity and channel tags
+      // stay on their targeted endpoints, so a stale packument cannot delay them.
+      const bootstrapMetadata =
+        tags?.latest === bootstrapLatestVersion
+          ? await readPackage(artifact.name)
+          : null;
+      assertLatestTagIsAllowed(
+        artifact,
+        tags,
+        bootstrapMetadata,
+        bootstrapNotices,
+      );
+      if (!integrity || tags?.[manifest.tag] !== artifact.version)
         pending.push(artifact.name);
     }
     if (!pending.length) return;

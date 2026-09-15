@@ -1,0 +1,30 @@
+---
+import Slide from '@alkemdotdev/alkemist-components/slide';
+import Chart from '@alkemdotdev/alkemist-components/chart';
+---
+
+<Slide title="A signal loses energy">
+  <p>
+    Displace an oscillator and release it. The motion continues, but each peak
+    is smaller than the last. The curve below is a synthetic analytic
+    trajectory: it illustrates damping without claiming an experimental
+    measurement.
+  </p>
+  <p>
+    The period describes how often the motion repeats. The envelope describes
+    how quickly it fades. Keep those two observations separate.
+  </p>
+</Slide>
+<Slide title="Inspect the trace">
+  <Chart
+    id="specimen-trace"
+    src="/test/oscillation.csv"
+    type="line"
+    x="time"
+    y="position"
+    title="Damped oscillator"
+    description="Synthetic position over time."
+    sample
+    parameters={['ink', 'grid', 'zoom']}
+  />
+</Slide>

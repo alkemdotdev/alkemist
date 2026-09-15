@@ -37,7 +37,9 @@ export interface IntegrationOptions {
   mdx?: boolean | MdxOptions;
   math?: boolean | MathOptions;
   code?: boolean | CodeIntegrationOptions;
-  /** Enable Markdown-first deck compilation and shared callouts/diagrams. */
+  /** Enable Markdown-first presentations and shared callouts/diagrams. */
+  presentations?: boolean;
+  /** Compatibility alias for presentations. */
   slides?: boolean;
   /** Opt in only when a site needs Alkemist's asset-file behavior. */
   vite?: { assetsInlineLimit?: number };
@@ -81,7 +83,15 @@ export default function alkemist(
   const mathEnabled = math.enabled ?? true;
   const codeEnabled = code.enabled ?? true;
   const mdxEnabled = mdxConfig.enabled ?? true;
-  const slidesEnabled = options.slides === true;
+  if (
+    options.presentations !== undefined &&
+    options.slides !== undefined &&
+    options.presentations !== options.slides
+  )
+    throw new Error(
+      'presentations and slides must agree when both are supplied.',
+    );
+  const slidesEnabled = (options.presentations ?? options.slides) === true;
   const remarkPlugins: any[] = [
     ...(mathEnabled ? [remarkMath] : []),
     ...(slidesEnabled ? [remarkAlkemistSlides] : []),

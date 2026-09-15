@@ -1,6 +1,7 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Shader from '@alkemdotdev/alkemist-components/shader';
+import Model from '@alkemdotdev/alkemist-components/model';
 import Chart from '@alkemdotdev/alkemist-components/chart';
 import Focus from '@alkemdotdev/alkemist-components/focus';
 import { THEME_STYLES } from '@alkemdotdev/alkemist-theme';
@@ -69,6 +70,21 @@ const descriptions = {
         description="A synthetic analytic trajectory."
         sample
         parameters={['ink', 'grid', 'zoom']}
+      />
+    </section>
+    <section class="theme-figure">
+      <header>
+        <h2>Look at the structure from another angle.</h2><Focus
+          for="theme-model"
+        />
+      </header>
+      <Model
+        id="theme-model"
+        src="/test/torus-knot.glb"
+        poster="/test/torus-knot.svg"
+        title="A torus knot"
+        description="An original, generated teaching mesh. Choose a camera view or inspect its wireframe."
+        parameters
       />
     </section>
     <p>

@@ -178,6 +178,18 @@ const props: SlidesProps = { title: 'Slides in my existing layout', view: 'read'
 <html lang="en"><head><title>Standalone slides</title></head><body><header>Host navigation</header><main><Annotations {...annotations}><p>Annotations also work in an existing document.</p></Annotations><Slides {...props}><section data-alk-slide id="first"><h1>Existing layout</h1><p>Host-owned document chrome remains in place.</p><Note for="first">A local note.</Note><Focus {...focus} /></section></Slides></main></body></html>`,
   );
   await write(
+    'src/pages/presentation.astro',
+    `---
+import Presentation, { type PresentationProps } from '@alkemdotdev/alkemist-components/presentation';
+import Deck, { type DeckProps } from '@alkemdotdev/alkemist-components/deck';
+import Slide, { type SlideProps } from '@alkemdotdev/alkemist-components/slide';
+const article: PresentationProps = { title: 'Typed article presentation' };
+const deck: DeckProps = { title: 'Typed authored deck' };
+const slide: SlideProps = { id: 'typed-slide', title: 'Typed slide', layout: 'title' };
+---
+<html lang="en"><head><title>Typed presentation entries</title></head><body><Presentation {...article} embedded><Slide title="Article flow"><p>Prose remains readable.</p></Slide></Presentation><Deck {...deck} embedded><Slide {...slide}><p>A typed authored unit.</p></Slide></Deck></body></html>`,
+  );
+  await write(
     'src/content/embedded.mdx',
     `---
 title: Embedded source
@@ -215,7 +227,7 @@ import EmbeddedContent from '../../content/embedded.mdx';
     `---
 title: Markdown deck
 description: A deck authored without MDX.
-format: slides
+format: deck
 incremental: true
 ---
 
@@ -238,7 +250,7 @@ incremental: true
     `---
 title: MDX deck
 description: Built-in figures need no explicit imports.
-format: slides
+format: deck
 ---
 
 # An auto-imported chart
@@ -257,7 +269,7 @@ format: slides
   );
   await write(
     'astro.config.mjs',
-    `import {defineConfig} from 'astro/config';import alkemist from '@alkemdotdev/alkemist-astro';export default defineConfig({integrations:[alkemist({slides:true})]});`,
+    `import {defineConfig} from 'astro/config';import alkemist from '@alkemdotdev/alkemist-astro';export default defineConfig({integrations:[alkemist({presentations:true})]});`,
   );
   console.log(
     `Installing ${registryMode ? 'registry releases' : 'packed releases'} in ${temporary}`,
@@ -308,6 +320,13 @@ format: slides
   assert.match(standaloneSlides, /data-document-id="packed-example"/);
   assert.match(standaloneSlides, /data-initial-view="read"/);
   assert.doesNotMatch(standaloneSlides, /class="alk-layout/);
+  const typedPresentation = await readFile(
+    join(temporary, 'dist/presentation/index.html'),
+    'utf8',
+  );
+  assert.match(typedPresentation, /data-layout-kind="article"/);
+  assert.match(typedPresentation, /data-layout-kind="deck"/);
+  assert.match(typedPresentation, /id="typed-slide"[^>]*data-layout="title"/);
   const embeddedSlides = await readFile(
     join(temporary, 'dist/slides/embedded/index.html'),
     'utf8',
@@ -558,7 +577,7 @@ export default defineConfig({integrations:[mdx(),alkemist({mdx:{enabled:false},m
   // Preserve a presentation-enabled artifact for --keep browser inspection.
   await write(
     'astro.config.mjs',
-    `import {defineConfig} from 'astro/config';import alkemist from '@alkemdotdev/alkemist-astro';export default defineConfig({integrations:[alkemist({slides:true})]});`,
+    `import {defineConfig} from 'astro/config';import alkemist from '@alkemdotdev/alkemist-astro';export default defineConfig({integrations:[alkemist({presentations:true})]});`,
   );
   run(['run', 'build']);
   const generator = manifest.artifacts.find(

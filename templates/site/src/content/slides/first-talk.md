@@ -1,7 +1,7 @@
 ---
 title: First talk
 description: A small Markdown deck that begins with a question and ends with an observable next step.
-format: slides
+format: deck
 incremental: true
 theme: inherit
 transition: fade

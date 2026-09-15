@@ -118,11 +118,15 @@ Category colors use the same eight ink values on both whiteboard and blackboard.
 
 Axes, labels, and legends use the board's neutral foreground and Ubuntu fonts. Grid lines use the board's neutral rule color. Heatmaps use a separate, fixed continuous cobalt ramp and labeled value scale, because ordered measurements need an ordered ramp rather than eight categorical swatches. The palette is not certified as distinguishable for every form of color vision; labels, tooltips, and the table remain essential.
 
-Theme changes and container-width changes redraw the chart and reset its view. Resizing is briefly debounced, then the chart recomputes tick density and legend layout for the new width. Replaced and removed views are finalized so their listeners do not remain attached. [Vega view lifecycle](https://vega.github.io/vega/docs/api/view/).
+Theme, parameter, and container-width changes redraw the chart while preserving a compatible zoom window. Reset view explicitly restores the full plotted domain. Resizing is briefly debounced, then the chart recomputes tick density and legend layout for the new width. Replaced and removed views are finalized so their listeners do not remain attached. [Vega view lifecycle](https://vega.github.io/vega/docs/api/view/).
 
 ## Source data stays available
 
-Every chart includes a CSV download and a table of its actual source rows. Tables show at most 100 rows, state the full count, and link to the complete file. CSV values are inserted as text, and tooltips use Vega-Tooltip's default escaping.
+Every chart keeps an original CSV link. **Data and export** reveals a table of the prepared rows supplied to the plot, with 25 rows per page and Previous/Next controls. Preparation includes validated numeric and date values and any chart-specific filtering; it does not filter rows to the current zoom window.
+
+**Download plotted CSV** exports those prepared rows. Spreadsheet formula prefixes in string cells are escaped; actual negative numeric measurements remain numbers. **Download SVG** and **Download PNG** export the current plot, including its theme and visible zoom window, without the surrounding controls. SVG is useful for vector editing; PNG is a 2× raster image. Export failures are reported beside the controls. The underlying APIs are Vega's [view exports](https://vega.github.io/vega/docs/api/view/#image-export).
+
+CSV cells are rendered as text, and tooltips use Vega-Tooltip's escaping. Tables and CSV stay available when inspecting a chart in Focus. Try the [live figures lab](/labs/themes-and-parameters/) or [Look closer](/slides/look-closer/).
 
 This first version loads the complete file into browser memory. It has no streaming, worker parsing, automatic reduction, automatic field selection, or server-rendered chart fallback. Keep datasets modest. A remote CSV must allow browser access through CORS. When JavaScript is unavailable, the CSV download remains usable; a fetch, validation, or rendering failure produces an error and Retry chart button, never invented replacement data.
 

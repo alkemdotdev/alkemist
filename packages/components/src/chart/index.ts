@@ -12,6 +12,15 @@ export {
   createChartSpec,
   prepareChartRows,
 } from '../charts';
+export {
+  chartExportFilename,
+  chartFields,
+  chartRowsToCsv,
+  chartTablePage,
+  chartTablePageSize,
+  csvCell,
+} from '../chart-data';
+export type { ChartTablePage } from '../chart-data';
 export type {
   ChartFieldType,
   ChartInk,

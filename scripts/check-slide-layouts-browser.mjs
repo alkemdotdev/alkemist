@@ -6,6 +6,7 @@ async function checkSlideLayouts(page) {
   page.on('pageerror', (error) => errors.push(error.message));
   await page.emulateMedia({ reducedMotion: 'reduce' });
   const slugs = [
+    'look-closer',
     'working-with-a-signal',
     'field-notebook',
     'interacting-with-the-field',

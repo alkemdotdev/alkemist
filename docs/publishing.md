@@ -41,7 +41,7 @@ Publishing runs in its own job with `id-token: write`, using npm OIDC trusted
 publishing. The job downloads the verified artifacts; it does not reinstall
 build dependencies or repack source. SHA-256, SHA-512 integrity, package
 identities, versions, and source revision are checked before publication.
-After npm accepts the uploads, verification waits for registry propagation for up to 30 checks at 10-second intervals. Different published bytes fail immediately; missing versions or stale channel tags are retried. Afterward, a separate job installs from npm and exercises standalone
+After npm accepts the uploads, verification waits for registry propagation for up to 30 checks at 10-second intervals. It reads each immutable package version directly to compare integrity and reads the lightweight `dist-tags` endpoint separately for the channel tag. The aggregate package document is read only for the legacy bootstrap `latest` exception, where it must reject that prerelease once any stable version exists. Different published bytes fail immediately; missing versions or stale channel tags are retried. Afterward, a separate job installs from npm and exercises standalone
 components, existing MDX integration, and the published starter.
 
 The root commands for a local release are:
@@ -140,8 +140,8 @@ hosting, or update existing files after creation. The consumer owns content,
 configuration, styles, and the generated lockfile.
 
 The starter includes an enabled Slides section and one Markdown deck under
-`src/content/slides/`. Keep `format: slides` on deck entries and retain the
-`alkemist({ slides: true })` integration option when updating a generated site.
+`src/content/slides/`. Use `format: deck` and `alkemist({ presentations: true })`
+for new work. `format: slides` and `slides: true` remain compatible aliases.
 The example is ordinary user-owned starter content and can be edited or removed.
 
 Its explicit `--update` mode refreshes those snapshots while preserving

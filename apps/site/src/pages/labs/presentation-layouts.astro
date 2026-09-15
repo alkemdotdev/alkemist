@@ -1,0 +1,89 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Presentation from '@alkemdotdev/alkemist-components/presentation';
+import Deck from '@alkemdotdev/alkemist-components/deck';
+import PresentationSpecimen from '../../components/labs/PresentationSpecimen.astro';
+import { isPreview } from '../../lib/deployment';
+---
+
+<SiteLayout
+  title="Articles and decks"
+  description="Compare two reading layouts with the same content and presentation controls."
+  preview={isPreview}
+>
+  <div class="layout-lab">
+    <header>
+      <a href="/labs/">← Labs</a>
+      <h1>Articles and decks</h1>
+      <p class="alk-lead">
+        One source, two reading layouts. Present either example, explore its
+        chart, and return with your values intact.
+      </p>
+    </header>
+    <section class="layout-example">
+      <h2>Article</h2>
+      <p class="layout-description">
+        A continuous argument in a comfortable reading column.
+      </p>
+      <Presentation
+        id="article-example"
+        title="The oscillator · article"
+        embedded
+        annotations={false}
+      >
+        <PresentationSpecimen />
+      </Presentation>
+    </section>
+    <section class="layout-example">
+      <h2>Deck</h2>
+      <p class="layout-description">
+        Authored frames with room for each observation. The content below comes
+        from the same component as the article above.
+      </p>
+      <Deck
+        id="deck-example"
+        title="The oscillator · deck"
+        embedded
+        annotations={false}
+      >
+        <PresentationSpecimen />
+      </Deck>
+    </section>
+    <p>
+      <a href="/docs/slides/">Authoring and component API</a> · <a
+        href="/slides/look-closer/">Explore a complete deck</a
+      >
+    </p>
+  </div>
+</SiteLayout>
+<style>
+  .layout-lab {
+    max-width: 1100px;
+    margin: auto;
+  }
+  .layout-lab > header {
+    max-width: 760px;
+    margin: 0 auto 4rem;
+  }
+  .layout-lab > header > a {
+    display: inline-block;
+    margin-bottom: 1.5rem;
+    font-size: 0.8rem;
+  }
+  .layout-example {
+    margin: 4rem 0;
+  }
+  .layout-example > h2,
+  .layout-description {
+    max-width: 760px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .layout-description {
+    color: var(--alk-muted);
+    margin-bottom: 2rem;
+  }
+  .layout-lab > p {
+    text-align: center;
+  }
+</style>

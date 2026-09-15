@@ -197,6 +197,7 @@ This entry uses a text-only listing.\n`,
   assert(imageListing.includes('data-fit="contain"'));
   assert(imageListing.includes('A post without an image'));
   assert(withCover.includes('lab-cover--article'));
+  assert.match(withCover, /data-layout-kind="article"/);
   assert(!thumbnailOnly.includes('lab-cover--article'));
   assert(!textOnly.includes('lab-cover--article'));
   const defaultLogs = await readFile(
@@ -225,6 +226,7 @@ This entry uses a text-only listing.\n`,
   assert(defaultSlides.includes('Interactive fixture'));
   assert(!defaultSlides.includes('Unpublished deck'));
   assert.match(firstTalk, /<alk-slides/);
+  assert.match(firstTalk, /data-layout-kind="deck"/);
   assert.match(interactiveTalk, /<alk-chart id="starter-chart"/);
   assert.match(interactiveTalk, /data-note-target="starter-chart"/);
   assert(defaultLogs.includes('Later reading'));

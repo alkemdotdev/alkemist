@@ -1,10 +1,38 @@
 ---
-title: Browser slides
+title: Presentations
 description: Write readable browser talks in Markdown and add interactive figures with MDX.
 order: 20
 ---
 
-`Slides` gives a document two views: a scrolling Markdown page and a browser presentation. Read is the default on every screen. Both views use the same content and mounted figures, so edits and local parameter changes carry across. The presentation reflows the document for the screen; it does not summarize or duplicate it.
+`Presentation` adds presenting to a document. `Deck` uses that same capability with a layout designed for authored slides. Articles and decks remain different kinds of pages, each with two views: a scrolling Markdown page and a browser presentation. Read is the default on every screen. Both views use the same content and mounted figures, so edits and local parameter changes carry across. The presentation reflows the document for the screen; it does not summarize or duplicate it.
+
+## Choose the page layout
+
+Use an article for a continuous argument and a deck for a sequence of authored frames. **Presentations** is the navigation label; `/slides/` and `src/content/slides/` stay the default route and storage path.
+
+| Component      | Purpose                                             | Reading layout                      |
+| -------------- | --------------------------------------------------- | ----------------------------------- |
+| `Presentation` | Shared presenting controls around sectioned content | Continuous article by default       |
+| `Deck`         | An authored deck using the same controls            | Distinct, responsive slide surfaces |
+| `Slide`        | One explicit section in an Astro composition        | Inherits its parent                 |
+
+```astro
+---
+import Deck from '@alkemdotdev/alkemist-components/deck';
+import Slide from '@alkemdotdev/alkemist-components/slide';
+---
+
+<Deck title="An experiment">
+  <Slide title="The question"><p>What changes when the source moves?</p></Slide>
+  <Slide title="The observation"
+    ><p>Keep the evidence beside the claim.</p></Slide
+  >
+</Deck>
+```
+
+Types (`PresentationProps`, `DeckProps`, `SlideProps`) come from those same entries. `Presentation` also accepts `layout="deck"`; `Deck` is the convenient explicit form. Both accept `embedded` for independent examples in a host page. [Compare the layouts live](/labs/presentation-layouts/).
+
+Existing `Slides` imports remain a deck compatibility entry. `format: slides` and `alkemist({ slides: true })` still work; use `format: deck` and `presentations: true` for new work. Do not give the two integration options conflicting values. Nothing requires renaming existing content or URLs.
 
 ## Present an existing post
 
@@ -31,18 +59,18 @@ Explain what this experiment cannot establish.
 
 H2 headings begin presentation sections; an ordinary top-level `---` can add a boundary within a longer section. Subheadings remain with their parent section. The title, lead, and cover are the introduction. Rules remain visible in Read, and footnotes retain their normal links and a single reference list. MDX posts keep explicit component imports.
 
-Try [One document, two views](/blog/one-document-two-views/). A custom content route can use the same compiler with `present: true` and wrap its rendered `<Content />` in `<Slides title={entry.data.title}>`. Include any route-owned title or cover inside a `section` with `data-alk-slide` if it should appear in Present. Add `present: z.boolean().default(false)` to the collection schema. The integration still requires `slides: true`.
+Try [One document, two views](/blog/one-document-two-views/). A custom content route can use the same compiler with `present: true` and wrap its rendered `<Content />` in `<Presentation title={entry.data.title}>`. Include any route-owned title or cover inside a `section` with `data-alk-slide` if it should appear in Present. Add `present: z.boolean().default(false)` to the collection schema. The integration requires `presentations: true`.
 
 ## Start with Markdown
 
-Add the integration option, then create `src/content/slides/` and a document with `format: slides`. A top-level rule begins the next slide. Use `.md` for ordinary Markdown and `.mdx` when a deck needs a component.
+Add the integration option, then create `src/content/slides/` and a document with `format: deck`. A top-level rule begins the next slide. Use `.md` for ordinary Markdown and `.mdx` when a deck needs a component.
 
 ```ts title="astro.config.ts"
 import alkemist from '@alkemdotdev/alkemist-astro';
 import { defineConfig } from 'astro/config';
 
 export default defineConfig({
-  integrations: [alkemist({ slides: true })],
+  integrations: [alkemist({ presentations: true })],
 });
 ```
 
@@ -50,7 +78,7 @@ export default defineConfig({
 ---
 title: First talk
 description: A short browser presentation.
-format: slides
+format: deck
 incremental: true
 ---
 
@@ -84,7 +112,7 @@ Slides infer a compact layout from their content: a title gets room, an image be
 Keep the source and the interpretation together.
 ```
 
-MDX uses a JSX comment: `{/* layout: split */}`. Available layouts are `title`, `split`, `media`, `quote`, and `content`; unknown values produce a build-time authoring error rather than changing a deck silently. The reading view keeps the same sections in a responsive document flow.
+MDX uses a JSX comment: `{/* layout: split */}`. Available layouts are `title`, `split`, `media`, `quote`, and `content`; unknown values produce a build-time authoring error rather than changing a deck silently. Deck reading keeps authored slide boundaries as padded surfaces with natural content height. Articles retain continuous prose. Present uses the same responsive stage in both cases; the content and mounted widgets are unchanged.
 
 ## Share the site theme
 
@@ -136,7 +164,7 @@ When slide authoring is enabled, Alkemist supplies the built-in component names 
 ---
 title: Field notebook
 description: A chart with a note.
-format: slides
+format: deck
 ---
 
 # A signal
@@ -155,7 +183,7 @@ format: slides
 <Note for="signal-chart">The CSV is a deterministic teaching fixture.</Note>
 ```
 
-`id` is optional on widgets. Give a figure an ID when attaching a `Note`; the note text appears beside its target in reading and presentation views. A missing target is an authoring error. `Slides` is also available to an Astro page through `@alkemdotdev/alkemist-components/slides`; pass a title, optional description, `theme`, `transition`, `aspect`, and compiled slide sections in its default slot.
+`id` is optional on widgets. Give a figure an ID when attaching a `Note`; the note text appears beside its target in reading and presentation views. A missing target is an authoring error. `Deck` is also available to an Astro page through `@alkemdotdev/alkemist-components/deck`; pass a title, optional description, `theme`, `transition`, `aspect`, and compiled slide sections in its default slot.
 
 ## Explore live parameters
 
@@ -164,6 +192,7 @@ A component’s ordinary props set its initial values. `parameters` exposes its 
 ```astro
 <Shader frequency={9} angle={24} parameters />
 <Chart {...chartProps} parameters={['ink', 'grid', 'zoom']} />
+<Model {...modelProps} parameters={['view', 'wireframe']} />
 ```
 
 **Focus** in a figure heading enlarges the same figure. Escape returns to the deck without resetting values. Inputs, charts, and model gestures keep their own keyboard and touch behavior. Opening Focus stops timed advance. The [parameter guide](/docs/parameters/) lists supported controls and the [Focus component](/docs/focus/) adds the same behavior to ordinary pages.
@@ -172,6 +201,7 @@ A component’s ordinary props set its initial values. `parameters` exposes its 
 
 The starter includes `src/content/slides/first-talk.md`. The demo includes:
 
+- [Look closer](/slides/look-closer/) combines prepared chart data, image exports, model parameters, and Focus.
 - [A figure you can question](/slides/interacting-with-the-field/) demonstrates live parameters and focused figures with the inherited site theme.
 - [Ready for the room](/slides/presenting-from-the-browser/) rehearses audience views and native browser tools.
 - [Working with a signal](/slides/working-with-a-signal/) uses plain Markdown, equations, code, footnotes, and Mermaid.
@@ -179,7 +209,7 @@ The starter includes `src/content/slides/first-talk.md`. The demo includes:
 - [Listening to the fixture](/slides/listening-to-the-fixture/) exercises Audio, Video, and the MIDI editor.
 - [A page can change its posture](/slides/layout-sampler/) shows inferred title, image/prose, list, quote, table, and code layouts.
 
-Read and Present share the same widget instances. Every screen defaults to Read. Speaker view is available for standalone decks; embedded decks keep independent navigation within their host page. The reading column uses `--alk-document-width` (760px by default).
+Read and Present share the same widget instances. Every screen defaults to Read. Speaker view is available for standalone decks; embedded decks keep independent navigation within their host page. Article reading uses `--alk-document-width` (760px by default); deck reading uses `--alk-deck-width` (1100px by default).
 
 The slide index and route exclude `draft: true`, just as Blog does. Test the reading route and presentation controls at desktop and phone widths. Exercise backward steps, widget focus, media pause on slide change, resize, and a no-JavaScript reading load before publishing. Browser presentation does not establish a verified PDF or video export; treat those as separate artifact work.
 
@@ -197,7 +227,7 @@ The native [Screen Wake Lock](https://developer.mozilla.org/en-US/docs/Web/API/S
 
 ### Optional casting
 
-Set `casting: true` in a deck's frontmatter, or pass `casting` to `Slides`, to expose **Cast to a receiver** when the browser provides the [Presentation API](https://developer.mozilla.org/en-US/docs/Web/API/Presentation_API). The receiver loads the same public deck URL and follows slide/step/blackout state. This is experimental and requires a compatible receiver selected by the browser. A supported browser alone does not establish device compatibility. **Stop casting** ends a connected presentation; cancelling or losing a receiver keeps the local view usable.
+Set `casting: true` in a deck's frontmatter, or pass `casting` to `Deck` or `Presentation`, to expose **Cast to a receiver** when the browser provides the [Presentation API](https://developer.mozilla.org/en-US/docs/Web/API/Presentation_API). The receiver loads the same public deck URL and follows slide/step/blackout state. This is experimental and requires a compatible receiver selected by the browser. A supported browser alone does not establish device compatibility. **Stop casting** ends a connected presentation; cancelling or losing a receiver keeps the local view usable.
 
 ### Local highlights and comments
 

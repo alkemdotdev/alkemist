@@ -30,6 +30,9 @@ async function checkEmbeddedSlides(page) {
           ?.getAttribute('aria-pressed') === 'true',
     ),
   );
+  // Present starts at each reading position; choose a known start before testing independent navigation.
+  for (let index = 0; index < 2; index++)
+    await decks.nth(index).locator('[data-slides-picker]').selectOption('0');
   await decks.nth(0).locator('[data-slides-next]').click();
   const state = await page.evaluate(() => {
     const ids = [...document.querySelectorAll('[id]')].map(
@@ -65,5 +68,32 @@ async function checkEmbeddedSlides(page) {
     path: '.alkemist/slides-embedded.png',
     fullPage: true,
   });
-  return state;
+  const origin = await page.evaluate(() => location.origin);
+  await page.goto(`${origin}/presentation/`);
+  await page.waitForFunction(() =>
+    [...document.querySelectorAll('alk-slides')].every(
+      (frame) => frame.dataset.ready === 'true',
+    ),
+  );
+  const frames = page.locator('alk-slides');
+  const layouts = await frames.evaluateAll((elements) =>
+    elements.map((element) => element.dataset.layoutKind),
+  );
+  if (layouts.join(',') !== 'article,deck')
+    throw new Error('Typed entries lost their distinct layouts');
+  for (let index = 0; index < 2; index++) {
+    const frame = frames.nth(index);
+    await frame.locator('[data-slides-present]').click();
+    await page.waitForFunction(
+      (index) =>
+        document
+          .querySelectorAll('[data-slides-present]')
+          [index].getAttribute('aria-pressed') === 'true',
+      index,
+    );
+    if ((await frame.locator('[data-alk-slide].present').count()) !== 1)
+      throw new Error('Typed Slide did not present');
+    await frame.locator('[data-slides-read]').click();
+  }
+  return { ...state, layouts };
 }

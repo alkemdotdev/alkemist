@@ -182,3 +182,110 @@ test('missing dates stay missing and never become an epoch-zero observation', as
     /no dates/,
   );
 });
+
+test('zoom restoration state includes only chart interaction signals', async () => {
+  const config = { ...base, type: 'line', xType: 'quantitative' };
+  const rows = prepareChartRows(
+    [
+      { category: '1', value: '2' },
+      { category: '2', value: '3' },
+    ],
+    config,
+  );
+  const view = await new View(
+    parse(compile(createChartSpec(config, rows, theme, 640)).spec),
+    {
+      renderer: 'none',
+    },
+  ).runAsync();
+  try {
+    const state = view.getState({
+      signals: (name) => name.startsWith('alk_window_'),
+      data: () => false,
+      recurse: false,
+    });
+    assert.ok(
+      Object.keys(state.signals).every((name) => name.startsWith('alk_window')),
+    );
+    assert.deepEqual(state.data, {});
+    assert.equal('subcontext' in state, false);
+  } finally {
+    view.finalize();
+  }
+});
+
+test('eligible charts retain their scale-bound interval while zoom and pan are disabled', () => {
+  const enabled = createChartSpec(
+    { ...base, type: 'line', xType: 'quantitative', zoom: true },
+    [
+      { category: 1, value: 2 },
+      { category: 2, value: 3 },
+    ],
+    theme,
+    640,
+  );
+  const disabled = createChartSpec(
+    { ...base, type: 'line', xType: 'quantitative', zoom: false },
+    [
+      { category: 1, value: 2 },
+      { category: 2, value: 3 },
+    ],
+    theme,
+    640,
+  );
+  assert.equal(enabled.params[0].select.translate, true);
+  assert.equal(enabled.params[0].select.zoom, 'wheel![event.shiftKey]');
+  assert.equal(disabled.params[0].select.translate, false);
+  assert.equal(disabled.params[0].select.zoom, false);
+  assert.equal(disabled.params[0].bind, 'scales');
+});
+
+test('a scale-bound interval domain survives zoom controls being disabled and restored', async () => {
+  const config = { ...base, type: 'line', xType: 'quantitative' };
+  const rows = prepareChartRows(
+    [
+      { category: '1', value: '2' },
+      { category: '2', value: '3' },
+      { category: '3', value: '4' },
+    ],
+    config,
+  );
+  const view = async (zoom) =>
+    new View(
+      parse(
+        compile(createChartSpec({ ...config, zoom }, rows, theme, 640)).spec,
+      ),
+      { renderer: 'none' },
+    ).runAsync();
+  const enabled = await view(true);
+  const disabled = await view(false);
+  const restored = await view(true);
+  const domain = [1.5, 2.5];
+  const signalName = `alk_window_${config.x}`;
+  try {
+    enabled.signal(signalName, domain);
+    await enabled.runAsync();
+    const state = enabled.getState({
+      signals: (name) => name.startsWith('alk_window_'),
+      data: () => false,
+      recurse: false,
+    });
+    const [signal, savedDomain] = Object.entries(state.signals).find(
+      ([, value]) =>
+        Array.isArray(value) &&
+        value.length === 2 &&
+        value.every((endpoint) => typeof endpoint === 'number'),
+    );
+    assert.equal(signal, signalName);
+    disabled.signal(signal, savedDomain);
+    await disabled.runAsync();
+    restored.signal(signal, savedDomain);
+    await restored.runAsync();
+    assert.deepEqual(disabled.scale('x').domain(), domain);
+    assert.deepEqual(restored.scale('x').domain(), domain);
+  } finally {
+    enabled.finalize();
+    disabled.finalize();
+    restored.finalize();
+  }
+});

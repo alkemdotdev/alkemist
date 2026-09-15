@@ -2,7 +2,8 @@
 import { getCollection, render } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
 import { Image } from 'astro:assets';
-import Slides from '@alkemdotdev/alkemist-components/slides';
+import Deck from '@alkemdotdev/alkemist-components/deck';
+import Presentation from '@alkemdotdev/alkemist-components/presentation';
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import {
   enabledSections,
@@ -75,7 +76,7 @@ interface Props {
 const { entry, section } = Astro.props as Props;
 const { Content } = await render(entry);
 const isPresentable = section !== 'slides' && entry.data.present;
-const Frame: any = isPresentable ? Slides : 'div';
+const Frame: any = isPresentable ? Presentation : 'div';
 const Intro = isPresentable ? 'section' : 'header';
 const frameAttributes = isPresentable
   ? {
@@ -142,9 +143,9 @@ const next = position >= 0 ? bookEntries[position + 1] : undefined;
     >
       <div class="slides-page" data-slides-page>
         <p class="slides-back">
-          <a href={withBase('slides/')}>← Slides</a>
+          <a href={withBase('slides/')}>← Presentations</a>
         </p>
-        <Slides
+        <Deck
           title={data.title}
           description={data.description}
           theme={slideData.theme}
@@ -157,7 +158,7 @@ const next = position >= 0 ? bookEntries[position + 1] : undefined;
           style={slideData.style}
         >
           <Content />
-        </Slides>
+        </Deck>
       </div>
     </SiteLayout>
   ) : (

@@ -27,7 +27,7 @@ const bookSchema = z.object({
 const slidesSchema = z.object({
   title: z.string(),
   description: z.string(),
-  format: z.literal('slides'),
+  format: z.enum(['deck', 'slides']),
   incremental: z.boolean().default(false),
   theme: z
     .enum(['inherit', 'default', 'paper', 'chalk', 'blueprint'])

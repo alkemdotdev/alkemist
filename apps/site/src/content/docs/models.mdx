@@ -19,6 +19,7 @@ import Model from '@alkemdotdev/alkemist-components/model';
   src="/test/torus-knot.glb"
   poster="/test/torus-knot.svg"
   title="A (2, 3) torus knot"
+  parameters={['view', 'wireframe']}
   description="A deterministic tube mesh around a closed torus-knot curve."
 />
 ```
@@ -37,6 +38,9 @@ The public prop type is `ModelProps`.
 | `title`       | Yes      | Visible figure title and accessible control label                                 |
 | `description` | No       | Context, provenance, units, or an explanation of the geometry                     |
 | `poster`      | No       | Static image shown while loading and when the interactive renderer is unavailable |
+| `view`        | No       | Initial camera: perspective (default), front, or top                              |
+| `wireframe`   | No       | Display wireframes initially; false restores authored material settings           |
+| `parameters`  | No       | false (default), true, or a list of view and wireframe controls                   |
 | `class`       | No       | Additional class on the figure's custom element                                   |
 
 Include a meaningful poster and description for published research. A poster is optional in the API, but it gives readers useful content before the GPU viewer starts and if their browser cannot render the scene.
@@ -53,6 +57,8 @@ Spin starts off, pauses offscreen, and stops when the reduced-motion preference
 changes to reduce.
 
 Orbit navigation uses [Three.js OrbitControls](https://github.com/mrdoob/three.js/blob/r185/examples/jsm/controls/OrbitControls.js). The canvas and controls expose keyboard labels, but a 3D canvas is not a complete nonvisual representation of complex geometry. The title, description, poster, and original file are part of the figure's accessible content.
+
+The [shared parameter API](/docs/parameters/) exposes `getParameters()`, atomic `setParameters(patch)`, and `alk:parameters-change` on the mounted `alk-model`. Parameter controls and View options stay in sync. Reset values restores authored props; Reset view and Home return the camera to perspective. The mesh and canvas survive parameter changes and Focus / Read / Present transitions. Try the [live figures lab](/labs/themes-and-parameters/).
 
 ## Theme and lifecycle
 

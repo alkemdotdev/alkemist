@@ -29,9 +29,13 @@ async function render(value, frontmatter = { format: 'slides' }) {
   );
 }
 
-async function renderIntegrated(value, frontmatter = { format: 'slides' }) {
+async function renderIntegrated(
+  value,
+  frontmatter = { format: 'slides' },
+  options = { presentations: true },
+) {
   let config;
-  await alkemist({ slides: true }).hooks['astro:config:setup']({
+  await alkemist(options).hooks['astro:config:setup']({
     injectScript() {},
     updateConfig(value) {
       config = value;
@@ -42,6 +46,35 @@ async function renderIntegrated(value, frontmatter = { format: 'slides' }) {
   );
   return (await processor.render(value, { frontmatter })).code;
 }
+
+test('presentations is the canonical compiler option and slides is compatible', async () => {
+  const source = '# First\n\n---\n\n# Second';
+  const canonical = await renderIntegrated(source, { format: 'deck' });
+  const compatibility = await renderIntegrated(
+    source,
+    { format: 'slides' },
+    { slides: true },
+  );
+  const explicitAlias = await renderIntegrated(
+    source,
+    { format: 'deck' },
+    { presentations: true, slides: true },
+  );
+  assert.equal(canonical, compatibility);
+  assert.equal(canonical, explicitAlias);
+  assert.throws(
+    () => alkemist({ presentations: true, slides: false }),
+    /presentations and slides must agree/,
+  );
+});
+
+test('format deck is canonical and format slides retains deck compilation', async () => {
+  const source = '# First\n\n---\n\n# Second';
+  const canonical = await render(source, { format: 'deck' });
+  const compatibility = await render(source, { format: 'slides' });
+  assert.equal(canonical, compatibility);
+  assert.equal((canonical.match(/data-alk-slide/g) ?? []).length, 2);
+});
 
 test('slide layout comments are optional, scoped, and validated', async () => {
   const html = await render(

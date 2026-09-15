@@ -1,7 +1,7 @@
 ---
 import { getCollection, render } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
-import Slides from '@alkemdotdev/alkemist-components/slides';
+import Deck from '@alkemdotdev/alkemist-components/deck';
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import { isPreview } from '../../lib/deployment';
 
@@ -22,8 +22,8 @@ const slidesPath = `${import.meta.env.BASE_URL}slides/`;
   preview={isPreview}
 >
   <div class="slides-page" data-slides-page>
-    <p class="slides-back"><a href={slidesPath}>← Slides</a></p>
-    <Slides
+    <p class="slides-back"><a href={slidesPath}>← Presentations</a></p>
+    <Deck
       title={entry.data.title}
       description={entry.data.description}
       theme={entry.data.theme}
@@ -36,7 +36,7 @@ const slidesPath = `${import.meta.env.BASE_URL}slides/`;
       style={entry.data.style}
     >
       <Content />
-    </Slides>
+    </Deck>
   </div>
 </SiteLayout>
 

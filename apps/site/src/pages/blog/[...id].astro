@@ -3,7 +3,7 @@ import SiteLayout from '../../layouts/SiteLayout.astro';
 import { Image } from 'astro:assets';
 import { getCollection, render } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
-import Slides from '@alkemdotdev/alkemist-components/slides';
+import Presentation from '@alkemdotdev/alkemist-components/presentation';
 import { isPreview } from '../../lib/deployment';
 export async function getStaticPaths() {
   return (await getCollection('blog'))
@@ -15,7 +15,7 @@ export async function getStaticPaths() {
 }
 const { entry } = Astro.props as { entry: CollectionEntry<'blog'> };
 const { Content } = await render(entry);
-const Frame: any = entry.data.present ? Slides : 'div';
+const Frame: any = entry.data.present ? Presentation : 'div';
 const Intro = entry.data.present ? 'section' : 'header';
 const frameAttributes = entry.data.present
   ? {

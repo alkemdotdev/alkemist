@@ -63,13 +63,15 @@ function layoutComment(node: Node): Node {
 }
 
 function isSlideDeck(file: FileLike) {
-  return file.data?.astro?.frontmatter?.format === 'slides';
+  return ['deck', 'slides'].includes(
+    String(file.data?.astro?.frontmatter?.format),
+  );
 }
 
 /** Ordinary articles opt into their presentation layout independently of decks. */
 function isPresentationArticle(file: FileLike) {
   const frontmatter = file.data?.astro?.frontmatter;
-  return frontmatter?.present === true && frontmatter?.format !== 'slides';
+  return frontmatter?.present === true && !isSlideDeck(file);
 }
 
 function visit(node: Node, callback: (current: Node) => void) {

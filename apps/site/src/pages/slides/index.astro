@@ -11,12 +11,14 @@ const slidesPath = (id = '') => `${import.meta.env.BASE_URL}slides/${id}`;
 ---
 
 <SiteLayout
-  title="Slides"
+  title="Presentations"
   description="Browser talks written in Markdown and MDX."
   preview={isPreview}
 >
-  <h1>Slides</h1>
-  <p class="alk-lead">Markdown talks with interactive figures.</p>
+  <h1>Presentations</h1>
+  <p class="alk-lead">
+    Authored decks with live figures, shared themes, and a readable view.
+  </p>
   <div class="slides-list" aria-label="Published slide decks">
     {
       decks.map((deck) => (

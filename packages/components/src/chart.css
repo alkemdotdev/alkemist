@@ -41,6 +41,44 @@
   cursor: pointer;
   padding: 0.4rem 0;
 }
+.alk-chart-data-tools-panel {
+  padding-bottom: 0.2rem;
+}
+.alk-chart-data-tools-panel p {
+  margin: 0.1rem 0 0.55rem;
+  color: var(--alk-muted, #5e5e5e);
+}
+.alk-chart-export-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-bottom: 0.65rem;
+}
+.alk-chart-table-pages {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.45rem;
+  padding-bottom: 0.85rem;
+  color: var(--alk-muted, #5e5e5e);
+  font: 0.72rem/1.4 var(--alk-mono, ui-monospace, monospace);
+}
+.alk-chart-table-pages button,
+.alk-chart-export-actions button {
+  min-height: 32px;
+  padding: 0.3rem 0.5rem;
+  border: 1px solid var(--alk-rule, #ccc);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--alk-ink, #111);
+  font: inherit;
+  cursor: pointer;
+}
+.alk-chart-table-pages button:disabled,
+.alk-chart-export-actions button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
 .alk-chart-table-scroll {
   max-height: 23rem;
   overflow: auto;

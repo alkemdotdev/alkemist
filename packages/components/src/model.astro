@@ -1,6 +1,9 @@
 ---
 import './model.css';
 import './figure.css';
+import './parameters.css';
+import type { ParametersProp } from './parameters';
+import type { ModelView } from './model-parameters';
 export interface ModelProps {
   id?: string;
   /** A glTF 2.0 .glb or .gltf URL. Compression decoders are not included. */
@@ -9,6 +12,12 @@ export interface ModelProps {
   description?: string;
   /** Static image shown before loading and when WebGL is unavailable. */
   poster?: string;
+  /** Initial camera preset. Defaults to perspective. */
+  view?: ModelView;
+  /** Start with a wireframe overlay. Existing material wireframes are restored when disabled. */
+  wireframe?: boolean;
+  /** Parameter controls to expose locally; disabled by default. */
+  parameters?: ParametersProp<'view' | 'wireframe'>;
   class?: string;
 }
 

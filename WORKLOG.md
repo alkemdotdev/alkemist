@@ -1,3 +1,16 @@
+# Articles, decks, and inspectable figures — September 15, 2026
+
+User requested completion of layout separation, release recovery, and continued improvement to presentations/widgets/charts with documentation. Branch: `feat/presentation-layouts`, based on verified `1416e88`.
+
+- Parent owns Presentation/Deck/Slide APIs, separate article/deck reading surfaces, integration aliases, demo/starter wiring, examples, docs, validation and delivery. New canonical `presentations: true` and `format: deck` retain old options, imports and `/slides/` paths. Navigation says Presentations.
+- `release_recovery` owns exact-version/dist-tags npm verification and compatibility/packed fixture tests. `chart_exploration` owns paginated prepared data, CSV/SVG/PNG exports, and zoom retention. `model_parameters` owns shared camera/wireframe parameters, material preservation, and aspect-aware fitting. `layout_review` reviewed these boundaries.
+- New Look closer deck, Articles and decks lab, expanded live figures lab, and development article demonstrate the public APIs. Package and starter docs use the same names and examples.
+- Final full verify passed: 142 tests, 121 validated output pages. Chromium/WebKit passed article/deck desktop/mobile behavior and existing document regressions, with the same content, mounted figure, parameters, links and reading position. Review fixed narrow model framing and zoom toggle preservation. Both browsers pass 124 layout cases, actual chart download contents, and pixel-based Model parameter checks. Packed consumers/starter and installed public entries pass.
+- Release root cause: aggregate npm metadata lagged the immutable version and dist-tags endpoints. New verification checks exact bytes and channel tags directly while retaining the bootstrap latest-tag safeguard. New main canary must complete before claiming release recovery.
+- Delivery pending: full final verification, installed package/starter checks, visual inspection, branch-preview verification, then main promotion and production/release identity. No physical projector/casting or audience parameter synchronization claim.
+
+## Previous milestone
+
 # Readable documents and presentation — September 15, 2026
 
 User requested a cleaner Present action and one Markdown document that works as a scrolling page or presentation, including ordinary posts. Branch: `feat/document-presentation`, based on verified production `4f36441`.
