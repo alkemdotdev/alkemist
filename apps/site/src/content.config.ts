@@ -52,6 +52,7 @@ export const collections = {
     loader: glob({ pattern: '**/*.mdx', base: './src/content/blog' }),
     schema: ({ image }) =>
       schema.extend({
+        present: z.boolean().default(false),
         cover: z
           .object({
             src: image(),

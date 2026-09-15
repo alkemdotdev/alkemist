@@ -1,3 +1,16 @@
+# Readable documents and presentation — September 15, 2026
+
+User requested a cleaner Present action and one Markdown document that works as a scrolling page or presentation, including ordinary posts. Branch: `feat/document-presentation`, based on verified production `4f36441`.
+
+- Read is the default at every viewport; explicit presentation links, audience/receiver views and `view="present"` preserve presenting intent. Present captures the reading section; returning restores that section and keyboard focus. Same-section return restores its previous offset. The document remains readable while the lazy engine loads or fails.
+- `present: true` compiles ordinary articles at H2 headings and top-level thematic rules. It preserves rules, component imports and one footnote list; no separate content copy. Site Blog and starter routes include the intro/title/cover and render Content once. Normal posts remain opt-in.
+- Parent owns runtime, CSS, docs, document regression, integration and delivery. `article_compiler` and `article_routes` owned bounded compiler/routes work; `document_browser_harness` adapted existing regression setup to explicit Present entry. Independent source review found no actionable issue.
+- Observed: 132 unit tests, 118 validated pages, clean formatting/types. Chromium 153 and WebKit 26.5 pass desktop/390px document transitions, same live nodes/canvas/parameters, reading offset/focus, Contents, ordinary and presentation links, single footnotes, no-JS, delayed/failed engine loading, and existing speaker/audience/native/annotation/theme/focus/media regressions. Six decks pass 108 layout cases at minimum 20px text.
+- Review fixes: whitespace/MDX-import-only article sections; loaded-reader presentation links; Present readiness waits; narrow split-layout widget controls stay in the main scrolling flow. Evidence: `.alkemist/document-*.log`, `.alkemist/document-read-*.png`, `.alkemist/document-present-*.png`.
+- Final full verify, fresh tarball consumers, generated starter and formatting pass. Two installed embedded decks retain independent positions, unique IDs, valid ARIA and local Focus in Chromium/WebKit. Ready for branch-preview verification, then main promotion. No physical display/casting claim or manual npm release.
+
+## Previous milestone
+
 # Shared themes and interactive figure focus — September 15, 2026
 
 Make live parameters easy to expose, preserve widget state when focusing a figure, share named styles between site and slides, and simplify presentation chrome. Parent owns focus, Slides UI/runtime, demos, integration and delivery. `shared_theme_styles` owns shared styles/header; `widget_parameters` owns Shader/Chart parameter controls. The earlier native-presentation revision `0cae203` is now verified by production build identity.

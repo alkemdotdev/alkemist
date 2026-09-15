@@ -13,6 +13,16 @@ async function checkNativePresentation(page) {
       () => document.querySelector('alk-slides')?.dataset.ready === 'true',
     );
   };
+  const present = async (target) => {
+    await target.locator('[data-slides-present]').click();
+    await target.waitForFunction(
+      () =>
+        document.querySelector('alk-slides')?.dataset.view === 'present' &&
+        document
+          .querySelector('[data-slides-present]')
+          ?.getAttribute('aria-pressed') === 'true',
+    );
+  };
   const choose = (target, index) =>
     target.locator('[data-slides-picker]').selectOption(String(index));
   const openTools = async (target) => {
@@ -32,6 +42,11 @@ async function checkNativePresentation(page) {
     );
   await page.setViewportSize({ width: 1440, height: 900 });
   await open(page);
+  assert(
+    (await page.locator('alk-slides').getAttribute('data-view')) === 'read',
+    'Desktop slide documents must open in Read',
+  );
+  await present(page);
   await page.locator('[data-annotations-open]').click();
   await page.keyboard.press('Escape');
   assert(
@@ -67,6 +82,11 @@ async function checkNativePresentation(page) {
   const audience = await popup;
   await audience.waitForFunction(
     () => document.querySelector('alk-slides')?.dataset.ready === 'true',
+  );
+  assert(
+    (await audience.locator('alk-slides').getAttribute('data-view')) ===
+      'present',
+    'Audience must open in Present',
   );
   assert(
     await audience.evaluate(
@@ -112,7 +132,7 @@ async function checkNativePresentation(page) {
   await audience
     .getByText('The presenter ended this session.', { exact: false })
     .waitFor();
-  await page.locator('[data-slides-present]').click();
+  await present(page);
   await choose(page, 3);
   await at(audience, 3);
   await audience.close();
@@ -245,6 +265,11 @@ async function checkNativePresentation(page) {
     };
   });
   await open(probe);
+  assert(
+    (await probe.locator('alk-slides').getAttribute('data-view')) === 'read',
+    'Native adapter probe must open in Read',
+  );
+  await present(probe);
   await openTools(probe);
   const fallbackPromise = probe.waitForEvent('popup');
   await probe.locator('[data-slides-audience]').click();
@@ -263,7 +288,7 @@ async function checkNativePresentation(page) {
     !(await probe.locator('[data-slides-screen-dialog]').isVisible()),
     'Stale permission opened chooser after leaving Present',
   );
-  await probe.locator('[data-slides-present]').click();
+  await present(probe);
   await openTools(probe);
   await probe.locator('[data-slides-screen]').click();
   await probe.evaluate(() => window.__native.resolveScreen());
@@ -382,6 +407,11 @@ async function checkNativePresentation(page) {
   );
   await receiver.waitForFunction(
     () => document.querySelector('alk-slides')?.dataset.ready === 'true',
+  );
+  assert(
+    (await receiver.locator('alk-slides').getAttribute('data-view')) ===
+      'present',
+    'Presentation API receiver must open in Present',
   );
   await receiver.evaluate(() => {
     window.__receiverConnection.dispatchEvent(

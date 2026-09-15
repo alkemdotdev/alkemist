@@ -134,6 +134,18 @@ async function checkAnnotations(page) {
   await page.waitForFunction(
     () => document.querySelector('alk-slides')?.dataset.ready === 'true',
   );
+  assert(
+    (await page.locator('alk-slides').getAttribute('data-view')) === 'read',
+    'Slide documents must open in Read',
+  );
+  await page.locator('[data-slides-present]').click();
+  await page.waitForFunction(
+    () =>
+      document.querySelector('alk-slides')?.dataset.view === 'present' &&
+      document
+        .querySelector('[data-slides-present]')
+        ?.getAttribute('aria-pressed') === 'true',
+  );
   const presentText = page
     .locator('[data-alk-slide].present .alk-slide-copy p')
     .first();

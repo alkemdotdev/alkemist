@@ -30,24 +30,24 @@ async function checkSlideLayouts(page) {
       await page.waitForFunction(
         () => document.querySelector('alk-slides')?.dataset.ready === 'true',
       );
+      if (
+        (await page.locator('alk-slides').getAttribute('data-view')) !== 'read'
+      )
+        throw new Error('Slide documents must begin in Read');
       if (width === 390) {
-        if (
-          (await page.locator('alk-slides').getAttribute('data-view')) !==
-          'read'
-        )
-          throw new Error('Mobile must begin in Read');
         const overflow = await page.evaluate(
           () => document.documentElement.scrollWidth > innerWidth + 2,
         );
         if (overflow) throw new Error(`Reading page overflows: ${slug}`);
-        await page.locator('[data-slides-present]').click();
-        await page.waitForFunction(
-          () =>
-            document
-              .querySelector('[data-slides-present]')
-              .getAttribute('aria-pressed') === 'true',
-        );
       }
+      await page.locator('[data-slides-present]').click();
+      await page.waitForFunction(
+        () =>
+          document.querySelector('alk-slides')?.dataset.view === 'present' &&
+          document
+            .querySelector('[data-slides-present]')
+            ?.getAttribute('aria-pressed') === 'true',
+      );
       const count = await page.locator('[data-alk-slide]').count();
       for (let index = 0; index < count; index++) {
         await page.locator('[data-slides-picker]').selectOption(String(index));

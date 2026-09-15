@@ -72,6 +72,10 @@ in a `format: slides` document. Add figures using the same components as an
 article. `Note for="figure-id"` attaches text to a figure, `Step` controls reveals,
 and `SpeakerNotes` supplies presenter notes. `Diagram` renders Mermaid source.
 Use `embedded` for independent decks inside a page, or a standalone route for
-deep links and the presenter window. Reading mode preserves the same DOM;
-mobile and no-JavaScript loads remain readable. See the
+deep links and the presenter window. Read is the default at every screen size;
+Present starts at the reading position, and Back to reading returns to the same
+section. Both views preserve the same mounted content and local widget state.
+Use `view="present"` or a presentation deep link to start in Present explicitly.
+Ordinary posts can use `present: true` with the integration and a `Slides` wrapper.
+No-JavaScript loads remain readable. See the
 [slide authoring guide](https://alkemist.alkem.dev/docs/slides/).

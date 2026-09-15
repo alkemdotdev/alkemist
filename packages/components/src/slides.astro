@@ -9,7 +9,7 @@ import '@alkemdotdev/alkemist-theme/slides.css';
 export interface SlidesProps {
   title: string;
   description?: string;
-  /** Small screens start in reading mode; Present remains available. */
+  /** Documents open in Read. Explicit presentation links retain their mode. */
   view?: 'read' | 'present';
   /** Embedded decks keep independent navigation without changing the URL. */
   embedded?: boolean;
@@ -29,7 +29,7 @@ type Props = SlidesProps;
 const {
   title,
   description,
-  view = 'present',
+  view = 'read',
   embedded = false,
   theme = 'inherit',
   colorScheme = 'inherit',
@@ -65,10 +65,25 @@ const {
   >
     <span class="alk-slides-title">{title}</span>
     <div class="alk-slides-modes" role="group" aria-label="Viewing mode">
-      <button type="button" data-slides-read aria-pressed="true">Read</button>
-      <button type="button" data-slides-present aria-pressed="false"
-        >Present</button
+      <button
+        type="button"
+        data-slides-read
+        aria-pressed="true"
+        title="Return to reading (Esc)"
+        aria-controls={`${id}-viewport`}>Back to reading</button
       >
+      <button
+        type="button"
+        data-slides-present
+        aria-pressed="false"
+        title="Present from your reading position"
+        aria-controls={`${id}-viewport`}
+      >
+        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24"
+          ><path d="m8 5 11 7-11 7Z" fill="currentColor"></path></svg
+        >
+        <span data-slides-present-label>Present</span>
+      </button>
     </div>
     {
       annotations && (
@@ -114,7 +129,7 @@ const {
             </select></label
           >
         </fieldset>
-        <fieldset class="alk-slides-tool-group">
+        <fieldset class="alk-slides-tool-group" data-slides-present-tools>
           <legend>Views</legend>
           <button type="button" data-slides-notes data-slides-speaker
             >Speaker view</button
@@ -131,7 +146,7 @@ const {
             >Cast to a receiver</button
           >
         </fieldset>
-        <fieldset class="alk-slides-tool-group">
+        <fieldset class="alk-slides-tool-group" data-slides-present-tools>
           <legend>Presenting</legend>
           <button type="button" data-slides-pointer aria-pressed="false"
             >Laser pointer</button
@@ -157,7 +172,8 @@ const {
           >
         </fieldset>
         <fieldset class="alk-slides-tool-group">
-          <legend>Share</legend>
+          <legend>Document</legend>
+          <button type="button" data-slides-contents>Contents</button>
           <button type="button" data-slides-print>Print</button>
           <button type="button" data-slides-copy-link>Copy current link</button>
           <button type="button" data-slides-help aria-label="Keyboard help"

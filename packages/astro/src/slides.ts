@@ -66,6 +66,12 @@ function isSlideDeck(file: FileLike) {
   return file.data?.astro?.frontmatter?.format === 'slides';
 }
 
+/** Ordinary articles opt into their presentation layout independently of decks. */
+function isPresentationArticle(file: FileLike) {
+  const frontmatter = file.data?.astro?.frontmatter;
+  return frontmatter?.present === true && frontmatter?.format !== 'slides';
+}
+
 function visit(node: Node, callback: (current: Node) => void) {
   callback(node);
   node.children?.forEach((child) => visit(child, callback));
@@ -254,6 +260,19 @@ export function injectSlideBuiltinImports(
 export function remarkAlkemistSlides(this: any) {
   const parse = this.parse.bind(this) as (value: string) => Node;
   return (tree: any, file: any) => {
+    if (isPresentationArticle(file)) {
+      for (const node of tree.children ?? []) {
+        if (node.type !== 'thematicBreak') continue;
+        node.data = {
+          ...node.data,
+          hProperties: {
+            ...(node.data?.hProperties as Record<string, unknown>),
+            dataAlkPresentationBreak: '',
+          },
+        };
+      }
+      return;
+    }
     if (!isSlideDeck(file)) return;
     tree.children = speakerNotesFromComments(tree.children ?? [], parse).map(
       layoutComment,
@@ -502,10 +521,110 @@ function attachSlideFootnotes(
   });
 }
 
+function reserveIds(tree: Node) {
+  const reservedIds = new Set<string>();
+  walkHast(tree, (node) => {
+    const id = node.properties?.id;
+    if (typeof id === 'string') reservedIds.add(id);
+  });
+  return reservedIds;
+}
+
+function allocateId(base: string, reservedIds: Set<string>) {
+  let id = base;
+  let suffix = 2;
+  while (reservedIds.has(id)) id = `${base}-${suffix++}`;
+  reservedIds.add(id);
+  return id;
+}
+
+function isPresentationBreak(node: Node) {
+  return (
+    node.type === 'element' &&
+    node.tagName === 'hr' &&
+    node.properties?.dataAlkPresentationBreak !== undefined
+  );
+}
+
+function hasPresentationContent(nodes: Node[]) {
+  return nodes.some((node) =>
+    node.type !== 'text'
+      ? node.type !== 'mdxjsEsm'
+      : Boolean(node.value?.trim()),
+  );
+}
+
+/**
+ * Wrap article content for Present while retaining the authored article tree.
+ * Footnotes remain in the final section with their Markdown-generated links
+ * and identifiers intact.
+ */
+function partitionPresentationArticle(tree: Node, file: FileLike) {
+  const assignHeadingIds = rehypeHeadingIds() as (
+    tree: Node,
+    file: FileLike,
+  ) => void;
+  assignHeadingIds(tree, file);
+  const rootChildren = tree.children ?? [];
+  const footnotes = rootChildren.filter(isFootnoteSection);
+  const content = rootChildren.filter((node) => !isFootnoteSection(node));
+  const reservedIds = reserveIds({ type: 'root', children: rootChildren });
+  const sections: Node[][] = [];
+  let current: Node[] = [];
+  const flush = () => {
+    if (hasPresentationContent(current)) sections.push(current);
+    else if (current.length && sections.length)
+      sections.at(-1)?.push(...current);
+    current = [];
+  };
+
+  for (const node of content) {
+    if (
+      node.type === 'element' &&
+      node.tagName === 'h2' &&
+      hasPresentationContent(current)
+    )
+      flush();
+    current.push(node);
+    if (isPresentationBreak(node)) flush();
+  }
+  flush();
+
+  if (footnotes.length > 0) {
+    if (sections.length === 0) sections.push([]);
+    sections.at(-1)?.push(...footnotes);
+  }
+  tree.children = sections.map((children, index) => {
+    const heading = children.find(
+      (node) => node.type === 'element' && node.tagName === 'h2',
+    );
+    const headingId = heading?.properties?.id;
+    const base =
+      typeof headingId === 'string'
+        ? `presentation-${headingId}`
+        : index === 0
+          ? 'presentation-intro'
+          : `presentation-section-${index + 1}`;
+    return {
+      type: 'element',
+      tagName: 'section',
+      properties: {
+        dataAlkSlide: '',
+        id: allocateId(base, reservedIds),
+      },
+      children,
+    };
+  });
+}
+
 /** Render deck groups as SSR semantic sections and enhance shared annotations. */
 export function rehypeAlkemistSlides() {
   return (tree: any, file: any) => {
     calloutsAndDiagrams(tree);
+    if (isPresentationArticle(file)) {
+      partitionPresentationArticle(tree, file);
+      return;
+    }
     if (!isSlideDeck(file)) return;
     // Astro normally applies this after user rehype plugins.  Run it now so
     // section and footnote IDs reserve the IDs it will retain on its later pass.
@@ -521,11 +640,7 @@ export function rehypeAlkemistSlides() {
       footnoteItems(node, footnotes);
       return false;
     });
-    const reservedIds = new Set<string>();
-    walkHast({ type: 'root', children: rootChildren }, (node) => {
-      const id = node.properties?.id;
-      if (typeof id === 'string') reservedIds.add(id);
-    });
+    const reservedIds = reserveIds({ type: 'root', children: rootChildren });
     const slides: Node[][] = [[]];
     for (const node of rootChildren) {
       if (node.type === 'element' && node.tagName === 'alk-slide-break')

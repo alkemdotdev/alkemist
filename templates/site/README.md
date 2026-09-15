@@ -12,6 +12,8 @@ Edit `src/lib/site.ts` to change the name, tagline, and `sections` configuration
 
 The starter's first deck is `src/content/slides/first-talk.md`. Keep `format: slides` in its frontmatter, use a top-level `---` to start the next slide, and choose `.mdx` only when a talk needs an interactive component. `incremental: true` enables list progression. `alkemist({ slides: true })` in `astro.config.ts` enables the deck compiler.
 
+Documents open in a scrolling Read view, with a Present button that starts from your reading position. Ordinary content entries can also set `present: true`: H2 headings and top-level rules become presentation boundaries, while reading retains the original Markdown and footnotes. The example `src/content/blog/first-experiment.mdx` demonstrates this. The title and lead appear in both views; MDX articles keep explicit component imports.
+
 Blog posts may include an optional local `cover` in frontmatter. Its `src` is resolved with Astro's `image()` schema, `alt` is required, and optional `caption`, `fit`, focal coordinates, and `showInPost` control the thumbnail and article cover. Covers are for individual posts; ordinary text rows need no image metadata.
 
 The oscillator data is synthetic. The tetrahedron is an original, small glTF fixture. Replace them with your own evidence and record units, provenance, and license terms. Math and fenced code in MDX work through the installed integration. Charts and models load their rendering engines when visible.

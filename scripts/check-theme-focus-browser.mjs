@@ -18,6 +18,18 @@ async function checkThemesAndFocus(page) {
     () => document.querySelector('alk-slides')?.dataset.ready === 'true',
   );
   const root = page.locator('alk-slides');
+  assert(
+    (await root.getAttribute('data-view')) === 'read',
+    'Desktop slide documents must open in Read',
+  );
+  await page.locator('[data-slides-present]').click();
+  await page.waitForFunction(
+    () =>
+      document.querySelector('alk-slides')?.dataset.view === 'present' &&
+      document
+        .querySelector('[data-slides-present]')
+        ?.getAttribute('aria-pressed') === 'true',
+  );
   const picker = page.locator('[data-slides-picker]');
   const tools = page.locator('[data-slides-tools]');
   const openTools = async () => {
@@ -112,7 +124,11 @@ async function checkThemesAndFocus(page) {
   );
   await page.locator('[data-slides-present]').click();
   await page.waitForFunction(
-    () => document.querySelector('alk-slides')?.dataset.view === 'present',
+    () =>
+      document.querySelector('alk-slides')?.dataset.view === 'present' &&
+      document
+        .querySelector('[data-slides-present]')
+        ?.getAttribute('aria-pressed') === 'true',
   );
   await field.locator('[data-parameters-reset]').click();
   assert(

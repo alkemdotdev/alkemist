@@ -93,6 +93,161 @@ test('a deck splits only parsed top-level thematic breaks', async () => {
   assert.match(html, /<code class="language-md">---/);
 });
 
+test('present articles partition a preamble at top-level H2 headings while retaining nested content', async () => {
+  const html = await render(
+    '# Article title\n\nPreamble.\n\n## First section\n\n### Detail\n\nBody.\n\n## Second section\n\nClosing.',
+    { present: true },
+  );
+  assert.equal((html.match(/<section data-alk-slide=""/g) ?? []).length, 3);
+  assert.match(
+    html,
+    /<section data-alk-slide="" id="presentation-intro"><h1 id="article-title">/,
+  );
+  assert.match(
+    html,
+    /<section data-alk-slide="" id="presentation-first-section"><h2 id="first-section">First section<\/h2>\n<h3 id="detail">Detail<\/h3>/,
+  );
+  const ids = [...html.matchAll(/\sid="([^"]+)"/g)].map((match) => match[1]);
+  assert.equal(new Set(ids).size, ids.length);
+});
+
+test('present is an explicit article opt-in and leaves ordinary Markdown untouched otherwise', async () => {
+  for (const frontmatter of [{}, { present: false }]) {
+    const html = await render('# Article\n\n## Section\n\nText', frontmatter);
+    assert.doesNotMatch(html, /data-alk-slide/);
+    assert.match(html, /<h2 id="section">Section<\/h2>/);
+  }
+  const deck = await render('# Deck\n\n---\n\n# End', {
+    format: 'slides',
+    present: true,
+  });
+  assert.equal((deck.match(/data-alk-slide/g) ?? []).length, 2);
+  assert.doesNotMatch(deck, /data-alk-presentation-break/);
+});
+
+test('an H2-less present article still renders as one slide section', async () => {
+  const html = await render('# Article\n\nOnly the introduction is here.', {
+    present: true,
+  });
+  assert.match(html, /<section data-alk-slide="" id="presentation-intro">/);
+  assert.equal((html.match(/data-alk-slide/g) ?? []).length, 1);
+});
+
+test('authored top-level rules stay visible in Read and partition present articles', async () => {
+  const html = await render(
+    `# Article
+
+Before.
+
+\`\`\`md
+---
+\`\`\`
+
+- outer
+  - ---
+
+---
+
+After.`,
+    { present: true },
+  );
+  assert.equal((html.match(/<section data-alk-slide=""/g) ?? []).length, 2);
+  assert.match(html, /<hr data-alk-presentation-break="">/);
+  assert.match(html, /<code class="language-md">---/);
+  assert.match(html, /<li>outer\n<hr>\n<\/li>/);
+  assert.equal((html.match(/data-alk-presentation-break/g) ?? []).length, 1);
+});
+
+test('a rule immediately before H2 does not manufacture a whitespace-only slide', async () => {
+  const html = await render(
+    '# Article\n\nBefore.\n\n---\n\n## Detail\n\nAfter.',
+    {
+      present: true,
+    },
+  );
+  assert.equal((html.match(/<section data-alk-slide=""/g) ?? []).length, 2);
+  assert.match(
+    html,
+    /data-alk-presentation-break=""><\/section><section data-alk-slide="" id="presentation-detail">\n<h2/,
+  );
+});
+
+test('present article footnotes retain one trailing definition block and their original identifiers', async () => {
+  const html = await render(
+    `# Article[^source]
+
+## Detail
+
+More text.[^second]
+
+[^source]: First source.
+[^second]: Second source.`,
+    { present: true },
+  );
+  assert.equal(
+    (html.match(/<section data-footnotes class="footnotes">/g) ?? []).length,
+    1,
+  );
+  assert.match(html, /id="user-content-fnref-source"/);
+  assert.match(html, /href="#user-content-fn-source"/);
+  assert.match(html, /id="user-content-fn-source"/);
+  assert.match(html, /id="user-content-fn-second"/);
+  assert.doesNotMatch(html, /alk-slide-\d+-(?:source|second)/);
+  const ids = [...html.matchAll(/\sid="([^"]+)"/g)].map((match) => match[1]);
+  assert.equal(new Set(ids).size, ids.length);
+});
+
+test('MDX present articles preserve bindings without deck built-in imports', async () => {
+  const compiled = String(
+    await compile(
+      new VFile({
+        value: `export const value = 2;
+
+# Article
+
+<Chart value={value} />
+
+## Detail
+
+{value}`,
+        data: { astro: { frontmatter: { present: true } } },
+      }),
+      {
+        remarkPlugins: [remarkAlkemistSlides],
+        rehypePlugins: [rehypeAlkemistSlides],
+        jsxImportSource: 'astro',
+      },
+    ),
+  );
+  assert.match(compiled, /export const value = 2/);
+  assert.match(compiled, /_jsx\(Chart/);
+  assert.match(compiled, /data-alk-slide/);
+  assert.doesNotMatch(compiled, /alkemist-components\/chart/);
+});
+
+test('leading MDX imports remain with the first H2 instead of creating an empty preamble slide', async () => {
+  const compiled = String(
+    await compile(
+      new VFile({
+        value: `import Chart from './chart.astro';
+
+## Detail
+
+<Chart />`,
+        data: { astro: { frontmatter: { present: true } } },
+      }),
+      {
+        remarkPlugins: [remarkAlkemistSlides],
+        rehypePlugins: [rehypeAlkemistSlides],
+        jsxImportSource: 'astro',
+      },
+    ),
+  );
+  assert.match(compiled, /import Chart from '\.\/chart\.astro';/);
+  assert.equal((compiled.match(/data-alk-slide/g) ?? []).length, 1);
+  assert.match(compiled, /id: "presentation-detail"/);
+});
+
 test('slide footnotes are local even when definitions are conventionally trailing', async () => {
   const html = await render(
     `# First[^one]\n\n---\n\n# Second[^two]\n\n[^one]: First source.\n[^two]: Second source.`,

@@ -12,11 +12,26 @@ async function checkSlides(page) {
   page.on('pageerror', (error) => errors.push(error.message));
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.emulateMedia({ colorScheme: 'light', reducedMotion: 'reduce' });
-  const open = async (slug) => {
+  const present = async () => {
+    await page.locator('[data-slides-present]').click();
+    await page.waitForFunction(
+      () =>
+        document.querySelector('alk-slides')?.dataset.view === 'present' &&
+        document
+          .querySelector('[data-slides-present]')
+          ?.getAttribute('aria-pressed') === 'true',
+    );
+  };
+  const open = async (slug, { presenting = true } = {}) => {
     await page.goto(`${base}/slides/${slug}/`);
     await page.waitForFunction(
       () => document.querySelector('alk-slides')?.dataset.ready === 'true',
     );
+    assert(
+      (await page.locator('alk-slides').getAttribute('data-view')) === 'read',
+      'Desktop slide documents must open in Read',
+    );
+    if (presenting) await present();
   };
   const choose = async (index) => {
     await page
@@ -101,13 +116,7 @@ async function checkSlides(page) {
   await page.waitForFunction(
     () => document.querySelector('alk-slides').dataset.view === 'read',
   );
-  await page.locator('[data-slides-present]').click();
-  await page.waitForFunction(
-    () =>
-      document
-        .querySelector('[data-slides-present]')
-        .getAttribute('aria-pressed') === 'true',
-  );
+  await present();
   assert(
     await page.evaluate(
       () =>
@@ -322,7 +331,7 @@ async function checkSlides(page) {
   );
 
   await page.setViewportSize({ width: 390, height: 844 });
-  await open('working-with-a-signal');
+  await open('working-with-a-signal', { presenting: false });
   assert(
     (await page.locator('alk-slides').getAttribute('data-view')) === 'read',
     'Mobile did not default to reading',

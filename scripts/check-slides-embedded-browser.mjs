@@ -16,9 +16,20 @@ async function checkEmbeddedSlides(page) {
       throw new Error(`Focus targeted another embedded instance: ${index}`);
     await page.keyboard.press('Escape');
   }
-  for (let index = 0; index < 2; index++)
-    if ((await decks.nth(index).getAttribute('data-view')) === 'read')
-      await decks.nth(index).locator('[data-slides-present]').click();
+  for (let index = 0; index < 2; index++) {
+    if ((await decks.nth(index).getAttribute('data-view')) !== 'read')
+      throw new Error(`Embedded deck did not open in Read: ${index}`);
+    await decks.nth(index).locator('[data-slides-present]').click();
+  }
+  await page.waitForFunction(() =>
+    [...document.querySelectorAll('alk-slides')].every(
+      (deck) =>
+        deck.dataset.view === 'present' &&
+        deck
+          .querySelector('[data-slides-present]')
+          ?.getAttribute('aria-pressed') === 'true',
+    ),
+  );
   await decks.nth(0).locator('[data-slides-next]').click();
   const state = await page.evaluate(() => {
     const ids = [...document.querySelectorAll('[id]')].map(

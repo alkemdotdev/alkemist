@@ -18,6 +18,7 @@ class SlidesElement extends HTMLElement {
   private current = 0;
   private fragment = -1;
   private restorePosition = false;
+  private readingPosition?: { section: HTMLElement; top: number };
   private operation = Promise.resolve();
   private epoch = 0;
   private printing = false;
@@ -182,6 +183,11 @@ class SlidesElement extends HTMLElement {
       signal,
     });
     this.button('overview').addEventListener(
+      'click',
+      () => this.openOverview(),
+      { signal },
+    );
+    this.button('contents').addEventListener(
       'click',
       () => this.openOverview(),
       { signal },
@@ -366,17 +372,35 @@ class SlidesElement extends HTMLElement {
     });
     this.resize.observe(this.viewport);
     const view =
-      !this.receiver &&
-      !this.native.audience &&
-      (this.dataset.initialView === 'read' || window.innerWidth < 640)
-        ? 'read'
-        : 'present';
+      this.receiver ||
+      this.native.audience ||
+      this.dataset.initialView === 'present' ||
+      (this.dataset.embedded !== 'true' && location.hash.startsWith('#/'))
+        ? 'present'
+        : 'read';
     this.dataset.view = view;
     this.sections.forEach(
       (section, i) =>
         (section.dataset.alkActive = String(view === 'read' || i === 0)),
     );
     this.updateActivity();
+    window.addEventListener(
+      'hashchange',
+      () => {
+        if (
+          !this.deck &&
+          this.dataset.embedded !== 'true' &&
+          location.hash.startsWith('#/')
+        ) {
+          this.current = 0;
+          this.fragment = -1;
+          this.restorePosition = false;
+          this.readingPosition = undefined;
+          void this.setView('present');
+        }
+      },
+      { signal },
+    );
     window.addEventListener('load', () => fitSlideContent(this), { signal });
     void document.fonts.ready.then(() => fitSlideContent(this));
     void this.setView(view);
@@ -536,7 +560,8 @@ class SlidesElement extends HTMLElement {
         this.message(
           `Presentation could not start: ${error instanceof Error ? error.message : 'unknown error'}. The document remains readable.`,
         );
-      });
+      })
+      .finally(() => this.setStarting(false));
     return this.operation;
   }
 
@@ -545,23 +570,42 @@ class SlidesElement extends HTMLElement {
     delete this.dataset.printReady;
     const epoch = this.epoch;
     if (view === 'read') {
+      const wasPresenting = Boolean(this.deck);
+      if (document.fullscreenElement === this) await document.exitFullscreen();
       this.teardown();
       this.dataset.view = 'read';
       this.sync();
+      if (wasPresenting && !this.receiver && !this.native?.audience)
+        this.returnToReading();
       return;
     }
     if (this.deck) return;
+    if (
+      this.dataset.view === 'read' &&
+      this.dataset.ready === 'true' &&
+      (this.dataset.embedded === 'true' || !location.hash.startsWith('#/'))
+    ) {
+      this.current = this.readingIndex();
+      this.fragment = -1;
+      this.restorePosition = true;
+      const section = this.sections[this.current]!;
+      this.readingPosition = {
+        section,
+        top: section.getBoundingClientRect().top,
+      };
+    }
+    this.setStarting(true);
+    const [{ default: Reveal }, { default: Notes }] = await Promise.all([
+      import('reveal.js'),
+      import('reveal.js/plugin/notes'),
+    ]);
+    if (!this.isConnected || epoch !== this.epoch) return;
     this.dataset.view = 'present';
     this.setStageInert(this.dataset.embedded !== 'true');
     this.native?.resume();
     this.updateActivity();
     prepareSlideLayouts(this);
     fitSlideContent(this);
-    const [{ default: Reveal }, { default: Notes }] = await Promise.all([
-      import('reveal.js'),
-      import('reveal.js/plugin/notes'),
-    ]);
-    if (!this.isConnected || epoch !== this.epoch) return;
     this.viewport.classList.add('reveal');
     const deck = new Reveal(this.viewport, {
       embedded: true,
@@ -666,6 +710,8 @@ class SlidesElement extends HTMLElement {
     const presenting = this.dataset.view === 'present' && Boolean(this.deck);
     this.button('read').setAttribute('aria-pressed', String(!presenting));
     this.button('present').setAttribute('aria-pressed', String(presenting));
+    this.button('read').hidden = !presenting;
+    this.button('present').hidden = presenting;
     this.button('notes').disabled =
       !presenting || this.dataset.embedded === 'true';
     this.button('notes').title =
@@ -721,8 +767,11 @@ class SlidesElement extends HTMLElement {
 
   private openOverview() {
     this.closeTools();
-    if (!this.deck) return;
+    if (!this.deck) this.current = this.readingIndex();
     const dialog = this.dialog('overview');
+    dialog.querySelector('h2')!.textContent = this.deck
+      ? 'Overview'
+      : 'Contents';
     const cards = dialog.querySelector<HTMLElement>(
       '[data-slides-overview-cards]',
     )!;
@@ -776,9 +825,15 @@ class SlidesElement extends HTMLElement {
         card.addEventListener(
           'click',
           () => {
-            this.deck?.slide(index, 0, -1);
-            this.lastOverlayFocus = this.viewport;
             dialog.close();
+            if (this.deck) this.deck.slide(index, 0, -1);
+            else {
+              this.current = index;
+              this.fragment = -1;
+              section.scrollIntoView({ block: 'start', behavior: 'instant' });
+              this.writeReadingHash(section);
+            }
+            this.lastOverlayFocus = this.viewport;
             this.viewport.focus({ preventScroll: true });
           },
           { signal: this.events?.signal },
@@ -859,13 +914,16 @@ class SlidesElement extends HTMLElement {
       );
       return;
     }
+    if (!this.deck) this.writeReadingHash(this.sections[this.readingIndex()]!);
     const url = new URL(location.href);
     for (const key of ['alkAudience', 'alkCast', 'receiver'])
       url.searchParams.delete(key);
     url.hash = this.deck?.getSlidePath() ?? url.hash;
     try {
       await navigator.clipboard.writeText(url.href);
-      this.message('Current slide link copied.');
+      this.message(
+        this.deck ? 'Current slide link copied.' : 'Section link copied.',
+      );
     } catch {
       const field = document.createElement('textarea');
       field.value = url.href;
@@ -877,7 +935,9 @@ class SlidesElement extends HTMLElement {
       field.remove();
       this.message(
         copied
-          ? 'Current slide link copied.'
+          ? this.deck
+            ? 'Current slide link copied.'
+            : 'Section link copied.'
           : 'Copy was blocked; use the address bar link.',
       );
     }
@@ -1149,6 +1209,50 @@ class SlidesElement extends HTMLElement {
     tools.open = false;
     if (restoreFocus)
       tools.querySelector('summary')?.focus({ preventScroll: true });
+  }
+
+  private setStarting(starting: boolean) {
+    this.button('present').disabled = starting;
+    this.button('present').setAttribute('aria-busy', String(starting));
+    this.querySelector('[data-slides-present-label]')!.textContent = starting
+      ? 'Opening…'
+      : 'Present';
+    if (starting) this.dataset.ready = 'false';
+  }
+
+  /** The first section below the reading toolbar owns the reading position. */
+  private readingIndex() {
+    const toolbar = this.querySelector<HTMLElement>('.alk-slides-toolbar')!;
+    const line = Math.max(0, toolbar.getBoundingClientRect().bottom) + 32;
+    const index = this.sections.findIndex(
+      (section) => section.getBoundingClientRect().bottom > line,
+    );
+    return index >= 0 ? index : this.sections.length - 1;
+  }
+
+  private writeReadingHash(section: HTMLElement) {
+    if (this.dataset.embedded === 'true') return;
+    const url = new URL(location.href);
+    url.hash =
+      section.querySelector<HTMLElement>('h1[id],h2[id],h3[id]')?.id ||
+      section.id;
+    history.replaceState(history.state, '', url);
+  }
+
+  private returnToReading() {
+    const section = this.sections[this.current];
+    if (!section) return;
+    this.writeReadingHash(section);
+    requestAnimationFrame(() => {
+      if (!this.isConnected || this.dataset.view !== 'read') return;
+      if (this.readingPosition?.section === section) {
+        window.scrollBy({
+          top: section.getBoundingClientRect().top - this.readingPosition.top,
+          behavior: 'instant',
+        });
+      } else section.scrollIntoView({ block: 'start', behavior: 'instant' });
+      this.button('present').focus({ preventScroll: true });
+    });
   }
 
   private followAnchor(event: MouseEvent) {

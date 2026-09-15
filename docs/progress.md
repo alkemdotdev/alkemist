@@ -1,5 +1,13 @@
 # Alkemist progress
 
+## 2026-09-15 — One document, Read and Present
+
+Slides now opens as a scrolling document at every viewport. A sticky primary Present action starts from the reading position; Back to reading returns to the current section and restores the prior offset when that section has not changed. Read exposes Contents and document tools, while presentation controls remain in Present. Both views retain the same content and mounted figures. Narrow split layouts keep figure controls in the main scroll flow.
+
+Ordinary posts can opt in with `present: true`. The compiler groups H2 headings and top-level rules while retaining authored rules in Read and one ordinary footnote list. Site Blog and starter content routes include the title, lead, and cover in Present, with an example development article and starter post. Other host routes can reuse the compiler and Slides wrapper. Named themes remain shared with the site.
+
+Observed locally: 132 unit tests and 118 validated pages; Chromium 153 and WebKit 26.5 pass document node/canvas identity, live parameter preservation, reading position/focus return, Contents, footnotes in both modes, deep links, engine-loading failure recovery, and no-JavaScript reading at desktop/390px widths. Existing controls, speaker/audience synchronization, native adapters, annotations, media lifecycle, and focus/theme regressions pass. Six example decks pass 108 layout cases with minimum 20px presentation text. Browser artifacts are under `.alkemist/document-*`; reproducible checks are in `scripts/check-document-presentation-browser.mjs` and the existing presentation scripts. Fullscreen is exercised where available; physical projector and casting hardware are not claimed.
+
 ## 2026-09-14 — Native presentation facilities
 
 Researched the platform contracts and browser support in `docs/browser-presentation-standards.md`. Shared Slides now owns opt-in screen wake locks, attached-display selection, a floating notes projection, audience-window synchronization, and an experimental opt-in Presentation API adapter. The local deck remains authoritative; remote state contains slides, steps and blackout, never local annotations or speaker-note payloads. Hidden local figures and media remain paused while floating notes can control the audience. Permission denial, late grants, close, Read and page lifecycle all have explicit recovery paths.

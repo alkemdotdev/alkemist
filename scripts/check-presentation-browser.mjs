@@ -12,6 +12,18 @@ async function checkPresentation(page) {
   await page.waitForFunction(
     () => document.querySelector('alk-slides')?.dataset.ready === 'true',
   );
+  assert(
+    (await page.locator('alk-slides').getAttribute('data-view')) === 'read',
+    'Desktop slide documents must open in Read',
+  );
+  await page.locator('[data-slides-present]').click();
+  await page.waitForFunction(
+    () =>
+      document.querySelector('alk-slides')?.dataset.view === 'present' &&
+      document
+        .querySelector('[data-slides-present]')
+        ?.getAttribute('aria-pressed') === 'true',
+  );
   const root = page.locator('alk-slides');
   const tools = page.locator('[data-slides-tools]');
   const toolsOpen = () => tools.evaluate((element) => element.open);
@@ -195,8 +207,14 @@ async function checkPresentation(page) {
     'Read did not restore host scrolling and interaction',
   );
   await page.locator('[data-slides-present]').click();
-  await page.waitForFunction(() =>
-    document.querySelector('.alk-slides-viewport').classList.contains('reveal'),
+  await page.waitForFunction(
+    () =>
+      document
+        .querySelector('.alk-slides-viewport')
+        ?.classList.contains('reveal') &&
+      document
+        .querySelector('[data-slides-present]')
+        ?.getAttribute('aria-pressed') === 'true',
   );
   if (await page.evaluate(() => document.fullscreenEnabled)) {
     await openTools();

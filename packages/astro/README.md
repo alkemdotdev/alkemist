@@ -36,3 +36,9 @@ list items. Markdown notes use `<!-- notes: ... -->`; MDX can use the built-in
 Render the compiled content inside `@alkemdotdev/alkemist-components/slides`.
 The generated starter uses `src/content/slides/` and `/slides/` by default.
 The same option enables callouts and lazy Mermaid fences in ordinary articles.
+
+An ordinary article can opt into presentation with `present: true` instead of
+`format: slides`. Its H2 headings and top-level rules define sections; the rules
+and a single ordinary footnote list remain in the reading document. MDX articles
+keep explicit imports. Render the compiled content once inside `Slides`; the
+starter supports this flag in its content routes.

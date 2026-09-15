@@ -3,6 +3,7 @@ import SiteLayout from '../../layouts/SiteLayout.astro';
 import { Image } from 'astro:assets';
 import { getCollection, render } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
+import Slides from '@alkemdotdev/alkemist-components/slides';
 import { isPreview } from '../../lib/deployment';
 export async function getStaticPaths() {
   return (await getCollection('blog'))
@@ -14,6 +15,21 @@ export async function getStaticPaths() {
 }
 const { entry } = Astro.props as { entry: CollectionEntry<'blog'> };
 const { Content } = await render(entry);
+const Frame: any = entry.data.present ? Slides : 'div';
+const Intro = entry.data.present ? 'section' : 'header';
+const frameAttributes = entry.data.present
+  ? {
+      title: entry.data.title,
+      description: entry.data.description,
+      view: 'read' as const,
+    }
+  : {};
+const introAttributes = entry.data.present
+  ? {
+      'data-alk-slide': true,
+      id: `blog-intro-${entry.id}`,
+    }
+  : {};
 ---
 
 <SiteLayout
@@ -25,28 +41,33 @@ const { Content } = await render(entry);
       <a href="/blog/">← Blog</a><time datetime={entry.data.date}
         >{entry.data.date}</time
       >
-    </p><h1>{entry.data.title}</h1><p class="alk-lead">
-      {entry.data.description}
-    </p>{
-      entry.data.cover?.showInPost && (
-        <figure
-          class="blog-cover"
-          style={`--cover-fit: ${entry.data.cover.fit}; --cover-position: ${entry.data.cover.focalX}% ${entry.data.cover.focalY}%;`}
-        >
-          <Image
-            src={entry.data.cover.src}
-            alt={entry.data.cover.alt}
-            widths={[720, 1200, 1600]}
-            sizes="(max-width: 800px) calc(100vw - 2.5rem), 800px"
-            loading="eager"
-            format="webp"
-          />
-          {entry.data.cover.caption && (
-            <figcaption>{entry.data.cover.caption}</figcaption>
-          )}
-        </figure>
-      )
-    }<Content />
+    </p><Frame {...frameAttributes}>
+      <Intro {...introAttributes}>
+        <h1>{entry.data.title}</h1><p class="alk-lead">
+          {entry.data.description}
+        </p>{
+          entry.data.cover?.showInPost && (
+            <figure
+              class="blog-cover"
+              style={`--cover-fit: ${entry.data.cover.fit}; --cover-position: ${entry.data.cover.focalX}% ${entry.data.cover.focalY}%;`}
+            >
+              <Image
+                src={entry.data.cover.src}
+                alt={entry.data.cover.alt}
+                widths={[720, 1200, 1600]}
+                sizes="(max-width: 800px) calc(100vw - 2.5rem), 800px"
+                loading="eager"
+                format="webp"
+              />
+              {entry.data.cover.caption && (
+                <figcaption>{entry.data.cover.caption}</figcaption>
+              )}
+            </figure>
+          )
+        }
+      </Intro>
+      <Content />
+    </Frame>
   </article></SiteLayout
 >
 

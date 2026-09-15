@@ -4,7 +4,34 @@ description: Write readable browser talks in Markdown and add interactive figure
 order: 20
 ---
 
-`Slides` turns a content entry into a browser presentation while retaining the same rendered document structure for reading. It is enabled through the Alkemist integration and used by the site's `/slides/` collection.
+`Slides` gives a document two views: a scrolling Markdown page and a browser presentation. Read is the default on every screen. Both views use the same content and mounted figures, so edits and local parameter changes carry across. The presentation reflows the document for the screen; it does not summarize or duplicate it.
+
+## Present an existing post
+
+Add `present: true` to a post's frontmatter. The site's Blog route and the generated starter support this directly:
+
+```md title="src/content/blog/experiment.md"
+---
+title: An experiment
+description: What changed when we moved the source.
+date: '2026-09-15'
+present: true
+---
+
+Start with the question and its context.
+
+## Observation
+
+Show the evidence here.
+
+## Limits
+
+Explain what this experiment cannot establish.
+```
+
+H2 headings begin presentation sections; an ordinary top-level `---` can add a boundary within a longer section. Subheadings remain with their parent section. The title, lead, and cover are the introduction. Rules remain visible in Read, and footnotes retain their normal links and a single reference list. MDX posts keep explicit component imports.
+
+Try [One document, two views](/blog/one-document-two-views/). A custom content route can use the same compiler with `present: true` and wrap its rendered `<Content />` in `<Slides title={entry.data.title}>`. Include any route-owned title or cover inside a `section` with `data-alk-slide` if it should appear in Present. Add `present: z.boolean().default(false)` to the collection schema. The integration still requires `slides: true`.
 
 ## Start with Markdown
 
@@ -85,7 +112,9 @@ Content is laid out first, then text fitting makes small adjustments within a re
 
 ## Present from the browser
 
-**Present** fills the window with the deck; **Read** returns to the document. The slide count at the bottom opens **Overview**, with selectable cards containing images and audience-facing text. The bottom controls move between slides or individual steps, and the slide picker jumps directly to a section.
+**Present** opens at the section you are reading and fills the window. **Back to reading** or Escape returns to that section; staying on the same slide restores your prior reading position. The same figures remain mounted through both transitions. In Read, **Tools → Contents** jumps between sections. In Present, the slide count opens **Overview**, with selectable cards containing images and audience-facing text. The bottom controls move between slides or individual steps, and the slide picker jumps directly to a section.
+
+Ordinary heading links open in Read. Presentation links with `#/slide-id` open directly in Present. **Copy current link** shares the current section in the current mode. Component authors can request `view="present"` when a page should explicitly open in presentation mode; audience and receiver windows always do so.
 
 **Tools** groups appearance, presenter views, presentation controls, sharing, and keyboard help. Timed advance starts only when requested and stops when the page is hidden, the overview opens, blackout begins, or the deck ends. Media never begins playing automatically.
 
@@ -150,7 +179,7 @@ The starter includes `src/content/slides/first-talk.md`. The demo includes:
 - [Listening to the fixture](/slides/listening-to-the-fixture/) exercises Audio, Video, and the MIDI editor.
 - [A page can change its posture](/slides/layout-sampler/) shows inferred title, image/prose, list, quote, table, and code layouts.
 
-Read and Present share the same widget instances. Phones default to Read. Speaker view is available for standalone decks; embedded decks keep independent navigation within their host page.
+Read and Present share the same widget instances. Every screen defaults to Read. Speaker view is available for standalone decks; embedded decks keep independent navigation within their host page. The reading column uses `--alk-document-width` (760px by default).
 
 The slide index and route exclude `draft: true`, just as Blog does. Test the reading route and presentation controls at desktop and phone widths. Exercise backward steps, widget focus, media pause on slide change, resize, and a no-JavaScript reading load before publishing. Browser presentation does not establish a verified PDF or video export; treat those as separate artifact work.
 

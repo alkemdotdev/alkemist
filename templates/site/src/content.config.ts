@@ -4,6 +4,7 @@ import { glob } from 'astro/loaders';
 const entrySchema = z.object({
   title: z.string(),
   description: z.string(),
+  present: z.boolean().default(false),
   draft: z.boolean().default(false),
 });
 const datedEntrySchema = entrySchema.extend({
