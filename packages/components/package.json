@@ -1,6 +1,6 @@
 {
   "name": "@alkemdotdev/alkemist-components",
-  "version": "1.0.0-beta.2",
+  "version": "1.0.0-beta.3",
   "description": "Astro components for Alkemist technical publishing.",
   "license": "Apache-2.0",
   "repository": {
@@ -61,7 +61,7 @@
     "astro": "^7.3.2"
   },
   "dependencies": {
-    "@alkemdotdev/alkemist-theme": "1.0.0-beta.2",
+    "@alkemdotdev/alkemist-theme": "1.0.0-beta.3",
     "@tonejs/midi": "2.0.28",
     "@types/three": "0.185.4",
     "entities": "6.0.1",
