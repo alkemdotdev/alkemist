@@ -1,5 +1,11 @@
 # Alkemist progress
 
+## 2026-09-17 — Present without the HUD
+
+Present now fills the page area with the slide, with the toolbar and navigation hidden by default. A 44px corner button and C shortcut reveal the controls as overlays, so the stage and live figures keep their size. The controls remain available to keyboard and touch users; Escape returns to reading. Browser fullscreen remains an explicit action. Articles, decks, embedded presentations, and direct presentation links share the behavior; audience and receiver views keep their existing dedicated controls.
+
+Local verification passes 142 tests and 121 validated pages. The seven example decks pass 124 layout cases across 1440, 1280, 1024, and 390px widths, with at least 20px presentation text. Chromium and WebKit pass the new controls regression, including touch input, keyboard focus, direct links, unchanged stage/widget surfaces, and zero automatic fullscreen requests. Existing presentation and document browser checks pass in Chromium. Desktop and mobile screenshots confirm the edge-to-edge stage and overlay controls. The presentation guide and development article describe the new interaction, and the browser harnesses now explicitly open controls before using the toolbar or slide picker.
+
 ## 2026-09-15 — One document, Read and Present
 
 Slides now opens as a scrolling document at every viewport. A sticky primary Present action starts from the reading position; Back to reading returns to the current section and restores the prior offset when that section has not changed. Read exposes Contents and document tools, while presentation controls remain in Present. Both views retain the same content and mounted figures. Narrow split layouts keep figure controls in the main scroll flow.

@@ -24,6 +24,7 @@ class SlidesElement extends HTMLElement {
   private printing = false;
   private timer?: number;
   private timerRunning = false;
+  private controlsVisible = false;
   private lastOverlayFocus?: HTMLElement;
   private touchStart?: { x: number; y: number };
   private inerted: Array<{ element: HTMLElement; inert: boolean }> = [];
@@ -163,8 +164,10 @@ class SlidesElement extends HTMLElement {
       },
       { signal },
     );
-    this.querySelectorAll<HTMLElement>('[data-slides-controls]').forEach(
-      (control) => (control.hidden = false),
+    this.button('chrome').addEventListener(
+      'click',
+      () => this.setControlsVisible(!this.controlsVisible),
+      { signal },
     );
     this.button('read').addEventListener(
       'click',
@@ -595,12 +598,14 @@ class SlidesElement extends HTMLElement {
       };
     }
     this.setStarting(true);
+    this.controlsVisible = false;
     const [{ default: Reveal }, { default: Notes }] = await Promise.all([
       import('reveal.js'),
       import('reveal.js/plugin/notes'),
     ]);
     if (!this.isConnected || epoch !== this.epoch) return;
     this.dataset.view = 'present';
+    this.syncControls();
     this.setStageInert(this.dataset.embedded !== 'true');
     this.native?.resume();
     this.updateActivity();
@@ -681,6 +686,7 @@ class SlidesElement extends HTMLElement {
   private teardown() {
     this.figureFocus.forEach((focus) => focus.close(false));
     this.closeTools();
+    this.controlsVisible = false;
     this.native?.suspend();
     this.stopTimer();
     this.setPointer(false);
@@ -708,6 +714,7 @@ class SlidesElement extends HTMLElement {
       this.fragment = indices.f ?? -1;
     }
     const presenting = this.dataset.view === 'present' && Boolean(this.deck);
+    this.syncControls();
     this.button('read').setAttribute('aria-pressed', String(!presenting));
     this.button('present').setAttribute('aria-pressed', String(presenting));
     this.button('read').hidden = !presenting;
@@ -1127,7 +1134,15 @@ class SlidesElement extends HTMLElement {
       else if (this.deck) void this.setView('read');
       return;
     }
-    if (!this.deck || this.isInteractive(event.target)) return;
+    if (
+      !this.deck ||
+      (this.isInteractive(event.target) &&
+        !(
+          event.target === this.button('chrome') &&
+          event.key.toLowerCase() === 'c'
+        ))
+    )
+      return;
     const action = () => {
       switch (event.key) {
         case 'n':
@@ -1150,6 +1165,14 @@ class SlidesElement extends HTMLElement {
         case 'o':
         case 'O':
           this.openOverview();
+          break;
+        case 'c':
+        case 'C':
+          if (!event.repeat) {
+            this.setControlsVisible(!this.controlsVisible);
+            if (this.controlsVisible)
+              this.button('chrome').focus({ preventScroll: true });
+          }
           break;
         case 'b':
         case 'B':
@@ -1209,6 +1232,37 @@ class SlidesElement extends HTMLElement {
     tools.open = false;
     if (restoreFocus)
       tools.querySelector('summary')?.focus({ preventScroll: true });
+  }
+
+  private setControlsVisible(visible: boolean) {
+    this.controlsVisible = visible;
+    if (!visible) {
+      this.closeTools();
+      if (
+        document.activeElement === this.button('chrome') ||
+        (document.activeElement instanceof Element &&
+          document.activeElement
+            .closest('[data-slides-controls]')
+            ?.closest('alk-slides') === this)
+      )
+        this.viewport.focus({ preventScroll: true });
+    }
+    this.syncControls();
+  }
+
+  private syncControls() {
+    const presenting = this.dataset.view === 'present';
+    const audience = this.receiver || this.native?.audience;
+    const visible = !audience && (!presenting || this.controlsVisible);
+    this.querySelectorAll<HTMLElement>('[data-slides-controls]').forEach(
+      (control) => (control.hidden = !visible),
+    );
+    const toggle = this.button('chrome');
+    toggle.hidden = !presenting || Boolean(audience);
+    toggle.setAttribute('aria-expanded', String(this.controlsVisible));
+    const label = `${this.controlsVisible ? 'Hide' : 'Show'} presentation controls`;
+    toggle.setAttribute('aria-label', label);
+    toggle.title = `${label} (C)`;
   }
 
   private setStarting(starting: boolean) {

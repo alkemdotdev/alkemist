@@ -146,6 +146,22 @@ async function checkAnnotations(page) {
         .querySelector('[data-slides-present]')
         ?.getAttribute('aria-pressed') === 'true',
   );
+  const openChrome = async () => {
+    if (
+      (await page.locator('alk-slides').getAttribute('data-view')) !== 'present'
+    )
+      return;
+    const chrome = page.locator('[data-slides-chrome]');
+    if ((await chrome.getAttribute('aria-expanded')) !== 'true')
+      await chrome.click();
+    await page.waitForFunction(
+      () =>
+        document
+          .querySelector('[data-slides-chrome]')
+          ?.getAttribute('aria-expanded') === 'true',
+    );
+  };
+  await openChrome();
   const presentText = page
     .locator('[data-alk-slide].present .alk-slide-copy p')
     .first();

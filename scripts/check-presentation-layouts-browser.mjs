@@ -51,6 +51,20 @@ async function checkPresentationLayouts(page) {
         await chart.evaluate((e) => e.getParameters().ink === 'teal'),
         'Present reset chart parameters',
       );
+      const openChrome = async () => {
+        if ((await frame.getAttribute('data-view')) !== 'present') return;
+        const chrome = frame.locator('[data-slides-chrome]');
+        if ((await chrome.getAttribute('aria-expanded')) !== 'true')
+          await chrome.click();
+        await page.waitForFunction(
+          (id) =>
+            document
+              .querySelector(`#${id} [data-slides-chrome]`)
+              ?.getAttribute('aria-expanded') === 'true',
+          `${kind}-example`,
+        );
+      };
+      await openChrome();
       await frame.locator('[data-slides-picker]').selectOption('1');
       await chart.locator('[data-figure-focus]').click();
       await chart.locator('.alk-chart-data-tools > summary').click();
@@ -64,6 +78,7 @@ async function checkPresentationLayouts(page) {
         );
       }, `${kind}-example`);
       await chart.locator('.alk-focus-close').click();
+      await openChrome();
       await frame.locator('[data-slides-read]').click();
       await page.waitForFunction(
         (id) => document.getElementById(id)?.dataset.view === 'read',

@@ -31,8 +31,21 @@ async function checkThemesAndFocus(page) {
         ?.getAttribute('aria-pressed') === 'true',
   );
   const picker = page.locator('[data-slides-picker]');
+  const openChrome = async () => {
+    if ((await root.getAttribute('data-view')) !== 'present') return;
+    const chrome = page.locator('[data-slides-chrome]');
+    if ((await chrome.getAttribute('aria-expanded')) !== 'true')
+      await chrome.click();
+    await page.waitForFunction(
+      () =>
+        document
+          .querySelector('[data-slides-chrome]')
+          ?.getAttribute('aria-expanded') === 'true',
+    );
+  };
   const tools = page.locator('[data-slides-tools]');
   const openTools = async () => {
+    await openChrome();
     if (!(await tools.evaluate((element) => element.open)))
       await tools.locator('summary').click();
   };
@@ -43,6 +56,7 @@ async function checkThemesAndFocus(page) {
           requestAnimationFrame(() => requestAnimationFrame(resolve)),
         ),
     );
+  await openChrome();
   await picker.selectOption('1');
   const field = page.locator('#live-field');
   await page.waitForFunction(
@@ -153,6 +167,7 @@ async function checkThemesAndFocus(page) {
   );
   assert(rejected, 'Invalid programmatic parameter patch was accepted');
 
+  await openChrome();
   await picker.selectOption('2');
   const chart = page.locator('#live-trace');
   await page.waitForFunction(

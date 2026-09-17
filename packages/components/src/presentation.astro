@@ -61,7 +61,29 @@ const {
   style={style}
   aria-label={title}
 >
+  <button
+    type="button"
+    data-slides-chrome
+    hidden
+    aria-label="Show presentation controls"
+    aria-expanded="false"
+    aria-keyshortcuts="C"
+    aria-controls={`${id}-toolbar ${id}-navigation`}
+    title="Show presentation controls (C)"
+    data-pagefind-ignore
+  >
+    <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24">
+      <path
+        d="M4 7h16M4 17h16"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.5"></path>
+      <circle cx="9" cy="7" r="2.5" fill="currentColor"></circle>
+      <circle cx="15" cy="17" r="2.5" fill="currentColor"></circle>
+    </svg>
+  </button>
   <div
+    id={`${id}-toolbar`}
     class="alk-slides-toolbar"
     data-slides-controls
     hidden
@@ -199,6 +221,7 @@ const {
     <div class="slides"><slot /></div>
   </div>
   <div
+    id={`${id}-navigation`}
     class="alk-slides-navigation"
     data-slides-controls
     hidden
@@ -279,13 +302,13 @@ const {
           Previous slide or step
         </dd><dt>Home / End</dt><dd>First / last slide</dd><dt>O</dt><dd>
           Overview
-        </dd><dt>B</dt><dd>Blackout</dd><dt>L</dt><dd>Laser pointer</dd><dt>
-          F
-        </dt><dd>Fullscreen</dd><dt>S</dt><dd>Speaker view</dd><dt>?</dt><dd>
-          Keyboard help
-        </dd><dt>Escape</dt><dd>
-          Close overlays, blackout, or leave presentation
-        </dd>
+        </dd><dt>C</dt><dd>Show / hide controls</dd><dt>B</dt><dd>
+          Blackout
+        </dd><dt>L</dt><dd>Laser pointer</dd><dt>F</dt><dd>Fullscreen</dd><dt>
+          S
+        </dt><dd>Speaker view</dd><dt>?</dt><dd>Keyboard help</dd><dt>
+          Escape
+        </dt><dd>Close overlays, blackout, or leave presentation</dd>
       </dl>
     </form>
   </dialog>

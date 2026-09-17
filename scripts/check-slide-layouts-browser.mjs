@@ -49,8 +49,25 @@ async function checkSlideLayouts(page) {
             .querySelector('[data-slides-present]')
             ?.getAttribute('aria-pressed') === 'true',
       );
+      const openChrome = async () => {
+        if (
+          (await page.locator('alk-slides').getAttribute('data-view')) !==
+          'present'
+        )
+          return;
+        const chrome = page.locator('[data-slides-chrome]');
+        if ((await chrome.getAttribute('aria-expanded')) !== 'true')
+          await chrome.click();
+        await page.waitForFunction(
+          () =>
+            document
+              .querySelector('[data-slides-chrome]')
+              ?.getAttribute('aria-expanded') === 'true',
+        );
+      };
       const count = await page.locator('[data-alk-slide]').count();
       for (let index = 0; index < count; index++) {
+        await openChrome();
         await page.locator('[data-slides-picker]').selectOption(String(index));
         await page.waitForFunction(
           (i) =>
@@ -127,10 +144,18 @@ async function checkSlideLayouts(page) {
             )
               throw new Error('Split visuals overlap');
         }
-        if (index === 0 || (slug === 'layout-sampler' && index === 1))
+        if (index === 0 || (slug === 'layout-sampler' && index === 1)) {
+          await page.locator('[data-slides-chrome]').click();
+          await page.waitForFunction(
+            () =>
+              document
+                .querySelector('[data-slides-chrome]')
+                ?.getAttribute('aria-expanded') === 'false',
+          );
           await page.screenshot({
             path: `.alkemist/presentation-${slug}-${width}-${index}.png`,
           });
+        }
       }
     }
   }

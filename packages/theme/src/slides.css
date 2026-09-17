@@ -170,7 +170,7 @@
   z-index: 1000;
   width: 100%;
   height: 100dvh;
-  padding: 0 clamp(8px, 1.5vw, 24px);
+  padding: 0;
   margin: 0;
   display: flex;
   flex-direction: column;
@@ -187,6 +187,52 @@ body:has(.alk-slides[data-view='present']:not([data-embedded='true'])) {
 }
 .alk-slides[data-view='present'][data-embedded='true'] .alk-slides-viewport {
   height: clamp(420px, 70svh, 760px);
+}
+/* Controls overlay the stage so showing them never resizes live figures. */
+.alk-slides[data-view='present']
+  > :is(.alk-slides-toolbar, .alk-slides-navigation) {
+  position: absolute;
+  z-index: 5;
+  left: max(12px, env(safe-area-inset-left));
+  right: max(12px, env(safe-area-inset-right));
+  padding: 8px 12px;
+  border: 1px solid var(--alk-rule, #ccc);
+  border-radius: 8px;
+  background: var(--alk-slide-background, var(--alk-paper, #f4f7fb));
+  box-shadow: 0 4px 24px #0002;
+}
+.alk-slides[data-view='present'] > .alk-slides-toolbar {
+  top: max(12px, env(safe-area-inset-top));
+}
+.alk-slides[data-view='present'] > .alk-slides-navigation {
+  bottom: max(12px, env(safe-area-inset-bottom));
+  right: max(68px, calc(env(safe-area-inset-right) + 56px));
+}
+.alk-slides > [data-slides-chrome] {
+  position: absolute;
+  z-index: 6;
+  right: max(12px, env(safe-area-inset-right));
+  bottom: max(12px, env(safe-area-inset-bottom));
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--alk-rule, #ccc);
+  border-radius: 8px;
+  color: var(--alk-slide-foreground, var(--alk-ink, #14283d));
+  background: var(--alk-slide-background, var(--alk-paper, #f4f7fb));
+  cursor: pointer;
+  opacity: 0.6;
+}
+.alk-slides
+  > [data-slides-chrome]:is(:hover, :focus-visible, [aria-expanded='true']) {
+  opacity: 1;
+}
+@media (hover: none) {
+  .alk-slides > [data-slides-chrome] {
+    opacity: 0.8;
+  }
 }
 .alk-slides .reveal {
   color: inherit;
@@ -701,7 +747,7 @@ body:has(.alk-slides[data-view='present']:not([data-embedded='true'])) {
   display: none !important;
 }
 .alk-slides:fullscreen {
-  padding: 0 16px;
+  padding: 0;
   background: var(--alk-slide-background, var(--alk-paper));
   height: 100dvh;
   box-sizing: border-box;
@@ -907,6 +953,7 @@ alk-diagram > pre code {
       .alk-skip,
       .alk-slides-toolbar,
       .alk-slides-navigation,
+      [data-slides-chrome],
       .alk-slides-message
     ) {
     display: none !important;

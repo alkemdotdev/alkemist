@@ -25,9 +25,22 @@ async function checkPresentation(page) {
         ?.getAttribute('aria-pressed') === 'true',
   );
   const root = page.locator('alk-slides');
+  const openChrome = async () => {
+    if ((await root.getAttribute('data-view')) !== 'present') return;
+    const chrome = page.locator('[data-slides-chrome]');
+    if ((await chrome.getAttribute('aria-expanded')) !== 'true')
+      await chrome.click();
+    await page.waitForFunction(
+      () =>
+        document
+          .querySelector('[data-slides-chrome]')
+          ?.getAttribute('aria-expanded') === 'true',
+    );
+  };
   const tools = page.locator('[data-slides-tools]');
   const toolsOpen = () => tools.evaluate((element) => element.open);
   const openTools = async () => {
+    await openChrome();
     if (!(await toolsOpen())) await tools.locator('summary').click();
     assert(await toolsOpen(), 'Tools did not open');
   };
@@ -41,6 +54,7 @@ async function checkPresentation(page) {
     'Presentation must accept navigation immediately on entry',
   );
   await page.keyboard.press('Home');
+  await openChrome();
   await page
     .getByRole('button', { name: 'Slide overview', exact: true })
     .click();

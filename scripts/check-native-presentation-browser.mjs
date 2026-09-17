@@ -23,9 +23,28 @@ async function checkNativePresentation(page) {
           ?.getAttribute('aria-pressed') === 'true',
     );
   };
-  const choose = (target, index) =>
-    target.locator('[data-slides-picker]').selectOption(String(index));
+  const openChrome = async (target) => {
+    if (
+      (await target.locator('alk-slides').getAttribute('data-view')) !==
+      'present'
+    )
+      return;
+    const chrome = target.locator('[data-slides-chrome]');
+    if ((await chrome.getAttribute('aria-expanded')) !== 'true')
+      await chrome.click();
+    await target.waitForFunction(
+      () =>
+        document
+          .querySelector('[data-slides-chrome]')
+          ?.getAttribute('aria-expanded') === 'true',
+    );
+  };
+  const choose = async (target, index) => {
+    await openChrome(target);
+    await target.locator('[data-slides-picker]').selectOption(String(index));
+  };
   const openTools = async (target) => {
+    await openChrome(target);
     const tools = target.locator('[data-slides-tools]');
     if (!(await tools.evaluate((element) => element.open)))
       await tools.locator('summary').click();
@@ -47,6 +66,7 @@ async function checkNativePresentation(page) {
     'Desktop slide documents must open in Read',
   );
   await present(page);
+  await openChrome(page);
   await page.locator('[data-annotations-open]').click();
   await page.keyboard.press('Escape');
   assert(
@@ -128,6 +148,7 @@ async function checkNativePresentation(page) {
     () => document.querySelector('alk-slides').dataset.blackout === 'false',
   );
   await audience.screenshot({ path: '.alkemist/native-audience.png' });
+  await openChrome(page);
   await page.locator('[data-slides-read]').click();
   await audience
     .getByText('The presenter ended this session.', { exact: false })
@@ -282,6 +303,7 @@ async function checkNativePresentation(page) {
   );
   await openTools(probe);
   await probe.locator('[data-slides-screen]').click();
+  await openChrome(probe);
   await probe.locator('[data-slides-read]').click();
   await probe.evaluate(() => window.__native.resolveScreen());
   assert(
@@ -370,6 +392,7 @@ async function checkNativePresentation(page) {
     (await probe.evaluate(() => window.__native.cast.state)) === 'terminated',
     'Stop casting did not terminate',
   );
+  await openChrome(probe);
   await probe.locator('[data-slides-read]').click();
   assert(
     await probe.evaluate(() =>

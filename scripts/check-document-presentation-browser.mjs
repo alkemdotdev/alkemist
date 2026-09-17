@@ -29,7 +29,23 @@ async function checkDocumentPresentation(page) {
     );
     await settle();
   };
+  const openChrome = async () => {
+    if (
+      (await page.locator('alk-slides').getAttribute('data-view')) !== 'present'
+    )
+      return;
+    const chrome = page.locator('[data-slides-chrome]');
+    if ((await chrome.getAttribute('aria-expanded')) !== 'true')
+      await chrome.click();
+    await page.waitForFunction(
+      () =>
+        document
+          .querySelector('[data-slides-chrome]')
+          ?.getAttribute('aria-expanded') === 'true',
+    );
+  };
   const read = async () => {
+    await openChrome();
     await page.locator('[data-slides-read]').click();
     await page.waitForFunction(
       () => document.querySelector('alk-slides')?.dataset.view === 'read',
@@ -114,6 +130,7 @@ async function checkDocumentPresentation(page) {
     const canvas = await field.locator('canvas').elementHandle();
     const before = await section.evaluate((e) => e.getBoundingClientRect().top);
     await present();
+    await openChrome();
     assert(
       (await page.locator('.slides > .present').getAttribute('id')) ===
         'presentation-let-a-figure-stay-live',
@@ -176,6 +193,7 @@ async function checkDocumentPresentation(page) {
 
     // Forward navigation returns to the new section; ordinary footnotes work in both views.
     await present();
+    await openChrome();
     await page.locator('[data-slides-picker]').selectOption('2');
     await page.locator('[data-footnote-ref]').click();
     await settle();

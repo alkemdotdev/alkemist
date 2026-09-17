@@ -22,6 +22,21 @@ async function checkSlides(page) {
           ?.getAttribute('aria-pressed') === 'true',
     );
   };
+  const openChrome = async () => {
+    if (
+      (await page.locator('alk-slides').getAttribute('data-view')) !== 'present'
+    )
+      return;
+    const chrome = page.locator('[data-slides-chrome]');
+    if ((await chrome.getAttribute('aria-expanded')) !== 'true')
+      await chrome.click();
+    await page.waitForFunction(
+      () =>
+        document
+          .querySelector('[data-slides-chrome]')
+          ?.getAttribute('aria-expanded') === 'true',
+    );
+  };
   const open = async (slug, { presenting = true } = {}) => {
     await page.goto(`${base}/slides/${slug}/`);
     await page.waitForFunction(
@@ -34,6 +49,7 @@ async function checkSlides(page) {
     if (presenting) await present();
   };
   const choose = async (index) => {
+    await openChrome();
     await page
       .getByLabel('Choose slide', { exact: true })
       .selectOption(String(index));
@@ -157,6 +173,7 @@ async function checkSlides(page) {
   );
 
   await choose(0);
+  await openChrome();
   await page.locator('[data-slides-tools] > summary').click();
   const popupPromise = page.waitForEvent('popup');
   await page.locator('[data-slides-notes]').click();

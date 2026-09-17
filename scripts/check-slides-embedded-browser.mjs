@@ -9,6 +9,12 @@ async function checkEmbeddedSlides(page) {
     );
   });
   const decks = page.locator('alk-slides');
+  const openChrome = async (deck) => {
+    if ((await deck.getAttribute('data-view')) !== 'present') return;
+    const chrome = deck.locator('[data-slides-chrome]');
+    if ((await chrome.getAttribute('aria-expanded')) !== 'true')
+      await chrome.click();
+  };
   for (let index = 0; index < 2; index++) {
     const deck = decks.nth(index);
     await deck.locator('alk-focus button').click();
@@ -31,8 +37,10 @@ async function checkEmbeddedSlides(page) {
     ),
   );
   // Present starts at each reading position; choose a known start before testing independent navigation.
-  for (let index = 0; index < 2; index++)
+  for (let index = 0; index < 2; index++) {
+    await openChrome(decks.nth(index));
     await decks.nth(index).locator('[data-slides-picker]').selectOption('0');
+  }
   await decks.nth(0).locator('[data-slides-next]').click();
   const state = await page.evaluate(() => {
     const ids = [...document.querySelectorAll('[id]')].map(
@@ -93,6 +101,7 @@ async function checkEmbeddedSlides(page) {
     );
     if ((await frame.locator('[data-alk-slide].present').count()) !== 1)
       throw new Error('Typed Slide did not present');
+    await openChrome(frame);
     await frame.locator('[data-slides-read]').click();
   }
   return { ...state, layouts };
